@@ -1,45 +1,131 @@
-import { Flame, FolderClock, LayoutDashboard, PersonStanding, Settings, UserRound } from "lucide-react";
+import { BarChart3, Flame, FolderClock, LayoutDashboard, PersonStanding, Settings, ShieldCheck, UserRound } from "lucide-react";
 
 const OptionSideBar = [
     {
         id: 'OSide01',
         name: 'Overview',
         icon: <LayoutDashboard />,
-        path: '/overview'
+        path: '/overview',
+        session: 'user'
     },
     {
         id: 'OSide02',
         name: 'Employee',
         icon: <PersonStanding />,
-        path: '/employee'
+        path: '/employee',
+        session: 'user'
     },
     {
         id: 'OSide05',
         name: 'Evaluated',
         icon: <Flame />,
-        path: '/flame'
+        path: '/flame',
+        session: 'user'
+    },
+    {
+        id: 'OSideAdmin',
+        name: 'Management',
+        icon: <ShieldCheck />,
+        path: '#',
+        session: 'Admin',
+        SubOptionSideBar:[
+            {
+                id: 'subOSide1',
+                name: 'Department',
+                path: '/department',
+            },
+            {
+                id: 'subOSide2',
+                name: 'Role',
+                path: '/manage_role',
+            },
+            {
+                id: 'subOSide3',
+                name: 'Form',
+                path: '/manage_form',
+            },
+            {
+                id: 'subOSide4',
+                name: 'User',
+                path: '/manage_user',
+            },
+        ]
     },
     {
         id: 'OSide06',
         name: 'History',
         icon: <FolderClock />,
-        path: '/flame'
+        path: '/flame',
+        session: 'user'
+    },
+    {
+        id: 'OSideAdmin2',
+        name: 'Evaluation',
+        icon: <BarChart3 />,
+        path: '#',
+        session: 'Admin',
+        SubOptionSideBar:[
+            {
+                id: 'subOSide4',
+                name: 'All result',
+                path: '/All_result',
+            },
+            {
+                id: 'subOSide5',
+                name: 'Export',
+                path: '/Export',
+            },
+        ]
     },
     {
         id: 'OSide03',
         name: 'Account',
         icon: <UserRound />,
-        path: '/profile/1'
+        path: '/profile/1',
+        session: 'user'
     },
     {
         id: 'OSide04',
         name: 'Setting',
         icon: <Settings />,
-        path: '/setting'
+        path: '/setting',
+        session: 'user'
     },
 ]
 
-
+const Department = [
+    {
+      id:"DEP01",
+      name:"สำนักงานผู้อำนวยการ",
+      img:"/test.png",
+    },
+    {
+      id:"DEP02",
+      name:"งานบริหารทั่วไป",
+      img:"/test.png",
+    },
+    {
+      id:"DEP03",
+      name:"งานประกันคุณภาพและประเมินผล",
+      img:"/test.png",
+    },
+    {
+      id:"DEP04",
+      name:"งานพัฒนาวิชาการและส่งเสริมการศึกษา",
+      img:"/test.png",
+    },
+    {
+      id:"DEP05",
+      name:"งานทะเบียนและประมวลผล",
+      img:"/test.png",
+    },
+    {
+      id:"DEP06",
+      name:"งานฝึกประสบการณ์วิชาชีพนักศึกษา",
+      img:"/test.png",
+    },
+  ]
 export{
-    OptionSideBar
+    OptionSideBar,
+    Department
 }

@@ -4,11 +4,11 @@ import RightSection from './_components/RightSection'
 
 const page = () => {
   return (
-    <div className='m-5 grid grid-cols-6 grid-rows-2 gap-5'>
-      <div className='col-span-4 row-span-1'>
+    <div className='m-5 grid grid-cols-6  gap-5'>
+      <div className='col-span-4 '>
         <MyEvaluated/>
       </div>
-      <div className='col-span-2 row-span-1'>
+      <div className='col-span-2 '>
         <RightSection/>
       </div>
     </div>

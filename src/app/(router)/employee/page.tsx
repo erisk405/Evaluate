@@ -37,7 +37,7 @@ const OptionEmployee = [
     },
 ]
   return (
-    <div className='p-10'>
+    <div className='p-10 w-full'>
       <h2 className='text-3xl font-bold'>Employee</h2>
       <div className='flex justify-around gap-3 flex-wrap my-10'>
         {OptionEmployee.map((item) => (

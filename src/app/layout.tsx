@@ -16,7 +16,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={notoSansThai.className }>
+      <body className={`${notoSansThai.className} `}>
         {children}
       </body>
     </html>

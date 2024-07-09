@@ -1,64 +1,8 @@
+import { Department } from '@/app/data/data-option'
 import Image from 'next/image'
 import React from 'react'
 
 const DepartmentSection = () => {
-  const Department = [
-    {
-      id:"DEP01",
-      name:"สำนักงานผู้อำนวยการ",
-      img:"/test.png",
-    },
-    {
-      id:"DEP02",
-      name:"งานบริหารทั่วไป",
-      img:"/test.png",
-    },
-    {
-      id:"DEP03",
-      name:"งานประกันคุณภาพและประเมินผล",
-      img:"/test.png",
-    },
-    {
-      id:"DEP04",
-      name:"งานพัฒนาวิชาการและส่งเสริมการศึกษา",
-      img:"/test.png",
-    },
-    {
-      id:"DEP05",
-      name:"งานทะเบียนและประมวลผล",
-      img:"/test.png",
-    },
-    {
-      id:"DEP06",
-      name:"งานฝึกประสบการณ์วิชาชีพนักศึกษา",
-      img:"/test.png",
-    },
-    {
-      id:"DEP07",
-      name:"งานฝึกประสบการณ์วิชาชีพนักศึกษา",
-      img:"/test.png",
-    },
-    {
-      id:"DEP08",
-      name:"งานฝึกประสบการณ์วิชาชีพนักศึกษา",
-      img:"/test.png",
-    },
-    {
-      id:"DEP09",
-      name:"งานฝึกประสบการณ์วิชาชีพนักศึกษา",
-      img:"/test.png",
-    },
-    {
-      id:"DEP10",
-      name:"งานฝึกประสบการณ์วิชาชีพนักศึกษา",
-      img:"/test.png",
-    },
-    {
-      id:"DEP11",
-      name:"งานฝึกประสบการณ์วิชาชีพนักศึกษา",
-      img:"/test.png",
-    },
-  ]
   return (
     <>
     <div className='h-[550px] overflow-y-scroll scrollbar-gemini'>
