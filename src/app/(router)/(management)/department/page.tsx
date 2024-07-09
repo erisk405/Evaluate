@@ -1,23 +1,41 @@
 import { Department } from '@/app/data/data-option'
 import { Input } from '@/components/ui/input'
-import { Search } from 'lucide-react'
+import { Plus, Search } from 'lucide-react'
 import Image from 'next/image'
 import React from 'react'
 import FilterSection from './_components/FilterSection'
-
+import { Button } from "@/components/ui/button"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 const page = () => {
   return (
     <div className='m-5 w-full grid grid-cols-6  gap-5'>
       <div className='col-span-4 '>
         <div className='bg-white w-full h-full shadow rounded-xl p-5'>
             <h2 className='text-2xl font-bold'>Department manage</h2>
-            <div className='flex justify-between'>
-              <div className='mt-3 flex-1 max-w-[300px] relative'>
+            <div className='flex justify-between items-center mt-3 '>
+              <div className='flex-1 max-w-[300px] relative'>
                 <Input type="email" placeholder="Email" className='rounded-full' />
                 <Search size={18} className='absolute top-1/2 right-0 -translate-y-1/2 -translate-x-1/2 text-gray-500' />
               </div>
-              <div>
+              <div className='flex items-center gap-5'>
                 <FilterSection/>
+                <div>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button variant="outline" className='p-2 active:scale-95'><Plus/></Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Create Department</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
               </div>
             </div>
             
