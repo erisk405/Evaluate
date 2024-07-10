@@ -98,31 +98,37 @@ const Department = [
       id:"DEP01",
       name:"สำนักงานผู้อำนวยการ",
       img:"/test.png",
+      quantity:'43'
     },
     {
       id:"DEP02",
       name:"งานบริหารทั่วไป",
       img:"/test.png",
+      quantity:'33'
     },
     {
       id:"DEP03",
       name:"งานประกันคุณภาพและประเมินผล",
       img:"/test.png",
+      quantity:'89'
     },
     {
       id:"DEP04",
       name:"งานพัฒนาวิชาการและส่งเสริมการศึกษา",
       img:"/test.png",
+      quantity:'73'
     },
     {
       id:"DEP05",
       name:"งานทะเบียนและประมวลผล",
       img:"/test.png",
+      quantity:'12'
     },
     {
       id:"DEP06",
       name:"งานฝึกประสบการณ์วิชาชีพนักศึกษา",
       img:"/test.png",
+      quantity:'56'
     },
   ]
 export{
