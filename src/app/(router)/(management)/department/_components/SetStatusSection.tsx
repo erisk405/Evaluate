@@ -23,27 +23,27 @@ const Roles = [
   {
     value: "general",
     label: "General",
-    description:''
+    description:"Can's do anything"
   },
   {
     value: "user",
     label: "User",
-    description:''
+    description:'Can view,comment and edit.'
   },
   {
     value: "bember",
     label: "Member",
-    description:''
+    description:'Can view,comment and edit.'
   },
   {
     value: "develop",
     label: "Develop",
-    description:''
+    description:'Can view,comment and manage billing.'
   },
   {
     value: "owner",
     label: "Owner",
-    description:''
+    description:'Admin-level access to all resources.'
   },
 ];
 
@@ -66,7 +66,7 @@ export default function SetStatusSection() {
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0 relative -left-10">
+      <PopoverContent className="w-[250px] p-0 relative -left-16">
         <Command>
           <CommandInput placeholder="Search Role..." />
           <CommandEmpty>No Role found.</CommandEmpty>
@@ -87,7 +87,10 @@ export default function SetStatusSection() {
                       value === Role.value ? "opacity-100" : "opacity-0"
                     )}
                   />
-                  {Role.label}
+                  <div className="flex flex-col w-[240px]">
+                    {Role.label}
+                    <span className="text-neutral-500">{Role.description}</span>
+                  </div>
                 </CommandItem>
               ))}
             </CommandList>

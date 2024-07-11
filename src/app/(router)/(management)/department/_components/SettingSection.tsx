@@ -11,9 +11,10 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Cog } from "lucide-react";
+import { Cog, EllipsisVertical, Search, X } from "lucide-react";
 import Image from "next/image";
 import SetStatusSection from "./SetStatusSection";
+import ListTeamOfDepartment from "./ListTeamOfDepartment";
 
 export default function SettingSection() {
   return (
@@ -37,7 +38,7 @@ export default function SettingSection() {
               width={300}
               height={300}
               alt="ProfileDepartment"
-              className="w-[250px] h-[250px] object-cover rounded-xl"
+              className="w-[200px] h-[200px] object-cover rounded-xl"
             />
           </div>
           <div className="grid gap-4 py-4">
@@ -45,31 +46,38 @@ export default function SettingSection() {
               <Label htmlFor="name" className="text-right">
                 Name
               </Label>
-              <Input id="name" defaultValue={'My Edit name'} className="col-span-3" />
+              <Input
+                id="name"
+                defaultValue={"My Edit name"}
+                className="col-span-2"
+              />
             </div>
           </div>
           <div className="my-4">
-            <h2 className="font-bold">Team Members</h2>
+            <h2 className="font-semibold ">Team Members</h2>
             <p className="text-sm text-neutral-500">
               Invite your team members to collaborate.
             </p>
-            <div className="px-10 my-3 flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <Image
-                  src={"/profiletest.jpg"}
-                  width={50}
-                  height={50}
-                  alt="ProfileDepartment"
-                  className="w-[40px] h-[40px] object-cover rounded-full"
+            <div className="flex justify-end">
+              <div className="flex-1 max-w-[250px] relative my-2">
+                <Input
+                  type="search"
+                  placeholder="Search"
+                  className="pl-9"
                 />
-                <ul className="text-sm">
-                  <li>Krittaphat Samrit</li>
-                  <li className="text-neutral-500">copter1177@gmail.com</li>
-                </ul>
+                <div className="">
+                  <Search
+                    size={18}
+                    className="absolute  top-1/2 left-0 -translate-y-1/2 translate-x-1/2 text-gray-500"
+                  />
+                </div>
               </div>
-              <div><SetStatusSection/></div>
+              <div></div>
             </div>
-            <hr />
+            {/* List Team of department */}
+            <div>
+              <ListTeamOfDepartment />
+            </div>
           </div>
         </div>
         <SheetFooter>
