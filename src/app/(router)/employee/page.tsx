@@ -37,46 +37,34 @@ const OptionEmployee = [
     },
 ]
   return (
-    <div className='p-10 w-full'>
-      <h2 className='text-3xl font-bold'>Employee</h2>
-      <div className='flex justify-around gap-3 flex-wrap my-10'>
+    <div className='p-10 w-full '>
+      <h2 className='text-2xl font-bold'>Employee</h2>
+      <div className='flex justify-around gap-6 flex-wrap my-5 bg-gray-100 p-5 rounded-3xl'>
         {OptionEmployee.map((item) => (
           <div key={item?.id} className='flex-1 min-w-[250px] max-w-[300px] cursor-pointer '>
             <div 
-              className={`flex rounded-lg gap-3 relative overflow-hidden
+              className={`flex rounded-3xl gap-3 relative overflow-hidden
               items-center px-8 py-7 shadow-xl
-              bg-gradient-to-r bg-neutral-900 hover:from-neutral-700 hover:to-black group hover:scale-105 active:scale-95
+              bg-gradient-to-r bg-neutral-900 from-neutral-700 to-neutral-900 group 
               transition-all `}
             >
-              <Image
-                src={item?.img}
-                width={70}
-                height={70}
-                alt='icon'
-                className='w-[50px] h-[50px] object-cover z-10'
-              />
-              <div className='text-white group-hover:text-white z-10'>
-                <h2 className='font-semibold text-md'>{item?.name}</h2>
-                <h2 className=''>{item?.quantity}</h2>
-              </div>
-
-              <div 
-              className='absolute top-0 z-0 right-0 opacity-0 blur-sm 
-              group-hover:animate-pulse group-hover:blur-0 group-hover:opacity-70 group-hover:translate-x-1
-              transition-all duration-1000'>
-                <Image
-                  src={'/bg.jpg'}
-                  width={400}
-                  height={150}
-                  alt='icon'
-                  className='w-[300px] h-[150px] object-cover'
-                />
+              <div className='text-white w-full group-hover:text-white z-10'>
+                <div className=''>
+                  <h2 className='text-sm text-neutral-400'>Avaliable Balance</h2>
+                  <h2 className='text-lg'>{item?.name}</h2>
+                </div>
+                <div className='flex justify-between mt-20'>
+                  <h2>View more</h2>
+                  <h2 className=''>{item?.quantity}</h2>
+                </div>
               </div>
             </div>
           </div>
         ))}
       </div>
-      <div className=''>
+      <div className='bg-gray-100 p-5 rounded-3xl'>
+        <h2 className='text-xl font-semibold'>All Employee List</h2>
+        <p className='text-gray-500'>The request is in the state Waiting for success</p>
         <ListEmployee/>
       </div>
     </div>

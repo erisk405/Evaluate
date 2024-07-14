@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -12,10 +12,10 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
+} from "@tanstack/react-table";
+import { ArrowUpDown, Building2, ChevronDown, Dot, MoreHorizontal } from "lucide-react";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -24,8 +24,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -33,8 +33,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import Image from "next/image"
+} from "@/components/ui/table";
+import Image from "next/image";
 
 const data: Payment[] = [
   {
@@ -42,57 +42,57 @@ const data: Payment[] = [
     name: "amphon yyyy",
     status: "success",
     email: "ken99@yahoo.com",
-    role:"CEO",
-    phone:"095-454-4484",
-    department:"CompanyA"
+    role: "CEO",
+    phone: "095-454-4484",
+    department: "CompanyA",
   },
   {
     id: "3u1reuv4",
     name: "Krittaphat samrit",
     status: "success",
     email: "Abe45@gmail.com",
-    role:"เสาหลัก",
-    phone:"095-454-4484",
-    department:"CompanyB"
+    role: "เสาหลัก",
+    phone: "095-454-4484",
+    department: "CompanyB",
   },
   {
     id: "derv1ws0",
     name: "Panyakorn somawong",
     status: "processing",
     email: "Monserrat44@gmail.com",
-    role:"Head",
-    phone:"095-454-4484",
-    department:"CompanyB"
+    role: "Head",
+    phone: "095-454-4484",
+    department: "CompanyB",
   },
   {
     id: "5kma53ae",
     name: "Wichaphon dogcat",
     status: "success",
     email: "Silas22@gmail.com",
-    role:"COO",
-    phone:"095-454-4484",
-    department:"CompanyB"
+    role: "COO",
+    phone: "095-454-4484",
+    department: "CompanyB",
   },
   {
     id: "bhqecj4p",
     name: "Worakamon gogo",
     status: "failed",
     email: "carmella@hotmail.com",
-    role:"CPE",
-    phone:"095-454-4484",
-    department:"CompanyC"
+    role: "CPE",
+    phone: "095-454-4484",
+    department: "CompanyC",
   },
-]
+];
 
 export type Payment = {
-  id: string
-  name: string
-  status: "pending" | "processing" | "success" | "failed"
-  email: string,
-  role:string,
-  phone:string,
-  department:string
-}
+  id: string;
+  name: string;
+  status: "pending" | "processing" | "success" | "failed";
+  email: string;
+  role: string;
+  phone: string;
+  department: string;
+};
 
 export const columns: ColumnDef<Payment>[] = [
   {
@@ -116,10 +116,10 @@ export const columns: ColumnDef<Payment>[] = [
     header: "Role",
     cell: ({ row }) => {
       return (
-        <div className="capitalize flex items-center gap-3 text-emerald-500">
+        <div className="capitalize font-semibold flex items-center gap-3 text-emerald-500">
           {row.getValue("role")}
         </div>
-      )
+      );
     },
   },
   {
@@ -134,7 +134,7 @@ export const columns: ColumnDef<Payment>[] = [
           Email
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
     cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
   },
@@ -146,7 +146,7 @@ export const columns: ColumnDef<Payment>[] = [
         <div className="capitalize flex items-center gap-3">
           {row.getValue("phone")}
         </div>
-      )
+      );
     },
   },
   {
@@ -154,24 +154,35 @@ export const columns: ColumnDef<Payment>[] = [
     header: "Department",
     cell: ({ row }) => {
       return (
-        <div 
-        className="flex items-center 
-        justify-center gap-3 bg-fuchsia-200 
-        text-fuchsia-700 border border-fuchsia-500 p-2 rounded-lg max-w-28">
+        <div
+          className="inline-flex items-center font-semibold
+        justify-center gap-2 bg-neutral-200 
+        text-neutral-900 border border-neutral-500 px-3 py-1 rounded-xl max-w-28"
+        >
+          <div className="">
+            <Building2 strokeWidth={2} size={16}  />
+          </div>
           {row.getValue("department")}
         </div>
-      )
+      );
     },
   },
   {
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => (
-      <div className={`capitalize 
-      ${row.getValue("status") === "success" ? 'text-emerald-500' : 
-        row.getValue("status") === "processing" ? 'text-yellow-500' : 'text-red-500'}`}
+      <div
+        className={`capitalize 
+      ${
+        row.getValue("status") === "success"
+          ? "font-semibold text-emerald-600 bg-emerald-100 rounded-xl border p-1 pr-4 border-emerald-500"
+          : row.getValue("status") === "processing"
+          ? "font-semibold text-yellow-600 bg-yellow-100 rounded-xl border p-1 pr-4 border-yellow-500"
+          : "font-semibold text-red-600 bg-red-100 rounded-xl border p-1 pr-4 border-red-500"
+      }  items-center inline-flex`}
       >
-        {row.getValue("status")}
+          <Dot strokeWidth={3} />
+          {row.getValue("status")}
       </div>
     ),
   },
@@ -180,7 +191,7 @@ export const columns: ColumnDef<Payment>[] = [
     enableHiding: false,
     header: "Action",
     cell: ({ row }) => {
-      const payment = row.original
+      const payment = row.original;
 
       return (
         <DropdownMenu>
@@ -202,19 +213,20 @@ export const columns: ColumnDef<Payment>[] = [
             <DropdownMenuItem>View payment details</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      )
+      );
     },
   },
-]
+];
 
 export function ListEmployee() {
-  const [sorting, setSorting] = React.useState<SortingState>([])
+  const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
-  )
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
-  const [rowSelection, setRowSelection] = React.useState({})
-  const [globalFilter, setGlobalFilter] = React.useState("")
+  );
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = React.useState({});
+  const [globalFilter, setGlobalFilter] = React.useState("");
 
   const table = useReactTable({
     data,
@@ -224,7 +236,7 @@ export function ListEmployee() {
       columnFilters,
       columnVisibility,
       rowSelection,
-      globalFilter
+      globalFilter,
     },
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -241,7 +253,7 @@ export function ListEmployee() {
       const searchValue = filterValue.toLowerCase();
       return name.includes(searchValue) || email.includes(searchValue);
     },
-  })
+  });
 
   return (
     <div className="w-full ">
@@ -250,7 +262,7 @@ export function ListEmployee() {
           placeholder="Filter by name or email..."
           value={globalFilter}
           onChange={(event) => setGlobalFilter(event.target.value)}
-          className="max-w-sm"
+          className="max-w-sm rounded-2xl"
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -274,19 +286,22 @@ export function ListEmployee() {
                   >
                     {column.id}
                   </DropdownMenuCheckboxItem>
-                )
+                );
               })}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="rounded-md ">
+      <div className="rounded-2xl border bg-white">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id} className="text-[16px] font-semibold text-neutral-800"> 
+                    <TableHead
+                      key={header.id}
+                      className="text-[16px] font-semibold text-neutral-800"
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -294,7 +309,7 @@ export function ListEmployee() {
                             header.getContext()
                           )}
                     </TableHead>
-                  )
+                  );
                 })}
               </TableRow>
             ))}
@@ -330,8 +345,7 @@ export function ListEmployee() {
         </Table>
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="flex-1 text-sm text-muted-foreground">
-        </div>
+        <div className="flex-1 text-sm text-muted-foreground"></div>
         <div className="space-x-2">
           <Button
             variant="outline"
@@ -352,5 +366,5 @@ export function ListEmployee() {
         </div>
       </div>
     </div>
-  )
+  );
 }

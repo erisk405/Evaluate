@@ -16,6 +16,7 @@ const page = () => {
             </p>
           </div>
           <div className="grid gap-10">
+            {/* email */}
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -25,6 +26,7 @@ const page = () => {
                 required
               />
             </div>
+            {/* password */}
             <div className="grid gap-2">
               <div className="flex items-center">
                 <Label htmlFor="password">Password</Label>
