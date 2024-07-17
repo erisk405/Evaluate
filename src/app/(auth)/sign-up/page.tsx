@@ -49,32 +49,12 @@ const formSchema = z.object({
     message: "Password must contain at least one uppercase letter."
   }).regex(/[0-9]/,{
     message: "Password must contain at least one number.",
-  }).regex(/[^a-zA-Z0-9]/,{
-    message: "Password must contain at least one special character.",
-  }),
+  })
 });
 
 const page = () => {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || `http://localhost:4000`;
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || `http://localhost:8000/api`;
 
-
-  const createUser = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const new_user = {
-      // name: firstName + " " + LastName,
-      // email: email,
-      // password: password,
-      // phone: phone,
-      // dateofbirth: "2544-12-05",
-    };
-
-    try {
-      const response = await axios.post(`${apiUrl}/users`, new_user);
-      console.log(response);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
 
   // Define form
   const form = useForm<z.infer<typeof formSchema>>({
@@ -86,10 +66,23 @@ const page = () => {
       password: ""
     },
   });
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
+ async function onSubmit(values: z.infer<typeof formSchema>) {
+  
     console.log(values);
+    const new_user = {
+      name: values.FirstName + " " + values.LastName,
+      email: values.email,
+      password: values.password,
+      phone: values.password,
+      dateofbirth: "2544-12-05",
+    };
+
+    try {
+      const response = await axios.post(`${apiUrl}/sign-up`, new_user);
+      console.log(response);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
   }
   return (
     <div className="relative w-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px] h-screen">
@@ -188,7 +181,7 @@ const page = () => {
                       <FormItem>
                         <FormLabel>Password</FormLabel>
                         <FormControl>
-                          <Input placeholder="*******" {...field} />
+                          <Input placeholder="*******" {...field} type="password" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
