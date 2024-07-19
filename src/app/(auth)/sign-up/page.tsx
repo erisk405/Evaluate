@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/card";
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -26,7 +25,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Target } from "lucide-react";
+import { apiUrl } from "@/app/data/data-option";
 
 const formSchema = z.object({
   FirstName: z.string().min(2, {
@@ -53,7 +52,6 @@ const formSchema = z.object({
 });
 
 const page = () => {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || `http://localhost:8000/api`;
 
 
   // Define form

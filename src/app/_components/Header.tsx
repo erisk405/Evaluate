@@ -1,6 +1,7 @@
+"use client"
 import { Bell, ChevronDown } from "lucide-react";
 import Image from "next/image";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,8 +11,22 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
-
+import Cookie from "js-cookie";
+import axios from "axios";
+import { apiUrl } from "../data/data-option";
 const Header = () => {
+  const handleLogout = ()=>{
+    Cookie.remove('token')
+  }
+  const id = Cookie.get('token');
+  const [user,setUser] = useState();
+  // const fetchUser = async () =>{
+  //   const respone = await axios.get(`${apiUrl}/users/${id}}`);
+  //   console.log(respone);
+  // }
+  // useEffect(()=>{
+  //   fetchUser();
+  // },[])
   return (
     <div className="flex justify-between items-center py-2">
       
@@ -82,7 +97,7 @@ const Header = () => {
               <DropdownMenuSeparator />
               <DropdownMenuItem>Profile</DropdownMenuItem>
               <DropdownMenuItem>Billing</DropdownMenuItem>
-              <Link href={'/sign-in'}>
+              <Link href={'/sign-in'}  onClick={handleLogout}>
                 <DropdownMenuItem>
                     Logout
                 </DropdownMenuItem>

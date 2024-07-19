@@ -1,10 +1,83 @@
+"use client";
 import Image from "next/image";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+
+import Cookie from "js-cookie";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import { apiUrl } from "@/app/data/data-option";
+
+import { useToast } from "@/components/ui/use-toast"
+
+const formSchema = z.object({
+  email: z.string().email({
+    message: "Email must be a valid email address.",
+  }),
+  password: z
+    .string()
+    .min(8, {
+      message: "Password must be at least 8 characters long.",
+    })
+    .regex(/[a-z]/, {
+      message: "Password must contain at least one lowercase letter.",
+    })
+    .regex(/[A-Z]/, {
+      message: "Password must contain at least one uppercase letter.",
+    })
+    .regex(/[0-9]/, {
+      message: "Password must contain at least one number.",
+    }),
+});
+
 const page = () => {
+  const Router = useRouter();
+  const { toast } = useToast();
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    console.log(values);
+    try {
+      const response = await axios.post(`${apiUrl}/sign-in`,values);
+      if(!response){
+        throw new Error("Invalid token"); 
+      }
+      Cookie.set('token', response.data.token); // เก็บ token ไว้ใน Cookie
+      Router.push('/overview');
+    } catch (error:any) {
+      toast({
+        variant: "destructive",
+        title: "Your are incurrect",
+        description: `${error?.response?.data.message}`,
+        className: "left-0"
+      })
+      console.error({message:error?.response?.data.message});
+    }
+  };
+
+  
   return (
     <div className="w-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px] h-screen">
       <div className="flex items-center justify-center py-12">
@@ -15,37 +88,52 @@ const page = () => {
               Enter your email below to login to your account
             </p>
           </div>
-          <div className="grid gap-10">
-            {/* email */}
-            <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="m@example.com"
-                required
-              />
-            </div>
-            {/* password */}
-            <div className="grid gap-2">
-              <div className="flex items-center">
-                <Label htmlFor="password">Password</Label>
-                <Link
-                  href="/forgot-password"
-                  className="ml-auto inline-block text-sm underline"
-                >
-                  Forgot your password?
-                </Link>
+          {/* email */}
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} action="">
+              <div className="grid gap-7">
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>email</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Email" {...field} />
+                      </FormControl>
+                      <FormDescription>
+                        This is your public display name.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                {/* password */}
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>password</FormLabel>
+                      <FormControl>
+                        <Input placeholder="password" type="password" {...field} />
+                      </FormControl>
+                      <FormDescription>
+                        This is your public display password.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button type="submit" className="w-full">
+                  Login
+                </Button>
+                <Button variant="outline" className="w-full">
+                  Login with Google
+                </Button>
               </div>
-              <Input id="password" type="password" required />
-            </div>
-            <Button type="submit" className="w-full">
-              Login
-            </Button>
-            <Button variant="outline" className="w-full">
-              Login with Google
-            </Button>
-          </div>
+            </form>
+          </Form>
           <div className="mt-4 text-center text-sm">
             Don&apos;t have an account?{" "}
             <Link href="/sign-up" className="underline">
