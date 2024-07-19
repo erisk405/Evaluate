@@ -3,14 +3,16 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { apiUrl } from './app/data/data-option';
 export async function middleware(request: NextRequest) {
-  const token = request.cookies.get('token');
+  
   try {
     const response = await axios.get(`${apiUrl}/protected`,{
-      headers:{
-        'Authorization':`${token?.value}`,
+      withCredentials: true,
+      headers: {
+        Cookie: request.headers.get('cookie') || '', // Forward cookies from the client request
       },
     });
-    console.log(response.data);
+    // console.log(response.data);
+    
   } catch (error : any) {
       if(error?.response){
         console.error('Response status:', error?.response.status);

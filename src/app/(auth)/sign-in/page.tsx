@@ -23,6 +23,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { apiUrl } from "@/app/data/data-option";
 
+import { ToastAction } from "@/components/ui/toast"
 import { useToast } from "@/components/ui/use-toast"
 
 const formSchema = z.object({
@@ -60,11 +61,12 @@ const page = () => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     console.log(values);
     try {
-      const response = await axios.post(`${apiUrl}/sign-in`,values);
+      const response = await axios.post(`${apiUrl}/sign-in`,values,{withCredentials:true});
       if(!response){
         throw new Error("Invalid token"); 
       }
-      Cookie.set('token', response.data.token); // เก็บ token ไว้ใน Cookie
+      console.log("response",response.data);
+      
       Router.push('/overview');
     } catch (error:any) {
       toast({

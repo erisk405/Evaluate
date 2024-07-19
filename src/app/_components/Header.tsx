@@ -14,19 +14,23 @@ import Link from "next/link";
 import Cookie from "js-cookie";
 import axios from "axios";
 import { apiUrl } from "../data/data-option";
+
 const Header = () => {
+  const [user, setUser] = useState(null);
   const handleLogout = ()=>{
     Cookie.remove('token')
   }
-  const id = Cookie.get('token');
-  const [user,setUser] = useState();
-  // const fetchUser = async () =>{
-  //   const respone = await axios.get(`${apiUrl}/users/${id}}`);
-  //   console.log(respone);
-  // }
-  // useEffect(()=>{
-  //   fetchUser();
-  // },[])
+  const fetchUser = async () =>{
+    const response = await axios.get(`${apiUrl}/users`, {
+        withCredentials: true, // เพื่อให้ cookies ถูกส่งไปด้วย
+    });
+    console.log(response.data)
+    const name = response.data.name
+    setUser(name)
+  }
+  useEffect(()=>{
+    fetchUser();
+  },[])
   return (
     <div className="flex justify-between items-center py-2">
       
@@ -88,7 +92,7 @@ const Header = () => {
           <DropdownMenu>
             <DropdownMenuTrigger>
               <div className="flex items-center gap-1">
-                Krittaphat samrit
+                {user}
                 <ChevronDown />
               </div>
             </DropdownMenuTrigger>
