@@ -24,7 +24,7 @@ const Header = () => {
     const response = await axios.get(`${apiUrl}/users`, {
         withCredentials: true, // เพื่อให้ cookies ถูกส่งไปด้วย
     });
-    console.log(response.data)
+    // console.log(response.data)
     const name = response.data.name
     setUser(name)
   }

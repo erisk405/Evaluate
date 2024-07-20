@@ -35,22 +35,22 @@ const OptionSideBar = [
             {
                 id: 'subOSide1',
                 name: 'Department',
-                path: '/department',
+                path: '/management/department',
             },
             {
                 id: 'subOSide2',
                 name: 'Role',
-                path: '/manage_role',
+                path: '/management/manage_role',
             },
             {
                 id: 'subOSide3',
                 name: 'Form',
-                path: '/manage_form',
+                path: '/management/manage_form',
             },
             {
                 id: 'subOSide4',
                 name: 'User',
-                path: '/manage_user',
+                path: '/management/manage_user',
             },
         ]
     },

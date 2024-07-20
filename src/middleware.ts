@@ -11,7 +11,6 @@ export async function middleware(request: NextRequest) {
         Cookie: request.headers.get('cookie') || '', // Forward cookies from the client request
       },
     });
-    // console.log(response.data);
     
   } catch (error : any) {
       if(error?.response){
@@ -26,5 +25,5 @@ export async function middleware(request: NextRequest) {
  
 // See "Matching Paths" below to learn more
 export const config = {
-  matcher: ['/overview:path*','/'],
+  matcher: ['/overview:path*','/','/management/:path*'],
 }

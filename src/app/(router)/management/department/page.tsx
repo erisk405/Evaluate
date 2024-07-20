@@ -1,8 +1,9 @@
+"use client";
 import { Department } from "@/app/data/data-option";
 import { Input } from "@/components/ui/input";
-import { Pencil, Plus, Search } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 import Image from "next/image";
-import React from "react";
+import React, { useRef, useState } from "react";
 import FilterSection from "./_components/FilterSection";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,6 +26,22 @@ import {
 import { Label } from "@/components/ui/label";
 
 const page = () => {
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files && event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setSelectedImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  const handleImageClick = () => {
+    // Trigger the click event on the file input
+    fileInputRef.current?.click();
+  };
   return (
     <div className="m-5 w-full grid grid-cols-6  gap-5">
       <div className="col-span-4 ">
@@ -65,31 +82,66 @@ const page = () => {
                   </TooltipProvider>
                   <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
-                      <DialogTitle>Edit profile</DialogTitle>
+                      <DialogTitle>Create Department</DialogTitle>
                       <DialogDescription>
                         Make changes to your profile here. Click save when
                         you're done.
                       </DialogDescription>
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
-                      <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="name" className="text-right">
+                      <div
+                        onClick={handleImageClick}
+                        className="flex justify-center items-center"
+                      >
+                        <div className="cursor-pointer relative overflow-hidden group rounded-lg">
+                          {selectedImage ? (
+                            <Image
+                              src={selectedImage}
+                              width={300}
+                              height={300}
+                              alt="ImageDepartment"
+                              className="w-auto h-auto object-cover"
+                            />
+                          ) : (
+                            <Image
+                              src={"/test.png"}
+                              width={300}
+                              height={300}
+                              alt="ImageDepartment"
+                              className="w-auto h-auto object-cover "
+                            />
+                          )}
+                          <div
+                            className="absolute top-0 bg-black bg-opacity-70
+                            left-0 bottom-0 right-0 text-white rounded-lg   
+                            translate-x-full group-hover:translate-x-0 transition-all duration-300"
+                          >
+                            <div className="flex  justify-center font-bold items-center h-full text-3xl">
+                              Click!!
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-2">
+                        <Label htmlFor="name" className="text-left">
                           Name
                         </Label>
                         <Input
                           id="name"
                           defaultValue="Pedro Duarte"
-                          className="col-span-3"
+                          className="col-span-4"
                         />
                       </div>
-                      <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="username" className="text-right">
-                          Username
+                      <div className="grid grid-cols-4 items-center gap-2">
+                        <Label htmlFor="picture" className="text-left">
+                          Picture
                         </Label>
                         <Input
-                          id="username"
-                          defaultValue="@peduarte"
-                          className="col-span-3"
+                          id="picture"
+                          type="file"
+                          className="col-span-4"
+                          onChange={handleImageChange}
+                          ref={fileInputRef}
                         />
                       </div>
                     </div>
