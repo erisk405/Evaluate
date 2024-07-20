@@ -17,8 +17,15 @@ import { apiUrl } from "../data/data-option";
 
 const Header = () => {
   const [user, setUser] = useState(null);
-  const handleLogout = ()=>{
-    Cookie.remove('token')
+  const handleLogout = async ()=>{
+    try {
+      const response = await axios.post(`${apiUrl}/sign-out`,{},{
+        withCredentials:true
+      })
+      console.log(response);
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
   }
   const fetchUser = async () =>{
     const response = await axios.get(`${apiUrl}/users`, {

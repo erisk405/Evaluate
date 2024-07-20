@@ -23,8 +23,9 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { apiUrl } from "@/app/data/data-option";
 
-import { ToastAction } from "@/components/ui/toast"
 import { useToast } from "@/components/ui/use-toast"
+import { useState } from "react";
+import { Loader } from "lucide-react";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -48,8 +49,9 @@ const formSchema = z.object({
 
 const page = () => {
   const Router = useRouter();
+  const [loading, setLoading] = useState(false);
   const { toast } = useToast();
-
+  const { setError , formState: { errors }} = useForm();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -61,21 +63,21 @@ const page = () => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     console.log(values);
     try {
+      setLoading(true);
       const response = await axios.post(`${apiUrl}/sign-in`,values,{withCredentials:true});
       if(!response){
         throw new Error("Invalid token"); 
       }
-      console.log("response",response.data);
-      
+      toast({
+        title: "Login success",
+        description: `Your are login success`,
+        className: "text-green-500"
+      });
       Router.push('/overview');
     } catch (error:any) {
-      toast({
-        variant: "destructive",
-        title: "Your are incurrect",
-        description: `${error?.response?.data.message}`,
-        className: "left-0"
-      })
-      console.error({message:error?.response?.data.message});
+      setLoading(false);
+      const errorMessage = error?.response?.data.message;
+      setError('password', { type: 'manual', message: errorMessage });
     }
   };
 
@@ -123,12 +125,18 @@ const page = () => {
                       <FormDescription>
                         This is your public display password.
                       </FormDescription>
-                      <FormMessage />
+                      {errors.password?.message && (
+                        <FormMessage>
+                          {typeof errors.password.message === 'string'
+                            ? errors.password.message
+                            : 'An error occurred'}
+                        </FormMessage>
+                      )}
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="w-full">
-                  Login
+                <Button  type="submit" className="w-full">
+                  {loading ? <Loader  className="animate-spin"/> : "Login"}
                 </Button>
                 <Button variant="outline" className="w-full">
                   Login with Google

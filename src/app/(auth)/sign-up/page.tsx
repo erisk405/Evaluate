@@ -26,6 +26,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { apiUrl } from "@/app/data/data-option";
+import { useState } from "react";
+import { Loader } from "lucide-react";
+import { toast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   FirstName: z.string().min(2, {
@@ -52,12 +56,14 @@ const formSchema = z.object({
 });
 
 const page = () => {
-
-
+  const [loading, setLoading] = useState(false);
+  
+  const Router = useRouter();
   // Define form
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      email:"",
       FirstName: "",
       LastName: "",
       phoneNumber:"",
@@ -65,7 +71,6 @@ const page = () => {
     },
   });
  async function onSubmit(values: z.infer<typeof formSchema>) {
-  
     console.log(values);
     const new_user = {
       name: values.FirstName + " " + values.LastName,
@@ -76,9 +81,17 @@ const page = () => {
     };
 
     try {
+      setLoading(true)
       const response = await axios.post(`${apiUrl}/sign-up`, new_user);
+      toast({
+        title: "Login success",
+        description: `${response.data.message}`,
+        className: "text-green-500"
+      });
       console.log(response);
+      Router.push('/sign-in');
     } catch (error) {
+      setLoading(false)
       console.error("Error fetching data:", error);
     }
   }
@@ -186,7 +199,7 @@ const page = () => {
                     )}
                   />
                 <Button type="submit" className="w-full">
-                  Create an account
+                  {loading ? <Loader  className="animate-spin"/> : "Create an account"}
                 </Button>
                 <Button variant="outline" className="w-full">
                   Sign up with GitHub
