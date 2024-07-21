@@ -3,7 +3,9 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { apiUrl } from './app/data/data-option';
 export async function middleware(request: NextRequest) {
-  
+  if (request.nextUrl.pathname === '/') {
+    return NextResponse.redirect(new URL('/overview', request.url));
+  }
   try {
     const response = await axios.get(`${apiUrl}/protected`,{
       withCredentials: true,
