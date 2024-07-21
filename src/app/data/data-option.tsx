@@ -84,7 +84,7 @@ const OptionSideBar = [
         id: 'OSide03',
         name: 'Account',
         icon: <UserRound />,
-        path: '/profile/1',
+        path: '/profile',
         session: 'user'
     },
     {

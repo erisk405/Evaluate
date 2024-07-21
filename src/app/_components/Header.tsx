@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { Bell, ChevronDown } from "lucide-react";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
@@ -11,36 +11,51 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
-import Cookie from "js-cookie";
 import axios from "axios";
 import { apiUrl } from "../data/data-option";
 
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
 const Header = () => {
   const [user, setUser] = useState(null);
-  const handleLogout = async ()=>{
+  const handleLogout = async () => {
     try {
-      const response = await axios.post(`${apiUrl}/sign-out`,{},{
-        withCredentials:true
-      })
+      const response = await axios.post(
+        `${apiUrl}/sign-out`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
       console.log(response);
     } catch (error) {
-      console.error('Error logging out:', error);
+      console.error("Error logging out:", error);
     }
-  }
-  const fetchUser = async () =>{
+  };
+  const fetchUser = async () => {
     const response = await axios.get(`${apiUrl}/users`, {
-        withCredentials: true, // เพื่อให้ cookies ถูกส่งไปด้วย
+      withCredentials: true, // เพื่อให้ cookies ถูกส่งไปด้วย
     });
     // console.log(response.data)
-    const name = response.data.name
-    setUser(name)
-  }
-  useEffect(()=>{
+    const name = response.data.name;
+    setUser(name);
+  };
+  useEffect(() => {
     fetchUser();
-  },[])
+  }, []);
   return (
-    <div className="flex justify-between items-center py-2">
-      
+    <div className="flex relative justify-between items-center py-2">
       <div className="flex-1 flex items-center min-w-[200px] max-w-[1000px] gap-20">
         {/* logo */}
         <div className="flex items-center py-1">
@@ -89,13 +104,53 @@ const Header = () => {
           <Bell />
         </div>
         <div className="flex gap-3">
-          <Image
-            src={"/profiletest.jpg"}
-            alt="logo"
-            width={45}
-            height={45}
-            className="w-[45px] h-[45px] object-cover rounded-full cursor-pointer"
-          />
+          {/* When click image profile */}
+          <Dialog>
+            <DialogTrigger asChild>
+              <Image
+                src={"/profiletest.jpg"}
+                alt="logo"
+                width={45}
+                height={45}
+                className="w-[45px] h-[45px] object-cover rounded-full cursor-pointer"
+              />
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Edit profile</DialogTitle>
+                <DialogDescription>
+                  Make changes to your profile here. Click save when you're
+                  done.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="name" className="text-right">
+                    Name
+                  </Label>
+                  <Input
+                    id="name"
+                    defaultValue="Pedro Duarte"
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="username" className="text-right">
+                    Username
+                  </Label>
+                  <Input
+                    id="username"
+                    defaultValue="@peduarte"
+                    className="col-span-3"
+                  />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button type="submit">Save changes</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+          {/* DropDown */}
           <DropdownMenu>
             <DropdownMenuTrigger>
               <div className="flex items-center gap-1">
@@ -107,11 +162,8 @@ const Header = () => {
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem>Profile</DropdownMenuItem>
-              <DropdownMenuItem>Billing</DropdownMenuItem>
-              <Link href={'/sign-in'}  onClick={handleLogout}>
-                <DropdownMenuItem>
-                    Logout
-                </DropdownMenuItem>
+              <Link href={"/sign-in"} onClick={handleLogout}>
+                <DropdownMenuItem>Logout</DropdownMenuItem>
               </Link>
             </DropdownMenuContent>
           </DropdownMenu>
