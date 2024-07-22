@@ -84,9 +84,9 @@ const page = () => {
       setLoading(true)
       const response = await axios.post(`${apiUrl}/sign-up`, new_user);
       toast({
-        title: "Login success",
-        description: `${response.data.message}`,
-        className: "text-green-500"
+        title: "Sigup success",
+        description: `✅ ${response.data.message}`,
+        className:"bg-black text-white"
       });
       console.log(response);
       Router.push('/sign-in');

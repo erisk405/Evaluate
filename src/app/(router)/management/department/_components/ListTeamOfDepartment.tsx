@@ -1,6 +1,6 @@
 import Image from "next/image";
 import React from "react";
-import SetStatusSection from "./SetStatusSection";
+import SetStatusSection from "@/app/_components/SetStatusSection";
 import { EllipsisVertical, Pencil, Trash2 } from "lucide-react";
 
 import {

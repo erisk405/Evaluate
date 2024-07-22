@@ -11,9 +11,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Cog, EllipsisVertical, Search, X } from "lucide-react";
+import { Cog, Search} from "lucide-react";
 import Image from "next/image";
-import SetStatusSection from "./SetStatusSection";
 import ListTeamOfDepartment from "./ListTeamOfDepartment";
 
 export default function SettingSection() {

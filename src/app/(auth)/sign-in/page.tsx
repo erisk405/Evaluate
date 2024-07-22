@@ -18,7 +18,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
-import Cookie from "js-cookie";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { apiUrl } from "@/app/data/data-option";
@@ -70,8 +69,8 @@ const page = () => {
       }
       toast({
         title: "Login success",
-        description: `Your are login success`,
-        className: "text-green-500"
+        description: `✅ Your are login success`,
+        className:"bg-black text-white"
       });
       Router.push('/overview');
     } catch (error:any) {

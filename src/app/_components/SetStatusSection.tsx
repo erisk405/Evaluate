@@ -58,7 +58,7 @@ export default function SetStatusSection() {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="justify-between w-[120px] "
+          className="justify-between w-[140px] "
         >
           {value
             ? Roles.find((Role) => Role.value === value)?.label
@@ -66,7 +66,7 @@ export default function SetStatusSection() {
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[250px] p-0 relative -left-16">
+      <PopoverContent className="w-[250px] p-0 relative -left-14">
         <Command>
           <CommandInput placeholder="Search Role..." />
           <CommandEmpty>No Role found.</CommandEmpty>

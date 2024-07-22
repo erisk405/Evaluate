@@ -18,8 +18,8 @@ export async function middleware(request: NextRequest) {
       if(error?.response){
         console.error('Response status:', error?.response.status);
         console.error('Response data:', error?.response.data);
-        return NextResponse.redirect(new URL('/sign-in', request.url))
       }
+      return NextResponse.redirect(new URL('/sign-in', request.url))
   }
   return NextResponse.next();
   

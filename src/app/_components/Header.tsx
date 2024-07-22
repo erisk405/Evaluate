@@ -11,46 +11,41 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
-import axios from "axios";
-import { apiUrl } from "../data/data-option";
-
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
-  DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import Myprofile from "./Myprofile";
+import GlobalApi from "../_unit/GlobalApi";
 
 const Header = () => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState('');
+  const [imageProfile, setImageProfile] = useState('');
   const handleLogout = async () => {
     try {
-      const response = await axios.post(
-        `${apiUrl}/sign-out`,
-        {},
-        {
-          withCredentials: true,
-        }
-      );
+      const response = await GlobalApi.Logout();
       console.log(response);
     } catch (error) {
       console.error("Error logging out:", error);
     }
   };
   const fetchUser = async () => {
-    const response = await axios.get(`${apiUrl}/users`, {
-      withCredentials: true, // เพื่อให้ cookies ถูกส่งไปด้วย
-    });
-    // console.log(response.data)
-    const name = response.data.name;
-    setUser(name);
+    try {
+      const response = await GlobalApi.fetchUserProfile(); // Await the promise
+      console.log(response.data);
+      const name = response.data.name;
+      const image = response.data.image?.url;
+      setUser(name);
+      setImageProfile(image ? image : '/profiletest.jpg');
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+    }
   };
+  
+
   useEffect(() => {
     fetchUser();
   }, []);
@@ -59,7 +54,7 @@ const Header = () => {
       <div className="flex-1 flex items-center min-w-[200px] max-w-[1000px] gap-20">
         {/* logo */}
         <div className="flex items-center py-1">
-          <Image src={"/logo.png"} alt="logo" width={76} height={76} />
+          <Image src={'/logo.png'} alt="logo" width={76} height={76} />
           <h2 className="text-2xl font-bold">Eval 360</h2>
         </div>
 
@@ -103,58 +98,49 @@ const Header = () => {
         <div className="bg-neutral-100 p-2 rounded-full hover:bg-neutral-200">
           <Bell />
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-1">
           {/* When click image profile */}
           <Dialog>
             <DialogTrigger asChild>
+              {imageProfile ? 
               <Image
-                src={"/profiletest.jpg"}
+                src={imageProfile}
                 alt="logo"
                 width={45}
                 height={45}
                 className="w-[45px] h-[45px] object-cover rounded-full cursor-pointer"
               />
+              :
+              <Image
+                src={'/profiletest.jpg'}
+                alt="logo"
+                width={45}
+                height={45}
+                className="w-[45px] h-[45px] object-cover rounded-full cursor-pointer"
+              />
+            }
+              
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>Edit profile</DialogTitle>
-                <DialogDescription>
-                  Make changes to your profile here. Click save when you're
-                  done.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="name" className="text-right">
-                    Name
-                  </Label>
-                  <Input
-                    id="name"
-                    defaultValue="Pedro Duarte"
-                    className="col-span-3"
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="username" className="text-right">
-                    Username
-                  </Label>
-                  <Input
-                    id="username"
-                    defaultValue="@peduarte"
-                    className="col-span-3"
-                  />
-                </div>
+            <DialogTitle></DialogTitle>
+            <DialogDescription></DialogDescription>
+            <DialogContent className="sm:max-w-[600px] p-1 sm:rounded-2xl overflow-hidden">
+              <div className="">
+                <Myprofile/>
               </div>
-              <DialogFooter>
-                <Button type="submit">Save changes</Button>
-              </DialogFooter>
             </DialogContent>
           </Dialog>
           {/* DropDown */}
           <DropdownMenu>
             <DropdownMenuTrigger>
               <div className="flex items-center gap-1">
-                {user}
+                {user ? 
+                  user 
+                : 
+                  <div className="flex flex-col gap-1">
+                    <div className="w-[150px] h-3 rounded-full bg-neutral-300 animate"></div>
+                    <div className="w-[100px] h-3 rounded-full bg-neutral-300 animate"></div>
+                  </div>
+                }
                 <ChevronDown />
               </div>
             </DropdownMenuTrigger>
