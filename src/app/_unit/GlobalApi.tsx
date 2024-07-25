@@ -3,6 +3,7 @@
 import axios, { AxiosResponse } from "axios";
 interface UserProfile {
     name: string;
+    email: string;
     image?: {
       url: string;
     };
@@ -30,6 +31,9 @@ const Logout = async () => {
       console.error("Error logging out:", error);
     }
 };
+
+
+
 
 
 export default{

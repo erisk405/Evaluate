@@ -20,10 +20,11 @@ import {
 } from "@/components/ui/dialog";
 import Myprofile from "./Myprofile";
 import GlobalApi from "../_unit/GlobalApi";
+import useStore from "../store/store";
 
 const Header = () => {
-  const [user, setUser] = useState('');
-  const [imageProfile, setImageProfile] = useState('');
+  const { ProfileDetail , updateProfileDetail } = useStore();
+
   const handleLogout = async () => {
     try {
       const response = await GlobalApi.Logout();
@@ -32,19 +33,18 @@ const Header = () => {
       console.error("Error logging out:", error);
     }
   };
+  
   const fetchUser = async () => {
     try {
       const response = await GlobalApi.fetchUserProfile(); // Await the promise
-      console.log(response.data);
       const name = response.data.name;
       const image = response.data.image?.url;
-      setUser(name);
-      setImageProfile(image ? image : '/profiletest.jpg');
+      const email = response.data?.email;
+      updateProfileDetail(name,email,image ? image : '/profiletest.jpg');
     } catch (error) {
       console.error("Error fetching user profile:", error);
     }
   };
-  
 
   useEffect(() => {
     fetchUser();
@@ -102,9 +102,9 @@ const Header = () => {
           {/* When click image profile */}
           <Dialog>
             <DialogTrigger asChild>
-              {imageProfile ? 
+              {ProfileDetail.image ? 
               <Image
-                src={imageProfile}
+                src={ProfileDetail.image}
                 alt="logo"
                 width={45}
                 height={45}
@@ -133,8 +133,8 @@ const Header = () => {
           <DropdownMenu>
             <DropdownMenuTrigger>
               <div className="flex items-center gap-1">
-                {user ? 
-                  user 
+                {ProfileDetail.name ? 
+                  ProfileDetail.name 
                 : 
                   <div className="flex flex-col gap-1">
                     <div className="w-[150px] h-3 rounded-full bg-neutral-300 animate"></div>

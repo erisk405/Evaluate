@@ -11,7 +11,6 @@ import {
     FormDescription,
     FormField,
     FormItem,
-    FormLabel,
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -19,9 +18,11 @@ import axios from "axios";
 import { apiUrl } from "@/app/data/data-option";
 import Image from "next/image";
 import Link from "next/link";
-import { Check, LinkIcon, Mail } from "lucide-react";
+import { Check, LinkIcon, Loader, Mail } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import SetStatusSection from "./SetStatusSection";
+import { useRef, useState } from "react";
+import useStore from "../store/store";
 
 const formSchema = z.object({
     image: z.instanceof(File).refine((file) => file.size > 0, {
@@ -42,21 +43,40 @@ const formSchema = z.object({
 });
 
 export default function Myprofile() {
+    // for image changing
+    const { ProfileDetail } = useStore();
+    const [selectedImage , setSelectedImage] = useState<string | null>(null);
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>)=>{
+        const file = event.target.files && event.target.files[0];
+        if(file){
+            const reader = new FileReader();
+            reader.onloadend = () =>{
+                setSelectedImage(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+    const handleImageClick = () =>{
+        fileInputRef.current?.click();
+    };
+
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             firstName: "Krittphat",
             lastName: "Samrit",
             image: undefined,
-            email:"copter1177@gmail.com",
+            email: ProfileDetail?.email ? ProfileDetail?.email : '',
             Department:"สำนักงานวิชาการ"
         },
     });
 
     // 2. Define a submit handler.
     async function onSubmit(values: z.infer<typeof formSchema>) {
+        setIsLoading(false)
         console.log(values);
-        
         const formData = new FormData();
         formData.append("image", values.image);
 
@@ -67,19 +87,42 @@ export default function Myprofile() {
             },
         });
         console.log(response.data);
+        setIsLoading(true)
     }
 
     return (
         <div className="">
             <div className="relative bg-gray-100 w-full h-[100px]">
-                <div className="absolute bottom-0 translate-y-1/2 px-4">
+                <div className="absolute bottom-0 translate-y-1/2 px-4 cursor-pointer" onClick={handleImageClick}>
+                {selectedImage  ? (
                     <Image
-                        src={"/profiletest.jpg"}
+                        src={selectedImage}
                         width={100}
                         height={100}
                         alt={"profile"}
                         className="w-[85px] h-[85px] rounded-full object-cover border border-neutral-50 p-[2px] shadow-lg bg-white"
                     />
+                ) 
+                : ProfileDetail.image ?
+                (
+                    <Image
+                        src={ProfileDetail?.image}
+                        width={100}
+                        height={100}
+                        alt={"profile"}
+                        className="w-[85px] h-[85px] rounded-full object-cover border border-neutral-50 p-[2px] shadow-lg bg-white"
+                    />
+                )
+                :(
+                    <div className="w-[85px] h-[85px] rounded-full object-cover border border-neutral-50 p-[2px] shadow-lg bg-neutral-600 animate-pulse">
+                        <div className="flex text-white h-full justify-center items-center animate-spin">
+                            <Loader size={30} />
+                        </div>
+                    </div>
+                )
+                
+                }
+                    
                     <div className="absolute button-0 right-0 -translate-x-full -translate-y-full bg-blue-500 text-white rounded-full p-1">
                         <Check strokeWidth={3} size={12} />
                     </div>
@@ -236,7 +279,9 @@ export default function Myprofile() {
                                                 type="file"
                                                 onChange={(e) => {
                                                     field.onChange(e.target.files?.[0]); // Set the first file from the FileList
+                                                    handleImageChange(e);
                                                 }}
+                                                ref={fileInputRef}
                                                 className="col-span-8"
                                             />
                                         </FormControl>
@@ -249,9 +294,19 @@ export default function Myprofile() {
                             )}
                         />
                         <div className="w-full text-right">
-                            <Button className="" type="submit">
-                                Save Change
-                            </Button>
+                            {
+                                isLoading ? (
+                                    <Button className="w-32" type="submit">
+                                        Save Change
+                                    </Button>
+                                )
+                                :
+                                (
+                                    <Button className="w-32 animate-pulse" type="button">
+                                        <Loader className="animate-spin"/>
+                                    </Button>
+                                )
+                            }
                         </div>
                     </form>
                 </Form>
