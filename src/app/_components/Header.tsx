@@ -1,5 +1,5 @@
 "use client";
-import { Bell, ChevronDown } from "lucide-react";
+import { Bell, ChevronDown, Loader } from "lucide-react";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import {
@@ -105,19 +105,17 @@ const Header = () => {
               {ProfileDetail.image ? 
               <Image
                 src={ProfileDetail.image}
-                alt="logo"
-                width={45}
-                height={45}
+                alt="profile"
+                width={500}
+                height={500}
                 className="w-[45px] h-[45px] object-cover rounded-full cursor-pointer"
               />
               :
-              <Image
-                src={'/profiletest.jpg'}
-                alt="logo"
-                width={45}
-                height={45}
-                className="w-[45px] h-[45px] object-cover rounded-full cursor-pointer"
-              />
+              <div className="w-[45px] h-[45px] rounded-full object-cover border border-neutral-50 p-[2px] shadow-lg bg-neutral-500 animate-pulse">
+                  <div className="flex text-white h-full justify-center items-center animate-spin">
+                      {/* <Loader size={20} /> */}
+                  </div>
+              </div>
             }
               
             </DialogTrigger>

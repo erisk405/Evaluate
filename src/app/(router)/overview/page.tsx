@@ -8,7 +8,7 @@ const page = () => {
       <div className='col-span-4 '>
         <MyEvaluated/>
       </div>
-      <div className='col-span-2 '>
+      <div className='col-span-2'>
         <RightSection/>
       </div>
     </div>

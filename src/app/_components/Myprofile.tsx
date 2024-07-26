@@ -97,8 +97,8 @@ export default function Myprofile() {
                 {selectedImage  ? (
                     <Image
                         src={selectedImage}
-                        width={100}
-                        height={100}
+                        width={500}
+                        height={500}
                         alt={"profile"}
                         className="w-[85px] h-[85px] rounded-full object-cover border border-neutral-50 p-[2px] shadow-lg bg-white"
                     />
@@ -107,8 +107,8 @@ export default function Myprofile() {
                 (
                     <Image
                         src={ProfileDetail?.image}
-                        width={100}
-                        height={100}
+                        width={500}
+                        height={500}
                         alt={"profile"}
                         className="w-[85px] h-[85px] rounded-full object-cover border border-neutral-50 p-[2px] shadow-lg bg-white"
                     />
@@ -204,6 +204,7 @@ export default function Myprofile() {
                                             <div className="relative">
                                                 <Mail strokeWidth={1.5} className="absolute top-1/2 -translate-y-1/2 left-2 text-gray-500" />
                                                 <Input
+                                                    disabled
                                                     id="email"
                                                     type="text"
                                                     className="pl-10  focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1"
