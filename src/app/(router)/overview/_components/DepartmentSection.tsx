@@ -5,7 +5,7 @@ import React from 'react'
 const DepartmentSection = () => {
   return (
     <>
-    <div className='h-[550px] overflow-y-scroll scrollbar-gemini'>
+    <div className='max-h-[550px] overflow-y-scroll scrollbar-gemini'>
       <h2 className='px-5 pt-5 text-xl font-bold'>Department</h2>
       <div className='grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 m-4'>
         {Department.map((item)=>(

@@ -33,10 +33,19 @@ const Logout = async () => {
 };
 
 
-
+// New function to update user image
+const updateUserImage = async (formData: FormData): Promise<AxiosResponse<any>> => {
+  return await axios.put(`${apiUrl}/usersImage`, formData, {
+    withCredentials: true,
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
 
 
 export default{
     fetchUserProfile,
-    Logout
+    Logout,
+    updateUserImage
 }

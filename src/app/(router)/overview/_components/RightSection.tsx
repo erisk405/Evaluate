@@ -30,7 +30,7 @@ const RightSection = () => {
   ];
   return (
     <div className="flex gap-3 flex-col h-full">
-      <div className="">
+      <div className="flex justify-center w-full">
         <DatePicker />
       </div>
       <div className="bg-white p-7 border h-full shadow-md rounded-2xl">

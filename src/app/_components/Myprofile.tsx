@@ -23,6 +23,7 @@ import { Separator } from "@/components/ui/separator";
 import SetStatusSection from "./SetStatusSection";
 import { useRef, useState } from "react";
 import useStore from "../store/store";
+import GlobalApi from "../_unit/GlobalApi";
 
 const formSchema = z.object({
     image: z.instanceof(File).refine((file) => file.size > 0, {
@@ -79,15 +80,14 @@ export default function Myprofile() {
         console.log(values);
         const formData = new FormData();
         formData.append("image", values.image);
-
-        const response = await axios.put(`${apiUrl}/usersImage`, formData, {
-            withCredentials: true, // เพื่อให้ cookies ถูกส่งไปด้วย
-            headers: {
-                "Content-Type": "multipart/form-data", // Set the content type to multipart/form-data
-            },
-        });
-        console.log(response.data);
-        setIsLoading(true)
+        try {
+            const response = await GlobalApi.updateUserImage(formData);
+            console.log(response.data);
+        } catch (error) {
+            console.error("Error updating user image:", error);
+        } finally {
+            setIsLoading(true)
+        }
     }
 
     return (

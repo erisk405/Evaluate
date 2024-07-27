@@ -16,8 +16,8 @@ const DatePicker = () => {
       setSelectedDate(date);
     };
   return (
-    <div className={`shadow-md rounded-xl overflow-hidden`}>
-      <div className="flex">
+    <div className={`shadow-md rounded-xl overflow-hidden w-full `}>
+      <div className="flex justify-center">
         {weekDays.map((date) => (
           <div
             key={date.toString()}
