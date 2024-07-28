@@ -1,4 +1,5 @@
 // store.ts
+import { Department } from '@/types/interface';
 import { create } from 'zustand';
 
 interface StoreState {
@@ -12,6 +13,10 @@ interface StoreState {
     image: string | null;
   };
   updateProfileDetail: (name: string, email: string, image: string) => void;
+
+  
+  departments: Department[];
+  setDepartments: (departments: Department[]) => void;
 }
 
 const useStore = create<StoreState>((set) => ({
@@ -37,6 +42,9 @@ const useStore = create<StoreState>((set) => ({
       image,
     },
   })),
+  
+  departments: [],
+  setDepartments: (departments) => set(() => ({ departments })),
 }));
 
 export default useStore;

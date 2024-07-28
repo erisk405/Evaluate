@@ -24,6 +24,7 @@ import SetStatusSection from "./SetStatusSection";
 import { useRef, useState } from "react";
 import useStore from "../store/store";
 import GlobalApi from "../_unit/GlobalApi";
+import { toast } from "@/components/ui/use-toast";
 
 const formSchema = z.object({
     image: z.instanceof(File).refine((file) => file.size > 0, {
@@ -45,7 +46,7 @@ const formSchema = z.object({
 
 export default function Myprofile() {
     // for image changing
-    const { ProfileDetail } = useStore();
+    const { ProfileDetail ,updateProfileDetail} = useStore();
     const [selectedImage , setSelectedImage] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -82,11 +83,17 @@ export default function Myprofile() {
         formData.append("image", values.image);
         try {
             const response = await GlobalApi.updateUserImage(formData);
-            console.log(response.data);
+            const name = response.data.name;
+            const image = response.data.image?.url;
+            const email = response.data?.email;
+            updateProfileDetail(name,email,image ? image : '/profiletest.jpg');
         } catch (error) {
             console.error("Error updating user image:", error);
         } finally {
             setIsLoading(true)
+            toast({
+                description: `✅ Your are save success`,
+            });
         }
     }
 

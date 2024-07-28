@@ -41,6 +41,7 @@ const Header = () => {
       const image = response.data.image?.url;
       const email = response.data?.email;
       updateProfileDetail(name,email,image ? image : '/profiletest.jpg');
+      
     } catch (error) {
       console.error("Error fetching user profile:", error);
     }

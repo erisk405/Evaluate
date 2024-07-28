@@ -1,9 +1,8 @@
 "use client";
-import { Department } from "@/app/data/data-option";
 import { Input } from "@/components/ui/input";
-import { Plus, Search } from "lucide-react";
+import { Loader, Plus, Search } from "lucide-react";
 import Image from "next/image";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import FilterSection from "./_components/FilterSection";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,21 +11,44 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import SettingSection from "./_components/SettingSection";
-
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
+import GlobalApi from "@/app/_unit/GlobalApi";
+import AllListDepartment from "./_components/AllListDepartment";
+import { toast } from "@/components/ui/use-toast";
+import useStore from "@/app/store/store";
+
+const formSchema = z.object({
+  name: z.string().min(1, { message: "Name is required" }),
+  image: z.instanceof(File).refine((file) => file.size > 0, {
+    message: "Please upload a file.",
+  }),
+});
+
 const page = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const { departments, setDepartments } = useStore();
+  // for load button
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
@@ -42,16 +64,55 @@ const page = () => {
     // Trigger the click event on the file input
     fileInputRef.current?.click();
   };
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "กลุ่มวิชาการ",
+      image: undefined,
+    },
+  });
+
+  const getDepartment = async () => {
+    try {
+      const response = await GlobalApi.Department();
+      setDepartments(response?.data); // ตั้งค่าเป็นอาเรย์ว่างถ้าไม่มีข้อมูล
+    } catch (error) {
+      console.error("Error fetching department data:", error);
+    }
+  };
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log(values);
+    const formData = new FormData();
+    formData.append("departmentName", values.name);
+    formData.append("image", values.image as File);
+    try {
+      setIsLoading(false);
+      const response = await GlobalApi.CreateDepartment(formData);
+      console.log(response);
+      setIsLoading(true);
+      getDepartment();
+      toast({
+        description: `✅ Your are create department success`,
+      });
+    } catch (error) {
+      console.error("Error updating user image:", error);
+    }
+  }
+
+  useEffect(() => {
+    getDepartment();
+  }, []);
   return (
-    <div className="m-5 w-full grid grid-cols-6  gap-5">
+    <div className="m-5 w-full grid grid-cols-6 gap-5">
       <div className="col-span-4 ">
         <div className="bg-white w-full h-full shadow rounded-xl p-5">
           <h2 className="text-2xl font-bold">Department manage</h2>
           <div className="flex justify-between items-center mt-3 ">
             <div className="flex-1 max-w-[300px] relative">
               <Input
-                type="email"
-                placeholder="Email"
+                type="text"
+                placeholder="Department"
                 className="rounded-full"
               />
               <Search
@@ -88,97 +149,116 @@ const page = () => {
                         you're done.
                       </DialogDescription>
                     </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                      <div
-                        onClick={handleImageClick}
-                        className="flex justify-center items-center"
-                      >
-                        <div className="cursor-pointer relative overflow-hidden group rounded-lg">
-                          {selectedImage ? (
-                            <Image
-                              src={selectedImage}
-                              width={300}
-                              height={300}
-                              alt="ImageDepartment"
-                              className="w-auto h-auto object-cover"
-                            />
-                          ) : (
-                            <Image
-                              src={"/test.png"}
-                              width={300}
-                              height={300}
-                              alt="ImageDepartment"
-                              className="w-auto h-auto object-cover "
-                            />
-                          )}
+                    <Form {...form}>
+                      <form onSubmit={form.handleSubmit(onSubmit)}>
+                        <div className="grid gap-4 py-4">
                           <div
-                            className="absolute top-0 bg-black bg-opacity-70
+                            onClick={handleImageClick}
+                            className="flex justify-center items-center"
+                          >
+                            <div className="cursor-pointer relative overflow-hidden group rounded-lg">
+                              {selectedImage ? (
+                                <Image
+                                  src={selectedImage}
+                                  width={300}
+                                  height={300}
+                                  alt="ImageDepartment"
+                                  className="w-auto h-auto object-cover"
+                                />
+                              ) : (
+                                <Image
+                                  src={"/test.png"}
+                                  width={300}
+                                  height={300}
+                                  alt="ImageDepartment"
+                                  className="w-auto h-auto object-cover "
+                                />
+                              )}
+                              <div
+                                className="absolute top-0 bg-black bg-opacity-70
                             left-0 bottom-0 right-0 text-white rounded-lg   
                             translate-x-full group-hover:translate-x-0 transition-all duration-300"
-                          >
-                            <div className="flex  justify-center font-bold items-center h-full text-3xl">
-                              Click!!
+                              >
+                                <div className="flex  justify-center font-bold items-center h-full text-3xl">
+                                  Click!!
+                                </div>
+                              </div>
                             </div>
                           </div>
+                          <FormField
+                            control={form.control}
+                            name="name"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormControl>
+                                  <div className="grid grid-cols-4 items-center gap-2">
+                                    <Label htmlFor="name" className="text-left">
+                                      Name
+                                    </Label>
+                                    <Input
+                                      id="name"
+                                      className="col-span-4"
+                                      {...field}
+                                    />
+                                  </div>
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="image"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormControl>
+                                  <div className="grid grid-cols-4 items-center gap-2">
+                                    <Label
+                                      htmlFor="picture"
+                                      className="text-left"
+                                    >
+                                      Picture
+                                    </Label>
+                                    <Input
+                                      id="picture"
+                                      type="file"
+                                      className="col-span-4"
+                                      onChange={(e) => {
+                                        field.onChange(e.target.files?.[0]);
+                                        handleImageChange(e);
+                                      }}
+                                      ref={fileInputRef}
+                                    />
+                                  </div>
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
                         </div>
-                      </div>
-                      <div className="grid grid-cols-4 items-center gap-2">
-                        <Label htmlFor="name" className="text-left">
-                          Name
-                        </Label>
-                        <Input
-                          id="name"
-                          defaultValue="Pedro Duarte"
-                          className="col-span-4"
-                        />
-                      </div>
-                      <div className="grid grid-cols-4 items-center gap-2">
-                        <Label htmlFor="picture" className="text-left">
-                          Picture
-                        </Label>
-                        <Input
-                          id="picture"
-                          type="file"
-                          className="col-span-4"
-                          onChange={handleImageChange}
-                          ref={fileInputRef}
-                        />
-                      </div>
-                    </div>
-                    <DialogFooter>
-                      <Button type="submit">Save changes</Button>
-                    </DialogFooter>
+                        <div className="w-full text-end">
+                          {isLoading ? (
+                            <Button className="w-32" type="submit">
+                              Save Change
+                            </Button>
+                          ) : (
+                            <Button
+                              className="w-32 animate-pulse"
+                              type="button"
+                            >
+                              <Loader className="animate-spin" />
+                            </Button>
+                          )}
+                        </div>
+                      </form>
+                    </Form>
                   </DialogContent>
                 </Dialog>
               </div>
             </div>
           </div>
-
-          <div className="w-full flex flex-col gap-3 my-4">
-            {Department?.map((item) => (
-              <div
-                key={item?.id}
-                className="border-b p-4 rounded-xl flex items-center gap-3"
-              >
-                <Image
-                  src={item?.img}
-                  width={200}
-                  height={200}
-                  alt="banner"
-                  className="w-[200px] h-[100px] object-cover rounded-lg"
-                />
-                <div className="flex justify-between w-full items-center">
-                  <div className="ml-3">
-                    <h2 className="text-lg">{item?.name}</h2>
-                    <h2 className="text-gray-500">{item?.quantity} คน</h2>
-                  </div>
-                  <div>
-                    <SettingSection />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          {/* All list departmemt */}
+          <AllListDepartment />
         </div>
       </div>
       <div className="col-span-2 ">

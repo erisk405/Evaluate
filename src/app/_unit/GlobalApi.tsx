@@ -44,8 +44,28 @@ const updateUserImage = async (formData: FormData): Promise<AxiosResponse<any>> 
 };
 
 
+const Department = async () =>{
+  try {
+    return await axios.get(`${apiUrl}/department`)
+  } catch (error) {
+    console.error("Error Department:", error);
+  }
+}
+const CreateDepartment = async (formData: FormData) : Promise<AxiosResponse<any>> =>{
+  return await axios.post(`${apiUrl}/department`,formData,{
+    withCredentials:true,
+    headers:{
+      "Content-Type":"multipart/form-data"
+    },
+  });
+}
+
+
+
 export default{
     fetchUserProfile,
     Logout,
-    updateUserImage
+    updateUserImage,
+    Department,
+    CreateDepartment
 }
