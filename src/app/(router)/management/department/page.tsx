@@ -35,6 +35,8 @@ import GlobalApi from "@/app/_unit/GlobalApi";
 import AllListDepartment from "./_components/AllListDepartment";
 import { toast } from "@/components/ui/use-toast";
 import useStore from "@/app/store/store";
+import axios from "axios";
+import { apiUrl } from "@/app/data/data-option";
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
@@ -45,7 +47,7 @@ const formSchema = z.object({
 
 const page = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const { departments, setDepartments } = useStore();
+  const {  setDepartments,setRole } = useStore();
   // for load button
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -74,7 +76,7 @@ const page = () => {
 
   const getDepartment = async () => {
     try {
-      const response = await GlobalApi.Department();
+      const response = await GlobalApi.getDepartment();
       setDepartments(response?.data); // ตั้งค่าเป็นอาเรย์ว่างถ้าไม่มีข้อมูล
     } catch (error) {
       console.error("Error fetching department data:", error);
@@ -99,9 +101,20 @@ const page = () => {
       console.error("Error updating user image:", error);
     }
   }
+  const fetchRole = async () =>{
+    try {
+      const response = await GlobalApi.getRole();
+      console.log('role:',response);
+      setRole(response?.data);
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
 
   useEffect(() => {
     getDepartment();
+    fetchRole();
   }, []);
   return (
     <div className="m-5 w-full grid grid-cols-6 gap-5">

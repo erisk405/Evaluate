@@ -17,39 +17,23 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { CommandList } from "cmdk";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { apiUrl } from "../data/data-option";
+import useStore from "../store/store";
+import { FormField } from "@/components/ui/form";
 
-const Roles = [
-  {
-    value: "general",
-    label: "General",
-    description:"Can's do anything"
-  },
-  {
-    value: "user",
-    label: "User",
-    description:'Can view,comment and edit.'
-  },
-  {
-    value: "bember",
-    label: "Member",
-    description:'Can view,comment and edit.'
-  },
-  {
-    value: "develop",
-    label: "Develop",
-    description:'Can view,comment and manage billing.'
-  },
-  {
-    value: "owner",
-    label: "Owner",
-    description:'Admin-level access to all resources.'
-  },
-];
+
 
 export default function SetStatusSection() {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
+  const {  roles } = useStore();
+  useEffect(()=>{
+    console.log(roles);
+    
+  },[roles])
+  
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -61,7 +45,7 @@ export default function SetStatusSection() {
           className="justify-between w-[140px] "
         >
           {value
-            ? Roles.find((Role) => Role.value === value)?.label
+            ? roles.find((Role) => Role.id === value)?.role_name
             : "Select Role"}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -72,10 +56,12 @@ export default function SetStatusSection() {
           <CommandEmpty>No Role found.</CommandEmpty>
           <CommandGroup >
             <CommandList>
-              {Roles.map((Role) => (
+              {roles.map((Role) => (
+                // <FormField
+                // />
                 <CommandItem
-                  key={Role.value}
-                  value={Role.value}
+                  key={Role.id}
+                  value={Role.id}
                   onSelect={(currentValue) => {
                     setValue(currentValue === value ? "" : currentValue);
                     setOpen(false);
@@ -84,11 +70,11 @@ export default function SetStatusSection() {
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      value === Role.value ? "opacity-100" : "opacity-0"
+                      value === Role.id ? "opacity-100" : "opacity-0"
                     )}
                   />
                   <div className="flex flex-col w-[240px]">
-                    {Role.label}
+                    {Role.role_name}
                     <span className="text-neutral-500">{Role.description}</span>
                   </div>
                 </CommandItem>

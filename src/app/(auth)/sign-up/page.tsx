@@ -76,7 +76,7 @@ const page = () => {
       name: values.FirstName + " " + values.LastName,
       email: values.email,
       password: values.password,
-      phone: values.password,
+      phone: values.phoneNumber,
       dateofbirth: "2544-12-05",
     };
 

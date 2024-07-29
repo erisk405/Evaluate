@@ -11,7 +11,7 @@ const DepartmentSection = () => {
   const { departments, setDepartments } = useStore();
   const getDepartment = async () => {
     try {
-      const response = await GlobalApi.Department();
+      const response = await GlobalApi.getDepartment();
       setDepartments(response?.data); // ตั้งค่าเป็นอาเรย์ว่างถ้าไม่มีข้อมูล
       
     } catch (error) {

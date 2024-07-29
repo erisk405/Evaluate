@@ -5,6 +5,10 @@ import useStore from "@/app/store/store";
 
 const AllListDepartment = () => {
   const { departments } = useStore();
+  useEffect(()=>{
+    console.log(departments);
+    
+  },[departments])
   return (
     <div className="w-full flex flex-col gap-3 my-4">
       {departments?.map((item) => (
@@ -27,7 +31,7 @@ const AllListDepartment = () => {
               <h2 className="text-gray-500">{item?._count?.user} คน</h2>
             </div>
             <div>
-              <SettingSection />
+              <SettingSection department = {item} />
             </div>
           </div>
         </div>
