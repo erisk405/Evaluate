@@ -42,7 +42,7 @@ export default function SetStatusSection() {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="justify-between w-[140px] "
+          className="justify-between w-auto"
         >
           {value
             ? roles.find((Role) => Role.id === value)?.role_name

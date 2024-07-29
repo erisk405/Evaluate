@@ -10,11 +10,11 @@ const AllListDepartment = () => {
     
   },[departments])
   return (
-    <div className="w-full flex flex-col gap-3 my-4">
+    <div className="w-full flex flex-col gap-3 my-4 ">
       {departments?.map((item) => (
         <div
           key={item?.id}
-          className="border-b p-4 rounded-xl flex items-center gap-3"
+          className="border-b p-4 rounded-xl flex items-center gap-3 "
         >
           <div className="w-[250px]">
             <Image
@@ -30,7 +30,7 @@ const AllListDepartment = () => {
               <h2 className="text-lg">{item?.department_name}</h2>
               <h2 className="text-gray-500">{item?._count?.user} คน</h2>
             </div>
-            <div>
+            <div className="">
               <SettingSection department = {item} />
             </div>
           </div>

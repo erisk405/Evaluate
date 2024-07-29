@@ -13,29 +13,57 @@ import {
 import GlobalApi from "@/app/_unit/GlobalApi";
 import { Department, User } from "@/types/interface";
 
-const member = [
-  {
-    id: "M01",
-    name: "John Doe",
-    img: "/profiletest.jpg",
-    email: "test@gmail.com",
-    date: "05/12/2564",
-  },
-  {
-    id: "M02",
-    name: "Amphon cat",
-    img: "/profiletest.jpg",
-    email: "test@gmail.com",
-    date: "02/12/2564",
-  },
-  {
-    id: "M03",
-    name: "Krittaphat Doe",
-    img: "/profiletest.jpg",
-    email: "test@gmail.com",
-    date: "04/12/2564",
-  },
-];
+// const member = [
+//   {
+//     id: "M01",
+//     name: "John Doe",
+//     img: "/profiletest.jpg",
+//     email: "test@gmail.com",
+//     phone:"0905626"
+//   },
+//   {
+//     id: "M02",
+//     name: "Amphon cat",
+//     img: "/profiletest.jpg",
+//     email: "test@gmail.com",
+//     phone:"0905626"
+//   },
+//   {
+//     id: "M03",
+//     name: "Krittaphat Doe",
+//     img: "/profiletest.jpg",
+//     email: "test@gmail.com",
+//     phone:"0905626"
+//   },
+//   {
+//     id: "M04",
+//     name: "Krittaphat Doe",
+//     img: "/profiletest.jpg",
+//     email: "test@gmail.com",
+//     phone:"0905626"
+//   },
+//   {
+//     id: "M05",
+//     name: "Krittaphat Doe",
+//     img: "/profiletest.jpg",
+//     email: "test@gmail.com",
+//     phone:"0905626"
+//   },
+//   {
+//     id: "M06",
+//     name: "Krittaphat Doe",
+//     img: "/profiletest.jpg",
+//     email: "test@gmail.com",
+//     phone:"0905626"
+//   },
+//   {
+//     id: "M06",
+//     name: "Krittaphat Doe",
+//     img: "/profiletest.jpg",
+//     email: "test@gmail.com",
+//     phone:"0905626"
+//   },
+// ];
 interface SettingSectionProps {
   department: Department; // Replace 'string' with the appropriate type for departmentId
 }
@@ -57,8 +85,8 @@ const ListTeamOfDepartment = ({ department }: SettingSectionProps) => {
   }, [user]);
 
   return (
-    <>
-      <div className="grid grid-cols-10">
+    <div className="max-h-[50dvh] overflow-y-scroll scrollbar-gemini pb-10">
+      <div className="grid grid-cols-10 font-bold">
         <h2 className="col-span-1 w-full text-center">#</h2>
         <h2 className="col-span-3 ">Title</h2>
         <h2 className="col-span-2">Date</h2>
@@ -68,12 +96,12 @@ const ListTeamOfDepartment = ({ department }: SettingSectionProps) => {
       <hr className="my-2" />
       {/* Member list */}
       {user &&
-        user?.map((item) => (
+        user?.map((item,index) => (
           <div key={item?.id}>
             <div className="grid grid-cols-10 my-3">
               {/* # */}
               <div className="col-span-1 flex items-center justify-center w-full">
-                1
+                {index+1}
               </div>
               {/* title */}
               <div className="flex items-center col-span-3 gap-3">
@@ -131,7 +159,7 @@ const ListTeamOfDepartment = ({ department }: SettingSectionProps) => {
             <hr />
           </div>
         ))}
-    </>
+    </div>
   );
 };
 

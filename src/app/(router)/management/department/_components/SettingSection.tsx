@@ -22,6 +22,7 @@ import { Department } from "@/types/interface";
 import { apiUrl } from "@/app/data/data-option";
 import { useEffect } from "react";
 import GlobalApi from "@/app/_unit/GlobalApi";
+import { ListEmployeeOfDepartment } from "./ListEmployeeOfDepartment";
 
 const formSchema = z.object({
   name:z.string().min(1,{message:"Name is required"}),
@@ -63,13 +64,13 @@ export default function SettingSection({department}:SettingSectionProps) {
   }
 
   return (
-    <Sheet>
+    <Sheet >
       <SheetTrigger asChild>
         <Button variant="outline" className="flex items-center gap-2">
           <Cog scale={13} /> Edit
         </Button>
       </SheetTrigger>
-      <SheetContent>
+      <SheetContent className="overflow-y-scroll scrollbar-gemini pb-10">
         <SheetHeader>
           <SheetTitle>Edit Department</SheetTitle>
           <SheetDescription>
@@ -79,7 +80,7 @@ export default function SettingSection({department}:SettingSectionProps) {
         <Form {...form}>
           <form onSubmit = {form.handleSubmit(onSubmit)}>
           <div>
-            <div className="flex justify-center mt-3">
+            <div className="flex justify-start items-end gap-3 my-5">
               {department.image ?
                 (
                   <Image
@@ -87,7 +88,7 @@ export default function SettingSection({department}:SettingSectionProps) {
                     width={400}
                     height={300}
                     alt="ProfileDepartment"
-                    className="w-[350px] h-[200px] object-cover rounded-xl"
+                    className="w-[250px] h-[150px] object-cover rounded-xl"
                   />
                 )
                 :
@@ -97,86 +98,73 @@ export default function SettingSection({department}:SettingSectionProps) {
                     width={400}
                     height={300}
                     alt="ProfileDepartment"
-                    className="w-[350px] h-[200px] object-cover rounded-xl"
+                    className="w-[300px] h-[200px] object-cover rounded-xl"
                   />
                 )
               }
-            </div>
-            <div className="grid gap-4 py-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({field})=>(
-                  <FormItem>
-                    <FormControl>
-                      <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="name" className="text-right">
-                          Name
+              <div className=" grid gap-3">
+                <FormField 
+                  control={form.control}
+                  name="name"
+                  render={({field})=>(
+                    <FormItem className="">
+                      <FormControl>
+                        <div className="grid grid-cols-4 items-center gap-2">
+                          <Label htmlFor="name" className="text-left">
+                            Name
+                          </Label>
+                          <Input
+                            id="name"
+                            {...field}
+                            className="col-span-4"
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage/>
+                    </FormItem>
+                  )}
+                />
+                 <FormField
+                  control={form.control}
+                  name="image"
+                  render={({field})=>(
+                    <FormItem className="">
+                      <FormControl >
+                      <div className="grid grid-cols-4 items-center gap-2">
+                        <Label htmlFor="image" className="text-left">
+                          image
                         </Label>
-                        <Input
-                          id="name"
-                          {...field}
-                          className="col-span-2"
-                        />
+                        <Input id="image" onChange={(e)=>{field.onChange(e.target.files?.[0])}} type="file" className="col-span-4"
+                       />
                       </div>
-                    </FormControl>
-                    <FormMessage/>
-                  </FormItem>
-                )}
-              
-              />
-               <FormField
-                control={form.control}
-                name="image"
-                render={({field})=>(
-                  <FormItem>
-                    <FormControl>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="image" className="text-right">
-                        image
-                      </Label>
-                      <Input id="image" onChange={(e)=>{field.onChange(e.target.files?.[0])}} type="file" className="col-span-2"
-                     />
-                    </div>
-                     
-                    </FormControl>
-                    <FormMessage/>
-                  </FormItem>
-                )}
-              
-              />
-             
-              
+                       
+                      </FormControl>
+                      <FormMessage/>
+                    </FormItem>
+                  )}
+                
+                />
+              </div>
             </div>
             <div className="my-4">
               <h2 className="font-semibold ">Team Members</h2>
               <p className="text-sm text-neutral-500">
                 Invite your team members to collaborate.
               </p>
-              <div className="flex justify-end">
-                <div className="flex-1 max-w-[250px] relative my-2">
-                  <Input type="search" placeholder="Search" className="pl-9" />
-                  <div className="">
-                    <Search
-                      size={18}
-                      className="absolute  top-1/2 left-0 -translate-y-1/2 translate-x-1/2 text-gray-500"
-                    />
-                  </div>
-                </div>
-                <div></div>
-              </div>
               {/* List Team of department */}
               
-          <Button type="submit">Save changes</Button>
-              <div>
-                <ListTeamOfDepartment department={department} />
+              <div className="">
+                <ListEmployeeOfDepartment department={department} />
+                {/* <ListTeamOfDepartment department={department} /> */}
               </div>
             </div>
+          </div>
+          <div className="fixed right-5 bottom-5">
+            <Button type="submit">Save changes</Button>
           </div>
           </form>
         </Form>
         <SheetFooter>
-          <Button type="submit">Save changes</Button>
         </SheetFooter>
       </SheetContent>
     </Sheet>
