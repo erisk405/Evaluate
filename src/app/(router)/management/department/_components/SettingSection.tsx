@@ -34,10 +34,10 @@ export default function SettingSection() {
           <div className="flex justify-center mt-3">
             <Image
               src={"/test.png"}
-              width={300}
+              width={400}
               height={300}
               alt="ProfileDepartment"
-              className="w-[200px] h-[200px] object-cover rounded-xl"
+              className="w-[350px] h-[200px] object-cover rounded-xl"
             />
           </div>
           <div className="grid gap-4 py-4">
@@ -48,6 +48,16 @@ export default function SettingSection() {
               <Input
                 id="name"
                 defaultValue={"My Edit name"}
+                className="col-span-2"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="image" className="text-right">
+                image
+              </Label>
+              <Input
+                id="image"
+                type="file"
                 className="col-span-2"
               />
             </div>
@@ -80,9 +90,7 @@ export default function SettingSection() {
           </div>
         </div>
         <SheetFooter>
-          <SheetClose asChild>
             <Button type="submit">Save changes</Button>
-          </SheetClose>
         </SheetFooter>
       </SheetContent>
     </Sheet>

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import SettingSection from "./SettingSection";
-import GlobalApi from "@/app/_unit/GlobalApi";
 import useStore from "@/app/store/store";
 
 const AllListDepartment = () => {
