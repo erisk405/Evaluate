@@ -63,12 +63,12 @@ export default function Myprofile() {
     const handleImageClick = () =>{
         fileInputRef.current?.click();
     };
-
     const form = useForm<z.infer<typeof formSchema>>({
+        
         resolver: zodResolver(formSchema),
         defaultValues: {
-            firstName: "Krittphat",
-            lastName: "Samrit",
+            firstName: ProfileDetail?.name?.split(' ')[0], 
+            lastName: ProfileDetail?.name?.split(' ')[1],
             image: undefined,
             email: ProfileDetail?.email ? ProfileDetail?.email : '',
             Department:"สำนักงานวิชาการ"
@@ -148,8 +148,8 @@ export default function Myprofile() {
                     </div>
                 </div>
                 <div className="my-3">
-                    <h2 className="text-xl font-bold">Krittaphat Samrit</h2>
-                    <h2 className="text-sm text-gray-500">Copter1177@gmail.com</h2>
+                    <h2 className="text-xl font-bold">{ProfileDetail?.name}</h2>
+                    <h2 className="text-sm text-gray-500">{ProfileDetail?.email}</h2>
                 </div>
                 <Separator className="my-3" />
                 <Form {...form}>

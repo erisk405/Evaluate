@@ -22,7 +22,7 @@ const AllListDepartment = () => {
               width={300}
               height={200}
               alt="banner"
-              className="w-full h-[100px] object-cover rounded-lg"
+              className="w-full h-[120px] object-cover rounded-lg"
             />
           </div>
           <div className="flex justify-between w-full items-center">

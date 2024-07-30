@@ -35,34 +35,6 @@ import { Department, User } from "@/types/interface";
 //     email: "test@gmail.com",
 //     phone:"0905626"
 //   },
-//   {
-//     id: "M04",
-//     name: "Krittaphat Doe",
-//     img: "/profiletest.jpg",
-//     email: "test@gmail.com",
-//     phone:"0905626"
-//   },
-//   {
-//     id: "M05",
-//     name: "Krittaphat Doe",
-//     img: "/profiletest.jpg",
-//     email: "test@gmail.com",
-//     phone:"0905626"
-//   },
-//   {
-//     id: "M06",
-//     name: "Krittaphat Doe",
-//     img: "/profiletest.jpg",
-//     email: "test@gmail.com",
-//     phone:"0905626"
-//   },
-//   {
-//     id: "M06",
-//     name: "Krittaphat Doe",
-//     img: "/profiletest.jpg",
-//     email: "test@gmail.com",
-//     phone:"0905626"
-//   },
 // ];
 interface SettingSectionProps {
   department: Department; // Replace 'string' with the appropriate type for departmentId

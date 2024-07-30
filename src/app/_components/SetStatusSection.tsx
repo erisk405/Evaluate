@@ -18,10 +18,7 @@ import {
 } from "@/components/ui/popover";
 import { CommandList } from "cmdk";
 import { useEffect, useState } from "react";
-import axios from "axios";
-import { apiUrl } from "../data/data-option";
 import useStore from "../store/store";
-import { FormField } from "@/components/ui/form";
 
 
 
@@ -29,9 +26,9 @@ export default function SetStatusSection() {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
   const {  roles } = useStore();
-  useEffect(()=>{
-    console.log(roles);
-    
+    useEffect(()=>{
+      console.log(roles);
+      
   },[roles])
   
 
@@ -61,7 +58,7 @@ export default function SetStatusSection() {
                 // />
                 <CommandItem
                   key={Role.id}
-                  value={Role.id}
+                  value={Role.role_name}
                   onSelect={(currentValue) => {
                     setValue(currentValue === value ? "" : currentValue);
                     setOpen(false);
