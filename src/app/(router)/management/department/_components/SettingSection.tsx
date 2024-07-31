@@ -203,10 +203,8 @@ export default function SettingSection({ department }: SettingSectionProps) {
                   Invite your team members to collaborate.
                 </p>
                 {/* List Team of department */}
-
                 <div className="">
                   <ListEmployeeOfDepartment department={department} />
-                  {/* <ListTeamOfDepartment department={department} /> */}
                 </div>
               </div>
             </div>
