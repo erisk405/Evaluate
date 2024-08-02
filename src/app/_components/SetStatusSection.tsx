@@ -25,7 +25,7 @@ import useStore from "../store/store";
 export default function SetStatusSection() {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
-  const {  roles } = useStore();
+  const { roles } = useStore();
     useEffect(()=>{
       console.log(roles);
       
@@ -58,7 +58,7 @@ export default function SetStatusSection() {
                 // />
                 <CommandItem
                   key={Role.id}
-                  value={Role.role_name}
+                  value={Role.id}
                   onSelect={(currentValue) => {
                     setValue(currentValue === value ? "" : currentValue);
                     setOpen(false);

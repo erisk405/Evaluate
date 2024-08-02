@@ -35,8 +35,6 @@ import GlobalApi from "@/app/_unit/GlobalApi";
 import AllListDepartment from "./_components/AllListDepartment";
 import { toast } from "@/components/ui/use-toast";
 import useStore from "@/app/store/store";
-import axios from "axios";
-import { apiUrl } from "@/app/data/data-option";
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),

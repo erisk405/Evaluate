@@ -2,9 +2,8 @@ import React from "react";
 import SideBar from "../_components/SideBar";
 import Header from "../_components/Header";
 import Footer from "../_components/Footer";
-
 const layout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
-  
+
   return (
     <div className="flex w-full relative">
       <div className="w-full flex flex-col">
