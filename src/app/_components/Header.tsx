@@ -22,8 +22,6 @@ import Myprofile from "./Myprofile";
 import GlobalApi from "../_unit/GlobalApi";
 import useStore from "../store/store";
 import socket from "@/lib/socket";
-import axios from "axios";
-import { apiUrl } from "../data/data-option";
 import NotificationSection from "./NotificationSection";
 const Header = () => {
   const { ProfileDetail, updateProfileDetail } = useStore();
@@ -37,22 +35,7 @@ const Header = () => {
     }
   };
 
-  const requestRole = async (roleId: any) => {
-    try {
-      const response = await axios.post(`${apiUrl}/sendRoleRequest`, {
-        userId: ProfileDetail?.id, // userId จะต้องเป็นค่าที่มาจากการล็อกอิน
-        roleId,
-      });
-      // Emit an event to notify admins
-      socket.emit("newRoleRequest", {
-        userId: ProfileDetail?.id,
-        roleId,
-        requestId: response?.data?.id,
-      });
-    } catch (error) {
-      console.error("Failed to request role:", error);
-    }
-  };
+  // fetch data of user
   const fetchUser = async () => {
     try {
       const response = await GlobalApi.fetchUserProfile(); // Await the promise
@@ -62,7 +45,6 @@ const Header = () => {
       const email = response.data?.email;
       const role = response.data?.role;
       console.log(response.data);
-
       updateProfileDetail(
         id,
         name,
@@ -78,11 +60,9 @@ const Header = () => {
   useEffect(() => {
     // ดึงข้อมูลต่างๆ ของ user
     fetchUser();
-
     socket.on("userNotification", (data) => {
       setNotifications((prev: any): any => [...prev, data]);
     });
-
     return () => {
       socket.off("userNotification");
     };
@@ -97,7 +77,7 @@ const Header = () => {
         </div>
 
         {/* search bar */}
-        {/* <div className="flex-1 relative min-w-[200px] max-w-[700px]">
+        <div className="flex-1 relative min-w-[200px] max-w-[700px]">
           <label htmlFor="Search" className="sr-only">
             {" "}
             Search{" "}
@@ -129,27 +109,12 @@ const Header = () => {
               </svg>
             </button>
           </span>
-        </div> */}
-      </div>
-      <NotificationSection />
-      <div>
-        <h1>User Page</h1>
-        <button
-          onClick={() => requestRole("81911879-52c6-4c8f-9732-fda56aac0e54")}
-        >
-          Request Role {ProfileDetail.role?.role_name}
-        </button>
-        <ul>
-          {notifications.map((notification: any) => (
-            <li key={notification?.id}>{notification?.message}</li>
-          ))}
-        </ul>
+        </div>
       </div>
       {/* profile */}
       <div className="flex items-center gap-8 ">
-        <div className="bg-neutral-100 p-2 rounded-full hover:bg-neutral-200">
-          <Bell />
-        </div>
+        <NotificationSection />
+        
         <div className="flex gap-1">
           {/* When click image profile */}
           <Dialog>

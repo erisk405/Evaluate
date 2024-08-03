@@ -6,16 +6,14 @@ import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormMessage,
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import axios from "axios";
-import { apiUrl } from "@/app/data/data-option";
 import Image from "next/image";
 import Link from "next/link";
 import { Check, LinkIcon, Loader, Mail } from "lucide-react";
@@ -25,300 +23,346 @@ import { useRef, useState } from "react";
 import useStore from "../store/store";
 import GlobalApi from "../_unit/GlobalApi";
 import { toast } from "@/components/ui/use-toast";
+import axios from "axios";
+import { apiUrl } from "../data/data-option";
+import socket from "@/lib/socket";
 
 const formSchema = z.object({
-    image: z.instanceof(File).refine((file) => file.size > 0, {
-        message: "Please upload a file.",
+  image: z
+    .instanceof(File)
+    .optional()
+    .refine((file) => !file || file.size > 0, {
+      message: "Please upload a valid file.",
     }),
-    firstName: z.string().min(2, {
-        message: "FirstName is required",
-    }),
-    lastName: z.string().min(2, {
-        message: "LastName is required",
-    }),
-    email: z.string().email({
-        message: "Please enter a valid email address.",
-    }),
-    Department: z.string().min(10,{
-        message: "Department must be at least 10 characters",
-    })
+  firstName: z.string().min(2, {
+    message: "FirstName is required",
+  }),
+  lastName: z.string().min(2, {
+    message: "LastName is required",
+  }),
+  email: z.string().email({
+    message: "Please enter a valid email address.",
+  }),
+  Department: z.string().min(10, {
+    message: "Department must be at least 10 characters",
+  }),
+  role: z.string().min(1, {
+    message: "Role is required",
+  }),
 });
 
 export default function Myprofile() {
-    // for image changing
-    const { ProfileDetail ,updateProfileDetail} = useStore();
-    const [selectedImage , setSelectedImage] = useState<string | null>(null);
-    const fileInputRef = useRef<HTMLInputElement | null>(null);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
-    const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>)=>{
-        const file = event.target.files && event.target.files[0];
-        if(file){
-            const reader = new FileReader();
-            reader.onloadend = () =>{
-                setSelectedImage(reader.result as string);
-            };
-            reader.readAsDataURL(file);
-        }
+  // for image changing
+  const { ProfileDetail, updateProfileDetail } = useStore();
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+//  image
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files && event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setSelectedImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
-    const handleImageClick = () =>{
-        fileInputRef.current?.click();
-    };
-    const form = useForm<z.infer<typeof formSchema>>({
-        
-        resolver: zodResolver(formSchema),
-        defaultValues: {
-            firstName: ProfileDetail?.name?.split(' ')[0], 
-            lastName: ProfileDetail?.name?.split(' ')[1],
-            image: undefined,
-            email: ProfileDetail?.email ? ProfileDetail?.email : '',
-            Department:"สำนักงานวิชาการ"
-        },
-    });
+  };
+//   when click image 
+  const handleImageClick = () => {
+    fileInputRef.current?.click();
+  };
 
-    // 2. Define a submit handler.
-    async function onSubmit(values: z.infer<typeof formSchema>) {
-        setIsLoading(false)
-        console.log(values);
-        const formData = new FormData();
-        formData.append("image", values.image);
-        try {
-            const response = await GlobalApi.updateUserImage(formData);
-            const name = response.data.name;
-            const image = response.data.image?.url;
-            const email = response.data?.email;
-            updateProfileDetail(name,email,image ? image : '/profiletest.jpg');
-        } catch (error) {
-            console.error("Error updating user image:", error);
-        } finally {
-            setIsLoading(true)
-            toast({
-                description: `✅ Your are save success`,
-            });
-        }
+//   useForm
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      firstName: ProfileDetail?.name?.split(" ")[0],
+      lastName: ProfileDetail?.name?.split(" ")[1],
+      image: undefined,
+      email: ProfileDetail?.email ? ProfileDetail?.email : "",
+      Department: "สำนักงานวิชาการ",
+      role: "",
+    },
+  });
+
+  // 2. Define a submit handler.
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsLoading(false);
+    console.log(values);
+    const formData = new FormData();
+    if (values.image) {
+      formData.append("image", values.image);
+      try {
+        const response = await GlobalApi.updateUserImage(formData);
+        console.log(response);
+        const id = response.data.id;
+        const name = response.data.name;
+        const image = response.data.image?.url;
+        const email = response.data?.email;
+        const role = response.data?.role;
+        updateProfileDetail(
+          id,
+          name,
+          email,
+          image ? image : "/profiletest.jpg",
+          role
+        );
+      } catch (error) {
+        console.error("Error updating user image:", error);
+      } finally {
+        setIsLoading(true);
+        toast({
+          description: `✅ Your are save success`,
+        });
+      }
     }
+    requestRole(values.role);
 
-    return (
-        <div className="">
-            <div className="relative bg-gray-100 w-full h-[100px]">
-                <div className="absolute bottom-0 translate-y-1/2 px-4 cursor-pointer" onClick={handleImageClick}>
-                {selectedImage  ? (
-                    <Image
-                        src={selectedImage}
-                        width={500}
-                        height={500}
-                        alt={"profile"}
-                        className="w-[85px] h-[85px] rounded-full object-cover border border-neutral-50 p-[2px] shadow-lg bg-white"
-                    />
-                ) 
-                : ProfileDetail.image ?
-                (
-                    <Image
-                        src={ProfileDetail?.image}
-                        width={500}
-                        height={500}
-                        alt={"profile"}
-                        className="w-[85px] h-[85px] rounded-full object-cover border border-neutral-50 p-[2px] shadow-lg bg-white"
-                    />
-                )
-                :(
-                    <div className="w-[85px] h-[85px] rounded-full object-cover border border-neutral-50 p-[2px] shadow-lg bg-neutral-600 animate-pulse">
-                        <div className="flex text-white h-full justify-center items-center animate-spin">
-                            <Loader size={30} />
-                        </div>
-                    </div>
-                )
-                
-                }
-                    
-                    <div className="absolute button-0 right-0 -translate-x-full -translate-y-full bg-blue-500 text-white rounded-full p-1">
-                        <Check strokeWidth={3} size={12} />
-                    </div>
-                </div>
+    setIsLoading(true);
+  }
+  const { setValue } = form;
+  const handleRoleChange: any = (newRole: any) => {
+    setValue("role", newRole);
+  };
+
+  //use Socket io for sendRoleRequest to admin
+  const requestRole = async (roleId: any) => {
+    try {
+      const response = await axios.post(`${apiUrl}/sendRoleRequest`, {
+        userId: ProfileDetail?.id, // userId จะต้องเป็นค่าที่มาจากการล็อกอิน
+        roleId,
+      });
+      // Emit an event to notify admins
+      socket.emit("newRoleRequest", {
+        userId: ProfileDetail?.id,
+        roleId,
+        requestId: response?.data?.id,
+      });
+    } catch (error) {
+      console.error("Failed to request role:", error);
+    }
+  };
+
+  return (
+    <div className="">
+      <div className="relative bg-gray-100 w-full h-[100px]">
+        <div
+          className="absolute bottom-0 translate-y-1/2 px-4 cursor-pointer"
+          onClick={handleImageClick}
+        >
+          {selectedImage ? (
+            <Image
+              src={selectedImage}
+              width={500}
+              height={500}
+              alt={"profile"}
+              className="w-[85px] h-[85px] rounded-full object-cover border border-neutral-50 p-[2px] shadow-lg bg-white"
+            />
+          ) : ProfileDetail.image ? (
+            <Image
+              src={ProfileDetail?.image}
+              width={500}
+              height={500}
+              alt={"profile"}
+              className="w-[85px] h-[85px] rounded-full object-cover border border-neutral-50 p-[2px] shadow-lg bg-white"
+            />
+          ) : (
+            <div className="w-[85px] h-[85px] rounded-full object-cover border border-neutral-50 p-[2px] shadow-lg bg-neutral-600 animate-pulse">
+              <div className="flex text-white h-full justify-center items-center animate-spin">
+                <Loader size={30} />
+              </div>
             </div>
-            <div className="p-4">
-                <div className="relative flex justify-end text-sm">
-                    <div className="flex gap-3 items-center">
-                        <div className="flex items-center border gap-1 border-gray-300 py-2 px-3 rounded-xl hover:bg-neutral-100 transition-all active:scale-95">
-                            <LinkIcon size={16} />
-                            <Link href={"#"}>Copy link</Link>
-                        </div>
-                        <div className="border border-gray-300 py-2 px-3 rounded-xl hover:bg-neutral-100 transition-all active:scale-95">
-                            <Link href={"#"}>View profile</Link>
-                        </div>
-                    </div>
-                </div>
-                <div className="my-3">
-                    <h2 className="text-xl font-bold">{ProfileDetail?.name}</h2>
-                    <h2 className="text-sm text-gray-500">{ProfileDetail?.email}</h2>
-                </div>
-                <Separator className="my-3" />
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
-                        <div className="grid grid-cols-11 items-center gap-3">
-                            <h2 className="col-span-3">Name</h2>
-                            {/* firstName */}
-                            <div className="col-span-4">
-                                <FormField
-                                    control={form.control}
-                                    name="firstName"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormControl>
-                                                <Input
-                                                    id="firstName"
-                                                    type="text"
-                                                    className="focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1"
-                                                    {...field}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
-                            
-                            {/* lastName */}
-                            <div className="col-span-4">
-                                <FormField
-                                    control={form.control}
-                                    name="lastName"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormControl className="col-span-4">
-                                                <Input
-                                                    id="lastName"
-                                                    type="text"
-                                                    className="focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1"
-                                                    {...field}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
-                        </div>
-                        <Separator />
-                        {/* email */}
-                        <FormField
-                            control={form.control}
-                            name="email"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <div className="grid grid-cols-11 items-center gap-3">
-                                        <h2 className="col-span-3">Email address</h2>
-                                        <FormControl className="col-span-8">
-                                            <div className="relative">
-                                                <Mail strokeWidth={1.5} className="absolute top-1/2 -translate-y-1/2 left-2 text-gray-500" />
-                                                <Input
-                                                    disabled
-                                                    id="email"
-                                                    type="text"
-                                                    className="pl-10  focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1"
-                                                    {...field}
-                                                />
-                                            </div>
-                                        </FormControl>
-                                    </div>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <Separator />
-                        {/* department */}
-                        <FormField
-                            control={form.control}
-                            name="Department"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <div className="grid grid-cols-11 items-center gap-3">
-                                        <h2 className="col-span-3">Department</h2>
-                                        <FormControl className="col-span-8">
-                                            <div className="relative">
-                                                <Input
-                                                    id="Department"
-                                                    type="text"
-                                                    disabled
-                                                    className="focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1"
-                                                    {...field}
-                                                />
-                                            </div>
-                                        </FormControl>
-                                    </div>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <Separator />
-                        {/* Role */}
-                        <FormField
-                            control={form.control}
-                            name="email"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <div className="grid grid-cols-11 items-center gap-3">
-                                        <h2 className="col-span-3">Role</h2>
-                                        <FormControl className="col-span-8">
-                                            <div className="relative">
-                                                <div className="flex items-center gap-3">
-                                                    <SetStatusSection/>
-                                                    <div className="bg-blue-500 text-white rounded-full p-1">
-                                                        <Check strokeWidth={3} size={10} />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </FormControl>
-                                    </div>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <Separator />
-                        <FormField
-                            control={form.control}
-                            name="image"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <div className="grid grid-cols-11 items-center gap-3">
-                                        <h2 className="col-span-3">Picture</h2>
-                                        <FormControl>
-                                            <Input
-                                                id="picture"
-                                                type="file"
-                                                onChange={(e) => {
-                                                    field.onChange(e.target.files?.[0]); // Set the first file from the FileList
-                                                    handleImageChange(e);
-                                                }}
-                                                ref={fileInputRef}
-                                                className="col-span-8"
-                                            />
-                                        </FormControl>
-                                    </div>
-                                    <FormDescription>
-                                        This is your public display image.
-                                    </FormDescription>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <div className="w-full text-right">
-                            {
-                                isLoading ? (
-                                    <Button className="w-32" type="submit">
-                                        Save Change
-                                    </Button>
-                                )
-                                :
-                                (
-                                    <Button className="w-32 animate-pulse" type="button">
-                                        <Loader className="animate-spin"/>
-                                    </Button>
-                                )
-                            }
-                        </div>
-                    </form>
-                </Form>
-            </div>
+          )}
+
+          <div className="absolute button-0 right-0 -translate-x-full -translate-y-full bg-blue-500 text-white rounded-full p-1">
+            <Check strokeWidth={3} size={12} />
+          </div>
         </div>
-    );
+      </div>
+      <div className="p-4">
+        <div className="relative flex justify-end text-sm">
+          <div className="flex gap-3 items-center">
+            <div className="flex items-center border gap-1 border-gray-300 py-2 px-3 rounded-xl hover:bg-neutral-100 transition-all active:scale-95">
+              <LinkIcon size={16} />
+              <Link href={"#"}>Copy link</Link>
+            </div>
+            <div className="border border-gray-300 py-2 px-3 rounded-xl hover:bg-neutral-100 transition-all active:scale-95">
+              <Link href={"#"}>View profile</Link>
+            </div>
+          </div>
+        </div>
+        <div className="my-3">
+          <h2 className="text-xl font-bold">{ProfileDetail?.name}</h2>
+          <h2 className="text-sm text-gray-500">{ProfileDetail?.email}</h2>
+        </div>
+        <Separator className="my-3" />
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+            <div className="grid grid-cols-11 items-center gap-3">
+              <h2 className="col-span-3">Name</h2>
+              {/* firstName */}
+              <div className="col-span-4">
+                <FormField
+                  control={form.control}
+                  name="firstName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input
+                          id="firstName"
+                          type="text"
+                          className="focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {/* lastName */}
+              <div className="col-span-4">
+                <FormField
+                  control={form.control}
+                  name="lastName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl className="col-span-4">
+                        <Input
+                          id="lastName"
+                          type="text"
+                          className="focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+            <Separator />
+            {/* email */}
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="grid grid-cols-11 items-center gap-3">
+                    <h2 className="col-span-3">Email address</h2>
+                    <FormControl className="col-span-8">
+                      <div className="relative">
+                        <Mail
+                          strokeWidth={1.5}
+                          className="absolute top-1/2 -translate-y-1/2 left-2 text-gray-500"
+                        />
+                        <Input
+                          disabled
+                          id="email"
+                          type="text"
+                          className="pl-10  focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1"
+                          {...field}
+                        />
+                      </div>
+                    </FormControl>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Separator />
+            {/* department */}
+            <FormField
+              control={form.control}
+              name="Department"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="grid grid-cols-11 items-center gap-3">
+                    <h2 className="col-span-3">Department</h2>
+                    <FormControl className="col-span-8">
+                      <div className="relative">
+                        <Input
+                          id="Department"
+                          type="text"
+                          disabled
+                          className="focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1"
+                          {...field}
+                        />
+                      </div>
+                    </FormControl>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Separator />
+            {/* Role */}
+            <FormField
+              control={form.control}
+              name="role"
+              render={() => (
+                <FormItem>
+                  <div className="grid grid-cols-11 items-center gap-3">
+                    <h2 className="col-span-3">Role</h2>
+                    <FormControl className="col-span-8">
+                      <div className="relative">
+                        <div className="flex items-center gap-3">
+                          <SetStatusSection onRoleChange={handleRoleChange} />
+                          <div className="bg-blue-500 text-white rounded-full p-1">
+                            <Check strokeWidth={3} size={10} />
+                          </div>
+                        </div>
+                      </div>
+                    </FormControl>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Separator />
+            <FormField
+              control={form.control}
+              name="image"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="grid grid-cols-11 items-center gap-3">
+                    <h2 className="col-span-3">Picture</h2>
+                    <FormControl>
+                      <Input
+                        id="picture"
+                        type="file"
+                        onChange={(e) => {
+                          field.onChange(e.target.files?.[0]); // Set the first file from the FileList
+                          handleImageChange(e);
+                        }}
+                        ref={fileInputRef}
+                        className="col-span-8"
+                      />
+                    </FormControl>
+                  </div>
+                  <FormDescription>
+                    This is your public display image.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className="w-full text-right">
+              {isLoading ? (
+                <Button className="w-32" type="submit">
+                  Save Change
+                </Button>
+              ) : (
+                <Button className="w-32 animate-pulse" type="button">
+                  <Loader className="animate-spin" />
+                </Button>
+              )}
+            </div>
+          </form>
+        </Form>
+      </div>
+    </div>
+  );
 }

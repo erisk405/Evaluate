@@ -19,18 +19,25 @@ import {
 import { CommandList } from "cmdk";
 import { useEffect, useState } from "react";
 import useStore from "../store/store";
+import GlobalApi from "../_unit/GlobalApi";
 
-
-
-export default function SetStatusSection() {
+export default function SetStatusSection({ onRoleChange }: any) {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
-  const { roles } = useStore();
-    useEffect(()=>{
-      console.log(roles);
-      
-  },[roles])
-  
+  const { roles, setRole } = useStore();
+
+  const fetchRole = async () => {
+    try {
+      const response = await GlobalApi.getRole();
+      console.log("role:", response);
+      setRole(response?.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    fetchRole();
+  }, []);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -42,7 +49,7 @@ export default function SetStatusSection() {
           className="justify-between w-auto"
         >
           {value
-            ? roles.find((Role) => Role.id === value)?.role_name
+            ? roles.find((Role) => Role.role_name === value)?.role_name
             : "Select Role"}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -51,23 +58,26 @@ export default function SetStatusSection() {
         <Command>
           <CommandInput placeholder="Search Role..." />
           <CommandEmpty>No Role found.</CommandEmpty>
-          <CommandGroup >
+          <CommandGroup>
             <CommandList>
               {roles.map((Role) => (
                 // <FormField
                 // />
                 <CommandItem
                   key={Role.id}
-                  value={Role.id}
+                  value={Role.role_name}
                   onSelect={(currentValue) => {
-                    setValue(currentValue === value ? "" : currentValue);
+                    console.log("currentValue:",currentValue,"\nRole_id:", Role.id);
+                    const newValue = currentValue === value ? "" : currentValue;
+                    setValue(newValue);
+                    if(onRoleChange) onRoleChange(Role.id)
                     setOpen(false);
                   }}
                 >
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      value === Role.id ? "opacity-100" : "opacity-0"
+                      value === Role.role_name ? "opacity-100" : "opacity-0"
                     )}
                   />
                   <div className="flex flex-col w-[240px]">
