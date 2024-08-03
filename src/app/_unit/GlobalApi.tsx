@@ -3,6 +3,7 @@
 import { Department } from "@/types/interface";
 import axios, { AxiosResponse } from "axios";
 interface UserProfile {
+  [x: string]: any;
   name: string;
   email: string;
   image?: {
@@ -13,7 +14,7 @@ const apiUrl = process.env.NEXT_PUBLIC_API_URL || `http://localhost:8000/api`;
 
 const fetchUserProfile = async (): Promise<AxiosResponse<UserProfile>> => {
   // Return the axios.get promise with type
-  return await axios.get(`${apiUrl}/userProfile`, {
+  return await axios.get(`${apiUrl}/myProfile`, {
     withCredentials: true, // ส่ง cookies ไปด้วย
   });
 };

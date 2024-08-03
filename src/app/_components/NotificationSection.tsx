@@ -3,15 +3,19 @@ import socket from '@/lib/socket';
 import { apiUrl } from '../data/data-option';
 import axios from 'axios';
 const NotificationSection = () => {
-    const [notification , setNotification] = useState([]);
+    const [notifications , setNotification] :any = useState([]);
 
 
     const handleRequest = async (requestId: any,status: any) =>{
-        await axios.patch(`${apiUrl}/handleRoleRequest`,{requestId,status})
-    }
+        console.log(requestId,status );
+        
+        await axios.patch(`${apiUrl}/adminSendRole`,{requestId,status});
+        socket.emit('roleRequestHandled', { requestId, status });
+    };
     useEffect(()=>{
         socket.on('adminNotification',(data)=>{
-            setNotification((prev) : any =>[...prev,data]);
+            console.log(data);
+            setNotification((prev :any) : any =>[...prev,data]);
         });
 
         return () =>{
@@ -19,7 +23,18 @@ const NotificationSection = () => {
         }
     },[]);
   return (
-    <div>NotificationSection</div>
+    <div>
+      <h1>Admin Notifications</h1>
+      <ul>
+        {notifications.map((notification :any) => (
+          <li key={notification.id}>
+            User {notification.userId} requested role {notification.roleId }
+            <button onClick={() => handleRequest(notification.requestId, 'APPROVED')}>Approve</button>
+            <button onClick={() => handleRequest(notification.requestId, 'REJECTED')}>Reject</button>
+          </li>
+        ))}
+      </ul>
+    </div>
   )
 }
 

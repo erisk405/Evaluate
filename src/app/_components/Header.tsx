@@ -21,10 +21,13 @@ import {
 import Myprofile from "./Myprofile";
 import GlobalApi from "../_unit/GlobalApi";
 import useStore from "../store/store";
-
+import socket from "@/lib/socket";
+import axios from "axios";
+import { apiUrl } from "../data/data-option";
+import NotificationSection from "./NotificationSection";
 const Header = () => {
-  const { ProfileDetail , updateProfileDetail } = useStore();
-
+  const { ProfileDetail, updateProfileDetail } = useStore();
+  const [notifications, setNotifications]: any = useState([]);
   const handleLogout = async () => {
     try {
       const response = await GlobalApi.Logout();
@@ -33,34 +36,68 @@ const Header = () => {
       console.error("Error logging out:", error);
     }
   };
-  
+
+  const requestRole = async (roleId: any) => {
+    try {
+      const response = await axios.post(`${apiUrl}/sendRoleRequest`, {
+        userId: ProfileDetail?.id, // userId จะต้องเป็นค่าที่มาจากการล็อกอิน
+        roleId,
+      });
+      // Emit an event to notify admins
+      socket.emit("newRoleRequest", {
+        userId: ProfileDetail?.id,
+        roleId,
+        requestId: response?.data?.id,
+      });
+    } catch (error) {
+      console.error("Failed to request role:", error);
+    }
+  };
   const fetchUser = async () => {
     try {
       const response = await GlobalApi.fetchUserProfile(); // Await the promise
+      const id = response.data.id;
       const name = response.data.name;
       const image = response.data.image?.url;
       const email = response.data?.email;
-      updateProfileDetail(name,email,image ? image : '/profiletest.jpg');
-      
+      const role = response.data?.role;
+      console.log(response.data);
+
+      updateProfileDetail(
+        id,
+        name,
+        email,
+        image ? image : "/profiletest.jpg",
+        role
+      );
     } catch (error) {
       console.error("Error fetching user profile:", error);
     }
   };
 
   useEffect(() => {
+    // ดึงข้อมูลต่างๆ ของ user
     fetchUser();
+
+    socket.on("userNotification", (data) => {
+      setNotifications((prev: any): any => [...prev, data]);
+    });
+
+    return () => {
+      socket.off("userNotification");
+    };
   }, []);
   return (
     <div className="flex relative justify-between items-center py-2">
       <div className="flex-1 flex items-center min-w-[200px] max-w-[1000px] gap-20">
         {/* logo */}
         <div className="flex items-center py-1">
-          <Image src={'/logo.png'} alt="logo" width={76} height={76} />
+          <Image src={"/logo.png"} alt="logo" width={76} height={76} />
           <h2 className="text-2xl font-bold">Eval 360</h2>
         </div>
 
         {/* search bar */}
-        <div className="flex-1 relative min-w-[200px] max-w-[700px]">
+        {/* <div className="flex-1 relative min-w-[200px] max-w-[700px]">
           <label htmlFor="Search" className="sr-only">
             {" "}
             Search{" "}
@@ -92,7 +129,21 @@ const Header = () => {
               </svg>
             </button>
           </span>
-        </div>
+        </div> */}
+      </div>
+      <NotificationSection />
+      <div>
+        <h1>User Page</h1>
+        <button
+          onClick={() => requestRole("81911879-52c6-4c8f-9732-fda56aac0e54")}
+        >
+          Request Role {ProfileDetail.role?.role_name}
+        </button>
+        <ul>
+          {notifications.map((notification: any) => (
+            <li key={notification?.id}>{notification?.message}</li>
+          ))}
+        </ul>
       </div>
       {/* profile */}
       <div className="flex items-center gap-8 ">
@@ -103,28 +154,27 @@ const Header = () => {
           {/* When click image profile */}
           <Dialog>
             <DialogTrigger asChild>
-              {ProfileDetail.image ? 
-              <Image
-                src={ProfileDetail.image}
-                alt="profile"
-                width={500}
-                height={500}
-                className="w-[45px] h-[45px] object-cover rounded-full cursor-pointer"
-              />
-              :
-              <div className="w-[45px] h-[45px] rounded-full object-cover border border-neutral-50 p-[2px] shadow-lg bg-neutral-500 animate-pulse">
+              {ProfileDetail.image ? (
+                <Image
+                  src={ProfileDetail.image}
+                  alt="profile"
+                  width={500}
+                  height={500}
+                  className="w-[45px] h-[45px] object-cover rounded-full cursor-pointer"
+                />
+              ) : (
+                <div className="w-[45px] h-[45px] rounded-full object-cover border border-neutral-50 p-[2px] shadow-lg bg-neutral-500 animate-pulse">
                   <div className="flex text-white h-full justify-center items-center animate-spin">
-                      {/* <Loader size={20} /> */}
+                    {/* <Loader size={20} /> */}
                   </div>
-              </div>
-            }
-              
+                </div>
+              )}
             </DialogTrigger>
             <DialogTitle></DialogTitle>
             <DialogDescription></DialogDescription>
             <DialogContent className="sm:max-w-[600px] p-1 sm:rounded-2xl overflow-hidden">
               <div className="">
-                <Myprofile/>
+                <Myprofile />
               </div>
             </DialogContent>
           </Dialog>
@@ -132,14 +182,14 @@ const Header = () => {
           <DropdownMenu>
             <DropdownMenuTrigger>
               <div className="flex items-center gap-1">
-                {ProfileDetail.name ? 
-                  ProfileDetail.name 
-                : 
+                {ProfileDetail.name ? (
+                  ProfileDetail.name
+                ) : (
                   <div className="flex flex-col gap-1">
                     <div className="w-[150px] h-3 rounded-full bg-neutral-300 animate"></div>
                     <div className="w-[100px] h-3 rounded-full bg-neutral-300 animate"></div>
                   </div>
-                }
+                )}
                 <ChevronDown />
               </div>
             </DropdownMenuTrigger>

@@ -8,13 +8,14 @@ interface StoreState {
   };
   toggleProfile: () => void;
   ProfileDetail: {
+    id:string | null;
     name: string | null;
     email: string | null;
     image: string | null;
+    role: Role | null; 
   };
-  updateProfileDetail: (name: string, email: string, image: string) => void;
+  updateProfileDetail: (id:string,name: string, email: string, image: string, role: Role) => void; 
 
-  
   departments: Department[];
   setDepartments: (departments: Department[]) => void;
 
@@ -22,11 +23,14 @@ interface StoreState {
   setRole: (roles: Role[]) => void;
 }
 
+
 const useStore = create<StoreState>((set) => ({
   ProfileDetail: {
+    id:null,
     name: null,
     email: null,
     image: null,
+    role:  null,
   },
   profilePopup: {
     open: false,
@@ -37,15 +41,17 @@ const useStore = create<StoreState>((set) => ({
       open: !state.profilePopup.open,
     },
   })),
-  updateProfileDetail: (name: string, email: string, image: string) => set((state) => ({
+  updateProfileDetail: (id:string,name: string, email: string, image: string, role: Role) => set((state) => ({
     ProfileDetail: {
       ...state.ProfileDetail,
+      id,
       name,
       email,
       image,
+      role,
     },
   })),
-  
+
   departments: [],
   setDepartments: (departments) => set(() => ({ departments })),
   roles: [],
