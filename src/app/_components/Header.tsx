@@ -77,7 +77,7 @@ const Header = () => {
         </div>
 
         {/* search bar */}
-        <div className="flex-1 relative min-w-[200px] max-w-[700px]">
+        <div className="hidden md:block flex-1 relative min-w-[200px] max-w-[700px]">
           <label htmlFor="Search" className="sr-only">
             {" "}
             Search{" "}

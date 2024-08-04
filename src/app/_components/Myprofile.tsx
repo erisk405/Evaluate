@@ -82,7 +82,7 @@ export default function Myprofile() {
       image: undefined,
       email: ProfileDetail?.email ? ProfileDetail?.email : "",
       Department: "สำนักงานวิชาการ",
-      role: "",
+      role: ProfileDetail?.role?.id,
     },
   });
 
@@ -311,7 +311,7 @@ export default function Myprofile() {
                     <FormControl className="col-span-8">
                       <div className="relative">
                         <div className="flex items-center gap-3">
-                          <SetStatusSection onRoleChange={handleRoleChange} />
+                          <SetStatusSection onRoleChange={handleRoleChange} defaultValue={ProfileDetail?.role?.role_name}/>
                           <div className="bg-blue-500 text-white rounded-full p-1">
                             <Check strokeWidth={3} size={10} />
                           </div>

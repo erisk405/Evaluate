@@ -21,7 +21,7 @@ import { useEffect, useState } from "react";
 import useStore from "../store/store";
 import GlobalApi from "../_unit/GlobalApi";
 
-export default function SetStatusSection({ onRoleChange }: any) {
+export default function SetStatusSection({ onRoleChange , defaultValue } : any) {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
   const { roles, setRole } = useStore();
@@ -31,6 +31,14 @@ export default function SetStatusSection({ onRoleChange }: any) {
       const response = await GlobalApi.getRole();
       console.log("role:", response);
       setRole(response?.data);
+
+      // Set default value based on fetched roles
+      const defaultRole = response?.data.find(
+        (role: any) => role.role_name === defaultValue
+      );
+      if (defaultRole) {
+        setValue(defaultRole.role_name);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -67,10 +75,15 @@ export default function SetStatusSection({ onRoleChange }: any) {
                   key={Role.id}
                   value={Role.role_name}
                   onSelect={(currentValue) => {
-                    console.log("currentValue:",currentValue,"\nRole_id:", Role.id);
+                    console.log(
+                      "currentValue:",
+                      currentValue,
+                      "\nRole_id:",
+                      Role.id
+                    );
                     const newValue = currentValue === value ? "" : currentValue;
                     setValue(newValue);
-                    if(onRoleChange) onRoleChange(Role.id)
+                    if (onRoleChange) onRoleChange(Role.id);
                     setOpen(false);
                   }}
                 >
