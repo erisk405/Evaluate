@@ -133,11 +133,13 @@ export default function Myprofile() {
         userId: ProfileDetail?.id, // userId จะต้องเป็นค่าที่มาจากการล็อกอิน
         roleId,
       });
+      console.log(response);
+      const data = response.data;
+      console.log(data);
+      
       // Emit an event to notify admins
       socket.emit("newRoleRequest", {
-        userId: ProfileDetail?.id,
-        roleId,
-        requestId: response?.data?.id,
+        data
       });
     } catch (error) {
       console.error("Failed to request role:", error);
