@@ -133,7 +133,6 @@ export default function Myprofile() {
         userId: ProfileDetail?.id, // userId จะต้องเป็นค่าที่มาจากการล็อกอิน
         roleId,
       });
-      console.log(response);
       const data = response.data;
       console.log(data);
       

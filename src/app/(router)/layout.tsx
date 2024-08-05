@@ -2,6 +2,7 @@ import React from "react";
 import SideBar from "../_components/SideBar";
 import Header from "../_components/Header";
 import Footer from "../_components/Footer";
+import { Toaster } from "@/components/ui/sonner"
 const layout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
 
   return (
@@ -19,6 +20,7 @@ const layout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
                 <SideBar />
               </div>
               {children}
+              <Toaster  expand={true} closeButton  />
             </div>
           </div>
         </div>
