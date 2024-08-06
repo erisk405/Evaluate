@@ -57,7 +57,7 @@ export default function Myprofile() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-//  image
+  //  image
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
     if (file) {
@@ -68,12 +68,12 @@ export default function Myprofile() {
       reader.readAsDataURL(file);
     }
   };
-//   when click image 
+  //   when click image
   const handleImageClick = () => {
     fileInputRef.current?.click();
   };
 
-//   useForm
+  //   useForm
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -96,18 +96,14 @@ export default function Myprofile() {
       try {
         const response = await GlobalApi.updateUserImage(formData);
         console.log(response);
-        const id = response.data.id;
-        const name = response.data.name;
-        const image = response.data.image?.url;
-        const email = response.data?.email;
-        const role = response.data?.role;
-        updateProfileDetail(
+        const { id, name, image, email, role } = response.data;
+        updateProfileDetail({
           id,
           name,
           email,
-          image ? image : "/profiletest.jpg",
-          role
-        );
+          image: image ? image.url : "/profiletest.jpg",
+          role,
+        });
       } catch (error) {
         console.error("Error updating user image:", error);
       } finally {
@@ -121,6 +117,8 @@ export default function Myprofile() {
 
     setIsLoading(true);
   }
+
+  // function เอาไว้ใชักับ SetStatusSection เพื่อให้สามารถนำ valueจาก component ด้านนอกมาใช้ได้
   const { setValue } = form;
   const handleRoleChange: any = (newRole: any) => {
     setValue("role", newRole);
@@ -135,10 +133,10 @@ export default function Myprofile() {
       });
       const data = response.data;
       console.log(data);
-      
+
       // Emit an event to notify admins
       socket.emit("newRoleRequest", {
-        data
+        data,
       });
     } catch (error) {
       console.error("Failed to request role:", error);
@@ -310,9 +308,17 @@ export default function Myprofile() {
                     <FormControl className="col-span-8">
                       <div className="relative">
                         <div className="flex items-center gap-3">
-                          <SetStatusSection onRoleChange={handleRoleChange} defaultValue={ProfileDetail?.role?.role_name}/>
-                          <div className="bg-blue-500 text-white rounded-full p-1">
-                            <Check strokeWidth={3} size={10} />
+                          <SetStatusSection
+                            onRoleChange={handleRoleChange}
+                            defaultValue={ProfileDetail?.role?.role_name}
+                          />
+                          <div className="flex items-center gap-2 select-none">
+                            <div className="bg-blue-500 text-white rounded-full p-1">
+                              <Check strokeWidth={3} size={10} />
+                            </div>
+                            <h2 className="font-bold text-sm text-blue-600 ">
+                              Aprove
+                            </h2>
                           </div>
                         </div>
                       </div>

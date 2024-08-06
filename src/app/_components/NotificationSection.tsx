@@ -52,6 +52,7 @@ const NotificationSection = () => {
     if (ProfileDetail.role?.role_name === "admin") {
       fetchRoleRequest();
       socket.on("adminNotification", (receive) => {
+        playNotificationSound();
         setQuantity(receive.data.count + 1);
         setNotification((prev: any): any => [...prev, receive.data.data]);
         const name = receive.data.data.user.name;
@@ -83,7 +84,6 @@ const NotificationSection = () => {
             </div>
           </div>
         );
-        playNotificationSound();
       });
       return () => {
         socket.off("adminNotification");

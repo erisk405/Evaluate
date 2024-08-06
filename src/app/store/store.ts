@@ -8,13 +8,22 @@ interface StoreState {
   };
   toggleProfile: () => void;
   ProfileDetail: {
-    id:string | null;
+    id: string | null;
     name: string | null;
     email: string | null;
     image: string | null;
-    role: Role | null; 
+    role: Role | null;
+    roleStatus: string | null;
   };
-  updateProfileDetail: (id:string,name: string, email: string, image: string, role: Role) => void; 
+  updateProfileDetail: (updatedFields: {
+    id?: string;
+    name?: string;
+    email?: string;
+    image?: string;
+    role?: Role;
+    roleStatus?: string;
+  }) => void;
+  
 
   departments: Department[];
   setDepartments: (departments: Department[]) => void;
@@ -26,11 +35,13 @@ interface StoreState {
 
 const useStore = create<StoreState>((set) => ({
   ProfileDetail: {
-    id:null,
+    id: null,
     name: null,
     email: null,
     image: null,
-    role:  null,
+    role: null,
+    roleStatus: null
+
   },
   profilePopup: {
     open: false,
@@ -41,16 +52,20 @@ const useStore = create<StoreState>((set) => ({
       open: !state.profilePopup.open,
     },
   })),
-  updateProfileDetail: (id:string,name: string, email: string, image: string, role: Role) => set((state) => ({
+  updateProfileDetail: (updatedFields: {
+    id?: string;
+    name?: string;
+    email?: string;
+    image?: string;
+    role?: Role;
+    roleStatus?: string;
+  }) => set((state) => ({
     ProfileDetail: {
       ...state.ProfileDetail,
-      id,
-      name,
-      email,
-      image,
-      role,
+      ...updatedFields,
     },
   })),
+
 
   departments: [],
   setDepartments: (departments) => set(() => ({ departments })),
