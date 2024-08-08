@@ -113,6 +113,7 @@ export default function Myprofile() {
         });
       }
     }
+    
     requestRole(values.role);
 
     setIsLoading(true);
