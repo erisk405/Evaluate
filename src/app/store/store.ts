@@ -1,5 +1,5 @@
 // store.ts
-import { Department, Role } from '@/types/interface';
+import { Department, Role, RoleRequest } from '@/types/interface';
 import { create } from 'zustand';
 
 interface StoreState {
@@ -13,7 +13,7 @@ interface StoreState {
     email: string | null;
     image: string | null;
     role: Role | null;
-    roleStatus: string | null;
+    roleRequests: RoleRequest[] | null;
   };
   updateProfileDetail: (updatedFields: {
     id?: string;
@@ -21,7 +21,7 @@ interface StoreState {
     email?: string;
     image?: string;
     role?: Role;
-    roleStatus?: string;
+    roleRequests?: RoleRequest[]
   }) => void;
   
 
@@ -40,7 +40,7 @@ const useStore = create<StoreState>((set) => ({
     email: null,
     image: null,
     role: null,
-    roleStatus: null
+    roleRequests: null
 
   },
   profilePopup: {
@@ -58,7 +58,7 @@ const useStore = create<StoreState>((set) => ({
     email?: string;
     image?: string;
     role?: Role;
-    roleStatus?: string;
+    roleRequests?: RoleRequest[];
   }) => set((state) => ({
     ProfileDetail: {
       ...state.ProfileDetail,

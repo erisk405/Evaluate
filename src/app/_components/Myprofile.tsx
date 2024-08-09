@@ -16,7 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import Link from "next/link";
-import { Check, LinkIcon, Loader, Mail } from "lucide-react";
+import { Check, CircleDashed, LinkIcon, Loader, Mail } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import SetStatusSection from "./SetStatusSection";
 import { useRef, useState } from "react";
@@ -26,6 +26,7 @@ import { toast } from "@/components/ui/use-toast";
 import axios from "axios";
 import { apiUrl } from "../data/data-option";
 import socket from "@/lib/socket";
+import { Role, RoleRequest } from "@/types/interface";
 
 const formSchema = z.object({
   image: z
@@ -90,6 +91,7 @@ export default function Myprofile() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(false);
     console.log(values);
+
     const formData = new FormData();
     if (values.image) {
       formData.append("image", values.image);
@@ -113,7 +115,7 @@ export default function Myprofile() {
         });
       }
     }
-    
+
     requestRole(values.role);
 
     setIsLoading(true);
@@ -133,8 +135,22 @@ export default function Myprofile() {
         roleId,
       });
       const data = response.data;
-      console.log(data);
-
+      console.log("requestRole:",data);
+      const{id,role_name,description} = response.data;
+      const roleRequests:{ role: Role; status: string }[] = [
+        {
+          role: {
+            id,
+            description,
+            role_name,
+          },
+          status: "PENDING", // Example status
+        },
+      ];
+      
+      // updateProfileDetail({
+      //   roleRequests: roleRequests,
+      // });
       // Emit an event to notify admins
       socket.emit("newRoleRequest", {
         data,
@@ -311,15 +327,42 @@ export default function Myprofile() {
                         <div className="flex items-center gap-3">
                           <SetStatusSection
                             onRoleChange={handleRoleChange}
-                            defaultValue={ProfileDetail?.role?.role_name}
+                            defaultValue={
+                              ProfileDetail.roleRequests?.length &&
+                              ProfileDetail.roleRequests.length > 0
+                                ? ProfileDetail.roleRequests[0].role.role_name
+                                : ProfileDetail?.role?.role_name
+                            }
+                            isPending={
+                              ProfileDetail.roleRequests?.length &&
+                              ProfileDetail.roleRequests.length > 0
+                                ? true
+                                : false
+                            }
                           />
                           <div className="flex items-center gap-2 select-none">
-                            <div className="bg-blue-500 text-white rounded-full p-1">
-                              <Check strokeWidth={3} size={10} />
+                            {ProfileDetail.roleRequests?.length &&
+                            ProfileDetail.roleRequests.length > 0 ? (
+                              <div className=" text-orange-400 rounded-full p-1">
+                                <CircleDashed strokeWidth={3} size={18} />
+                              </div>
+                            ) : (
+                              <div className="bg-blue-500 text-white rounded-full p-1">
+                                <Check strokeWidth={3} size={10} />
+                              </div>
+                            )}
+                            <div>
+                              {ProfileDetail.roleRequests?.length &&
+                              ProfileDetail.roleRequests.length > 0 ? (
+                                <h2 className="font-bold text-sm text-orange-400 ">
+                                  Pending
+                                </h2>
+                              ) : (
+                                <h2 className="font-bold text-sm text-blue-600 ">
+                                  Approved
+                                </h2>
+                              )}
                             </div>
-                            <h2 className="font-bold text-sm text-blue-600 ">
-                              Aprove
-                            </h2>
                           </div>
                         </div>
                       </div>

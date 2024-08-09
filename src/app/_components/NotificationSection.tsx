@@ -129,10 +129,23 @@ const NotificationSection: React.FC = () => {
         socket.off("adminNotification");
       };
     }
+    else{
+      socket.on("userNotification", (receive) => {
+        if(receive.userId === ProfileDetail.id){
+          console.log("receive....",receive);
+        }
+      });
+      return () => {
+        socket.off("userNotification");
+      };
+    }
   }, [ProfileDetail]);
 
   useEffect(() => {
-    fetchRoleRequest();
+    if (ProfileDetail.role?.role_name === "admin") {
+      fetchRoleRequest();
+    }
+
   }, [page]);
 
   useEffect(() => {

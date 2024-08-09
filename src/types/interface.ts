@@ -32,4 +32,12 @@ interface Role {
   role_name:string
 }
 
-export type { DepartmentImage, Department,Role ,User};
+interface RoleRequest{
+  id:string;
+  role:Role;
+  status:string;
+  createAt:Date;
+  updateAt:Date;
+}
+
+export type { DepartmentImage, Department,Role ,User,RoleRequest};

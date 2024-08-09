@@ -39,17 +39,16 @@ const Header = () => {
   const fetchUser = async () => {
     try {
       const response = await GlobalApi.fetchUserProfile(); // Await the promise
-      const { id, name, image, email, role } = response.data;
-      const roleStatus = response.data?.roleRequests[0]?.status;
+      const { id, name, image, email, role,roleRequests } = response.data;
+     
       console.log(response.data);
-      console.log("status:",roleStatus);
       updateProfileDetail({
         id,
         name,
         email,
         image: image ? image.url : "/profiletest.jpg",
         role,
-        roleStatus
+        roleRequests
       });
     } catch (error) {
       console.error("Error fetching user profile:", error);

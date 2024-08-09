@@ -21,7 +21,7 @@ import { useEffect, useState } from "react";
 import useStore from "../store/store";
 import GlobalApi from "../_unit/GlobalApi";
 
-export default function SetStatusSection({ onRoleChange , defaultValue } : any) {
+export default function SetStatusSection({ onRoleChange , defaultValue ,isPending} : any) {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
   const { roles, setRole } = useStore();
@@ -55,6 +55,7 @@ export default function SetStatusSection({ onRoleChange , defaultValue } : any) 
           role="combobox"
           aria-expanded={open}
           className="justify-between w-auto"
+          disabled = {isPending}
         >
           {value
             ? roles.find((Role) => Role.role_name === value)?.role_name
@@ -75,12 +76,6 @@ export default function SetStatusSection({ onRoleChange , defaultValue } : any) 
                   key={Role.id}
                   value={Role.role_name}
                   onSelect={(currentValue) => {
-                    console.log(
-                      "currentValue:",
-                      currentValue,
-                      "\nRole_id:",
-                      Role.id
-                    );
                     const newValue = currentValue === value ? "" : currentValue;
                     setValue(newValue);
                     if (onRoleChange) onRoleChange(Role.id);
