@@ -8,38 +8,30 @@ import { Button } from "@/components/ui/button";
 import useStore from "../store/store";
 import { toast } from "sonner";
 import moment from "moment-timezone";
+import { Notification, Role } from "@/types/interface";
 
 const TIMEZONE = 'Asia/Bangkok';
 const PAGE_LIMIT = 4;
 
-interface Notification {
-  id: string;
-  user: {
-    image?: { url: string };
-    name: string;
-    email: string;
-    id: string;
-  };
-  role: {
-    requestRole: string;
-    role_name: string;
-  };
-  createdAt: string;
-}
 
 const NotificationSection: React.FC = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showNotifications, setShowNotifications] = useState(true);
   const [slideOut, setSlideOut] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(0);
-  const { ProfileDetail } = useStore();
+  const { ProfileDetail,updateProfileDetail } = useStore();
   const [page, setPage] = useState(1);
   const loaderRef = useRef<HTMLDivElement>(null);
 
   const handleRequest = async (requestId: string, status: string, userId: string) => {
     try {
-      await axios.patch(`${apiUrl}/resolveRole`, { requestId, status, userId });
-      socket.emit("roleRequestHandled", { requestId, status, userId });
+      const response = await axios.patch(`${apiUrl}/resolveRole`, { requestId, status, userId });
+      const SendRes = response.data;
+      console.log(ProfileDetail);
+      const {name ,image} = ProfileDetail;
+      
+      socket.emit("roleRequestHandled", {userId,SendRes,AdminName:name,AdminImage:image});
+
       setSlideOut(requestId);
 
       setTimeout(() => {
@@ -60,10 +52,8 @@ const NotificationSection: React.FC = () => {
 
   const loadMore = useCallback(() => {
     const skip = page * PAGE_LIMIT;
-    console.log("skip:" ,skip);
-    console.log("quantity:",quantity);
-    
-    
+    // console.log("skip:" ,skip);
+    // console.log("quantity:",quantity);
     if(skip >= quantity){
       setPage(0);
     }
@@ -92,14 +82,14 @@ const NotificationSection: React.FC = () => {
   useEffect(() => {
     if (ProfileDetail.role?.role_name === "admin") {
       fetchRoleRequest();
-
       socket.on("adminNotification", (receive) => {
         playNotificationSound();
         setQuantity((prev) => prev + 1);
         setNotifications((prev) => [...prev, receive.data.data]);
         
         const { user, role, createdAt } = receive.data.data;
-        console.log(user.image);
+        console.log("receive",receive.data.data);
+        
         toast(
           <div className="w-full">
             <div className="flex gap-3 justify-start items-start">
@@ -114,7 +104,7 @@ const NotificationSection: React.FC = () => {
                 <span className="font-bold">{user.name}</span>
                 <h1 className="text-md">
                   has requested the role{" "}
-                  <span className="font-semibold text-blue-500">{role.requestRole}</span>
+                  <span className="font-semibold text-blue-500">{role.role_name}</span>
                 </h1>
                 <h1 className="text-sm text-gray-500">
                   {moment.utc(createdAt).tz(TIMEZONE).format('YYYY-MM-DD HH:mm:ss')}
@@ -132,9 +122,58 @@ const NotificationSection: React.FC = () => {
     else{
       socket.on("userNotification", (receive) => {
         if(receive.userId === ProfileDetail.id){
+          playNotificationSound();
           console.log("receive....",receive);
+          const SenderImage = receive.AdminImage
+          const SenderName = receive.AdminName
+          const SenderStatus = receive.SendRes.status
+          const updateAt = receive.updatedAt
+          const {id,role_name,description}= receive.SendRes.role
+          console.log(SenderStatus);
+          const role = ProfileDetail?.role; // role ดั้งเดิมของ user คนนั้น
+          
+          SenderStatus === 'APPROVED' ? (
+            updateProfileDetail({
+              role:{
+                id,
+                role_name,
+                description
+              }, // ส่ง role เข้าไปอัพเดทUser คนนั้น
+              roleRequests:[]
+            })
+          ):
+          (
+            updateProfileDetail({
+              roleRequests:[]
+            })
+          )
+          toast(
+            <div className="w-full">
+              <div className="flex gap-3 justify-start items-start">
+                <Image
+                  src={SenderImage? SenderImage : "/profiletest.jpg"}
+                  width={100}
+                  height={100}
+                  alt="Notification"
+                  className="w-[40px] h-[40px] object-cover rounded-full"
+                />
+                <div className="text-lg">
+                  <span className="font-bold">{SenderName}</span>
+                  <h1 className="text-md">
+                    Action your request to {" "}
+                    <span className="font-semibold text-blue-500">{SenderStatus}</span>
+                  </h1>
+                  <h1 className="text-sm text-gray-500">
+                    {moment.utc(updateAt).tz(TIMEZONE).format('YYYY-MM-DD HH:mm:ss')}
+                  </h1>
+                </div>
+              </div>
+            </div>
+          );
+          
         }
       });
+      console.log(ProfileDetail);
       return () => {
         socket.off("userNotification");
       };
@@ -196,13 +235,13 @@ const NotificationSection: React.FC = () => {
         )}
       </div>
       <div
-        className={`fixed lg:absolute ${
-          showNotifications ? "opacity-0 scale-95" : "opacity-1 scale-100"
-        } lg:w-[400px] lg:-inset-x-96 lg:translate-y-0 lg:top-full 
-        sm:mx-28 inset-0 top-1/2 -translate-y-1/2 z-[50]
-        rounded-2xl p-1 transition-all ease-in-out`}
+        className={`fixed lg:absolute h-auto block 
+        ${showNotifications ? "opacity-0 scale-95" : "opacity-1 scale-100"} 
+        lg:w-[400px] lg:-inset-x-96 lg:translate-y-0 lg:top-full 
+        w-full left-0 top-1/2 -translate-y-1/2 z-[50]
+        rounded-2xl p-1 transition-all `}
       >
-        <div className="px-5 py-4 shadow-lg bg-white rounded-2xl">
+        <div className="px-5 py-4 shadow-lg bg-white rounded-2xl lg:w-full lg:mx-10 sm:mx-28 transition-all">
           <h1 className="text-2xl font-bold mb-3">Notifications</h1>
           <hr />
           <div className="scrollbar-gemini overflow-y-scroll overflow-x-hidden max-h-[500px]">

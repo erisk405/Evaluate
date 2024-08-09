@@ -19,7 +19,7 @@ import Link from "next/link";
 import { Check, CircleDashed, LinkIcon, Loader, Mail } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import SetStatusSection from "./SetStatusSection";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useStore from "../store/store";
 import GlobalApi from "../_unit/GlobalApi";
 import { toast } from "@/components/ui/use-toast";
@@ -126,7 +126,6 @@ export default function Myprofile() {
   const handleRoleChange: any = (newRole: any) => {
     setValue("role", newRole);
   };
-
   //use Socket io for sendRoleRequest to admin
   const requestRole = async (roleId: any) => {
     try {
@@ -135,6 +134,8 @@ export default function Myprofile() {
         roleId,
       });
       const data = response.data;
+
+      // หาว่ามีการร้องขอมามั้ย ถ้ามีก็ให้ updateProfileDetailไว้ เพื่อคงสถานะ แล้วนำไปใช้ในการ disable button
       console.log("requestRole:",data);
       const{id,role_name,description} = response.data;
       const roleRequests:{ role: Role; status: string }[] = [
@@ -144,13 +145,13 @@ export default function Myprofile() {
             description,
             role_name,
           },
-          status: "PENDING", // Example status
+          status: "PENDING",
         },
       ];
       
-      // updateProfileDetail({
-      //   roleRequests: roleRequests,
-      // });
+      updateProfileDetail({
+        roleRequests: roleRequests,
+      });
       // Emit an event to notify admins
       socket.emit("newRoleRequest", {
         data,

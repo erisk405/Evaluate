@@ -8,36 +8,49 @@ interface Department {
   id: string;
   department_name: string;
   image: DepartmentImage;
-  _count:DepartmentCount
+  _count: DepartmentCount
   // เพิ่มข้อมูลที่จำเป็นตามโครงสร้างข้อมูลจริง
 }
-interface UserImage{
-  id:string,
-  url:string,
-  public_id:string
+interface UserImage {
+  id: string,
+  url: string,
+  public_id: string
 }
 
-interface User{
-  id:string,
-  name:string,
-  email:string,
-  image:UserImage,
-  role:Role
-  phone:string
+interface User {
+  id: string,
+  name: string,
+  email: string,
+  image: UserImage,
+  role: Role
+  phone: string
 }
 
 interface Role {
-  id:string;
-  description:string,
-  role_name:string
+  id: string;
+  description: string,
+  role_name: string
 }
 
-interface RoleRequest{
-  id:string;
-  role:Role;
-  status:string;
-  createAt:Date;
-  updateAt:Date;
+interface RoleRequest {
+  role: Role;
+  status: string;
 }
 
-export type { DepartmentImage, Department,Role ,User,RoleRequest};
+
+interface Notification {
+  id: string;
+  user: {
+    image?: { url: string };
+    name: string;
+    email: string;
+    id: string;
+  };
+  role: {
+    requestRole: string;
+    role_name: string;
+  };
+  createdAt: string;
+}
+
+export type { DepartmentImage, Department, Role, User, RoleRequest, Notification };
