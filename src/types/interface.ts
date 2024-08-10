@@ -43,11 +43,11 @@ interface Notification {
   user: {
     image?: { url: string };
     name: string;
-    email: string;
-    id: string;
+    email?: string;
+    id?: string;
   };
   role: {
-    requestRole: string;
+    requestRole?: string;
     role_name: string;
   };
   createdAt: string;

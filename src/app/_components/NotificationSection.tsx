@@ -8,37 +8,50 @@ import { Button } from "@/components/ui/button";
 import useStore from "../store/store";
 import { toast } from "sonner";
 import moment from "moment-timezone";
-import { Notification, Role } from "@/types/interface";
+import { Notification } from "@/types/interface";
 
-const TIMEZONE = 'Asia/Bangkok';
+const TIMEZONE = "Asia/Bangkok";
 const PAGE_LIMIT = 4;
-
 
 const NotificationSection: React.FC = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showNotifications, setShowNotifications] = useState(true);
   const [slideOut, setSlideOut] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(0);
-  const { ProfileDetail,updateProfileDetail } = useStore();
+  const { ProfileDetail, updateProfileDetail } = useStore();
   const [page, setPage] = useState(1);
   const loaderRef = useRef<HTMLDivElement>(null);
 
-  const handleRequest = async (requestId: string, status: string, userId: string) => {
+  const handleRequest = async (
+    requestId: string,
+    status: string,
+    userId: string
+  ) => {
     try {
-      const response = await axios.patch(`${apiUrl}/resolveRole`, { requestId, status, userId });
+      const response = await axios.patch(`${apiUrl}/resolveRole`, {
+        requestId,
+        status,
+        userId,
+      });
       const SendRes = response.data;
       console.log(ProfileDetail);
-      const {name ,image} = ProfileDetail;
-      
-      socket.emit("roleRequestHandled", {userId,SendRes,AdminName:name,AdminImage:image});
+      const { name, image } = ProfileDetail;
+
+      socket.emit("roleRequestHandled", {
+        userId,
+        SendRes,
+        AdminName: name,
+        AdminImage: image,
+      });
 
       setSlideOut(requestId);
 
       setTimeout(() => {
-        setNotifications((prev) => prev.filter((item) => item.id !== requestId));
+        setNotifications((prev) =>
+          prev.filter((item) => item.id !== requestId)
+        );
         setQuantity((prev) => prev - 1);
         setSlideOut(null);
-
       }, 300);
     } catch (error) {
       console.error("Error handling request:", error);
@@ -46,20 +59,22 @@ const NotificationSection: React.FC = () => {
   };
 
   const playNotificationSound = () => {
-    const audio = new Audio('/sounds/notification.wav');
+    const audio = new Audio("/sounds/notification.wav");
     audio.play();
   };
 
+  // function ที่ใช้ในการทำ scroll loading
   const loadMore = useCallback(() => {
     const skip = page * PAGE_LIMIT;
     // console.log("skip:" ,skip);
     // console.log("quantity:",quantity);
-    if(skip >= quantity){
+    if (skip >= quantity) {
       setPage(0);
     }
     setPage((prevPage) => prevPage + 1);
   }, [quantity]);
 
+  // function ที่นำRoleRequest มาSet ไว้ที่ notificate และ จำนวนของ notificate
   const fetchRoleRequest = async () => {
     try {
       const response = await axios.get(`${apiUrl}/roleRequestPending`, {
@@ -67,11 +82,13 @@ const NotificationSection: React.FC = () => {
         withCredentials: true,
       });
       console.log(response);
-      
+
       setQuantity(response.data.count);
       setNotifications((prevNotifications) => {
         const existingIds = new Set(prevNotifications.map((item) => item.id));
-        const newNotifications = response.data.data.filter((item: { id: string }) => !existingIds.has(item.id));
+        const newNotifications = response.data.data.filter(
+          (item: { id: string }) => !existingIds.has(item.id)
+        );
         return [...prevNotifications, ...newNotifications];
       });
     } catch (error) {
@@ -85,11 +102,12 @@ const NotificationSection: React.FC = () => {
       socket.on("adminNotification", (receive) => {
         playNotificationSound();
         setQuantity((prev) => prev + 1);
-        setNotifications((prev) => [...prev, receive.data.data]);
-        
+
+        setNotifications((prev) => [receive.data.data, ...prev]);
+
         const { user, role, createdAt } = receive.data.data;
-        console.log("receive",receive.data.data);
-        
+        console.log("receive", receive.data.data);
+
         toast(
           <div className="w-full">
             <div className="flex gap-3 justify-start items-start">
@@ -104,10 +122,15 @@ const NotificationSection: React.FC = () => {
                 <span className="font-bold">{user.name}</span>
                 <h1 className="text-md">
                   has requested the role{" "}
-                  <span className="font-semibold text-blue-500">{role.role_name}</span>
+                  <span className="font-semibold text-blue-500">
+                    {role.role_name}
+                  </span>
                 </h1>
                 <h1 className="text-sm text-gray-500">
-                  {moment.utc(createdAt).tz(TIMEZONE).format('YYYY-MM-DD HH:mm:ss')}
+                  {moment
+                    .utc(createdAt)
+                    .tz(TIMEZONE)
+                    .format("YYYY-MM-DD HH:mm:ss")}
                 </h1>
               </div>
             </div>
@@ -118,40 +141,48 @@ const NotificationSection: React.FC = () => {
       return () => {
         socket.off("adminNotification");
       };
-    }
-    else{
+    } else {
       socket.on("userNotification", (receive) => {
-        if(receive.userId === ProfileDetail.id){
+        if (receive.userId === ProfileDetail.id) {
           playNotificationSound();
-          console.log("receive....",receive);
-          const SenderImage = receive.AdminImage
-          const SenderName = receive.AdminName
-          const SenderStatus = receive.SendRes.status
-          const updateAt = receive.updatedAt
-          const {id,role_name,description}= receive.SendRes.role
-          console.log(SenderStatus);
-          const role = ProfileDetail?.role; // role ดั้งเดิมของ user คนนั้น
-          
-          SenderStatus === 'APPROVED' ? (
-            updateProfileDetail({
-              role:{
-                id,
-                role_name,
-                description
-              }, // ส่ง role เข้าไปอัพเดทUser คนนั้น
-              roleRequests:[]
-            })
-          ):
-          (
-            updateProfileDetail({
-              roleRequests:[]
-            })
-          )
+          setQuantity((prev) => prev + 1);
+          console.log("receive....", receive);
+          const SenderImage = receive.AdminImage;
+          const SenderName = receive.AdminName;
+          const SenderStatus = receive.SendRes.status;
+          const updateAt = receive.updatedAt;
+          const { id, role_name, description } = receive.SendRes.role;
+
+          const dataSender = {
+            id: receive.SendRes.id,
+            user: {
+              image: { url: SenderImage },
+              name: SenderName,
+            },
+            role: {
+              requestRole: SenderStatus,
+              role_name: role_name,
+            },
+            createdAt: updateAt,
+          };
+          setNotifications((prev) => [dataSender, ...prev]);
+          SenderStatus === "APPROVED"
+            ? updateProfileDetail({
+                role: {
+                  id,
+                  role_name,
+                  description,
+                }, // ส่ง role เข้าไปอัพเดทUser คนนั้น
+                roleRequests: [],
+              })
+            : updateProfileDetail({
+                roleRequests: [],
+              });
           toast(
             <div className="w-full">
               <div className="flex gap-3 justify-start items-start">
                 <Image
-                  src={SenderImage? SenderImage : "/profiletest.jpg"}
+                  src={SenderImage ? SenderImage : "/profiletest.jpg"}
                   width={100}
                   height={100}
                   alt="Notification"
@@ -160,20 +191,24 @@ const NotificationSection: React.FC = () => {
                 <div className="text-lg">
                   <span className="font-bold">{SenderName}</span>
                   <h1 className="text-md">
-                    Action your request to {" "}
-                    <span className="font-semibold text-blue-500">{SenderStatus}</span>
+                    Action your request to{" "}
+                    <span className="font-semibold text-blue-500">
+                      {SenderStatus}
+                    </span>
                   </h1>
                   <h1 className="text-sm text-gray-500">
-                    {moment.utc(updateAt).tz(TIMEZONE).format('YYYY-MM-DD HH:mm:ss')}
+                    {moment
+                      .utc(updateAt)
+                      .tz(TIMEZONE)
+                      .format("YYYY-MM-DD HH:mm:ss")}
                   </h1>
                 </div>
               </div>
             </div>
           );
-          
         }
       });
-      console.log(ProfileDetail);
+      // console.log(ProfileDetail);
       return () => {
         socket.off("userNotification");
       };
@@ -184,7 +219,6 @@ const NotificationSection: React.FC = () => {
     if (ProfileDetail.role?.role_name === "admin") {
       fetchRoleRequest();
     }
-
   }, [page]);
 
   useEffect(() => {
@@ -192,7 +226,7 @@ const NotificationSection: React.FC = () => {
       ([entry]) => {
         if (entry.isIntersecting) {
           console.log(entry.isIntersecting);
-          
+
           loadMore();
         }
       },
@@ -256,28 +290,64 @@ const NotificationSection: React.FC = () => {
                   <div className="flex flex-col gap-3">
                     <div className="flex items-start gap-3">
                       <Image
-                        src={item.user.image ? item.user.image.url : "/profiletest.jpg"}
+                        src={
+                          item.user.image
+                            ? item.user.image.url
+                            : "/profiletest.jpg"
+                        }
                         width={100}
                         height={100}
                         alt="Notification"
                         className="w-[50px] h-[50px] object-cover rounded-full"
                       />
+                      {/* notification-box user & admin */}
                       <div>
                         <h1 className="text-sm">{item.user.email}</h1>
                         <h1 className="text-md font-bold">
-                          {item.user.name} Request Role {item.role.role_name}
+                          {ProfileDetail.role?.role_name === "admin"  ?
+                          (
+                            <>
+                              {item.user.name} Request Role {item.role.role_name}
+                            </>
+                          )
+                          :
+                          (
+                            <>
+                              <span className="bg-clip-text bg-gradient-to-r from-red-500 via-rose-500 to-fuchsia-800 inline-block text-transparent">Admin</span> 
+                              {" "}{item.user.name} <span className="font-medium"> active Role {item.role.role_name} </span>
+                              <span className={`${item.role.requestRole === 'APPROVED' ? 'text-blue-500': 'text-red-500'}`}> to {item.role.requestRole}</span>
+                            </>
+                          )
+                          
+                          }
                         </h1>
                         <h1 className="text-sm text-gray-600">
-                          {moment.utc(item.createdAt).tz(TIMEZONE).format('YYYY-MM-DD HH:mm:ss')}
+                          {moment
+                            .utc(item.createdAt)
+                            .tz(TIMEZONE)
+                            .format("YYYY-MM-DD HH:mm:ss")}
                         </h1>
-                        <div className="flex gap-2 mt-2">
-                          <Button onClick={() => handleRequest(item.id, "APPROVED", item.user.id)}>
-                            Approve
-                          </Button>
-                          <Button onClick={() => handleRequest(item.id, "REJECTED", item.user.id)}>
-                            Reject
-                          </Button>
-                        </div>
+                        {/* เงื่อนไขเพื่อบอกว่าถ้าหากไม่ใช้ admin จะไม่เห็น ปุ่มในการ approve */}
+                        {ProfileDetail.role?.role_name === "admin" ? (
+                          <div className="flex gap-2 mt-2">
+                            <Button
+                              onClick={() =>
+                                handleRequest(item.id, "APPROVED",item.user.id ? item.user.id : '')
+                              }
+                            >
+                              Approve
+                            </Button>
+                            <Button
+                              onClick={() =>
+                                handleRequest(item.id, "REJECTED", item.user.id ? item.user.id : '')
+                              }
+                            >
+                              Reject
+                            </Button>
+                          </div>
+                        ) : (
+                          ""
+                        )}
                       </div>
                     </div>
                   </div>
@@ -285,7 +355,9 @@ const NotificationSection: React.FC = () => {
               ))
             ) : (
               <div className="mt-3">
-                <h1 className="text-xl text-center text-gray-500">No notifications</h1>
+                <h1 className="text-xl text-center text-gray-500">
+                  No notifications
+                </h1>
               </div>
             )}
             <div ref={loaderRef} className="h-2 w-full bg-transparent"></div>

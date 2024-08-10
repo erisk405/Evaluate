@@ -133,11 +133,9 @@ export default function Myprofile() {
         userId: ProfileDetail?.id, // userId จะต้องเป็นค่าที่มาจากการล็อกอิน
         roleId,
       });
-      const data = response.data;
 
       // หาว่ามีการร้องขอมามั้ย ถ้ามีก็ให้ updateProfileDetailไว้ เพื่อคงสถานะ แล้วนำไปใช้ในการ disable button
-      console.log("requestRole:",data);
-      const{id,role_name,description} = response.data;
+      const{id,role_name,description} = response.data.data.role;
       const roleRequests:{ role: Role; status: string }[] = [
         {
           role: {
@@ -152,7 +150,9 @@ export default function Myprofile() {
       updateProfileDetail({
         roleRequests: roleRequests,
       });
-      // Emit an event to notify admins
+      // Emit an event to notify admins ขนข้อูลทั้งหมดที่ได้จาก response ไปให้ admin
+      const data = response.data;
+      console.log("requestRole:",data);
       socket.emit("newRoleRequest", {
         data,
       });
