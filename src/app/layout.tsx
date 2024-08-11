@@ -16,8 +16,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${notoSansThai.className} `}>
-        {children}
+      <body className={`${notoSansThai.className} relative`}>
+        <div className="">
+          {children}
+        </div>
         <Toaster />
       </body>
     </html>

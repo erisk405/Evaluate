@@ -36,7 +36,7 @@ import {
 } from "@/components/ui/table";
 import Image from "next/image";
 
-const data: Payment[] = [
+const data: employee[] = [
   {
     id: "m5gr84i9",
     name: "amphon yyyy",
@@ -84,7 +84,7 @@ const data: Payment[] = [
   },
 ];
 
-export type Payment = {
+export type employee = {
   id: string;
   name: string;
   status: "pending" | "processing" | "success" | "failed";
@@ -94,7 +94,7 @@ export type Payment = {
   department: string;
 };
 
-export const columns: ColumnDef<Payment>[] = [
+export const columns: ColumnDef<employee>[] = [
   {
     accessorKey: "name",
     header: "Name",
