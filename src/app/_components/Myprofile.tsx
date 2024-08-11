@@ -16,7 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import Link from "next/link";
-import { Check, CircleDashed, LinkIcon, Loader, Mail } from "lucide-react";
+import { Check, CircleDashed, LinkIcon, Loader, Mail, RollerCoaster } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import SetStatusSection from "./SetStatusSection";
 import { useEffect, useRef, useState } from "react";
@@ -115,8 +115,16 @@ export default function Myprofile() {
         });
       }
     }
+    if(ProfileDetail.role && ProfileDetail.role.id === values.role){
+      console.log('request role เดิม ',values.role,":  ",ProfileDetail.role.id);
+    }
+    else if (ProfileDetail.roleRequests?.length == 0) {
 
-    requestRole(values.role);
+      requestRole(values.role);
+    }else{
+      console.log("don't request role ,cause have pending request!!");
+      
+    }
 
     setIsLoading(true);
   }
@@ -135,8 +143,8 @@ export default function Myprofile() {
       });
 
       // หาว่ามีการร้องขอมามั้ย ถ้ามีก็ให้ updateProfileDetailไว้ เพื่อคงสถานะ แล้วนำไปใช้ในการ disable button
-      const{id,role_name,description} = response.data.data.role;
-      const roleRequests:{ role: Role; status: string }[] = [
+      const { id, role_name, description } = response.data.data.role;
+      const roleRequests: { role: Role; status: string }[] = [
         {
           role: {
             id,
@@ -146,13 +154,13 @@ export default function Myprofile() {
           status: "PENDING",
         },
       ];
-      
+
       updateProfileDetail({
         roleRequests: roleRequests,
       });
       // Emit an event to notify admins ขนข้อูลทั้งหมดที่ได้จาก response ไปให้ admin
       const data = response.data;
-      console.log("requestRole:",data);
+      console.log("requestRole:", data);
       socket.emit("newRoleRequest", {
         data,
       });
