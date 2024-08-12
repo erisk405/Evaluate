@@ -45,7 +45,7 @@ const OptionEmployee = [
             <div 
               className={`flex rounded-3xl gap-3 relative overflow-hidden
               items-center px-8 py-7 shadow-xl
-              bg-gradient-to-r bg-neutral-900 from-neutral-700 to-neutral-900 group 
+              bg-gradient-to-br bg-neutral-900 from-neutral-800 from-30% to-neutral-900 to-70% group 
               transition-all `}
             >
               <div className='text-white w-full group-hover:text-white z-10'>
