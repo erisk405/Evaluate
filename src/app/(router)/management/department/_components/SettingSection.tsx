@@ -10,7 +10,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Cog, Loader, Search } from "lucide-react";
+import { Cog, Loader } from "lucide-react";
 import Image from "next/image";
 import {
   Form,

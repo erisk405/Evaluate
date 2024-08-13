@@ -2,9 +2,7 @@ import React from "react";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -14,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import Link from "next/link";
-
+import EvaluaateSection from "../../_components/EvaluateSection";
 import {
   Select,
   SelectContent,
@@ -34,6 +32,18 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+
+import { Label } from "@/components/ui/label";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 const data: employee[] = [
   {
@@ -81,6 +91,16 @@ const data: employee[] = [
     name: "Worakamon gogo",
     status: "failed",
     email: "carmella@hotmail.com",
+    role: "CPE",
+    phone: "095-454-4484",
+    department: "CompanyC",
+    img: "/profiletest.jpg",
+  },
+  {
+    id: "bhqecj4p1215",
+    name: "catcat gogo",
+    status: "failed",
+    email: "carmella2@hotmail.com",
     role: "CPE",
     phone: "095-454-4484",
     department: "CompanyC",
@@ -255,16 +275,30 @@ const page = () => {
                     </TableCell>
                     <TableCell className="">
                       <div className="flex justify-end">
-                        <Button className="flex items-center gap-3">
-                          <Hexagon /> Evaluate
-                        </Button>
+                        <Sheet>
+                          <SheetTrigger asChild>
+                            <Button className="flex items-center gap-3 active:scale-95 transition-all">
+                                <Hexagon /> Evaluate
+                            </Button>
+                          </SheetTrigger>
+                          <SheetContent side="bottom" className="h-[calc(100vh-10%)] xl:mx-52 rounded-2xl">
+                            <SheetHeader>
+                              <SheetTitle>Edit profile</SheetTitle>
+                              <SheetDescription>
+                                Make changes to your profile here. Click save
+                                when you're done.
+                              </SheetDescription>
+                            </SheetHeader>
+                            <EvaluaateSection/>
+                          </SheetContent>
+                        </Sheet>
                       </div>
                     </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
-                
+
             <Pagination>
               <PaginationContent>
                 <PaginationItem>
