@@ -31,7 +31,7 @@ const DepartmentSection = () => {
           {departments.length > 0
             ? departments.map((item) => (
                 <Link
-                  href={'/overview/department/1'}
+                  href={`/overview/department/${item.id}`}
                   key={item?.id}
                   className="overflow-hidden cursor-pointer col-span-1 rounded-2xl shadow-md
             hover:bg-neutral-700 hover:scale-105 active:scale-95 group transition-all"

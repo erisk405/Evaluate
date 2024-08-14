@@ -1,4 +1,5 @@
-import React from "react";
+'use client'
+import React, { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -44,6 +45,11 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { useParams } from "next/navigation";
+import axios from "axios";
+import { apiUrl } from "@/app/data/data-option";
+import useStore from "@/app/store/store";
+import GlobalApi from "@/app/_unit/GlobalApi";
 
 const data: employee[] = [
   {
@@ -149,6 +155,31 @@ const OptionEmployee = [
   },
 ];
 const page = () => {
+  const params = useParams<{departmentId:string}>();
+  const { updateProfileDetail } = useStore();
+  const [department_name,setDepartmentName] = useState('');
+  const joinDepartment = async () =>{
+    const response = await axios.put(`${apiUrl}/usersDepartment`,params,{
+      withCredentials:true
+    });
+    const {department} = response.data;
+    updateProfileDetail({
+      department: department? department.department_name : null
+    });
+  };
+
+  const fetchDepartment = async () =>{
+    const response = await GlobalApi.getDepartmentById(params.departmentId);
+    const {department_name} = response?.data;
+    console.log(department_name);
+    
+    setDepartmentName(department_name)
+  };
+  useEffect(()=>{
+    fetchDepartment();
+    
+  },[])
+  
   return (
     <div className="m-5 w-full flex flex-col gap-3">
       <div className="flex justify-between">
@@ -159,10 +190,10 @@ const page = () => {
           <span className="cursor-pointer">Back to overview</span>
         </Link>
         <div>
-          <Button>Join this department</Button>
+          <Button onClick={joinDepartment}>Join this department</Button>
         </div>
       </div>{" "}
-      <h2 className="font-bold text-4xl">Department Name</h2>
+      <h2 className="font-bold text-4xl">{department_name}</h2>
       <div className="flex justify-around gap-3 flex-wrap p-5 rounded-3xl">
         {OptionEmployee.map((item) => (
           <div

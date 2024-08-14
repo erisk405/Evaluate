@@ -82,7 +82,7 @@ export default function Myprofile() {
       lastName: ProfileDetail?.name?.split(" ")[1],
       image: undefined,
       email: ProfileDetail?.email ? ProfileDetail?.email : "",
-      Department: "สำนักงานวิชาการ",
+      Department: ProfileDetail?.department? ProfileDetail.department : 'no department',
       role: ProfileDetail?.role?.id,
     },
   });

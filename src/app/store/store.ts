@@ -13,6 +13,7 @@ interface StoreState {
     email: string | null;
     image: string | null;
     role: Role | null;
+    department:string| null;
     roleRequests: RoleRequest[] | null;
   };
   updateProfileDetail: (updatedFields: {
@@ -21,7 +22,8 @@ interface StoreState {
     email?: string;
     image?: string;
     role?: Role;
-    roleRequests?: RoleRequest[]
+    roleRequests?: RoleRequest[];
+    department?:string;
   }) => void;
   
 
@@ -40,7 +42,8 @@ const useStore = create<StoreState>((set) => ({
     email: null,
     image: null,
     role: null,
-    roleRequests: null
+    roleRequests: null,
+    department:null
 
   },
   profilePopup: {
@@ -59,6 +62,7 @@ const useStore = create<StoreState>((set) => ({
     image?: string;
     role?: Role;
     roleRequests?: RoleRequest[];
+    department?:string;
   }) => set((state) => ({
     ProfileDetail: {
       ...state.ProfileDetail,
