@@ -3,7 +3,7 @@ import React from 'react'
 const EvaluateSection = () => {
   return (
     <div>
-      <h1 className='text-xl font-bold'>Evaluation Form</h1>
+      <h1 className='text-lg font-bold'>Evaluation Form</h1>
       
     </div>
   )

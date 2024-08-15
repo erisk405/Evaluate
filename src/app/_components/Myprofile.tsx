@@ -183,6 +183,7 @@ export default function Myprofile() {
               height={500}
               alt={"profile"}
               className="w-[85px] h-[85px] rounded-full object-cover border border-neutral-50 p-[2px] shadow-lg bg-white"
+              loading="lazy"
             />
           ) : ProfileDetail.image ? (
             <Image
@@ -191,6 +192,7 @@ export default function Myprofile() {
               height={500}
               alt={"profile"}
               className="w-[85px] h-[85px] rounded-full object-cover border border-neutral-50 p-[2px] shadow-lg bg-white"
+              loading="lazy"
             />
           ) : (
             <div className="w-[85px] h-[85px] rounded-full object-cover border border-neutral-50 p-[2px] shadow-lg bg-neutral-600 animate-pulse">

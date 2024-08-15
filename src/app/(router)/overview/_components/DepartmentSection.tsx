@@ -44,6 +44,7 @@ const DepartmentSection = () => {
                         height={500}
                         alt="BannerDeapartment"
                         className="w-[250px] h-[120px] object-cover"
+                        loading="lazy"
                       />
                     ) : (
                       <Image
@@ -52,6 +53,7 @@ const DepartmentSection = () => {
                         height={500}
                         alt="BannerDeapartment"
                         className="w-[250px] h-[120px] object-cover"
+                        loading="lazy"
                       />
                     )}
 

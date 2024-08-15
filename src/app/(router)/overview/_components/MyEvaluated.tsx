@@ -50,7 +50,7 @@ const MyEvaluated = () => {
     ];
 
     return (
-        <div className='h-full flex flex-col gap-5'>
+        <div  className='h-full flex flex-col gap-5' >
             <div className=' flex justify-between flex-wrap gap-5'>
                 {myscore.map((item) => (
                     <div key={item.id} className='flex-1 py-3 px-7 bg-white shadow-md rounded-2xl'>

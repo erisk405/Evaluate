@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import React, { useEffect, useState } from "react";
 import {
   Table,
@@ -8,7 +8,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ChevronLeft, GraduationCap, Hexagon, ListFilter } from "lucide-react";
+import {
+  Check,
+  ChevronLeft,
+  CirclePlus,
+  GraduationCap,
+  Hexagon,
+  ListFilter,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
@@ -25,6 +32,18 @@ import {
 } from "@/components/ui/select";
 
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
+import {
   Pagination,
   PaginationContent,
   PaginationEllipsis,
@@ -33,14 +52,10 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-
-import { Label } from "@/components/ui/label";
 import {
   Sheet,
-  SheetClose,
   SheetContent,
   SheetDescription,
-  SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -155,31 +170,30 @@ const OptionEmployee = [
   },
 ];
 const page = () => {
-  const params = useParams<{departmentId:string}>();
-  const { updateProfileDetail } = useStore();
-  const [department_name,setDepartmentName] = useState('');
-  const joinDepartment = async () =>{
-    const response = await axios.put(`${apiUrl}/usersDepartment`,params,{
-      withCredentials:true
+  const params = useParams<{ departmentId: string }>();
+  const { ProfileDetail, updateProfileDetail } = useStore();
+  const [department_name, setDepartmentName] = useState("");
+  const joinDepartment = async () => {
+    const response = await axios.put(`${apiUrl}/usersDepartment`, params, {
+      withCredentials: true,
     });
-    const {department} = response.data;
+    const { department } = response.data;
     updateProfileDetail({
-      department: department? department.department_name : null
+      department: department ? department.department_name : null,
     });
   };
 
-  const fetchDepartment = async () =>{
+  const fetchDepartment = async () => {
     const response = await GlobalApi.getDepartmentById(params.departmentId);
-    const {department_name} = response?.data;
+    const { department_name } = response?.data;
     console.log(department_name);
-    
-    setDepartmentName(department_name)
+
+    setDepartmentName(department_name);
   };
-  useEffect(()=>{
+  useEffect(() => {
     fetchDepartment();
-    
-  },[])
-  
+  }, []);
+
   return (
     <div className="m-5 w-full flex flex-col gap-3">
       <div className="flex justify-between">
@@ -190,7 +204,40 @@ const page = () => {
           <span className="cursor-pointer">Back to overview</span>
         </Link>
         <div>
-          <Button onClick={joinDepartment}>Join this department</Button>
+          <AlertDialog>
+            {department_name ? (
+              ProfileDetail.department === department_name ? (
+                <h2 className="flex items-center gap-2 py-1 px-2 rounded-lg text-lg font-bold text-emerald-500 bg-emerald-100">
+                  <Check />
+                  คุณอยู่ในหน่วยงานนี้แล้ว
+                </h2>
+              ) : (
+                <AlertDialogTrigger asChild>
+                  <Button className="flex gap-3">
+                    <CirclePlus /> Join this department
+                  </Button>
+                </AlertDialogTrigger>
+              )
+            ) : (
+              <div className="bg-gray-300 w-[200px] h-[40px] rounded-lg animate-pulse"></div>
+            )}
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle className="text-xl">
+                  คูณแน่ใจที่จะเข้า {department_name} ใช่ไหม ?
+                </AlertDialogTitle>
+                <AlertDialogDescription className="text-red-500 text-lg">
+                  หากยืนยัน บันทึกการประเมินทั้งหมดของคุณจะถูกลบทิ้ง
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={joinDepartment}>
+                  Confirm
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>{" "}
       <h2 className="font-bold text-4xl">{department_name}</h2>
@@ -309,18 +356,23 @@ const page = () => {
                         <Sheet>
                           <SheetTrigger asChild>
                             <Button className="flex items-center gap-3 active:scale-95 transition-all">
-                                <Hexagon /> Evaluate
+                              <Hexagon /> Evaluate
                             </Button>
                           </SheetTrigger>
-                          <SheetContent side="bottom" className="h-[calc(100vh-10%)] xl:mx-52 rounded-2xl">
+                          <SheetContent
+                            side="bottom"
+                            className="h-[calc(100vh-10%)] xl:mx-52 rounded-2xl"
+                          >
                             <SheetHeader>
-                              <SheetTitle>Edit profile</SheetTitle>
-                              <SheetDescription>
-                                Make changes to your profile here. Click save
-                                when you're done.
-                              </SheetDescription>
+                              <SheetTitle className="text-2xl text-center">
+                                Eveluate Form
+                              </SheetTitle>
                             </SheetHeader>
-                            <EvaluaateSection/>
+                            <EvaluaateSection />
+                            <SheetDescription>
+                              Make changes to your profile here. Click save when
+                              you're done.
+                            </SheetDescription>
                           </SheetContent>
                         </Sheet>
                       </div>
