@@ -361,10 +361,10 @@ const page = () => {
                           </SheetTrigger>
                           <SheetContent
                             side="bottom"
-                            className="h-[calc(100vh-10%)] xl:mx-52 rounded-2xl"
+                            className="h-[calc(100vh-10%)] xl:mx-52 rounded-2xl overflow-scroll scrollbar-gemini"
                           >
                             <SheetHeader>
-                              <SheetTitle className="text-2xl text-center">
+                              <SheetTitle className="text-3xl text-center">
                                 Eveluate Form
                               </SheetTitle>
                             </SheetHeader>
