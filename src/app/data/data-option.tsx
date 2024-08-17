@@ -34,21 +34,16 @@ const OptionSideBar = [
         SubOptionSideBar:[
             {
                 id: 'subOSide1',
-                name: 'Department',
-                path: '/management/department',
+                name: 'Department & Role',
+                path: '/management/department_role',
             },
             {
                 id: 'subOSide2',
-                name: 'Role',
-                path: '/management/manage_role',
-            },
-            {
-                id: 'subOSide3',
                 name: 'Form',
                 path: '/management/manage_form',
             },
             {
-                id: 'subOSide4',
+                id: 'subOSide3',
                 name: 'User',
                 path: '/management/manage_user',
             },

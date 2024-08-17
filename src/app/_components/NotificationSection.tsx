@@ -249,7 +249,7 @@ const NotificationSection: React.FC = () => {
   }, [loaderRef, loadMore]);
 
   return (
-    <div className="relative">
+    <div className="relative" data-aria-hidden="true">
       <div
         className={`relative hover:bg-neutral-200 ${
           showNotifications ? "bg-neutral-100" : "bg-blue-100"
@@ -269,13 +269,13 @@ const NotificationSection: React.FC = () => {
         )}
       </div>
       <div
-        className={`fixed lg:absolute h-auto block 
-        ${showNotifications ? "opacity-0 scale-95" : "opacity-1 scale-100"} 
-        lg:w-[400px] lg:-inset-x-96 lg:translate-y-0 lg:top-full 
-        w-full left-0 top-1/2 -translate-y-1/2 z-[50]
+        className={`fixed lg:absolute h-auto  
+        ${showNotifications ? "opacity-0 scale-95 pointer-events-none" : "opacity-100 scale-100 pointer-events-auto"} 
+        lg:w-[400px] lg:-inset-x-80 lg:translate-y-0 lg:top-full 
+        w-full left-0 top-1/2 -translate-y-1/2 z-50 
         rounded-2xl p-1 transition-all `}
       >
-        <div className="px-5 py-4 shadow-lg bg-white rounded-2xl lg:w-full lg:mx-10 sm:mx-28 transition-all">
+        <div className="px-5 py-4 shadow-lg bg-white rounded-2xl lg:w-full lg:mx-0 sm:mx-28 transition-all">
           <h1 className="text-2xl font-bold mb-3">Notifications</h1>
           <hr />
           <div className="scrollbar-gemini overflow-y-scroll overflow-x-hidden max-h-[500px]">

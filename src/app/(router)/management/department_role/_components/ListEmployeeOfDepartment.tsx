@@ -41,7 +41,7 @@ import {
 } from "@/components/ui/table";
 import Image from "next/image";
 import { Department } from "@/types/interface";
-import SetStatusSection from "@/app/_components/SetStatusSection";
+import SetStatusSection from "./SetStatusSection";
 
 const data: Data[] = [
   {
@@ -112,7 +112,7 @@ export const columns: ColumnDef<Data>[] = [
     cell: ({ row }) => {
       return (
         <div className="flex items-center">
-          <SetStatusSection />
+          <SetStatusSection/>
         </div>
       );
     },

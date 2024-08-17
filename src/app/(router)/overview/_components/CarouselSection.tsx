@@ -17,27 +17,27 @@ const CarouselSection = () => {
   const AdminRol = [
     {
       id: "AR01",
-      name: "Krittaphat Samrit",
-      img: "/profiletest.jpg",
-      massage: "ทำไรหนิเห้ย ดึกๆดื่นๆไม่หลับไม่นอนนะเห้ยตัวนี้",
+      name: "GasGas",
+      img: "/gas.jpg",
+      massage: "ดั่งมี....!!!!! ใบมีดทิ่มแทงงงง~~ ช้าาๆ มันแทงงลงไปป",
     },
     {
       id: "AR02",
-      name: "Amphon",
-      img: "/amphon.jpg",
-      massage: "ทำไรหนิเห้ย อย่าลืมทำวิชา Computer Vision ด้วย",
+      name: "Kla dog",
+      img: "/kla.jpg",
+      massage: "ไม่มี...!!! ไม่มีเรี่ยวแรงงงง~~ ไม่อาจแกล้งง ว่าไม่~ เป็นไรรรร",
     },
     {
       id: "AR03",
-      name: "GasGas",
-      img: "/gas.jpg",
-      massage: "ก็เพราะว่าฉ้านนนน ชอบบเธออ ตั้งแต่แรกเจ้ออ แต่ไม่กล้าบอกก",
+      name: "Krittaphat Samrit",
+      img: "/profiletest.jpg",
+      massage: "อยู่อยู่ ก็มีแต่น้ำ...~~ ตาาาาาา~ จิตใจก็เริ่มอ่อนล่า มลายหายไปป~~",
     },
     {
       id: "AR04",
-      name: "Kla dog",
-      img: "/kla.jpg",
-      massage: "กลัวว่าเธอออนั้นจะมาหลอกกก คนบ้านนอกอย่างฉ้านนน โอ้วว",
+      name: "Amphon",
+      img: "/amphon.jpg",
+      massage: "ช่วยบอกกันทีได้มั้ย ฉันทำวิ่งใดด ถึงต้องมาเจ็บช้ำ...~~",
     },
   ];
   return (

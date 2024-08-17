@@ -224,7 +224,7 @@ const page = () => {
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle className="text-xl">
-                  คูณแน่ใจที่จะเข้า {department_name} ใช่ไหม ?
+                  คูณแน่ใจที่จะเข้า<span className="underline">{department_name}</span> ใช่หรือไม่ ?
                 </AlertDialogTitle>
                 <AlertDialogDescription className="text-red-500 text-lg">
                   หากยืนยัน บันทึกการประเมินทั้งหมดของคุณจะถูกลบทิ้ง

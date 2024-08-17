@@ -35,6 +35,7 @@ import GlobalApi from "@/app/_unit/GlobalApi";
 import AllListDepartment from "./_components/AllListDepartment";
 import { toast } from "@/components/ui/use-toast";
 import useStore from "@/app/store/store";
+import ManageRole from "./_components/ManageRole";
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
@@ -273,7 +274,9 @@ const page = () => {
         </div>
       </div>
       <div className="col-span-2 ">
-        <div className="bg-white w-full h-full shadow rounded-xl p-5"></div>
+        <div className="bg-white w-full h-full shadow rounded-xl p-5">
+          <ManageRole/>
+        </div>
       </div>
     </div>
   );
