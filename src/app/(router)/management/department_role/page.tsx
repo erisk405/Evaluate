@@ -76,6 +76,8 @@ const page = () => {
   const getDepartment = async () => {
     try {
       const response = await GlobalApi.getDepartment();
+      // console.log("Department :",response);
+      
       setDepartments(response?.data); // ตั้งค่าเป็นอาเรย์ว่างถ้าไม่มีข้อมูล
     } catch (error) {
       console.error("Error fetching department data:", error);
@@ -117,7 +119,7 @@ const page = () => {
   }, []);
   return (
     <div className="m-5 w-full grid grid-cols-6 gap-5">
-      <div className="col-span-4 ">
+      <div className="col-span-6 xl:col-span-4 ">
         <div className="bg-white w-full h-full shadow rounded-xl p-5">
           <h2 className="text-2xl font-bold">Department manage</h2>
           <div className="flex justify-between items-center mt-3 ">
@@ -273,7 +275,7 @@ const page = () => {
           <AllListDepartment />
         </div>
       </div>
-      <div className="col-span-2 ">
+      <div className="col-span-6 xl:col-span-2 ">
         <div className="bg-white w-full h-full shadow rounded-xl p-5">
           <ManageRole/>
         </div>

@@ -40,63 +40,19 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Image from "next/image";
-import { Department } from "@/types/interface";
+import { Department, User } from "@/types/interface";
 import SetStatusSection from "./SetStatusSection";
+import GlobalApi from "@/app/_unit/GlobalApi";
 
-const data: Data[] = [
-  {
-    id: "m5gr84i9",
-    name: "amphon yyyy",
-    email: "ken99@yahoo.com",
-    role: "CEO",
-    phone: "095-454-4484",
-  },
-  {
-    id: "3u1reuv4",
-    name: "Krittaphat samrit",
-    email: "Abe45@gmail.com",
-    role: "เสาหลัก",
-    phone: "095-454-4484",
-  },
-  {
-    id: "derv1ws0",
-    name: "Panyakorn somawong",
-    email: "Monserrat44@gmail.com",
-    role: "Head",
-    phone: "095-454-4484",
-  },
-  {
-    id: "5kma53ae",
-    name: "Wichaphon dogcat",
-    email: "Silas22@gmail.com",
-    role: "COO",
-    phone: "095-454-4484",
-  },
-  {
-    id: "bhqecj4p",
-    name: "Worakamon gogo",
-    email: "carmella@hotmail.com",
-    role: "CPE",
-    phone: "095-454-4484",
-  },
-];
 
-export type Data = {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  phone: string;
-};
-
-export const columns: ColumnDef<Data>[] = [
+export const columns: ColumnDef<User>[] = [
   {
     accessorKey: "name",
     header: "Name",
     cell: ({ row }) => (
       <div className="capitalize flex items-center gap-3">
         <Image
-          src="/profiletest.jpg"
+          src={row.original.image ? row.original.image.url : "/profiletest.jpg"}  // ดึง url จาก image object row.original.image.url เข้าถึง property image ซึ่งเป็น object แล้วดึง url จาก UserImage object นั้น
           width={50}
           height={50}
           alt="profiletable"
@@ -112,7 +68,7 @@ export const columns: ColumnDef<Data>[] = [
     cell: ({ row }) => {
       return (
         <div className="flex items-center">
-          <SetStatusSection/>
+          <SetStatusSection defaultValue={row.original.role.role_name} />
         </div>
       );
     },
@@ -184,9 +140,19 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
   const [globalFilter, setGlobalFilter] = React.useState("");
+  const [allUser , setAllUser] = React.useState<User[]>([]);
 
+
+  const getDataOfEmployee = async () => {
+    const response = await GlobalApi.getDepartmentById(department.id);
+    if (response?.data?.user) {
+      setAllUser(response.data.user);
+    } else {
+      setAllUser([]); // ตั้งค่าเป็นอาเรย์เปล่าเมื่อข้อมูลไม่ถูกต้อง
+    }
+  };
   const table = useReactTable({
-    data,
+    data: allUser ?? [],
     columns,
     state: {
       sorting,
@@ -211,6 +177,13 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
       return name.includes(searchValue) || email.includes(searchValue);
     },
   });
+
+  React.useEffect(()=>{
+    getDataOfEmployee()
+  },[])
+  React.useEffect(()=>{
+    console.log(allUser);
+  },[allUser])
 
   return (
     <div className="w-full ">

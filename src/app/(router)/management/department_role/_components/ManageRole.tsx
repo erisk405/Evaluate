@@ -17,34 +17,52 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { BadgeCheck, Plus, Settings2 } from "lucide-react";
+import {
+  BadgeAlert,
+  BadgeCheck,
+  Plus,
+  Settings2,
+  ShieldPlus,
+} from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import FilterSection from "./FilterSection";
+import { Textarea } from "@/components/ui/textarea";
 const Allrole = [
   {
     id: "Ar1",
     name: "Admin",
-    description: "All permission",
+    description:
+      "All permission Lorem ipsum dolor, sit amet consectetur adipisicing ",
   },
   {
     id: "Ar2",
     name: "ผู้อำนวยการ",
-    description: "ประมาณรอง",
+    description:
+      "ประมาณรอง Lorem ipsum dolor, sit amet consectetur adipisicing ",
   },
   {
     id: "Ar3",
     name: "รองผู๋อำนวยการ",
-    description: "ประมาณหัวหน้า",
+    description:
+      "ประมาณหัวหน้า Lorem ipsum dolor, sit amet consectetur adipisicing ",
   },
   {
     id: "Ar4",
     name: "หัวหน้างานวิชาการ",
-    description: "บุคลากร",
+    description: "บุคลากร Lorem ipsum dolor, sit amet consectetur adipisicing ",
   },
   {
     id: "Ar5",
     name: "บุคลากรทั่วไป",
-    description: "ประเมิณกันเอง",
+    description:
+      "ประเมิณกันเอง Lorem ipsum dolor, sit amet consectetur adipisicing ",
   },
 ];
 
@@ -72,33 +90,62 @@ const ManageRole = () => {
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-          <DialogContent className="sm:max-w-[425px]">
+          <DialogContent className="sm:max-w-[525px]">
             <DialogHeader>
-              <DialogTitle>Edit profile</DialogTitle>
+              <DialogTitle className="flex gap-2 items-center">
+                <div className="block p-1 bg-blue-100 rounded-full">
+                  <ShieldPlus size={40} className="text-blue-500 " />{" "}
+                </div>
+                <h2 className="text-xl">Create role</h2>
+              </DialogTitle>
               <DialogDescription>
                 Make changes to your profile here. Click save when you're done.
               </DialogDescription>
             </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="name" className="text-right">
+            <div className="grid gap-4 py-4 px-4">
+              <div className="flex items-center gap-4">
+                <Label htmlFor="name" className="">
                   Name
                 </Label>
                 <Input
                   id="name"
-                  defaultValue="Pedro Duarte"
+                  defaultValue="Dog role"
                   className="col-span-3"
                 />
               </div>
+              <hr />
+              <div className="flex items-center gap-2 font-semibold">
+                <BadgeAlert className="text-blue-500 bg-white rounded-full " />{" "}
+                <h2>Set role permission form evaluate</h2>
+              </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="username" className="text-right">
-                  Username
-                </Label>
-                <Input
-                  id="username"
-                  defaultValue="@peduarte"
-                  className="col-span-3"
+                {Allrole.map(
+                  (item) =>
+                    item.name !== "Admin" && (
+                      <div className="col-span-2 " key={item.id + "dog"}>
+                        <Label
+                          htmlFor="permission"
+                          className="text-left col-span-2"
+                        >
+                          {item.name}
+                        </Label>
+                        <div className="w-full ">
+                          <FilterSection />
+                        </div>
+                      </div>
+                    )
+                )}
+              </div>
+
+              <div className="grid w-full gap-1.5">
+                <Label htmlFor="message-2">Your Describtion</Label>
+                <Textarea
+                  placeholder="Type your message here."
+                  id="message-2"
                 />
+                <p className="text-sm text-muted-foreground">
+                  Your message will be copied to the describtion role.
+                </p>
               </div>
             </div>
             <DialogFooter>
@@ -109,18 +156,30 @@ const ManageRole = () => {
       </div>
       <div className="flex flex-col gap-3 ">
         {Allrole.map((item) => (
-          <div
-            key={item.id}
-            className="px-3 w-full h-14 bg-gray-50 rounded-xl flex justify-between items-center"
-          >
-            <div className="flex items-center gap-1">
-              <BadgeCheck className="text-white bg-blue-500 overflow-hidden rounded-full"/>
-              <h2 className="text-lg font-bold text-black">{item.name}</h2>
-            </div>
-            <Button className="flex items-center gap-2 active:scale-95 ">
-              <Settings2 size={18} /> Permission
-            </Button>
-          </div>
+          <Accordion type="single" collapsible className="w-full" key={item.id}>
+            <AccordionItem value="item-1">
+              <AccordionTrigger>
+                <div className="px-3 w-full h-14 rounded-xl flex justify-between items-center">
+                  <div className="flex items-center gap-1">
+                    <BadgeCheck className="text-white bg-blue-500 overflow-hidden rounded-full" />
+                    <h2 className="text-lg font-bold text-black">
+                      {item.name}
+                    </h2>
+                  </div>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="w-full">
+                  <p className="text-lg">{item.description}</p>
+                  <div className="w-full flex justify-end">
+                    <Button className="flex items-center gap-2 px-2 h-9 active:scale-95 ">
+                      <Settings2 size={18} /> Permission
+                    </Button>
+                  </div>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         ))}
       </div>
     </div>

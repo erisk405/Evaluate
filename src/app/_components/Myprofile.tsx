@@ -19,7 +19,7 @@ import Link from "next/link";
 import { Check, CircleDashed, LinkIcon, Loader, Mail, RollerCoaster } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import SetStatusSection from "./SetStatusSection";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import useStore from "../store/store";
 import GlobalApi from "../_unit/GlobalApi";
 import { toast } from "@/components/ui/use-toast";

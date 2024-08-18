@@ -25,18 +25,16 @@ export default function SetStatusSection({ onRoleChange , defaultValue ,isPendin
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
   const { roles, setRole } = useStore();
+
   const fetchRole = async () => {
     try {
       const response = await GlobalApi.getRole();
-      console.log("role:", response);
+      // console.log("role:", response);
       setRole(response?.data);
 
       // Set default value based on fetched roles
-      const defaultRole = response?.data.find(
-        (role: any) => role.role_name === defaultValue
-      );
-      if (defaultRole) {
-        setValue(defaultRole.role_name);
+      if (defaultValue) {
+        setValue(defaultValue);
       }
     } catch (error) {
       console.log(error);

@@ -20,24 +20,20 @@ import { CommandList } from "cmdk"
 
 const frameworks = [
   {
-    value: "next.js",
-    label: "Next.js",
+    value: "Psychomotor",
+    label: "Form จิตพิสัย",
   },
   {
-    value: "sveltekit",
-    label: "SvelteKit",
+    value: "working",
+    label: "Form การทำงาน",
   },
   {
-    value: "nuxt.js",
-    label: "Nuxt.js",
+    value: "Knowledge",
+    label: "Form ความรู้ด้านวิชาการ",
   },
   {
-    value: "remix",
-    label: "Remix",
-  },
-  {
-    value: "astro",
-    label: "Astro",
+    value: "skill",
+    label: "Form ทักษะในการทำงาน",
   },
 ]
 
@@ -52,11 +48,11 @@ export default function FilterSection() {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between"
+          className="w-full justify-between"
         >
           {value
             ? frameworks.find((framework) => framework.value === value)?.label
-            : "Select framework..."}
+            : "Select form..."}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>

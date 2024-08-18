@@ -68,12 +68,13 @@ const Header = () => {
   return (
     <div className="flex relative justify-between items-center py-2">
       <div className="flex-1 flex items-center min-w-[200px] max-w-[1000px] gap-20">
+
         {/* logo */}
         <div className="flex items-center py-1">
           <Image src={"/logo.png"} alt="logo" width={76} height={76} />
           <h2 className="text-2xl font-bold">Eval 360</h2>
         </div>
-
+        
         {/* search bar */}
         <div className="hidden md:block flex-1 relative min-w-[200px] max-w-[700px]">
           <label htmlFor="Search" className="sr-only">
