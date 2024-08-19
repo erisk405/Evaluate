@@ -65,6 +65,7 @@ import axios from "axios";
 import { apiUrl } from "@/app/data/data-option";
 import useStore from "@/app/store/store";
 import GlobalApi from "@/app/_unit/GlobalApi";
+import { motion } from "framer-motion";
 
 const data: employee[] = [
   {
@@ -224,7 +225,9 @@ const page = () => {
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle className="text-xl">
-                  คูณแน่ใจที่จะเข้า<span className="underline">{department_name}</span> ใช่หรือไม่ ?
+                  คูณแน่ใจที่จะเข้า
+                  <span className="underline">{department_name}</span>{" "}
+                  ใช่หรือไม่ ?
                 </AlertDialogTitle>
                 <AlertDialogDescription className="text-red-500 text-lg">
                   หากยืนยัน บันทึกการประเมินทั้งหมดของคุณจะถูกลบทิ้ง
@@ -240,12 +243,30 @@ const page = () => {
           </AlertDialog>
         </div>
       </div>{" "}
-      <h2 className="font-bold text-4xl">{department_name}</h2>
+      {
+        department_name ? (
+          <h2 className="font-bold text-4xl">{department_name}</h2>
+        )
+        :
+        (
+          <div className="flex flex-col gap-3 animate-pulse">
+            <div className="h-3 w-64 bg-gray-400 rounded-full"></div>
+            <div className="h-3 w-32 bg-gray-400 rounded-full"></div>
+          </div>
+        )
+      }
       <div className="flex justify-around gap-3 flex-wrap p-5 rounded-3xl">
-        {OptionEmployee.map((item) => (
-          <div
+        {OptionEmployee.map((item, index) => (
+          <motion.div
             key={item?.id}
             className="flex-1 min-w-[250px] max-w-full cursor-pointer "
+            initial={{ opacity: 0, y: 100 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 1,
+              ease: [0, 0.71, 0.2, 1.01],
+              delay: index * 0.2,
+            }}
           >
             <div
               className={`flex rounded-2xl gap-3 relative overflow-hidden
@@ -284,10 +305,19 @@ const page = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
-      <div className="xl:col-span-6 col-span-6">
+      <motion.div
+        className="xl:col-span-6 col-span-6"
+        initial={{ opacity: 0, y: 100 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{
+          duration: 1.6,
+          ease: [0, 0.71, 0.2, 1.01],
+          delay: 0.3,
+        }}
+      >
         <div className="bg-white w-full shadow rounded-xl p-8">
           <div className="flex justify-between items-center">
             <Input
@@ -408,7 +438,7 @@ const page = () => {
             </Pagination>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };
