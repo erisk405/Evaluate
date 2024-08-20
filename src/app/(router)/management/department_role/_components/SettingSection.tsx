@@ -83,7 +83,7 @@ export default function SettingSection({ department }: SettingSectionProps) {
         console.log("responseChangeImage", response);
       }
       if (values.name != department.department_name) {
-        console.log("old name");
+        
       }
       getDepartment();
       toast({

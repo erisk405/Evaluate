@@ -58,6 +58,14 @@ const getAllUsers = async () => {
   }
 };
 
+const findUserEmptyDepartment = async () => {
+  try {
+    return await axios.get(`${apiUrl}/findUserEmplyDepartment`);
+  } catch (error) {
+    console.error("Error role:", error);
+  }
+};
+
 const updateDepartmentImage = async (
   formData: FormData,
   department: Department
@@ -70,6 +78,19 @@ const updateDepartmentImage = async (
       headers: {
         "Content-Type": "multipath/form-data",
       },
+    }
+  );
+};
+
+const addUsersToDepartment = async (payload:any) => {
+  return await axios.put(
+    `${apiUrl}/usersToDepartment`,
+    payload,
+    {
+      withCredentials: true,
+      headers: {
+        "Content-Type": "application/json", // Set content type to JSON
+      },  
     }
   );
 };
@@ -106,6 +127,17 @@ const CreateDepartment = async (
     },
   });
 };
+const updateDepartment = async (formData: FormData
+): Promise<AxiosResponse<any>> => {
+  
+    return await axios.put(`${apiUrl}/department`, formData, {
+      withCredentials: true,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    
+};
 
 export default {
   fetchUserProfile,
@@ -116,5 +148,8 @@ export default {
   updateDepartmentImage,
   getRole,
   getAllUsers,
-  getDepartmentById
+  getDepartmentById,
+  updateDepartment,
+  findUserEmptyDepartment,
+  addUsersToDepartment
 };

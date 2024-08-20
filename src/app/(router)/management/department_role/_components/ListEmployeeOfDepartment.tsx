@@ -15,7 +15,10 @@ import {
 } from "@tanstack/react-table";
 import {
   ArrowUpDown,
+  Check,
   ChevronDown,
+  Circle,
+  CirclePlus,
   EllipsisVertical,
   Pencil,
   Trash2,
@@ -43,7 +46,18 @@ import Image from "next/image";
 import { Department, User } from "@/types/interface";
 import SetStatusSection from "./SetStatusSection";
 import GlobalApi from "@/app/_unit/GlobalApi";
-
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 export const columns: ColumnDef<User>[] = [
   {
@@ -52,7 +66,7 @@ export const columns: ColumnDef<User>[] = [
     cell: ({ row }) => (
       <div className="capitalize flex items-center gap-3">
         <Image
-          src={row.original.image ? row.original.image.url : "/profiletest.jpg"}  // ดึง url จาก image object row.original.image.url เข้าถึง property image ซึ่งเป็น object แล้วดึง url จาก UserImage object นั้น
+          src={row.original.image ? row.original.image.url : "/profiletest.jpg"} // ดึง url จาก image object row.original.image.url เข้าถึง property image ซึ่งเป็น object แล้วดึง url จาก UserImage object นั้น
           width={50}
           height={50}
           alt="profiletable"
@@ -140,8 +154,7 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
   const [globalFilter, setGlobalFilter] = React.useState("");
-  const [allUser , setAllUser] = React.useState<User[]>([]);
-
+  const [allUser, setAllUser] = React.useState<User[]>([]);
 
   const getDataOfEmployee = async () => {
     const response = await GlobalApi.getDepartmentById(department.id);
@@ -178,48 +191,170 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
     },
   });
 
-  React.useEffect(()=>{
-    getDataOfEmployee()
-  },[])
-  React.useEffect(()=>{
+  React.useEffect(() => {
+    getDataOfEmployee();
+  }, []);
+  React.useEffect(() => {
     console.log(allUser);
-  },[allUser])
+  }, [allUser]);
+
+  const [selectedItems, setSelectedItems] = React.useState<string[]>([]);
+  const [usersEmptyDepartment, setUsersEmptyDepartment] = React.useState<any>();
+  const handleToggle = (value: string) => {
+    console.log("handleToggle:", value);
+
+    setSelectedItems((prev) =>
+      prev.includes(value)
+        ? prev.filter((item) => item !== value)
+        : [...prev, value]
+    );
+  };
+
+  const fetchUserEmptyDepartment = async () => {
+    try {
+      const response = await GlobalApi.findUserEmptyDepartment();
+      setUsersEmptyDepartment(response?.data);
+    } catch (error) {
+      console.log(error);
+      
+    }
+  };
+
+  const onsubmit = async () => {
+    try {
+      const payload = {
+        userIds: selectedItems,  // selectedItems is an array of user IDs
+        departmentId: department.id,
+      };
+  
+      console.log('Payload:', payload); // For debugging
+  
+      const response = await GlobalApi.addUsersToDepartment(payload);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  
+  
 
   return (
     <div className="w-full ">
-      <div className="flex items-center py-4">
+      <div className="flex items-center justify-between py-4">
         <Input
           placeholder="Filter by name or email..."
           value={globalFilter}
           onChange={(event) => setGlobalFilter(event.target.value)}
           className="max-w-sm rounded-2xl"
         />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Columns <ChevronDown className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="flex items-center gap-3">
+          
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button className="flex gap-2" onClick={fetchUserEmptyDepartment}>
+                <CirclePlus />
+                Add Employee
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[500px]">
+              <DialogHeader>
+                <DialogTitle>Add Employee</DialogTitle>
+                <DialogDescription>
+                  Make changes to your profile here. Click save when you're
+                  done.
+                </DialogDescription>
+              </DialogHeader>
+              <div>
+                <div className="flex justify-between items-center">
+                  <Input
+                    className="max-w-[200px] h-8"
+                    placeholder="Search Employee"
+                    type="text"
+                  />
+
+                  <div className="flex items-center space-x-2">
+                    <Switch id="airplane-mode" />
+                    <Label htmlFor="airplane-mode">Airplane Mode</Label>
+                  </div>
+                </div>
+
+                <ToggleGroup
+                  type="multiple"
+                  className="flex flex-col gap-2 w-full mt-5"
+                >
+                  {usersEmptyDepartment ? (
+                    usersEmptyDepartment.map((item: any) => (
+                      <ToggleGroupItem
+                        key={item.id}
+                        value={item.id}
+                        aria-label="Toggle bold"
+                        className="py-2 justify-between h-auto w-full "
+                        onClick={() => handleToggle(item.id)}
+                      >
+                        <div className="flex items-center gap-2">
+                          <Image
+                            src={item.image ? item.image.url : '/profiletest.jpg'}
+                            width={80}
+                            height={80}
+                            alt="profile"
+                            className="w-[50px] h-[50px] object-cover rounded-full"
+                          />
+                          <ul className="text-left">
+                            <li>{item.name}</li>
+                            <li className="text-gray-500">{item.role.role_name}</li>
+                          </ul>
+                        </div>
+
+                        {selectedItems.includes(item.id) ? (
+                          <div className="p-1 bg-blue-500 rounded-full">
+                            <Check
+                              className="text-white"
+                              size={18}
+                              strokeWidth={4}
+                            />
+                          </div>
+                        ) : (
+                          <div className="p-1 w-[26px] h-[26px] border-2 border-dashed border-blue-600 rounded-full"></div>
+                        )}
+                      </ToggleGroupItem>
+                    ))
+                  ) : (
+                    <div>No items found.</div>
+                  )}
+                </ToggleGroup>
+              </div>
+              <DialogFooter>
+                <Button type="submit" onClick={onsubmit}>Save changes</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="ml-auto">
+                Columns <ChevronDown className="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {table
+                .getAllColumns()
+                .filter((column) => column.getCanHide())
+                .map((column) => {
+                  return (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(!!value)
+                      }
+                    >
+                      {column.id}
+                    </DropdownMenuCheckboxItem>
+                  );
+                })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
       <div className="rounded-2xl border bg-white">
         <Table>
