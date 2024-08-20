@@ -92,11 +92,13 @@ const ManageRole = () => {
           </TooltipProvider>
           <DialogContent className="sm:max-w-[525px]">
             <DialogHeader>
-              <DialogTitle className="flex gap-2 items-center">
-                <div className="block p-1 bg-blue-100 rounded-full">
-                  <ShieldPlus size={40} className="text-blue-500 " />{" "}
+              <DialogTitle >
+                <div className="flex gap-2 items-center">
+                  <div className="block p-1 bg-blue-100 rounded-full">
+                    <ShieldPlus size={40} className="text-blue-500 " />{" "}
+                  </div>
+                  <h2 className="text-xl">Create role</h2>
                 </div>
-                <h2 className="text-xl">Create role</h2>
               </DialogTitle>
               <DialogDescription>
                 Make changes to your profile here. Click save when you're done.

@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -17,7 +16,6 @@ import {
   ArrowUpDown,
   Check,
   ChevronDown,
-  Circle,
   CirclePlus,
   EllipsisVertical,
   Pencil,
@@ -58,6 +56,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { useEffect, useState } from "react";
 
 export const columns: ColumnDef<User>[] = [
   {
@@ -146,15 +145,53 @@ interface SettingSectionProps {
 }
 
 export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
     []
   );
   const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
-  const [globalFilter, setGlobalFilter] = React.useState("");
-  const [allUser, setAllUser] = React.useState<User[]>([]);
+    useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = useState({});
+  const [globalFilter, setGlobalFilter] = useState("");
+  const [allUser, setAllUser] = useState<User[]>([]);
+
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [usersEmptyDepartment, setUsersEmptyDepartment] = useState<any>([]);
+  const handleToggle = (value: string) => {
+    console.log("handleToggle:", value);
+
+    setSelectedItems((prev) =>
+      prev.includes(value)
+        ? prev.filter((item) => item !== value)
+        : [...prev, value]
+    );
+  };
+
+  const fetchUserEmptyDepartment = async () => {
+    try {
+      const response = await GlobalApi.findUserEmptyDepartment();
+      response?.data && setUsersEmptyDepartment(response?.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const onsubmit = async () => {
+    try {
+      const payload = {
+        userIds: selectedItems, // selectedItems is an array of user IDs
+        departmentId: department.id,
+      };
+      console.log("Payload:", payload); // For debugging
+      
+      const response = await GlobalApi.addUsersToDepartment(payload);
+      if(response.data){
+        fetchUserEmptyDepartment();// รอให้ addUsersToDepartment เสร็จสิ้นก่อน แล้วเรียก fetch อีกครั้ง เพื่อให้แสดงผลเลย ไม่ต้อง reload
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const getDataOfEmployee = async () => {
     const response = await GlobalApi.getDepartmentById(department.id);
@@ -164,6 +201,12 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
       setAllUser([]); // ตั้งค่าเป็นอาเรย์เปล่าเมื่อข้อมูลไม่ถูกต้อง
     }
   };
+
+  useEffect(() => {
+    
+    getDataOfEmployee();
+  }, [usersEmptyDepartment]);
+
   const table = useReactTable({
     data: allUser ?? [],
     columns,
@@ -191,52 +234,6 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
     },
   });
 
-  React.useEffect(() => {
-    getDataOfEmployee();
-  }, []);
-  React.useEffect(() => {
-    console.log(allUser);
-  }, [allUser]);
-
-  const [selectedItems, setSelectedItems] = React.useState<string[]>([]);
-  const [usersEmptyDepartment, setUsersEmptyDepartment] = React.useState<any>();
-  const handleToggle = (value: string) => {
-    console.log("handleToggle:", value);
-
-    setSelectedItems((prev) =>
-      prev.includes(value)
-        ? prev.filter((item) => item !== value)
-        : [...prev, value]
-    );
-  };
-
-  const fetchUserEmptyDepartment = async () => {
-    try {
-      const response = await GlobalApi.findUserEmptyDepartment();
-      setUsersEmptyDepartment(response?.data);
-    } catch (error) {
-      console.log(error);
-      
-    }
-  };
-
-  const onsubmit = async () => {
-    try {
-      const payload = {
-        userIds: selectedItems,  // selectedItems is an array of user IDs
-        departmentId: department.id,
-      };
-  
-      console.log('Payload:', payload); // For debugging
-  
-      const response = await GlobalApi.addUsersToDepartment(payload);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  
-  
-
   return (
     <div className="w-full ">
       <div className="flex items-center justify-between py-4">
@@ -247,7 +244,6 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
           className="max-w-sm rounded-2xl"
         />
         <div className="flex items-center gap-3">
-          
           <Dialog>
             <DialogTrigger asChild>
               <Button className="flex gap-2" onClick={fetchUserEmptyDepartment}>
@@ -272,8 +268,8 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
                   />
 
                   <div className="flex items-center space-x-2">
-                    <Switch id="airplane-mode" />
-                    <Label htmlFor="airplane-mode">Airplane Mode</Label>
+                    <Switch id="gogo" />
+                    <Label htmlFor="gogo">Airplane Mode</Label>
                   </div>
                 </div>
 
@@ -281,7 +277,7 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
                   type="multiple"
                   className="flex flex-col gap-2 w-full mt-5"
                 >
-                  {usersEmptyDepartment ? (
+                  {usersEmptyDepartment.length > 0 ? (
                     usersEmptyDepartment.map((item: any) => (
                       <ToggleGroupItem
                         key={item.id}
@@ -292,7 +288,9 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
                       >
                         <div className="flex items-center gap-2">
                           <Image
-                            src={item.image ? item.image.url : '/profiletest.jpg'}
+                            src={
+                              item.image ? item.image.url : "/profiletest.jpg"
+                            }
                             width={80}
                             height={80}
                             alt="profile"
@@ -300,7 +298,9 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
                           />
                           <ul className="text-left">
                             <li>{item.name}</li>
-                            <li className="text-gray-500">{item.role.role_name}</li>
+                            <li className="text-gray-500">
+                              {item.role.role_name}
+                            </li>
                           </ul>
                         </div>
 
@@ -323,7 +323,9 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
                 </ToggleGroup>
               </div>
               <DialogFooter>
-                <Button type="submit" onClick={onsubmit}>Save changes</Button>
+                <Button type="submit" onClick={onsubmit}>
+                  Save changes
+                </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
