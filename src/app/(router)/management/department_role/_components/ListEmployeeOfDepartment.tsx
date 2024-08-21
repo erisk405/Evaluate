@@ -18,6 +18,7 @@ import {
   ChevronDown,
   CirclePlus,
   EllipsisVertical,
+  Loader,
   Pencil,
   Trash2,
 } from "lucide-react";
@@ -146,17 +147,16 @@ interface SettingSectionProps {
 
 export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
-    []
-  );
-  const [columnVisibility, setColumnVisibility] =
-    useState<VisibilityState>({});
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
   const [globalFilter, setGlobalFilter] = useState("");
   const [allUser, setAllUser] = useState<User[]>([]);
 
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [usersEmptyDepartment, setUsersEmptyDepartment] = useState<any>([]);
+
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const handleToggle = (value: string) => {
     console.log("handleToggle:", value);
 
@@ -178,16 +178,18 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
 
   const onsubmit = async () => {
     try {
+      setIsLoading(false);
       const payload = {
         userIds: selectedItems, // selectedItems is an array of user IDs
         departmentId: department.id,
       };
       console.log("Payload:", payload); // For debugging
-      
+
       const response = await GlobalApi.addUsersToDepartment(payload);
-      if(response.data){
-        fetchUserEmptyDepartment();// รอให้ addUsersToDepartment เสร็จสิ้นก่อน แล้วเรียก fetch อีกครั้ง เพื่อให้แสดงผลเลย ไม่ต้อง reload
+      if (response.data) {
+        fetchUserEmptyDepartment(); // รอให้ addUsersToDepartment เสร็จสิ้นก่อน แล้วเรียก fetch อีกครั้ง เพื่อให้แสดงผลเลย ไม่ต้อง reload
       }
+      setIsLoading(true);
     } catch (error) {
       console.log(error);
     }
@@ -203,7 +205,6 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
   };
 
   useEffect(() => {
-    
     getDataOfEmployee();
   }, [usersEmptyDepartment]);
 
@@ -277,6 +278,10 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
                   type="multiple"
                   className="flex flex-col gap-2 w-full mt-5"
                 >
+                  <div className="flex justify-between w-full px-2 font-bold border-b border-black pb-2">
+                    <h2>Name</h2>
+                    <h2>Select</h2>
+                  </div>
                   {usersEmptyDepartment.length > 0 ? (
                     usersEmptyDepartment.map((item: any) => (
                       <ToggleGroupItem
@@ -313,7 +318,7 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
                             />
                           </div>
                         ) : (
-                          <div className="p-1 w-[26px] h-[26px] border-2 border-dashed border-blue-600 rounded-full"></div>
+                          <div className="p-1 w-[26px] h-[26px] border border-blue-500 rounded-full"></div>
                         )}
                       </ToggleGroupItem>
                     ))
@@ -323,9 +328,15 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
                 </ToggleGroup>
               </div>
               <DialogFooter>
-                <Button type="submit" onClick={onsubmit}>
-                  Save changes
-                </Button>
+                {isLoading ? (
+                  <Button type="submit" onClick={onsubmit}>
+                    Comfirm
+                  </Button>
+                ) : (
+                  <Button className="w-32 animate-pulse" type="button">
+                    <Loader className="animate-spin" />
+                  </Button>
+                )}
               </DialogFooter>
             </DialogContent>
           </Dialog>

@@ -1,8 +1,9 @@
 import React from 'react'
+import { DataTableDemo } from './table'
 
 const page = () => {
   return (
-    <div>manage_form</div>
+    <div><DataTableDemo/></div>
   )
 }
 

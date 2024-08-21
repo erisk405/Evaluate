@@ -1,6 +1,6 @@
 "use client";
 import { Input } from "@/components/ui/input";
-import { Loader, Plus, Search } from "lucide-react";
+import { Loader, Plus, RotateCcw, Search } from "lucide-react";
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
 import FilterSection from "./_components/FilterSection";
@@ -46,7 +46,7 @@ const formSchema = z.object({
 
 const page = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const {  setDepartments,setRole } = useStore();
+  const { setDepartments, setRole } = useStore();
   // for load button
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -77,7 +77,7 @@ const page = () => {
     try {
       const response = await GlobalApi.getDepartment();
       // console.log("Department :",response);
-      
+
       setDepartments(response?.data); // ตั้งค่าเป็นอาเรย์ว่างถ้าไม่มีข้อมูล
     } catch (error) {
       console.error("Error fetching department data:", error);
@@ -102,16 +102,15 @@ const page = () => {
       console.error("Error updating user image:", error);
     }
   }
-  const fetchRole = async () =>{
+  const fetchRole = async () => {
     try {
       const response = await GlobalApi.getRole();
-      console.log('role:',response);
+      console.log("role:", response);
       setRole(response?.data);
     } catch (error) {
       console.log(error);
-      
     }
-  }
+  };
 
   useEffect(() => {
     getDepartment();
@@ -121,7 +120,19 @@ const page = () => {
     <div className="m-5 w-full grid grid-cols-6 gap-5">
       <div className="col-span-6 xl:col-span-4 ">
         <div className="bg-white w-full h-full shadow rounded-xl p-5">
-          <h2 className="text-2xl font-bold">Department manage</h2>
+          <div className="flex justify-between items-center">
+            <h2 className="text-2xl font-bold">Department manage</h2>
+            <div
+              className="hover:bg-blue-100 p-2 hover:text-blue-500 
+              rounded-full active:scale-95 hover:scale-110 transition-all
+              hover:-rotate-[360deg]
+              "
+              title="refesh"
+              onClick={getDepartment}
+            >
+              <RotateCcw />
+            </div>
+          </div>
           <div className="flex justify-between items-center mt-3 ">
             <div className="flex-1 max-w-[300px] relative">
               <Input
@@ -277,7 +288,7 @@ const page = () => {
       </div>
       <div className="col-span-6 xl:col-span-2 ">
         <div className="bg-white w-full h-full shadow rounded-xl p-5">
-          <ManageRole/>
+          <ManageRole />
         </div>
       </div>
     </div>
