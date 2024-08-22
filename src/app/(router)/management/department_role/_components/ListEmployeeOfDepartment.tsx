@@ -58,8 +58,43 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useEffect, useState } from "react";
+import { Checkbox } from "@/components/ui/checkbox";
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export const columns: ColumnDef<User>[] = [
+  {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
   {
     accessorKey: "name",
     header: "Name",
@@ -149,17 +184,19 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = useState({});
   const [globalFilter, setGlobalFilter] = useState("");
   const [allUser, setAllUser] = useState<User[]>([]);
 
+  // select ตัวนี้ใช้กับ การที่ต้องการ select ข้อมูลทั้งตารางมาใช้ได้ในส่วนของ employee ในdepartment นั้นๆ
+  const [rowSelection, setRowSelection] = useState({});
+
+  // select ตัวนี้ใช้กับ การที่ select addemployee เข้ามาเท่านั้น ไม่เกี่ยวข้องกับส่วนอื่น
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
+
   const [usersEmptyDepartment, setUsersEmptyDepartment] = useState<any>([]);
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const handleToggle = (value: string) => {
-    console.log("handleToggle:", value);
-
     setSelectedItems((prev) =>
       prev.includes(value)
         ? prev.filter((item) => item !== value)
@@ -176,7 +213,7 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
     }
   };
 
-  const onsubmit = async () => {
+  const onsubmitAddEmployee = async () => {
     try {
       setIsLoading(false);
       const payload = {
@@ -203,6 +240,31 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
       setAllUser([]); // ตั้งค่าเป็นอาเรย์เปล่าเมื่อข้อมูลไม่ถูกต้อง
     }
   };
+
+  // ใช้กับ selection ตอนจะ ลบ employee ออกจาก department
+  const handleUpdateSelectedRows = async () => {
+    const selectedRows = table
+      .getSelectedRowModel()
+      .rows.map((row) => row.original.id); // ที่ต้องการใช้มีแค่ Id ของ users คนนั้นๆ เลยselect มาแค่ Id เพียงเท่านั้น
+
+    const payload = {
+      userIds: selectedRows, // selectedItems is an array of user IDs
+      departmentId: null, // ใช้เพื่อต้องการนำ user คนนั้นออกจาก department ที่สังกัดอยู่
+    };
+    
+    try {
+      const response = await GlobalApi.addUsersToDepartment(payload);
+      if (response.data) {
+        fetchUserEmptyDepartment(); // รอให้ addUsersToDepartment เสร็จสิ้นก่อน แล้วเรียก fetch อีกครั้ง เพื่อให้แสดงผลเลย ไม่ต้อง reload
+      }
+    } catch (error) {
+      console.log("message:", { message: error });
+    }
+  };
+
+  // useEffect(() => {
+  //   console.log("rowSelection:", rowSelection);
+  // }, [rowSelection]);
 
   useEffect(() => {
     getDataOfEmployee();
@@ -245,6 +307,7 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
           className="max-w-sm rounded-2xl"
         />
         <div className="flex items-center gap-3">
+          {/* for add employee button  */}
           <Dialog>
             <DialogTrigger asChild>
               <Button className="flex gap-2" onClick={fetchUserEmptyDepartment}>
@@ -329,7 +392,7 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
               </div>
               <DialogFooter>
                 {isLoading ? (
-                  <Button type="submit" onClick={onsubmit}>
+                  <Button type="submit" onClick={onsubmitAddEmployee} disabled={selectedItems.length > 0 ? false : true}>
                     Comfirm
                   </Button>
                 ) : (
@@ -340,7 +403,37 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
               </DialogFooter>
             </DialogContent>
           </Dialog>
+          {/* for remove employee button  */}
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="outline"
+                disabled={
+                  table.getFilteredSelectedRowModel().rows.length > 0
+                    ? false
+                    : true
+                }
+              >
+                Removes
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription className="text-red-500">
+                  This action cannot be undone. This will permanently delete.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleUpdateSelectedRows}>
+                  Continue
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
 
+          {/* for filter attribute from table  */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto">
@@ -369,6 +462,7 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
           </DropdownMenu>
         </div>
       </div>
+      {/* table employee on department  */}
       <div className="rounded-2xl border bg-white">
         <Table>
           <TableHeader>
@@ -423,7 +517,10 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
         </Table>
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="flex-1 text-sm text-muted-foreground"></div>
+        <div className="flex-1 text-sm text-muted-foreground">
+          {table.getFilteredSelectedRowModel().rows.length} of{" "}
+          {table.getFilteredRowModel().rows.length} row(s) selected.
+        </div>
         <div className="space-x-2">
           <Button
             variant="outline"
