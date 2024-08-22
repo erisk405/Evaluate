@@ -173,9 +173,12 @@ const ManageRole = () => {
               <AccordionContent>
                 <div className="w-full">
                   <p className="text-lg">{item.description}</p>
-                  <div className="w-full flex justify-end">
+                  <div className="w-full flex justify-end gap-3">
                     <Button className="flex items-center gap-2 px-2 h-9 active:scale-95 ">
-                      <Settings2 size={18} /> Permission
+                      ลบรายการ
+                    </Button>
+                    <Button className="flex items-center gap-2 px-2 h-9 active:scale-95 ">
+                      <Settings2 size={18} /> กำหนดสิทธิ
                     </Button>
                   </div>
                 </div>
