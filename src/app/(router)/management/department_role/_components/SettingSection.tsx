@@ -241,7 +241,7 @@ export default function SettingSection({ department }: SettingSectionProps) {
                               </Label>
                               <div className="col-span-4">
                                 <SetHeadOfDepartmentSection
-                                  onHeadChange={handleHeadChange}
+                                  onDeputyChange={handleDeputyChange}
                                   department={department}
                                 />
                               </div>

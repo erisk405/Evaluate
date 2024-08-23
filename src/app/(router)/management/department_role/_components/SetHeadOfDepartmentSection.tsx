@@ -23,6 +23,7 @@ import GlobalApi from "@/app/_unit/GlobalApi";
 
 export default function SetHeadOfDepartmentSection({
   onHeadChange,
+  onDeputyChange,
   defaultValue,
   department
 }: any) {
@@ -78,7 +79,7 @@ export default function SetHeadOfDepartmentSection({
                       const newValue =
                         currentValue === value ? "" : currentValue;
                       setValue(newValue);
-                      if (onHeadChange) onHeadChange(User.id);
+                      onHeadChange ? onHeadChange(User.id) : onDeputyChange && onDeputyChange(User.id)
                       setOpen(false);
                     }}
                   >
