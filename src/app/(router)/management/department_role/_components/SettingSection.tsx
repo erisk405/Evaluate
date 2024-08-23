@@ -28,10 +28,13 @@ import { ListEmployeeOfDepartment } from "./ListEmployeeOfDepartment";
 import { useRef, useState } from "react";
 import useStore from "@/app/store/store";
 import { toast } from "@/components/ui/use-toast";
+import SetHeadOfDepartmentSection from "./SetHeadOfDepartmentSection";
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
   image: z.any().optional(),
+  head: z.any(),
+  deputy: z.any()
 });
 interface SettingSectionProps {
   department: Department; // Replace 'string' with the appropriate type for departmentId
@@ -83,7 +86,6 @@ export default function SettingSection({ department }: SettingSectionProps) {
         console.log("responseChangeImage", response);
       }
       if (values.name != department.department_name) {
-        
       }
       getDepartment();
       toast({
@@ -98,6 +100,15 @@ export default function SettingSection({ department }: SettingSectionProps) {
     // Trigger the click event on the file input
     fileInputRef.current?.click();
   };
+
+  const {setValue} = form;
+  const handleHeadChange: any = (newHead:any) => {
+    setValue("head", newHead);
+  }
+  const handleDeputyChange: any = (newDeputy:any) => {
+    setValue("deputy", newDeputy);
+  }
+
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -147,7 +158,7 @@ export default function SettingSection({ department }: SettingSectionProps) {
                     </div>
                   </div>
                 </div>
-                <div className=" grid gap-3">
+                <div className=" grid gap-3 w-[400px]">
                   <FormField
                     control={form.control}
                     name="name"
@@ -195,6 +206,52 @@ export default function SettingSection({ department }: SettingSectionProps) {
                       </FormItem>
                     )}
                   />
+                  <div className="grid grid-cols-2 gap-3">
+                    <FormField
+                      control={form.control}
+                      name="head"
+                      render={({ field }) => (
+                        <FormItem className="">
+                          <FormControl>
+                            <div className="grid grid-cols-4 items-center gap-2">
+                              <Label htmlFor="head" className="text-left col-span-4">
+                                รองผู้อำนวยการ
+                              </Label>
+                              <div className="col-span-4">
+                                <SetHeadOfDepartmentSection
+                                  onHeadChange={handleHeadChange}
+                                  department={department}
+                                />
+                              </div>
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="deputy"
+                      render={({ field }) => (
+                        <FormItem className="">
+                          <FormControl>
+                            <div className="grid grid-cols-4 items-center gap-2">
+                              <Label htmlFor="deputy" className="text-left col-span-4">
+                                หัวหน้างาน
+                              </Label>
+                              <div className="col-span-4">
+                                <SetHeadOfDepartmentSection
+                                  onHeadChange={handleHeadChange}
+                                  department={department}
+                                />
+                              </div>
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                 </div>
               </div>
               <div className="my-4">
