@@ -9,7 +9,7 @@ const AllListDepartment = () => {
     // console.log(departments);
   }, [departments]);
   return (
-    <div className="w-full flex flex-col gap-3 my-4 ">
+    <div className="w-full flex flex-col gap-3 my-4 sm:max-h-[700px] overflow-scroll scrollbar-gemini">
       {departments.length > 0
         ? departments?.map((item) => (
             <div

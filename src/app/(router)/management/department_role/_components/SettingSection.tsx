@@ -87,6 +87,7 @@ export default function SettingSection({ department }: SettingSectionProps) {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     // console.log(department);
+    console.log("values", values);
     try {
       setIsLoading(false);
       if (values.image) {
@@ -98,8 +99,7 @@ export default function SettingSection({ department }: SettingSectionProps) {
         );
         console.log("responseChangeImage", response);
       }
-      console.log("values", values);
-      if (values.head != values.deputy) {
+      if (values.head != values.deputy || values.name != department.department_name) {
         const data = {
           department_id: department.id,
           department_name: values.name,

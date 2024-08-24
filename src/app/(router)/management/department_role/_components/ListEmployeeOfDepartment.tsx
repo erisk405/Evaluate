@@ -187,6 +187,9 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
   const [globalFilter, setGlobalFilter] = useState("");
   const [allUser, setAllUser] = useState<User[]>([]);
 
+  // ใช้งานเพื่อจัดเรียงข้อมูล แต่ละหน้าของ ต่างๆภายใน table ออกมา 
+  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 5 })
+
   // select ตัวนี้ใช้กับ การที่ต้องการ select ข้อมูลทั้งตารางมาใช้ได้ในส่วนของ employee ในdepartment นั้นๆ
   const [rowSelection, setRowSelection] = useState({});
 
@@ -251,7 +254,7 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
       userIds: selectedRows, // selectedItems is an array of user IDs
       departmentId: null, // ใช้เพื่อต้องการนำ user คนนั้นออกจาก department ที่สังกัดอยู่
     };
-    
+
     try {
       const response = await GlobalApi.addUsersToDepartment(payload);
       if (response.data) {
@@ -279,7 +282,9 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
       columnVisibility,
       rowSelection,
       globalFilter,
+      pagination,
     },
+    onPaginationChange: setPagination,   // ใช้ในการจัดหน้าใน ตาราง
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -323,8 +328,8 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
                   done.
                 </DialogDescription>
               </DialogHeader>
-              <div>
-                <div className="flex justify-between items-center">
+              <div className="">
+                <div className="flex justify-between items-center ">
                   <Input
                     className="max-w-[200px] h-8"
                     placeholder="Search Employee"
@@ -339,60 +344,66 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
 
                 <ToggleGroup
                   type="multiple"
-                  className="flex flex-col gap-2 w-full mt-5"
+                  className="flex flex-col gap-2 w-full mt-5 "
                 >
-                  <div className="flex justify-between w-full px-2 font-bold border-b border-black pb-2">
+                  <div className="flex justify-between w-full px-2 font-bold border-b border-black pb-2 ">
                     <h2>Name</h2>
                     <h2>Select</h2>
                   </div>
-                  {usersEmptyDepartment.length > 0 ? (
-                    usersEmptyDepartment.map((item: any) => (
-                      <ToggleGroupItem
-                        key={item.id}
-                        value={item.id}
-                        aria-label="Toggle bold"
-                        className="py-2 justify-between h-auto w-full "
-                        onClick={() => handleToggle(item.id)}
-                      >
-                        <div className="flex items-center gap-2">
-                          <Image
-                            src={
-                              item.image ? item.image.url : "/profiletest.jpg"
-                            }
-                            width={80}
-                            height={80}
-                            alt="profile"
-                            className="w-[50px] h-[50px] object-cover rounded-full"
-                          />
-                          <ul className="text-left">
-                            <li>{item.name}</li>
-                            <li className="text-gray-500">
-                              {item.role.role_name}
-                            </li>
-                          </ul>
-                        </div>
-
-                        {selectedItems.includes(item.id) ? (
-                          <div className="p-1 bg-blue-500 rounded-full">
-                            <Check
-                              className="text-white"
-                              size={18}
-                              strokeWidth={4}
+                  <div className="w-full sm:max-h-[400px] overflow-scroll scrollbar-gemini">
+                    {usersEmptyDepartment.length > 0 ? (
+                      usersEmptyDepartment.map((item: any) => (
+                        <ToggleGroupItem
+                          key={item.id}
+                          value={item.id}
+                          aria-label="Toggle bold"
+                          className="py-2 justify-between h-auto w-full"
+                          onClick={() => handleToggle(item.id)}
+                        >
+                          <div className="flex items-center gap-2">
+                            <Image
+                              src={
+                                item.image ? item.image.url : "/profiletest.jpg"
+                              }
+                              width={80}
+                              height={80}
+                              alt="profile"
+                              className="w-[50px] h-[50px] object-cover rounded-full"
                             />
+                            <ul className="text-left">
+                              <li>{item.name}</li>
+                              <li className="text-gray-500">
+                                {item.role.role_name}
+                              </li>
+                            </ul>
                           </div>
-                        ) : (
-                          <div className="p-1 w-[26px] h-[26px] border border-blue-500 rounded-full"></div>
-                        )}
-                      </ToggleGroupItem>
-                    ))
-                  ) : (
-                    <div>No items found.</div>
-                  )}
+
+                          {selectedItems.includes(item.id) ? (
+                            <div className="p-1 bg-blue-500 rounded-full">
+                              <Check
+                                className="text-white"
+                                size={18}
+                                strokeWidth={4}
+                              />
+                            </div>
+                          ) : (
+                            <div className="p-1 w-[26px] h-[26px] border border-blue-500 rounded-full"></div>
+                          )}
+                        </ToggleGroupItem>
+                      ))
+                    ) : (
+                      <div>No items found.</div>
+                    )}
+                  </div>
                 </ToggleGroup>
               </div>
               <DialogFooter>
                 {isLoading ? (
-                  <Button type="submit" onClick={onsubmitAddEmployee} disabled={selectedItems.length > 0 ? false : true}>
+                  <Button
+                    type="submit"
+                    onClick={onsubmitAddEmployee}
+                    disabled={selectedItems.length > 0 ? false : true}
+                  >
                     Comfirm
                   </Button>
                 ) : (
@@ -407,7 +418,7 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button
-              className="border-red-500 text-red-500"
+                className="border-red-500 text-red-500"
                 variant="outline"
                 disabled={
                   table.getFilteredSelectedRowModel().rows.length > 0
@@ -524,6 +535,7 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
         </div>
         <div className="space-x-2">
           <Button
+            type="button"
             variant="outline"
             size="sm"
             onClick={() => table.previousPage()}
@@ -532,6 +544,7 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
             Previous
           </Button>
           <Button
+            type="button"
             variant="outline"
             size="sm"
             onClick={() => table.nextPage()}
