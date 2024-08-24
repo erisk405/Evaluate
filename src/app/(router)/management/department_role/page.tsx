@@ -76,7 +76,7 @@ const page = () => {
   const getDepartment = async () => {
     try {
       const response = await GlobalApi.getDepartment();
-      // console.log("Department :",response);
+      // console.log("Department :",response.data);
 
       setDepartments(response?.data); // ตั้งค่าเป็นอาเรย์ว่างถ้าไม่มีข้อมูล
     } catch (error) {

@@ -36,7 +36,8 @@ export default function SetHeadOfDepartmentSection({
       const response = await GlobalApi.getDepartmentById(department.id)
       setUser(response?.data?.user);
       if (defaultValue) {
-        setValue(defaultValue);
+        onHeadChange ? onHeadChange(defaultValue.id) : onDeputyChange && onDeputyChange(defaultValue.id)
+        setValue(defaultValue.name);
       }
     } catch (error) {
       console.log(error);

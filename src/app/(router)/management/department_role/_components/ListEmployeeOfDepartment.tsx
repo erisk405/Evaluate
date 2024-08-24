@@ -407,6 +407,7 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button
+              className="border-red-500 text-red-500"
                 variant="outline"
                 disabled={
                   table.getFilteredSelectedRowModel().rows.length > 0

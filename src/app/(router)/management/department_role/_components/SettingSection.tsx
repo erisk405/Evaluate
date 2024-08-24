@@ -30,12 +30,26 @@ import useStore from "@/app/store/store";
 import { toast } from "@/components/ui/use-toast";
 import SetHeadOfDepartmentSection from "./SetHeadOfDepartmentSection";
 
-const formSchema = z.object({
-  name: z.string().min(1, { message: "Name is required" }),
-  image: z.any().optional(),
-  head: z.any(),
-  deputy: z.any()
-});
+const formSchema = z
+  .object({
+    name: z.string().min(1, { message: "Name is required" }),
+    image: z.any().optional(),
+    head: z.string().nullable().optional(),
+    deputy: z.string().nullable().optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.head && data.deputy) {
+        return data.head !== data.deputy;
+      }
+      return true;
+    },
+    {
+      message: "Head and Deputy cannot be the same person",
+      path: ["deputy"],
+    }
+  );
+
 interface SettingSectionProps {
   department: Department; // Replace 'string' with the appropriate type for departmentId
 }
@@ -72,7 +86,6 @@ export default function SettingSection({ department }: SettingSectionProps) {
   };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(values);
     // console.log(department);
     try {
       setIsLoading(false);
@@ -85,8 +98,18 @@ export default function SettingSection({ department }: SettingSectionProps) {
         );
         console.log("responseChangeImage", response);
       }
-      if (values.name != department.department_name) {
+      console.log("values", values);
+      if (values.head != values.deputy) {
+        const data = {
+          department_id: department.id,
+          department_name: values.name,
+          headOfDepartment_id: values.head || null,
+          deputyDirector_id: values.deputy || null,
+        };
+
+        await GlobalApi.updateDepartment(data);
       }
+
       getDepartment();
       toast({
         description: `✅ Your are edit department success`,
@@ -101,13 +124,13 @@ export default function SettingSection({ department }: SettingSectionProps) {
     fileInputRef.current?.click();
   };
 
-  const {setValue} = form;
-  const handleHeadChange: any = (newHead:any) => {
+  const { setValue } = form;
+  const handleHeadChange: any = (newHead: any) => {
     setValue("head", newHead);
-  }
-  const handleDeputyChange: any = (newDeputy:any) => {
+  };
+  const handleDeputyChange: any = (newDeputy: any) => {
     setValue("deputy", newDeputy);
-  }
+  };
 
   return (
     <Sheet>
@@ -209,18 +232,22 @@ export default function SettingSection({ department }: SettingSectionProps) {
                   <div className="grid grid-cols-2 gap-3">
                     <FormField
                       control={form.control}
-                      name="head"
+                      name="deputy"
                       render={({ field }) => (
                         <FormItem className="">
                           <FormControl>
                             <div className="grid grid-cols-4 items-center gap-2">
-                              <Label htmlFor="head" className="text-left col-span-4">
+                              <Label
+                                htmlFor="deputy"
+                                className="text-left col-span-4"
+                              >
                                 รองผู้อำนวยการ
                               </Label>
                               <div className="col-span-4">
                                 <SetHeadOfDepartmentSection
-                                  onHeadChange={handleHeadChange}
+                                  onDeputyChange={handleDeputyChange}
                                   department={department}
+                                  defaultValue={department.deputyDirector}
                                 />
                               </div>
                             </div>
@@ -231,18 +258,22 @@ export default function SettingSection({ department }: SettingSectionProps) {
                     />
                     <FormField
                       control={form.control}
-                      name="deputy"
+                      name="head"
                       render={({ field }) => (
                         <FormItem className="">
                           <FormControl>
                             <div className="grid grid-cols-4 items-center gap-2">
-                              <Label htmlFor="deputy" className="text-left col-span-4">
+                              <Label
+                                htmlFor="head"
+                                className="text-left col-span-4"
+                              >
                                 หัวหน้างาน
                               </Label>
                               <div className="col-span-4">
                                 <SetHeadOfDepartmentSection
-                                  onDeputyChange={handleDeputyChange}
+                                  onHeadChange={handleHeadChange}
                                   department={department}
+                                  defaultValue={department.headOfDepartment}
                                 />
                               </div>
                             </div>
@@ -255,10 +286,33 @@ export default function SettingSection({ department }: SettingSectionProps) {
                 </div>
               </div>
               <div className="my-4">
-                <h2 className="font-semibold ">Team Members</h2>
-                <p className="text-sm text-neutral-500">
-                  Invite your team members to collaborate.
-                </p>
+                <div className="flex justify-between">
+                  <div>
+                    <h2 className="font-semibold ">Team Members</h2>
+                    <p className="text-sm text-neutral-500">
+                      Invite your team members to collaborate.
+                    </p>
+                  </div>
+                  <div>
+                    <div className="grid grid-cols-3 gap-3">
+                      <h2 className="text-right font-bold">รองผู้อำนวยการ</h2>
+                      <div className="col-span-2">
+                        {department.deputyDirector
+                          ? department.deputyDirector.name
+                          : "-"}
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-3 gap-3">
+                      <h2 className="text-right font-bold">หัวหน้างาน</h2>
+                      <div className="col-span-2">
+                        {department.headOfDepartment
+                          ? department.headOfDepartment.name
+                          : "-"}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 {/* List Team of department */}
                 <div className="">
                   <ListEmployeeOfDepartment department={department} />

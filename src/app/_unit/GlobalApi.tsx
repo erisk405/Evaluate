@@ -82,17 +82,13 @@ const updateDepartmentImage = async (
   );
 };
 
-const addUsersToDepartment = async (payload:any) => {
-  return await axios.put(
-    `${apiUrl}/usersToDepartment`,
-    payload,
-    {
-      withCredentials: true,
-      headers: {
-        "Content-Type": "application/json", // Set content type to JSON
-      },  
-    }
-  );
+const addUsersToDepartment = async (payload: any) => {
+  return await axios.put(`${apiUrl}/usersToDepartment`, payload, {
+    withCredentials: true,
+    headers: {
+      "Content-Type": "application/json", // Set content type to JSON
+    },
+  });
 };
 
 const getRole = async () => {
@@ -127,16 +123,20 @@ const CreateDepartment = async (
     },
   });
 };
-const updateDepartment = async (formData: FormData
-): Promise<AxiosResponse<any>> => {
-  
-    return await axios.put(`${apiUrl}/department`, formData, {
+const updateDepartment = async (data:any) => {
+  try {
+    // console.log("formData",data);
+    
+    return await axios.put(`${apiUrl}/department`, data, {
       withCredentials: true,
       headers: {
-        "Content-Type": "multipart/form-data",
+        "Content-Type": "application/json", // Set content type to JSON
       },
     });
-    
+  } catch (error) {
+    console.error("Error updating department:", error);
+    throw error;
+  }
 };
 
 export default {
@@ -151,5 +151,5 @@ export default {
   getDepartmentById,
   updateDepartment,
   findUserEmptyDepartment,
-  addUsersToDepartment
+  addUsersToDepartment,
 };
