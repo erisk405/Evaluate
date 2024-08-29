@@ -188,7 +188,9 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
   const [allUser, setAllUser] = useState<User[]>([]);
 
   // ใช้งานเพื่อจัดเรียงข้อมูล แต่ละหน้าของ ต่างๆภายใน table ออกมา 
-  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 5 })
+  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 5 });
+  // จำนวนpage ทั้งหมด อิง
+  const [totalPages, setTotalPages] = useState(0);
 
   // select ตัวนี้ใช้กับ การที่ต้องการ select ข้อมูลทั้งตารางมาใช้ได้ในส่วนของ employee ในdepartment นั้นๆ
   const [rowSelection, setRowSelection] = useState({});
@@ -236,11 +238,13 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
   };
 
   const getDataOfEmployee = async () => {
-    const response = await GlobalApi.getDepartmentById(department.id);
-    if (response?.data?.user) {
-      setAllUser(response.data.user);
+    
+    const response = await GlobalApi.getDepartmentById(department.id , pagination.pageIndex, pagination.pageSize);
+    if (response?.data) {
+      setAllUser(response.data.data.user);
+      setTotalPages(response?.data.totalPages); // ตั้งค่าจำนวนหน้าทั้งหมด
     } else {
-      setAllUser([]); // ตั้งค่าเป็นอาเรย์เปล่าเมื่อข้อมูลไม่ถูกต้อง
+      setAllUser([]);
     }
   };
 
@@ -271,11 +275,12 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
 
   useEffect(() => {
     getDataOfEmployee();
-  }, [usersEmptyDepartment]);
+  }, [pagination.pageIndex, pagination.pageSize,usersEmptyDepartment]);
 
   const table = useReactTable({
     data: allUser ?? [],
     columns,
+    pageCount: totalPages, // จำนวนหน้าทั้งหมดที่ได้จาก backend
     state: {
       sorting,
       columnFilters,
@@ -284,6 +289,7 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
       globalFilter,
       pagination,
     },
+    manualPagination: true, // กำหนดว่า pagination ทำที่ backend
     onPaginationChange: setPagination,   // ใช้ในการจัดหน้าใน ตาราง
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

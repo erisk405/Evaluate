@@ -137,13 +137,9 @@ export default function Myprofile() {
   //use Socket io for sendRoleRequest to admin
   const requestRole = async (roleId: any) => {
     try {
-      const response = await axios.post(`${apiUrl}/sendRoleRequest`, {
-        userId: ProfileDetail?.id, // userId จะต้องเป็นค่าที่มาจากการล็อกอิน
-        roleId,
-      });
-
+      const response = await GlobalApi.sendRoleRequest(ProfileDetail?.id,roleId);
       // หาว่ามีการร้องขอมามั้ย ถ้ามีก็ให้ updateProfileDetailไว้ เพื่อคงสถานะ แล้วนำไปใช้ในการ disable button
-      const { id, role_name, description } = response.data.data.role;
+      const { id, role_name, description } = response?.data.data.role;
       const roleRequests: { role: Role; status: string }[] = [
         {
           role: {
@@ -159,7 +155,7 @@ export default function Myprofile() {
         roleRequests: roleRequests,
       });
       // Emit an event to notify admins ขนข้อูลทั้งหมดที่ได้จาก response ไปให้ admin
-      const data = response.data;
+      const data = response?.data;
       console.log("requestRole:", data);
       socket.emit("newRoleRequest", {
         data,

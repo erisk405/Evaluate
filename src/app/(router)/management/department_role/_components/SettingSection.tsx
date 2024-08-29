@@ -139,7 +139,7 @@ export default function SettingSection({ department }: SettingSectionProps) {
           <Cog scale={13} /> Edit
         </Button>
       </SheetTrigger>
-      <SheetContent className="overflow-y-scroll scrollbar-gemini pb-10">
+      <SheetContent side="right" className="overflow-y-scroll sm:max-w-5xl scrollbar-gemini pb-10">
         <SheetHeader>
           <SheetTitle>Edit Department</SheetTitle>
           <SheetDescription>

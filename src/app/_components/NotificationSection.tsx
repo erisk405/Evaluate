@@ -9,6 +9,7 @@ import useStore from "../store/store";
 import { toast } from "sonner";
 import moment from "moment-timezone";
 import { Notification } from "@/types/interface";
+import GlobalApi from "../_unit/GlobalApi";
 
 const TIMEZONE = "Asia/Bangkok";
 const PAGE_LIMIT = 4;
@@ -28,12 +29,8 @@ const NotificationSection: React.FC = () => {
     userId: string
   ) => {
     try {
-      const response = await axios.patch(`${apiUrl}/resolveRole`, {
-        requestId,
-        status,
-        userId,
-      });
-      const SendRes = response.data;
+      const response = await GlobalApi.resolveRole(requestId,status,userId)
+      const SendRes = response?.data;
       console.log(ProfileDetail);
       const { name, image } = ProfileDetail;
 

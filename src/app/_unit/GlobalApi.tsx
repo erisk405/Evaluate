@@ -93,7 +93,7 @@ const addUsersToDepartment = async (payload: any) => {
 
 const getRole = async () => {
   try {
-    return await axios.get(`${apiUrl}/Role`);
+    return await axios.get(`${apiUrl}/Role`,{withCredentials: true});
   } catch (error) {
     console.error("Error role:", error);
   }
@@ -106,9 +106,11 @@ const getDepartment = async () => {
     console.error("Error Department:", error);
   }
 };
-const getDepartmentById = async (departmentId: any) => {
+const getDepartmentById = async (departmentId: any , pageIndex :number, pageSize :number) => {
+  // console.log(`page=${pageIndex}&size=${pageSize}`);
   try {
-    return await axios.get(`${apiUrl}/department/${departmentId}`);
+    const url = `${apiUrl}/department/${departmentId}?page=${pageIndex}&size=${pageSize}`;
+    return await axios.get(url, { withCredentials: true });
   } catch (error) {
     console.error("Error Department:", error);
   }
@@ -123,6 +125,7 @@ const CreateDepartment = async (
     },
   });
 };
+
 const updateDepartment = async (data:any) => {
   try {
     // console.log("formData",data);
@@ -139,6 +142,37 @@ const updateDepartment = async (data:any) => {
   }
 };
 
+// function api สำหรับ user เมื่อต้องการร้องขอ role
+const sendRoleRequest = async (userId : any, roleId :any) => {
+  try {
+    return await axios.post(`${apiUrl}/sendRoleRequest`, {
+      userId,// userId จะต้องเป็นค่าที่มาจากการล็อกอิน
+      roleId,
+    },{
+      withCredentials: true,
+    });
+  } catch (error) {
+    
+  }
+}
+
+
+// function api สำหรับ Admin ที่ใช้ในการจัดการกับ การ Approve หรือ Reject เมื่อ user ร้องขอ role
+const resolveRole = async (requestId : string, status : string, userId :string) =>{
+  try {
+    return await axios.patch(`${apiUrl}/resolveRole`, {
+      requestId,
+      status,
+      userId,
+    },{
+      withCredentials: true,
+    });
+  } catch (error) {
+    console.error({message : error});
+    
+  }
+}
+
 export default {
   fetchUserProfile,
   Logout,
@@ -152,4 +186,6 @@ export default {
   updateDepartment,
   findUserEmptyDepartment,
   addUsersToDepartment,
+  resolveRole,
+  sendRoleRequest
 };

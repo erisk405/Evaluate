@@ -174,6 +174,10 @@ const page = () => {
   const params = useParams<{ departmentId: string }>();
   const { ProfileDetail, updateProfileDetail } = useStore();
   const [department_name, setDepartmentName] = useState("");
+  
+  // ใช้งานเพื่อจัดเรียงข้อมูล แต่ละหน้าของ ต่างๆภายใน table ออกมา 
+  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 5 });
+
   const joinDepartment = async () => {
     const response = await axios.put(`${apiUrl}/usersDepartment`, params, {
       withCredentials: true,
@@ -185,10 +189,9 @@ const page = () => {
   };
 
   const fetchDepartment = async () => {
-    const response = await GlobalApi.getDepartmentById(params.departmentId);
-    const { department_name } = response?.data;
-    console.log(department_name);
-
+    const response = await GlobalApi.getDepartmentById(params.departmentId, pagination.pageIndex, pagination.pageSize);
+    const { department_name } = response?.data.data;
+    // console.log(department_name);
     setDepartmentName(department_name);
   };
   useEffect(() => {
