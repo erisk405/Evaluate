@@ -34,6 +34,19 @@ import {
 } from "@/components/ui/accordion";
 import FilterSection from "./FilterSection";
 import { Textarea } from "@/components/ui/textarea";
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
 const Allrole = [
   {
     id: "Ar1",
@@ -92,7 +105,7 @@ const ManageRole = () => {
           </TooltipProvider>
           <DialogContent className="sm:max-w-[525px]">
             <DialogHeader>
-              <DialogTitle >
+              <DialogTitle>
                 <div className="flex gap-2 items-center">
                   <div className="block p-1 bg-blue-100 rounded-full">
                     <ShieldPlus size={40} className="text-blue-500 " />{" "}
@@ -156,7 +169,7 @@ const ManageRole = () => {
           </DialogContent>
         </Dialog>
       </div>
-      <div className="flex flex-col gap-3 ">
+      <div className="flex flex-col  ">
         {Allrole.map((item) => (
           <Accordion type="single" collapsible className="w-full" key={item.id}>
             <AccordionItem value="item-1">
@@ -173,13 +186,109 @@ const ManageRole = () => {
               <AccordionContent>
                 <div className="w-full">
                   <p className="text-lg">{item.description}</p>
-                  <div className="w-full flex justify-end gap-3">
-                    <Button className="flex items-center gap-2 px-2 h-9 active:scale-95 ">
-                      ลบรายการ
-                    </Button>
-                    <Button className="flex items-center gap-2 px-2 h-9 active:scale-95 ">
-                      <Settings2 size={18} /> กำหนดสิทธิ
-                    </Button>
+                  <div className="w-full flex justify-end gap-3 mt-2">
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button className="flex items-center gap-2 px-2 h-9 active:scale-95">
+                          ลบรายการ
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            Are you absolutely sure?
+                          </AlertDialogTitle>
+                          <AlertDialogDescription className="text-red-500">
+                            การดำเนินการนี้ไม่สามารถย้อนกลับได้
+                            การดำเนินการนี้จะลบบัญชีของคุณอย่างถาวรและลบตำแหน่งนี้
+                            ออกจากเซิร์ฟเวอร์ของเรา
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction>Continue</AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button className="flex items-center gap-2 px-2 h-9 active:scale-95 ">
+                          <Settings2 size={18} /> กำหนดสิทธิ
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-[525px]">
+                        <DialogHeader>
+                          <DialogTitle>
+                            <div className="flex gap-2 items-center">
+                              <div className="block p-1 bg-blue-100 rounded-full">
+                                <ShieldPlus
+                                  size={40}
+                                  className="text-blue-500 "
+                                />{" "}
+                              </div>
+                              <h2 className="text-xl">Edit role</h2>
+                            </div>
+                          </DialogTitle>
+                          <DialogDescription>
+                            Make changes to your profile here. Click save when
+                            you're done.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="grid gap-4 py-4 px-4">
+                          <div className="flex items-center gap-4">
+                            <Label htmlFor="name" className="">
+                              Name
+                            </Label>
+                            <Input
+                              id="name"
+                              defaultValue="Dog role"
+                              className="col-span-3"
+                            />
+                          </div>
+                          <hr />
+                          <div className="flex items-center gap-2 font-semibold">
+                            <BadgeAlert className="text-blue-500 bg-white rounded-full " />{" "}
+                            <h2>Set role permission form evaluate</h2>
+                          </div>
+                          <div className="grid grid-cols-4 items-center gap-4">
+                            {Allrole.map(
+                              (item) =>
+                                item.name !== "Admin" && (
+                                  <div
+                                    className="col-span-2 "
+                                    key={item.id + "dog"}
+                                  >
+                                    <Label
+                                      htmlFor="permission"
+                                      className="text-left col-span-2"
+                                    >
+                                      {item.name}
+                                    </Label>
+                                    <div className="w-full ">
+                                      <FilterSection />
+                                    </div>
+                                  </div>
+                                )
+                            )}
+                          </div>
+
+                          <div className="grid w-full gap-1.5">
+                            <Label htmlFor="message-2">Your Describtion</Label>
+                            <Textarea
+                              placeholder="Type your message here."
+                              id="message-2"
+                            />
+                            <p className="text-sm text-muted-foreground">
+                              Your message will be copied to the describtion
+                              role.
+                            </p>
+                          </div>
+                        </div>
+                        <DialogFooter>
+                          <Button type="submit">Save changes</Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
                   </div>
                 </div>
               </AccordionContent>

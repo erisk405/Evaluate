@@ -303,7 +303,7 @@ const page = () => {
                     className="flex items-center gap-3 bg-neutral-800 hover:bg-neutral-700 
                   text-neutral-200 px-2 py-1 rounded-xl transition-all active:scale-95"
                   >
-                    <Hexagon /> Evaluate
+                    <Hexagon /> ประเมิณ
                   </h2>
                 </div>
               </div>
@@ -371,15 +371,15 @@ const page = () => {
                     </TableCell>
                     <TableCell>{item.email}</TableCell>
                     <TableCell>{item.role}</TableCell>
-                    <TableCell className="text-center">
+                    <TableCell className="text-center w-[150px]">
                       <h2
                         className={` ${
                           item.status === "success"
-                            ? "font-semibold text-emerald-600 bg-emerald-100 rounded-xl border p-1 pr-4 border-emerald-500"
+                            ? "font-semibold text-emerald-600 bg-emerald-100 rounded-xl border p-1  border-emerald-500"
                             : item.status === "processing"
-                            ? "font-semibold text-yellow-600 bg-yellow-100 rounded-xl border p-1 pr-4 border-yellow-500"
-                            : "font-semibold text-red-600 bg-red-100 rounded-xl border p-1 pr-4 border-red-500"
-                        }`}
+                            ? "font-semibold text-yellow-600 bg-yellow-100 rounded-xl border p-1  border-yellow-500"
+                            : "font-semibold text-red-600 bg-red-100 rounded-xl border p-1  border-red-500"
+                        } text-center`}
                       >
                         {item.status}
                       </h2>
@@ -389,7 +389,7 @@ const page = () => {
                         <Sheet>
                           <SheetTrigger asChild>
                             <Button className="flex items-center gap-3 active:scale-95 transition-all">
-                              <Hexagon /> Evaluate
+                              <Hexagon /> ประเมิณ
                             </Button>
                           </SheetTrigger>
                           <SheetContent

@@ -22,7 +22,7 @@ const OptionSideBar = [
         id: 'OSide05',
         name: 'Evaluated',
         icon: <Flame />,
-        path: '/flame',
+        path: '/evaluated',
         session: 'user'
     },
     {
