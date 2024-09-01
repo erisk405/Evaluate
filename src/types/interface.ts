@@ -25,7 +25,8 @@ interface User {
   email: string,
   image: UserImage,
   role: Role
-  phone: string
+  phone: string,
+  department?: Department
 }
 
 interface Role {

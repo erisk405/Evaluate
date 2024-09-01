@@ -17,9 +17,9 @@ import {
   ArrowUpDown,
   Building2,
   ChevronDown,
-  Dot,
-  MoreHorizontal,
   Pencil,
+  Ribbon,
+  UserRoundCog,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -47,90 +47,68 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
 import UserProfile from "./UserProfile";
+import GlobalApi from "@/app/_unit/GlobalApi";
+import { User } from "@/types/interface";
 
-const data: employee[] = [
-  {
-    id: "m5gr84i9",
-    name: "amphon yyyy",
-    email: "ken99@yahoo.com",
-    role: "CEO",
-    phone: "095-454-4484",
-    department: "CompanyA",
-  },
-  {
-    id: "3u1reuv4",
-    name: "Krittaphat samrit",
-    email: "Abe45@gmail.com",
-    role: "เสาหลัก",
-    phone: "095-454-4484",
-    department: "CompanyB",
-  },
-  {
-    id: "derv1ws0",
-    name: "Panyakorn somawong",
-    email: "Monserrat44@gmail.com",
-    role: "Head",
-    phone: "095-454-4484",
-    department: "CompanyB",
-  },
-  {
-    id: "5kma53ae",
-    name: "Wichaphon dogcat",
-    email: "Silas22@gmail.com",
-    role: "COO",
-    phone: "095-454-4484",
-    department: "CompanyB",
-  },
-  {
-    id: "bhqecj4p",
-    name: "Worakamon gogo",
-    email: "carmella@hotmail.com",
-    role: "CPE",
-    phone: "095-454-4484",
-    department: "CompanyC",
-  },
-];
-
-export type employee = {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  phone: string;
-  department: string;
-};
-
-export const columns: ColumnDef<employee>[] = [
+export const columns: ColumnDef<User>[] = [
   {
     accessorKey: "name",
     header: "Name",
-    cell: ({ row }) => (
-      <div className="capitalize flex items-center gap-3">
-        <Image
-          src="/profiletest.jpg"
-          width={50}
-          height={50}
-          alt="profiletable"
-          className="w-[50px] h-[50px] rounded-full object-cover"
-        />
-        {row.getValue("name")}
-      </div>
-    ),
+    cell: ({ row }) => {
+      const image = row.original.image;
+      console.log("image :", image);
+
+      return (
+        <div className="capitalize flex items-center gap-3">
+          {image?.url ? (
+            <Image
+              src={image?.url}
+              width={50}
+              height={50}
+              alt="profiletable"
+              className="w-[50px] h-[50px] rounded-full object-cover"
+            />
+          ) : (
+            <Image
+              src="/profiletest.jpg"
+              width={50}
+              height={50}
+              alt="profiletable"
+              className="w-[50px] h-[50px] rounded-full object-cover"
+            />
+          )}
+          {row.getValue("name")}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "role",
     header: "Role",
     cell: ({ row }) => {
+      const role_name = row.original.role.role_name;
       return (
-        <div className="capitalize font-semibold flex items-center gap-3 text-emerald-500">
-          {row.getValue("role")}
+        <div
+          className={`capitalize font-semibold inline-flex items-center gap-2
+            border border-gray-200 p-2 rounded-lg 
+            ${role_name != "member" ? "text-black" : "text-gray-500"}
+          `}
+        >
+          <div
+            className={`p-1 rounded-full ${
+              role_name != "member"
+                ? "bg-emerald-50 text-emerald-500"
+                : "text-gray-500"
+            } `}
+          >
+            <Ribbon size={20} />
+          </div>
+          {role_name}
         </div>
       );
     },
@@ -166,16 +144,28 @@ export const columns: ColumnDef<employee>[] = [
     accessorKey: "department",
     header: "Department",
     cell: ({ row }) => {
+      const NameOfDepartment = row.original.department;
       return (
         <div
           className="inline-flex items-center font-semibold
-        justify-center gap-2 bg-neutral-200 
-        text-neutral-900 border border-neutral-500 px-3 py-1 rounded-xl max-w-28"
+        justify-center gap-2 border border-gray-200 px-3 py-1 rounded-xl max-w-52"
         >
-          <div className="">
-            <Building2 strokeWidth={2} size={16} />
+          <div
+            className={`p-2 ${
+              NameOfDepartment
+                ? "bg-cyan-50 text-cyan-500"
+                : "bg-gray-100 text-gray-500"
+            } rounded-full`}
+          >
+            <Building2 strokeWidth={2} size={20} />
           </div>
-          {row.getValue("department")}
+          <h2
+            className={`${NameOfDepartment ? "text-black" : "text-gray-500"}`}
+          >
+            {NameOfDepartment
+              ? NameOfDepartment.department_name
+              : "No Department"}
+          </h2>
         </div>
       );
     },
@@ -185,8 +175,6 @@ export const columns: ColumnDef<employee>[] = [
     enableHiding: false,
     header: "Action",
     cell: ({ row }) => {
-      const payment = row.original;
-
       return (
         <Dialog>
           <DialogTrigger asChild>
@@ -201,13 +189,20 @@ export const columns: ColumnDef<employee>[] = [
           </DialogTrigger>
           <DialogContent className="sm:max-w-[565px]">
             <DialogHeader>
-              <DialogTitle>Edit user</DialogTitle>
+              <DialogTitle>
+                <div className="flex items-center gap-2">
+                  <div className="bg-cyan-50 p-2 rounded-full">
+                    <UserRoundCog size={30} className="text-cyan-500" />
+                  </div>
+                  <h2 className="text-2xl">Edit user</h2>
+                </div>
+              </DialogTitle>
               <DialogDescription>
                 Make changes to your profile here. Click save when you're done.
               </DialogDescription>
             </DialogHeader>
             {/* User Profile */}
-            <UserProfile/>
+            <UserProfile userDetail = {row.original} />
           </DialogContent>
         </Dialog>
       );
@@ -225,8 +220,16 @@ export function ListEmployee() {
   const [rowSelection, setRowSelection] = React.useState({});
   const [globalFilter, setGlobalFilter] = React.useState("");
 
+  const [allUser, SetAllUser] = React.useState();
+
+  const fetchUserList = async () => {
+    const response = await GlobalApi.getAllUsers();
+    // console.log("AllUser", response?.data);
+    SetAllUser(response?.data);
+  };
+
   const table = useReactTable({
-    data,
+    data: allUser ?? [],
     columns,
     state: {
       sorting,
@@ -251,6 +254,10 @@ export function ListEmployee() {
       return name.includes(searchValue) || email.includes(searchValue);
     },
   });
+
+  React.useEffect(() => {
+    fetchUserList();
+  }, []);
 
   return (
     <div className="w-full ">

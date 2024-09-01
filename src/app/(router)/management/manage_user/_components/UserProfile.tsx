@@ -15,21 +15,11 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
-import Link from "next/link";
-import {
-  Check,
-  CircleDashed,
-  LinkIcon,
-  Loader,
-  Mail,
-  RollerCoaster,
-} from "lucide-react";
+import { Check, Loader, Mail } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useRef, useState } from "react";
 import { toast } from "@/components/ui/use-toast";
-import axios from "axios";
-import socket from "@/lib/socket";
-import { Role, RoleRequest } from "@/types/interface";
+import { Role, User } from "@/types/interface";
 import useStore from "@/app/store/store";
 import GlobalApi from "@/app/_unit/GlobalApi";
 import SetRoleUserOptions from "./SetRoleUserOptions";
@@ -58,9 +48,12 @@ const formSchema = z.object({
     message: "Role is required",
   }),
 });
-const UserProfile = () => {
+
+interface UserProfileProps {
+  userDetail: User;
+}
+const UserProfile = ({ userDetail }: UserProfileProps) => {
   // for image changing
-  const { ProfileDetail, updateProfileDetail } = useStore();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -84,14 +77,14 @@ const UserProfile = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      firstName: ProfileDetail?.name?.split(" ")[0],
-      lastName: ProfileDetail?.name?.split(" ")[1],
+      firstName: userDetail?.name?.split(" ")[0],
+      lastName: userDetail?.name?.split(" ")[1],
       image: undefined,
-      email: ProfileDetail?.email ? ProfileDetail?.email : "",
-      Department: ProfileDetail?.department
-        ? ProfileDetail.department
+      email: userDetail?.email ? userDetail?.email : "",
+      Department: userDetail?.department?.department_name
+        ? userDetail.department.department_name
         : "no department",
-      role: ProfileDetail?.role?.id,
+      role: userDetail?.role?.id,
     },
   });
 
@@ -109,13 +102,6 @@ const UserProfile = () => {
         const response = await GlobalApi.updateUserImage(formData);
         console.log(response);
         const { id, name, image, email, role } = response.data;
-        updateProfileDetail({
-          id,
-          name,
-          email,
-          image: image ? image.url : "/profiletest.jpg",
-          role,
-        });
       } catch (error) {
         console.error("Error updating user image:", error);
       } finally {
@@ -125,17 +111,8 @@ const UserProfile = () => {
         });
       }
     }
-    if (ProfileDetail.role && ProfileDetail.role.id === values.role) {
-      console.log(
-        "request role เดิม ",
-        values.role,
-        ":  ",
-        ProfileDetail.role.id
-      );
-    } else if (ProfileDetail.roleRequests?.length == 0) {
-      requestRole(values.role);
-    } else {
-      console.log("don't request role ,cause have pending request!!");
+    if (userDetail.role && userDetail.role.id === values.role) {
+      console.log("request role เดิม ", values.role, ":  ", userDetail.role.id);
     }
 
     setIsLoading(true);
@@ -145,39 +122,6 @@ const UserProfile = () => {
   const { setValue } = form;
   const handleRoleChange: any = (newRole: any) => {
     setValue("role", newRole);
-  };
-  //use Socket io for sendRoleRequest to admin
-  const requestRole = async (roleId: any) => {
-    try {
-      const response = await GlobalApi.sendRoleRequest(
-        ProfileDetail?.id,
-        roleId
-      );
-      // หาว่ามีการร้องขอมามั้ย ถ้ามีก็ให้ updateProfileDetailไว้ เพื่อคงสถานะ แล้วนำไปใช้ในการ disable button
-      const { id, role_name, description } = response?.data.data.role;
-      const roleRequests: { role: Role; status: string }[] = [
-        {
-          role: {
-            id,
-            description,
-            role_name,
-          },
-          status: "PENDING",
-        },
-      ];
-
-      updateProfileDetail({
-        roleRequests: roleRequests,
-      });
-      // Emit an event to notify admins ขนข้อูลทั้งหมดที่ได้จาก response ไปให้ admin
-      const data = response?.data;
-      console.log("requestRole:", data);
-      socket.emit("newRoleRequest", {
-        data,
-      });
-    } catch (error) {
-      console.error("Failed to request role:", error);
-    }
   };
 
   return (
@@ -199,10 +143,10 @@ const UserProfile = () => {
                   loading="lazy"
                 />
               </div>
-            ) : ProfileDetail.image ? (
+            ) : userDetail.image ? (
               <div className="relative">
                 <Image
-                  src={ProfileDetail?.image}
+                  src={userDetail?.image.url}
                   width={500}
                   height={500}
                   alt={"profile"}
@@ -211,10 +155,15 @@ const UserProfile = () => {
                 />
               </div>
             ) : (
-              <div className="w-[85px] h-[85px] rounded-full object-cover border border-neutral-50 p-[2px] shadow-lg bg-neutral-600 animate-pulse">
-                <div className="flex text-white h-full justify-center items-center animate-spin">
-                  <Loader size={30} />
-                </div>
+              <div className="relative">
+                <Image
+                  src={'/profiletest.jpg'}
+                  width={500}
+                  height={500}
+                  alt={"profile"}
+                  className="w-[85px] h-[85px] rounded-full object-cover border border-neutral-50 p-[2px] shadow-lg bg-white"
+                  loading="lazy"
+                />
               </div>
             )}
             <div className="absolute button-0 right-0 -translate-y-full bg-blue-500 text-white rounded-full p-1">
@@ -222,8 +171,8 @@ const UserProfile = () => {
             </div>
           </div>
           <div className="my-3">
-            <h2 className="text-xl font-bold">{ProfileDetail?.name}</h2>
-            <h2 className="text-sm text-gray-500">{ProfileDetail?.email}</h2>
+            <h2 className="text-xl font-bold">{userDetail?.name}</h2>
+            <h2 className="text-sm text-gray-500">{userDetail?.email}</h2>
           </div>
         </div>
       </div>
@@ -291,7 +240,6 @@ const UserProfile = () => {
                           className="absolute top-1/2 -translate-y-1/2 left-2 text-gray-500"
                         />
                         <Input
-                          disabled
                           id="email"
                           type="text"
                           className="pl-10  focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1"
@@ -337,21 +285,6 @@ const UserProfile = () => {
                       <div className="relative">
                         <div className="flex items-center gap-3">
                           <SetRoleUserOptions />
-                          {/* <SetStatusSection
-                            onRoleChange={handleRoleChange}
-                            defaultValue={
-                              ProfileDetail.roleRequests?.length &&
-                              ProfileDetail.roleRequests.length > 0
-                                ? ProfileDetail.roleRequests[0].role.role_name
-                                : ProfileDetail?.role?.role_name
-                            }
-                            isPending={
-                              ProfileDetail.roleRequests?.length &&
-                              ProfileDetail.roleRequests.length > 0
-                                ? true
-                                : false
-                            }
-                          /> */}
                         </div>
                       </div>
                     </FormControl>
@@ -390,7 +323,7 @@ const UserProfile = () => {
             />
             <div className="w-full text-right">
               {isLoading ? (
-                <Button className="w-32" type="submit">
+                <Button className="w-32" type="submit" disabled>
                   Save Change
                 </Button>
               ) : (
