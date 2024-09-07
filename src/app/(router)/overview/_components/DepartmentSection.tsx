@@ -1,7 +1,6 @@
 "use client";
 import GlobalApi from "@/app/_unit/GlobalApi";
 import useStore from "@/app/store/store";
-import { Department } from "@/types/interface";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
