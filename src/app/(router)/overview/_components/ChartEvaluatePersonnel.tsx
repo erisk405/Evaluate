@@ -8,10 +8,18 @@ import {
   RadialBar,
   RadialBarChart,
 } from "recharts";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { ChartConfig, ChartContainer } from "@/components/ui/chart";
 import Link from "next/link";
 import ChartEvaluatedYou from "./ChartEvaluatedYou";
+import { TrendingUp } from "lucide-react";
 
 export const description = "A radial chart with a custom shape";
 const ChartEvaluatePersonnel = () => {
@@ -33,21 +41,20 @@ const ChartEvaluatePersonnel = () => {
     },
   } satisfies ChartConfig;
   return (
-    <div>
+    <div className="">
       {myQuest &&
         myQuest.map((item, index) => (
-          <div
-            key={item.id}
-          >
-            <Card className="grid grid-cols-2">
+          <div key={item.id}>
+            <Card className="grid grid-cols-2 border-none shadow-none">
+              <CardHeader className="items-center col-span-2 pb-0">
+                <CardTitle>{item.name}</CardTitle>
+                <CardDescription>January - June 2024</CardDescription>
+              </CardHeader>
               <CardContent className="p-0 h-auto col-span-2">
-                <CardHeader className="items-start pb-0">
-                  <CardTitle>{item.name}</CardTitle>
-                </CardHeader>
-                <div className="w-full flex justify-center">
+                <div className="flex-1 pb-0">
                   <ChartContainer
                     config={chartConfig}
-                    className="aspect-square h-[220px] "
+                    className="mx-auto aspect-square max-h-[250px]"
                   >
                     <RadialBarChart
                       data={item.chartData}
@@ -103,28 +110,38 @@ const ChartEvaluatePersonnel = () => {
                   </ChartContainer>
                 </div>
               </CardContent>
-              <div className="col-span-2">
-                <div className="grid grid-cols-2 gap-4 text-sm  mx-6 mb-6">
-                  {departments.map((item, index) => (
-                    <div
-                      className="flex justify-between gap-2"
-                      key={index + "Letgo"}
-                    >
-                      <Link
-                        href={`/overview/department/${item.id}`}
-                        className="cursor-pointer hover:text-blue-500 transition-all active:scale-95"
-                      >
-                        {item.department_name}
-                      </Link>
-                      <div className="flex items-start gap-1 font-bold">
-                        25/32
-                        <span>คน</span>
-                      </div>
-                    </div>
-                  ))}
+              <CardFooter className="flex-col gap-2 col-span-2 text-sm">
+                <div className="flex items-center gap-2 font-medium leading-none">
+                  Trending up by 5.2% this month{" "}
+                  <TrendingUp className="h-4 w-4" />
                 </div>
-              </div>
+                <div className="leading-none text-muted-foreground">
+                  Showing total visitors for the last 6 months
+                </div>
+              </CardFooter>
             </Card>
+
+            <div className="col-span-2">
+              <div className="grid sm:grid-cols-2 gap-4 text-sm  mx-6 mb-6">
+                {departments.map((item, index) => (
+                  <div
+                    className="flex justify-between gap-2"
+                    key={index + "Letgo"}
+                  >
+                    <Link
+                      href={`/overview/department/${item.id}`}
+                      className="cursor-pointer hover:text-blue-500 transition-all active:scale-95"
+                    >
+                      {item.department_name}
+                    </Link>
+                    <div className="flex items-start gap-1 font-bold">
+                      25/32
+                      <span>คน</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         ))}
     </div>
