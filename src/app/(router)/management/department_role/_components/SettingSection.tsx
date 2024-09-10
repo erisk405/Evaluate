@@ -25,7 +25,7 @@ import { useForm } from "react-hook-form";
 import { Department } from "@/types/interface";
 import GlobalApi from "@/app/_unit/GlobalApi";
 import { ListEmployeeOfDepartment } from "./ListEmployeeOfDepartment";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useStore from "@/app/store/store";
 import { toast } from "@/components/ui/use-toast";
 import SetHeadOfDepartmentSection from "./SetHeadOfDepartmentSection";
@@ -131,7 +131,6 @@ export default function SettingSection({ department }: SettingSectionProps) {
   const handleDeputyChange: any = (newDeputy: any) => {
     setValue("deputy", newDeputy);
   };
-
   return (
     <Sheet>
       <SheetTrigger asChild>

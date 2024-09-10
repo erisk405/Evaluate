@@ -6,7 +6,7 @@ import useStore from "@/app/store/store";
 const AllListDepartment = () => {
   const { departments } = useStore();
   useEffect(() => {
-    // console.log(departments);
+    // console.log("departments:",departments);
   }, [departments]);
   return (
     <div className="w-full flex flex-col gap-3 my-4 sm:max-h-[700px] overflow-scroll scrollbar-gemini">

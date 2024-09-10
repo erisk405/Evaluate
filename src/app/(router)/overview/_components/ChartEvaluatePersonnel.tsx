@@ -28,7 +28,7 @@ const ChartEvaluatePersonnel = () => {
   const myQuest = [
     {
       id: "AOU01",
-      name: "คุณประเมินบุคลากรไปแล้ว",
+      name: "คุณประเมินไปแล้ว",
       chartData: [
         { browser: "alreadyEvaluated", quantity: 40, fill: "rgb(253 224 71)" },
       ],

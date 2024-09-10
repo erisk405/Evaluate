@@ -21,31 +21,26 @@ import {
 import { useMemo, useState } from "react";
 export const description = "A donut chart with text";
 const chartData = [
-  { browser: "chrome", visitors: 5, fill: "var(--color-chrome)" },
-  { browser: "safari", visitors: 10, fill: "var(--color-safari)" },
-  { browser: "firefox", visitors: 19, fill: "var(--color-firefox)" },
-  { browser: "edge", visitors: 13, fill: "var(--color-edge)" },
+  { browser: "workSkills", visitors: 5, fill: "var(--color-workSkills)" },
+  { browser: "academicKnowledge", visitors: 10, fill: "var(--color-academicKnowledge)" },
+  { browser: "affective", visitors: 19, fill: "var(--color-affective)" },
 ];
 
 const chartConfig = {
   visitors: {
     label: "Visitors",
   },
-  chrome: {
-    label: "Chrome",
-    color: "rgb(59 130 246)",
+  workSkills: {
+    label: "ทักษาปฏิบัติงาน",
+    color: "#C5FFF8",
   },
-  safari: {
-    label: "Safari",
-    color: "rgb(37 99 235)",
+  academicKnowledge: {
+    label: "ความรู้เชิงวิชาการ",
+    color: "#96EFFF",
   },
-  firefox: {
-    label: "Firefox",
-    color: "rgb(147 197 253)",
-  },
-  edge: {
-    label: "Edge",
-    color: "rgb(29 78 216)",
+  affective: {
+    label: "จิตพิสัย",
+    color: "#5FBDFF",
   },
 } satisfies ChartConfig;
 
@@ -74,7 +69,7 @@ const ChartEvaluatedYou = () => {
       now: 10,
       total: 39,
       icon: <UserRoundSearch />,
-      color: "#22c55e",
+      color: "#C5FFF8",
       state: Academicknowledge,
     },
     {
@@ -83,7 +78,7 @@ const ChartEvaluatedYou = () => {
       now: 14,
       total: 54,
       icon: <FolderKanban />,
-      color: "#3b82f6",
+      color: "#96EFFF",
       state: OperationalSkills,
     },
     {
@@ -92,7 +87,7 @@ const ChartEvaluatedYou = () => {
       now: 64,
       total: 72,
       icon: <Cog />,
-      color: "#06B6D4",
+      color: "#5FBDFF",
       state: AffectiveDomain,
     },
   ];
@@ -213,7 +208,7 @@ const ChartEvaluatedYou = () => {
                     // pathTransition: 'none',
                     // Colors
                     textColor: "#000000",
-                    trailColor: "#D1ECEC",
+                    trailColor: "rgb(243 244 246)",
                     backgroundColor: "#3e98c7",
                   })}
                 />

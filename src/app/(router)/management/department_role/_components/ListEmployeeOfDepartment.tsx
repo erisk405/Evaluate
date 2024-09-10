@@ -115,6 +115,7 @@ export const columns: ColumnDef<User>[] = [
     accessorKey: "role",
     header: "Role",
     cell: ({ row }) => {
+      // console.log("Role : ", row.original);
       return (
         <div className="flex items-center">
           <SetStatusSection defaultValue={row.original.role.role_name} />
@@ -186,7 +187,8 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [globalFilter, setGlobalFilter] = useState("");
   const [allUser, setAllUser] = useState<User[]>([]);
-
+  console.log("ListEmployee",department);
+  
   // ใช้งานเพื่อจัดเรียงข้อมูล แต่ละหน้าของ ต่างๆภายใน table ออกมา 
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 5 });
   // จำนวนpage ทั้งหมด อิง
@@ -242,6 +244,7 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
     const response = await GlobalApi.getDepartmentById(department.id , pagination.pageIndex, pagination.pageSize);
     if (response?.data) {
       setAllUser(response.data.data.user);
+      
       setTotalPages(response?.data.totalPages); // ตั้งค่าจำนวนหน้าทั้งหมด
     } else {
       setAllUser([]);
@@ -268,7 +271,6 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
       console.log("message:", { message: error });
     }
   };
-
   // useEffect(() => {
   //   console.log("rowSelection:", rowSelection);
   // }, [rowSelection]);
@@ -300,12 +302,12 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
     onGlobalFilterChange: setGlobalFilter,
-    globalFilterFn: (row, columnId, filterValue) => {
-      const name = row.original.name.toLowerCase();
-      const email = row.original.email.toLowerCase();
-      const searchValue = filterValue.toLowerCase();
-      return name.includes(searchValue) || email.includes(searchValue);
-    },
+    // globalFilterFn: (row, columnId, filterValue) => {
+    //   const name = row.original.name.toLowerCase();
+    //   const email = row.original.email.toLowerCase();
+    //   const searchValue = filterValue.toLowerCase();
+    //   return name.includes(searchValue) || email.includes(searchValue);
+    // },
   });
 
   return (
