@@ -105,7 +105,7 @@ const page = () => {
   const fetchRole = async () => {
     try {
       const response = await GlobalApi.getRole();
-      console.log("role:", response);
+      // console.log("role:", response);
       setRole(response?.data);
     } catch (error) {
       console.log(error);

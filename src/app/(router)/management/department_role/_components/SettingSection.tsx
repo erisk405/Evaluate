@@ -61,6 +61,10 @@ export default function SettingSection({ department }: SettingSectionProps) {
       image: undefined,
     },
   });
+  
+  // useEffect(()=>{
+  //   console.log("department: ",department.department_name);
+  // })
   const { setDepartments } = useStore();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   // for change when select file image

@@ -5,9 +5,6 @@ import useStore from "@/app/store/store";
 
 const AllListDepartment = () => {
   const { departments } = useStore();
-  useEffect(() => {
-    // console.log("departments:",departments);
-  }, [departments]);
   return (
     <div className="w-full flex flex-col gap-3 my-4 sm:max-h-[700px] overflow-scroll scrollbar-gemini">
       {departments.length > 0
@@ -36,7 +33,7 @@ const AllListDepartment = () => {
               </div>
             </div>
           ))
-        : [1, 2, 3].map((item,index) => (
+        : [1, 2, 3].map((item,index) => ( // for loading when wait api send response
             <div key={"LoadDepert"+index} className="flex gap-3 justify-between items-center animate-pulse mt-3 mx-3">
               <div className="flex gap-3 items-center">
                 <div className="w-[190px] h-[120px] bg-gray-300 rounded-lg"></div>

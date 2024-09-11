@@ -21,7 +21,11 @@ import { useEffect, useState } from "react";
 import useStore from "@/app/store/store";
 import GlobalApi from "@/app/_unit/GlobalApi";
 
-export default function SetStatusSection({ onRoleChange , defaultValue ,isPending} : any) {
+export default function SetStatusSection({
+  onRoleChange,
+  defaultValue,
+  isPending,
+}: any) {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
   const { roles, setRole } = useStore();
@@ -42,10 +46,8 @@ export default function SetStatusSection({ onRoleChange , defaultValue ,isPendin
   };
   // ให้ เรียกใช้ function ใหม่หากเกิดการเปลี่ยนแปลงที่ rolRequest
   useEffect(() => {
-    
     fetchRole();
-  }, []);
-
+  }, [defaultValue]);
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -54,7 +56,7 @@ export default function SetStatusSection({ onRoleChange , defaultValue ,isPendin
           role="combobox"
           aria-expanded={open}
           className="justify-between w-auto"
-          disabled = {isPending}
+          disabled={isPending}
         >
           {value
             ? roles.find((Role) => Role.role_name === value)?.role_name
