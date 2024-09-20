@@ -25,24 +25,23 @@ const DepartmentSection = () => {
   return (
     <>
       <div className="max-h-[550px] overflow-y-scroll scrollbar-gemini">
-        <h2 className="px-5 pt-5 text-xl font-bold">Department</h2>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 m-4">
+        <div className="grid gap-5 m-2 xl:grid-cols-1 lg:grid-cols-3">
           {departments.length > 0
             ? departments.map((item) => (
                 <Link
                   href={`/overview/department/${item.id}`}
                   key={item?.id}
-                  className="overflow-hidden cursor-pointer col-span-1 rounded-2xl shadow-md
-            hover:bg-neutral-700 hover:scale-105 active:scale-95 group transition-all"
+                  className="overflow-hidden cursor-pointer col-span-1 rounded-2xl shadow
+                hover:bg-neutral-700 active:scale-95 group transition-all border"
                 >
-                  <div className="flex items-center flex-col">
+                  <div className="flex items-center xl:flex-row lg:flex-col ">
                     {item.image ? (
                       <Image
                         src={item?.image ? item?.image.url: '/test.png'}
                         width={500}
                         height={500}
                         alt="BannerDeapartment"
-                        className="w-[250px] h-[120px] object-cover"
+                        className="w-[150px] h-[120px] object-cover"
                         loading="lazy"
                       />
                     ) : (
@@ -56,7 +55,7 @@ const DepartmentSection = () => {
                       />
                     )}
 
-                    <h2 className="group-hover:text-white text-center p-4">
+                    <h2 className="group-hover:text-white text-start p-3">
                       {item?.department_name}
                     </h2>
                   </div>
