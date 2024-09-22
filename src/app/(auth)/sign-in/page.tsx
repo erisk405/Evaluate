@@ -146,6 +146,12 @@ const page = () => {
               Sign up
             </Link>
           </div>
+          <div className="text-center text-sm">
+            if you forgot have an account?{" "}
+            <Link href="/forgot-password" className="underline">
+              forgot password
+            </Link>
+          </div>
         </div>
       </div>
       <div className="hidden bg-muted lg:block overflow-hidden">

@@ -67,12 +67,12 @@ const Header = () => {
   }, []);
   return (
     <div className="flex relative justify-between items-center py-2">
-      <div className="flex-1 flex items-center min-w-[200px] max-w-[1000px] gap-20">
+      <div className="flex-1 flex items-center min-w-[200px] max-w-[1000px] gap-12">
 
         {/* logo */}
-        <div className="flex items-center py-1">
-          <Image src={"/logo.png"} alt="logo" width={76} height={76} />
-          <h2 className="text-2xl font-bold">Eval 360</h2>
+        <div className="flex items-center py-1 gap-3">
+          <Image src={"/logo.png"} alt="logo" width={50} height={50} />
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-rose-600 to-orange-400 text-transparent bg-clip-text">Evaluate 360</h2>
         </div>
         
         {/* search bar */}
@@ -86,7 +86,7 @@ const Header = () => {
             type="text"
             id="Search"
             placeholder="Search for..."
-            className="w-full rounded-full outline-none p-5 border border-neutral-300 py-2.5 pe-10 shadow-2xl sm:text-sm"
+            className="w-full rounded-lg outline-none p-5 border border-neutral-300 py-2.5 pe-10 shadow sm:text-sm"
           />
           <span className="absolute inset-y-0 end-0 grid w-10 place-content-center">
             <button type="button" className="text-gray-600 hover:text-gray-700">
