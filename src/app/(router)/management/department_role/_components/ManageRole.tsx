@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -46,40 +46,14 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-
-const Allrole = [
-  {
-    id: "Ar1",
-    name: "Admin",
-    description:
-      "All permission Lorem ipsum dolor, sit amet consectetur adipisicing ",
-  },
-  {
-    id: "Ar2",
-    name: "ผู้อำนวยการ",
-    description:
-      "ประมาณรอง Lorem ipsum dolor, sit amet consectetur adipisicing ",
-  },
-  {
-    id: "Ar3",
-    name: "รองผู๋อำนวยการ",
-    description:
-      "ประมาณหัวหน้า Lorem ipsum dolor, sit amet consectetur adipisicing ",
-  },
-  {
-    id: "Ar4",
-    name: "หัวหน้างานวิชาการ",
-    description: "บุคลากร Lorem ipsum dolor, sit amet consectetur adipisicing ",
-  },
-  {
-    id: "Ar5",
-    name: "บุคลากรทั่วไป",
-    description:
-      "ประเมิณกันเอง Lorem ipsum dolor, sit amet consectetur adipisicing ",
-  },
-];
+import useStore from "@/app/store/store";
 
 const ManageRole = () => {
+  const { roles } = useStore();
+  useEffect(()=>{
+    console.log("roles:",roles);
+    
+  },[roles])
   return (
     <div>
       <h2 className="text-2xl font-bold">Manage Role</h2>
@@ -134,15 +108,15 @@ const ManageRole = () => {
                 <h2>Set role permission form evaluate</h2>
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                {Allrole.map(
+                {roles.map(
                   (item) =>
-                    item.name !== "Admin" && (
-                      <div className="col-span-2 " key={item.id + "dog"}>
+                    item.role_name !== "admin" && item.role_name !== "member" && (
+                      <div className="col-span-2 " key={item.id}>
                         <Label
                           htmlFor="permission"
                           className="text-left col-span-2"
                         >
-                          {item.name}
+                          {item.role_name}
                         </Label>
                         <div className="w-full ">
                           <FilterSection />
@@ -170,7 +144,7 @@ const ManageRole = () => {
         </Dialog>
       </div>
       <div className="flex flex-col  ">
-        {Allrole.map((item) => (
+        {roles.map((item) => item.role_name !== "admin" && item.role_name !== "member" && (
           <Accordion type="single" collapsible className="w-full" key={item.id}>
             <AccordionItem value="item-1">
               <AccordionTrigger>
@@ -178,7 +152,7 @@ const ManageRole = () => {
                   <div className="flex items-center gap-1">
                     <BadgeCheck className="text-white bg-blue-500 overflow-hidden rounded-full" />
                     <h2 className="text-lg font-bold text-black">
-                      {item.name}
+                      {item.role_name}
                     </h2>
                   </div>
                 </div>
@@ -251,18 +225,18 @@ const ManageRole = () => {
                             <h2>Set role permission form evaluate</h2>
                           </div>
                           <div className="grid grid-cols-4 items-center gap-4">
-                            {Allrole.map(
+                            {roles.map(
                               (item) =>
-                                item.name !== "Admin" && (
+                                item.role_name !== "admin" && item.role_name !== "member" && (
                                   <div
                                     className="col-span-2 "
-                                    key={item.id + "dog"}
+                                    key={item.id}
                                   >
                                     <Label
                                       htmlFor="permission"
                                       className="text-left col-span-2"
                                     >
-                                      {item.name}
+                                      {item.role_name}
                                     </Label>
                                     <div className="w-full ">
                                       <FilterSection />

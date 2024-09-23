@@ -147,7 +147,7 @@ const page = () => {
             </Link>
           </div>
           <div className="text-center text-sm">
-            if you forgot have an account?{" "}
+            if you forgot an account?{" "}
             <Link href="/forgot-password" className="underline">
               forgot password
             </Link>

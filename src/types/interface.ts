@@ -32,7 +32,7 @@ interface User {
 interface Role {
   id: string;
   description: string,
-  role_name: string
+  role_name: string,
 }
 
 interface RoleRequest {
