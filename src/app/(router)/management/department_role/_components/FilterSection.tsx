@@ -15,7 +15,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { CommandList } from "cmdk"
 
 const frameworks = [
@@ -39,7 +39,15 @@ const frameworks = [
 
 export default function FilterSection() {
   const [open, setOpen] = useState(false)
-  const [value, setValue] = useState("")
+  const [selectedValues, setSelectedValues] = useState<string[]>([])
+
+  const toggleValue = (value: string) => {
+    setSelectedValues((prev) =>
+      prev.includes(value)
+        ? prev.filter((v) => v !== value) // ถ้าเลือกอยู่แล้ว ให้เอาออก
+        : [...prev, value] // ถ้ายังไม่เลือก ให้เพิ่มเข้าไป
+    )
+  }
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -50,8 +58,8 @@ export default function FilterSection() {
           aria-expanded={open}
           className="w-full justify-between"
         >
-          {value
-            ? frameworks.find((framework) => framework.value === value)?.label
+          {selectedValues.length > 0
+            ? `Selected ${selectedValues.length} form(s)`
             : "Select form..."}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -66,21 +74,20 @@ export default function FilterSection() {
                 <CommandItem
                   key={framework.value}
                   value={framework.value}
-                  onSelect={(currentValue) => {
-                    setValue(currentValue === value ? "" : currentValue)
-                    setOpen(false)
+                  onSelect={() => {
+                    toggleValue(framework.value)
                   }}
                 >
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      value === framework.value ? "opacity-100" : "opacity-0"
+                      selectedValues.includes(framework.value) ? "opacity-100" : "opacity-0"
                     )}
                   />
                   {framework.label}
                 </CommandItem>
               ))}
-              </CommandList>
+            </CommandList>
           </CommandGroup>
         </Command>
       </PopoverContent>
