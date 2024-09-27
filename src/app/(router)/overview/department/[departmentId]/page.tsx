@@ -303,7 +303,7 @@ const page = () => {
                     className="flex items-center gap-3 bg-neutral-800 hover:bg-neutral-700 
                   text-neutral-200 px-2 py-1 rounded-xl transition-all active:scale-95"
                   >
-                    <Hexagon /> ประเมิณ
+                    <Hexagon /> ประเมิน
                   </h2>
                 </div>
               </div>
@@ -389,7 +389,7 @@ const page = () => {
                         <Sheet>
                           <SheetTrigger asChild>
                             <Button className="flex items-center gap-3 active:scale-95 transition-all">
-                              <Hexagon /> ประเมิณ
+                              <Hexagon /> ประเมิน
                             </Button>
                           </SheetTrigger>
                           <SheetContent

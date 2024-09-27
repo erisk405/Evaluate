@@ -53,7 +53,7 @@ const OptionSideBar = [
         id: 'OSide06',
         name: 'History',
         icon: <FolderClock />,
-        path: '/flame',
+        path: '/history',
         session: 'user'
     },
     {
