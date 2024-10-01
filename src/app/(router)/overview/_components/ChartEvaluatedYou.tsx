@@ -32,15 +32,15 @@ const chartConfig = {
   },
   workSkills: {
     label: "ทักษาปฏิบัติงาน",
-    color: "#C5FFF8",
+    color: "#ffe4f3",
   },
   academicKnowledge: {
     label: "ความรู้เชิงวิชาการ",
-    color: "#96EFFF",
+    color: "#ffc8fb",
   },
   affective: {
     label: "จิตพิสัย",
-    color: "#5FBDFF",
+    color: "#ff92c2",
   },
 } satisfies ChartConfig;
 
@@ -69,7 +69,7 @@ const ChartEvaluatedYou = () => {
       now: 10,
       total: 39,
       icon: <UserRoundSearch />,
-      color: "#C5FFF8",
+      color: "#ffe4f3",
       state: Academicknowledge,
     },
     {
@@ -78,7 +78,7 @@ const ChartEvaluatedYou = () => {
       now: 14,
       total: 54,
       icon: <FolderKanban />,
-      color: "#96EFFF",
+      color: "#ffc8fb",
       state: OperationalSkills,
     },
     {
@@ -87,7 +87,7 @@ const ChartEvaluatedYou = () => {
       now: 64,
       total: 72,
       icon: <Cog />,
-      color: "#5FBDFF",
+      color: "#ff92c2",
       state: AffectiveDomain,
     },
   ];

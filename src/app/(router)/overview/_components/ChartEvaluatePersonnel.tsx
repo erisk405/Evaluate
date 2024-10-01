@@ -30,7 +30,7 @@ const ChartEvaluatePersonnel = () => {
       id: "AOU01",
       name: "คุณประเมินไปแล้ว",
       chartData: [
-        { browser: "alreadyEvaluated", quantity: 40, fill: "rgb(253 224 71)" },
+        { browser: "alreadyEvaluated", quantity: 40, fill: "#9bf6ff" },
       ],
       engle: 200,
     },

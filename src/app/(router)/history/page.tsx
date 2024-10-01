@@ -45,7 +45,7 @@ const page = () => {
             className="flex justify-between m-3 p-6 shadow rounded-xl 
           hover:shadow-md transition-all mb-3  "
           >
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 ">
               <Cloudy size={30} className="text-blue-500" />
               <h2 className="text-lg">{item.title}</h2>
             </div>
@@ -56,11 +56,11 @@ const page = () => {
                   ดูรายละเอียด
                 </Button>
               </DrawerTrigger>
-              <DrawerContent className="h-[calc(100dvh-10%)]">
-                <div className="mx-auto w-full ">
-                  <div className="mx-auto w-full max-w-lg">
-                    <DrawerHeader>
-                      <DrawerTitle>
+              <DrawerContent className="h-[calc(100dvh-10%)] ">
+                <div className="mx-auto w-full overflow-auto scrollbar-gemini">
+                  <div className="mx-auto w-full max-w-lg ">
+                    <DrawerHeader className="flex flex-col justify-center items-center">
+                      <DrawerTitle  className="text-xl">
                         สรุปผลการประเมินสมรรถนะ 360 องศา นายกฤตภาส สัมฤทธิ์
                       </DrawerTitle>
                       <DrawerDescription>
@@ -68,7 +68,7 @@ const page = () => {
                       </DrawerDescription>
                     </DrawerHeader>
                   </div>
-                  <div className="mx-auto w-full max-w-6xl"> 
+                  <div className="mx-auto w-full max-w-7xl"> 
                     <ResultSection/>
                   </div>
                   <div className="mx-auto w-full max-w-lg">
