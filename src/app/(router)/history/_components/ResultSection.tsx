@@ -1,3 +1,4 @@
+"use client"
 import React from "react";
 import {
   Table,
@@ -197,7 +198,7 @@ const ResultSection = () => {
             </TableCell>
             <TableCell className="text-left">นายกฤตภาส สัมฤทธิ์</TableCell>
             <TableCell className="text-center">4.35</TableCell>
-            <TableCell className="text-center">0.81</TableCell>{" "}
+            <TableCell className="text-center">0.81</TableCell>
             <TableCell className="flex justify-center items-center gap-1 text-emerald-500">
               0.87{" "}
               <span className="bg-emerald-500 text-white rounded-full">

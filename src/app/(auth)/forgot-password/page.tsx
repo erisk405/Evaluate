@@ -13,7 +13,7 @@ const page = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Image src={"/logo.png"} width={50} height={50} alt="logo" />
-              <h2 className="text-xl font-bold">Evalute 360</h2>
+              <h2 className="text-xl font-bold">Evaluate 360</h2>
             </div>
             <Link
               href={"/sign-up"}
