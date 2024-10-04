@@ -12,12 +12,20 @@ interface UserProfile {
 }
 const apiUrl = process.env.NEXT_PUBLIC_API_URL || `http://localhost:8000/api`;
 
+const fetchProtected = () =>{
+  return axios.get(`${apiUrl}/protected`,{
+    withCredentials: true,
+  })
+}
+
 const fetchUserProfile = async (): Promise<AxiosResponse<UserProfile>> => {
   // Return the axios.get promise with type
   return await axios.get(`${apiUrl}/myProfile`, {
     withCredentials: true, // ส่ง cookies ไปด้วย
   });
 };
+
+
 
 const Logout = async () => {
   try {
@@ -187,5 +195,6 @@ export default {
   findUserEmptyDepartment,
   addUsersToDepartment,
   resolveRole,
-  sendRoleRequest
+  sendRoleRequest,
+  fetchProtected
 };

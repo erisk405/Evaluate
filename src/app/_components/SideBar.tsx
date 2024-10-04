@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { OptionSideBar } from "@/app/data/data-option";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
@@ -15,15 +15,32 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import GlobalApi from "../_unit/GlobalApi";
 const SideBar = () => {
-  const [position, setPosition] = React.useState("");
+  const [position, setPosition] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false); // สถานะของ admin
   const pathUrl = usePathname();
+  const Protected = async () => {
+    try {
+      const response = await GlobalApi.fetchProtected();
+      if (response.data.role === "admin") {
+        setIsAdmin(true); // ถ้า role เป็น admin ให้ตั้งค่าเป็น true
+      }
+    } catch (error) {
+      // console.error("Error fetching admin role:", error);
+      setIsAdmin(false); // ในกรณีที่ดึงข้อมูลไม่สำเร็จ หรือตรวจสอบ role ไม่ผ่าน
+    }
+  };
+  useEffect(()=>{
+    Protected();
+  },[])
+
   return (
     <div className="sticky top-32">
       {/* option */}
       <div className="my-9 mx-2 flex flex-col gap-3 w-auto">
         {OptionSideBar.map((item) =>
-          item?.session !== "Admin" ? (
+          item?.session !== "admin" ? (
             <Link
               key={item?.id}
               href={item?.path}
@@ -32,6 +49,7 @@ const SideBar = () => {
                   ? "bg-neutral-800 text-white transition-all"
                   : "text-neutral-600 hover:bg-gray-100"
               }
+               ${isAdmin ? '' : 'pr-20'}
               rounded-2xl px-4 py-2 `}
             >
               <div className="flex gap-3 items-center">
@@ -40,7 +58,8 @@ const SideBar = () => {
               </div>
             </Link>
           ) : (
-            <div  key={item.id}>
+            isAdmin &&
+            <div  key={item.id} >
               <div className="block md:hidden ">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>

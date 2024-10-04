@@ -30,7 +30,7 @@ const OptionSideBar = [
         name: 'Management',
         icon: <ShieldCheck />,
         path: '#',
-        session: 'Admin',
+        session: 'admin',
         SubOptionSideBar:[
             {
                 id: 'subOSide1',
@@ -61,7 +61,7 @@ const OptionSideBar = [
         name: 'Evaluation',
         icon: <BarChart3 />,
         path: '#',
-        session: 'Admin',
+        session: 'admin',
         SubOptionSideBar:[
             {
                 id: 'subOSide4',

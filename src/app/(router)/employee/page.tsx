@@ -1,5 +1,4 @@
 "use client"
-import { SquareUserRound } from 'lucide-react'
 import Image from 'next/image'
 import React from 'react'
 import { ListEmployee } from './_components/ListEmployee'
@@ -9,28 +8,28 @@ const page = () => {
 const OptionEmployee = [
     {
       id: "OEP01",
-      name: "Total Employee",
+      name: "ผู้ใช้งานทั้งหมด",
       quantity: 100,
       img: '/team.svg',
       color: 'from-red-300 to-pink-300',
     },
     {
       id: "OEP02",
-      name: "New Employee",
+      name: "สมาชิกใหม่",
       quantity: 15,
       img: '/NewEmployee.svg',
       color: 'from-green-200 to-emerald-300'
     },
     {
       id: "OEP03",
-      name: "Male",
+      name: "ประเมินไปแล้ว",
       quantity: 65,
       img: '/male.svg',
       color: 'from-blue-300 to-cyan-300'
     },
     {
       id: "OEP04",
-      name: "Female",
+      name: "ที่ยังไม่ถูกประเมิน",
       quantity: 20,
       img: '/female.svg',
       color: 'from-purple-300 to-fuchsia-300'
@@ -50,8 +49,8 @@ const OptionEmployee = [
             >
               <div className='text-white w-full group-hover:text-white z-10'>
                 <div className=''>
-                  <h2 className='text-sm text-neutral-400'>Avaliable Balance</h2>
-                  <h2 className='text-lg'>{item?.name}</h2>
+                  <h2 className='text-sm text-neutral-400'>Report</h2>
+                  <h2 className='text-xl'>{item?.name}</h2>
                 </div>
                 <div className='flex justify-between mt-20'>
                   <h2>View more</h2>
