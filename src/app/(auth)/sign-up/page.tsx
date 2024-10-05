@@ -26,10 +26,22 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { apiUrl } from "@/app/data/data-option";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Loader } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
+
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import GlobalApi from "@/app/_unit/GlobalApi";
+import { Department } from "@/types/interface";
 
 const formSchema = z.object({
   FirstName: z.string().min(2, {
@@ -44,54 +56,77 @@ const formSchema = z.object({
   phoneNumber: z.string().regex(/^(\+\d{1,3}[- ]?)?\d{10}$/, {
     message: "Phone number must be a valid format.",
   }),
-  password: z.string().min(8,{
-    message: "Password must be at least 8 characters long."
-  }).regex(/[a-z]/,{
-    message: "Password must contain at least one lowercase letter.",
-  }).regex(/[A-Z]/,{
-    message: "Password must contain at least one uppercase letter."
-  }).regex(/[0-9]/,{
-    message: "Password must contain at least one number.",
-  })
+  password: z
+    .string()
+    .min(8, {
+      message: "Password must be at least 8 characters long.",
+    })
+    .regex(/[a-z]/, {
+      message: "Password must contain at least one lowercase letter.",
+    })
+    .regex(/[A-Z]/, {
+      message: "Password must contain at least one uppercase letter.",
+    })
+    .regex(/[0-9]/, {
+      message: "Password must contain at least one number.",
+    }),
+  prefix: z.string().min(1, { message: "กรุณาใส่คำนำหน้าชื่อ" }),
+  department: z.string().min(1, { message: "กรุณาใส่หน่วยงานที่ประจำอยู่" }),
 });
 
 const page = () => {
   const [loading, setLoading] = useState(false);
-  
+  const [prefix, setPrefix] = useState<
+    { prefix_id: string; prefix_name: string }[] | null
+  >(null);
+  const [department, setDepartment] = useState<Department[]>([]);
+
+  const fetchDataOfSelection = async () => {
+    const prefixResponse = await GlobalApi.getPrefix();
+    const departmentResponse = await GlobalApi.getDepartment();
+    setDepartment(departmentResponse?.data);
+    setPrefix(prefixResponse?.data);
+  };
+  useEffect(() => {
+    fetchDataOfSelection();
+  }, []);
   const Router = useRouter();
   // Define form
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email:"",
+      email: "",
       FirstName: "",
       LastName: "",
-      phoneNumber:"",
-      password: ""
+      phoneNumber: "",
+      password: "",
+      prefix: "", // ค่าเริ่มต้นของ select
+      department: "",
     },
   });
- async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
     const new_user = {
       name: values.FirstName + " " + values.LastName,
       email: values.email,
       password: values.password,
       phone: values.phoneNumber,
-      dateofbirth: "2544-12-05",
+      prefix: values.prefix,
+      department: values.department,
     };
 
     try {
-      setLoading(true)
+      setLoading(true);
       const response = await axios.post(`${apiUrl}/sign-up`, new_user);
       toast({
         title: "Sigup success",
         description: `✅ ${response.data.message}`,
-        className:"bg-black text-white"
+        className: "bg-black text-white",
       });
       console.log(response);
-      Router.push('/sign-in');
+      Router.push("/sign-in");
     } catch (error) {
-      setLoading(false)
+      setLoading(false);
       console.error("Error fetching data:", error);
     }
   }
@@ -122,6 +157,67 @@ const page = () => {
               <div className="grid gap-10">
                 <div className="grid grid-cols-2 gap-10">
                   {/* first name */}
+                  <FormField
+                    control={form.control}
+                    name="prefix"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Select a prefix</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="คำนำหน้าชื่อ" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectLabel>คำนำหน้า</SelectLabel>
+
+                              {prefix?.map((item) => (
+                                <SelectItem
+                                  key={`${item.prefix_id}`}
+                                  value={item.prefix_id}
+                                >
+                                  {item.prefix_name}
+                                </SelectItem>
+                              ))}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="department"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Select a department</FormLabel>
+                        <Select
+                          onValueChange={field.onChange} // อัพเดตค่าเมื่อเลือก
+                          defaultValue={field.value}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="หน่วยงาน" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectLabel>หน่วยงาน</SelectLabel>
+                              {department?.map((item) => (
+                                <SelectItem key={`${item.id}`} value={item.id}>
+                                  {item.department_name}
+                                </SelectItem>
+                              ))}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   <FormField
                     control={form.control}
                     name="FirstName"
@@ -158,48 +254,56 @@ const page = () => {
                 </div>
                 {/* phone */}
                 <FormField
-                    control={form.control}
-                    name="phoneNumber"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Phone</FormLabel>
-                        <FormControl>
-                          <Input placeholder="097-xxx-xxxx" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  control={form.control}
+                  name="phoneNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Phone</FormLabel>
+                      <FormControl>
+                        <Input placeholder="097-xxx-xxxx" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 {/* email */}
                 <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input placeholder="m@example.com" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input placeholder="m@example.com" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 {/* password */}
                 <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Password</FormLabel>
-                        <FormControl>
-                          <Input placeholder="*******" {...field} type="password" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="*******"
+                          {...field}
+                          type="password"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <Button type="submit" className="w-full">
-                  {loading ? <Loader  className="animate-spin"/> : "Create an account"}
+                  {loading ? (
+                    <Loader className="animate-spin" />
+                  ) : (
+                    "Create an account"
+                  )}
                 </Button>
                 <Button variant="outline" className="w-full">
                   Sign up with GitHub

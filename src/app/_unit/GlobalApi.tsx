@@ -12,6 +12,14 @@ interface UserProfile {
 }
 const apiUrl = process.env.NEXT_PUBLIC_API_URL || `http://localhost:8000/api`;
 
+const getPrefix = () => {
+  try {
+    return axios.get(`${apiUrl}/prefix`);
+  } catch (error) {
+    console.error("Error prefix:", error);
+  }
+}
+
 const fetchProtected = () =>{
   return axios.get(`${apiUrl}/protected`,{
     withCredentials: true,
@@ -196,5 +204,6 @@ export default {
   addUsersToDepartment,
   resolveRole,
   sendRoleRequest,
-  fetchProtected
+  fetchProtected,
+  getPrefix
 };
