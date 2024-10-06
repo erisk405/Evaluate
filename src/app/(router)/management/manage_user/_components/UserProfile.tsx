@@ -157,7 +157,7 @@ const UserProfile = ({ userDetail }: UserProfileProps) => {
             ) : (
               <div className="relative">
                 <Image
-                  src={'/profiletest.jpg'}
+                  src={"/profiletest.jpg"}
                   width={500}
                   height={500}
                   alt={"profile"}
@@ -321,6 +321,17 @@ const UserProfile = ({ userDetail }: UserProfileProps) => {
                 </FormItem>
               )}
             />
+            <Separator />
+            <FormItem>
+              <div className="grid grid-cols-11 items-center gap-3">
+                <h2 className="col-span-3">Reset Password</h2>
+                <Button variant={"outline"} className="px-16 active:scale-95">Reset</Button>
+              </div>
+              <FormDescription>
+                You can reset password for member
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
             <div className="w-full text-right">
               {isLoading ? (
                 <Button className="w-32" type="submit" disabled>

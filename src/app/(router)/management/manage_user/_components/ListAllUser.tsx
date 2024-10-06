@@ -192,7 +192,7 @@ export const columns: ColumnDef<User>[] = [
               <DialogTitle>
                 <div className="flex items-center gap-2">
                   <div className="bg-cyan-50 p-2 rounded-full">
-                    <UserRoundCog size={30} className="text-cyan-500" />
+                    <UserRoundCog size={30} className="text-blue-500" />
                   </div>
                   <h2 className="text-2xl">Edit user</h2>
                 </div>
