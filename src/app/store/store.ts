@@ -3,6 +3,12 @@ import { Department, Role, RoleRequest } from '@/types/interface';
 import { create } from 'zustand';
 
 interface StoreState {
+  openForm: {
+    open: boolean,
+    id: string | null
+  };
+  setOpenForm: (id: string) => void;
+
   profilePopup: {
     open: boolean;
   };
@@ -13,7 +19,7 @@ interface StoreState {
     email: string | null;
     image: string | null;
     role: Role | null;
-    department:string| null;
+    department: string | null;
     roleRequests: RoleRequest[] | null;
   };
   updateProfileDetail: (updatedFields: {
@@ -23,9 +29,9 @@ interface StoreState {
     image?: string;
     role?: Role;
     roleRequests?: RoleRequest[];
-    department?:string;
+    department?: string;
   }) => void;
-  
+
 
   departments: Department[];
   setDepartments: (departments: Department[]) => void;
@@ -43,9 +49,21 @@ const useStore = create<StoreState>((set) => ({
     image: null,
     role: null,
     roleRequests: null,
-    department:null
+    department: null
 
   },
+
+  openForm: {
+    open: false,
+    id: null
+  },
+  setOpenForm: (id: string) => set(() => ({
+    openForm: {
+      open: true,
+      id
+    }
+  })),
+
   profilePopup: {
     open: false,
   },
@@ -62,7 +80,7 @@ const useStore = create<StoreState>((set) => ({
     image?: string;
     role?: Role;
     roleRequests?: RoleRequest[];
-    department?:string;
+    department?: string;
   }) => set((state) => ({
     ProfileDetail: {
       ...state.ProfileDetail,

@@ -79,26 +79,68 @@ const formSchema = z.object({
     .string()
     .min(10, { message: "Description must be at least 10 characters." }) // ขั้นต่ำ 10 ตัวอักษร
     .max(100, { message: "Description must not exceed 100 characters." }), // สูงสุด 100 ตัวอักษร
+  roleLevel: z.enum(["LEVEL_1", "LEVEL_2", "LEVEL_3", "LEVEL_4"], {
+    required_error: "Please select a role level.",
+  }),
 });
+
+// Define the type for a single permission
+type Permission = {
+  internal: string[];
+  external: string[];
+};
+
+// Define the type for the permissions state
+type Permissions = {
+  [key: string]: Permission;
+};
 
 const ManageRole = () => {
   const { roles } = useStore();
-
+  const [permissions, setPermissions] = useState<Permissions>(
+    roles
+      .filter(
+        (role) => role.role_name !== "admin" && role.role_name !== "member"
+      )
+      .reduce(
+        (acc, role) => ({
+          ...acc,
+          [role.role_name]: { internal: [], external: [] },
+        }),
+        {} as Permissions
+      )
+  );
   const [loading, setLoading] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       roleName: "",
       description: "", // เพิ่มค่า default สำหรับ description
+      roleLevel: undefined,
     },
   });
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    console.log(permissions);
+    
     console.log(values);
     try {
       setLoading(true);
     } catch (error) {
       setLoading(false);
     }
+  };
+  const handleFilterChange = (
+    roleName: string,
+    type: "internal" | "external",
+    newValues: string[]
+  ) => {
+    setPermissions((prev) => ({
+      ...prev,
+      [roleName]: {
+        ...prev[roleName], // ถ้าไม่คัดลอกค่าเดิมไว้ ตอนSetใหม่ค่าเก่ามันจะหาย 
+        [type]: newValues,
+      } as any,
+    }));
   };
   return (
     <div>
@@ -144,6 +186,7 @@ const ManageRole = () => {
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="grid gap-4 py-4 px-4"
               >
+                {/* Role name */}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <FormField
@@ -160,33 +203,44 @@ const ManageRole = () => {
                       )}
                     />
                   </div>
+                  {/* Role level */}
                   <div>
-                    <Label htmlFor="name" className="">
-                      Role level
-                    </Label>
-                    <div className="mt-2">
-                      <Select required>
-                        <SelectTrigger className="w-full ">
-                          <SelectValue placeholder="Select a level " />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectLabel>Level</SelectLabel>
-                            <SelectItem value="LEVEL_1">Level 1</SelectItem>
-                            <SelectItem value="LEVEL_2">Level 2</SelectItem>
-                            <SelectItem value="LEVEL_3">Level 3</SelectItem>
-                            <SelectItem value="LEVEL_4">Level 4</SelectItem>
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
+                    <div>
+                      <FormField
+                        control={form.control}
+                        name="roleLevel"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Role level</FormLabel>
+                            <Select
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                            >
+                              <FormControl>
+                                <SelectTrigger className="w-full ">
+                                  <SelectValue placeholder="Select a level " />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="LEVEL_1">Level 1</SelectItem>
+                                <SelectItem value="LEVEL_2">Level 2</SelectItem>
+                                <SelectItem value="LEVEL_3">Level 3</SelectItem>
+                                <SelectItem value="LEVEL_4">Level 4</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </FormItem>
+                        )}
+                      ></FormField>
                     </div>
                   </div>
                 </div>
                 <hr />
+                {/* body header */}
                 <div className="flex items-center gap-2 font-semibold">
                   <BadgeAlert className="text-blue-500 bg-white rounded-full " />{" "}
                   <h2>Set role permission form evaluate</h2>
                 </div>
+                {/* Set role permission form evaluate */}
                 <div className="grid grid-cols-4 items-center gap-4">
                   {roles.map(
                     (item) =>
@@ -202,18 +256,40 @@ const ManageRole = () => {
                           <div className="w-full mt-2">
                             <div className="ml-4">
                               <h2 className="text-sm">ภายในกลุ่มงาน</h2>
-                              <FilterSection />
+                              <FilterSection
+                                selectedValues={
+                                  permissions[item.role_name]?.internal || []
+                                }
+                                setSelectedValues={(newValues) =>
+                                  handleFilterChange(
+                                    item.role_name,
+                                    "internal",
+                                    newValues
+                                  )
+                                }
+                              />
                             </div>
                             <div className="ml-4 mt-2">
                               <h2 className="text-sm">ภายนอกกลุ่มงาน</h2>
-                              <FilterSection />
+                              <FilterSection
+                                selectedValues={
+                                  permissions[item.role_name]?.external || []
+                                }
+                                setSelectedValues={(newValues) =>
+                                  handleFilterChange(
+                                    item.role_name,
+                                    "external",
+                                    newValues
+                                  )
+                                }
+                              />
                             </div>
                           </div>
                         </div>
                       )
                   )}
                 </div>
-
+                {/* discription */}
                 <div className="grid w-full gap-1.5">
                   <FormField
                     control={form.control}
@@ -355,13 +431,37 @@ const ManageRole = () => {
                                             <h2 className="text-sm">
                                               ภายในกลุ่มงาน
                                             </h2>
-                                            <FilterSection />
+                                            <FilterSection
+                                              selectedValues={
+                                                permissions[item.role_name]
+                                                  ?.internal || []
+                                              }
+                                              setSelectedValues={(newValues) =>
+                                                handleFilterChange(
+                                                  item.role_name,
+                                                  "internal",
+                                                  newValues
+                                                )
+                                              }
+                                            />
                                           </div>
                                           <div className="ml-4 mt-2">
                                             <h2 className="text-sm">
                                               ภายนอกกลุ่มงาน
                                             </h2>
-                                            <FilterSection />
+                                            <FilterSection
+                                              selectedValues={
+                                                permissions[item.role_name]
+                                                  ?.external || []
+                                              }
+                                              setSelectedValues={(newValues) =>
+                                                handleFilterChange(
+                                                  item.role_name,
+                                                  "external",
+                                                  newValues
+                                                )
+                                              }
+                                            />
                                           </div>
                                         </div>
                                       </div>
