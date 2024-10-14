@@ -17,29 +17,16 @@ import {
 } from "@/components/ui/popover";
 import { useEffect, useState } from "react";
 import { CommandList } from "cmdk";
+import GlobalApi from "@/app/_unit/GlobalApi";
 
-const frameworks = [
-  {
-    value: "Psychomotor",
-    label: "Form จิตพิสัย",
-  },
-  {
-    value: "working",
-    label: "Form การทำงาน",
-  },
-  {
-    value: "Knowledge",
-    label: "Form ความรู้ด้านวิชาการ",
-  },
-  {
-    value: "skill",
-    label: "Form ทักษะในการทำงาน",
-  },
-];
 
 interface FilterSectionProps {
   selectedValues: string[];
   setSelectedValues: (values: string[]) => void;
+}
+interface formStates {
+  id: string;
+  name: string;
 }
 
 export default function FilterSection({
@@ -47,7 +34,7 @@ export default function FilterSection({
   setSelectedValues,
 }: FilterSectionProps) {
   const [open, setOpen] = useState(false);
-
+  const [form , setForm] = useState<formStates[]>([]);
   const toggleValue = (value: string) => {
     setSelectedValues(
       selectedValues.includes(value)
@@ -55,7 +42,19 @@ export default function FilterSection({
         : [...selectedValues, value] // ถ้ายังไม่เลือก ให้เพิ่มเข้าไป
     );
   };
-
+  const getForm = async () =>{
+    try {
+      const response = await GlobalApi.getForm();
+      setForm(response?.data);
+      
+    } catch (error) {
+      console.error({message:error});
+      
+    }
+  }
+  useEffect(()=>{
+    getForm();
+  },[])
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -77,24 +76,24 @@ export default function FilterSection({
           <CommandEmpty>No framework found.</CommandEmpty>
           <CommandGroup>
             <CommandList>
-              {frameworks.map((framework) => (
+              {form && form.map((item) => (
                 <CommandItem
-                  key={framework.value}
-                  value={framework.value}
+                  key={item.id}
+                  value={item.id}
                   onSelect={() => {
-                    toggleValue(framework.value);
+                    toggleValue(item.id);
                   }}
                 >
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      (selectedValues ?? []).includes(framework.value) // Fallback to an empty array if undefined
+                      (selectedValues ?? []).includes(item.id) // Fallback to an empty array if undefined
                         ? "opacity-100"
                         : "opacity-0"
                     )}
                   />
 
-                  {framework.label}
+                  {item.name}
                 </CommandItem>
               ))}
             </CommandList>

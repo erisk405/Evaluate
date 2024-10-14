@@ -105,7 +105,7 @@ const ManageRole = () => {
       .reduce(
         (acc, role) => ({
           ...acc,
-          [role.role_name]: { internal: [], external: [] },
+          [role.role_name]: { id: role.id, internal: [], external: [] },
         }),
         {} as Permissions
       )
@@ -129,15 +129,18 @@ const ManageRole = () => {
       setLoading(false);
     }
   };
+  // function ที่ใช้ เพื่อประกอบ JSON ออกมาแล้ว ส่งไปอัพเดท
   const handleFilterChange = (
-    roleName: string,
-    type: "internal" | "external",
-    newValues: string[]
+    roleID: string,
+    roleName: string, // อััพเดทที่ role id อะไร
+    type: "internal" | "external", //ภายในหรือภายนอกหน่วยงาน
+    newValues: string[] // id ของแบบฟอร์ที่ส่งมาจาก Server
   ) => {
     setPermissions((prev) => ({
       ...prev,
       [roleName]: {
-        ...prev[roleName], // ถ้าไม่คัดลอกค่าเดิมไว้ ตอนSetใหม่ค่าเก่ามันจะหาย 
+        ...prev[roleName], // ถ้าไม่คัดลอกค่าเดิมไว้ ตอนSetใหม่ค่าเก่ามันจะหาย
+        ["id"]: roleID,
         [type]: newValues,
       } as any,
     }));
@@ -262,6 +265,7 @@ const ManageRole = () => {
                                 }
                                 setSelectedValues={(newValues) =>
                                   handleFilterChange(
+                                    item.id,
                                     item.role_name,
                                     "internal",
                                     newValues
@@ -277,6 +281,7 @@ const ManageRole = () => {
                                 }
                                 setSelectedValues={(newValues) =>
                                   handleFilterChange(
+                                    item.id,
                                     item.role_name,
                                     "external",
                                     newValues
@@ -438,6 +443,7 @@ const ManageRole = () => {
                                               }
                                               setSelectedValues={(newValues) =>
                                                 handleFilterChange(
+                                                  item.id,
                                                   item.role_name,
                                                   "internal",
                                                   newValues
@@ -456,6 +462,7 @@ const ManageRole = () => {
                                               }
                                               setSelectedValues={(newValues) =>
                                                 handleFilterChange(
+                                                  item.id,
                                                   item.role_name,
                                                   "external",
                                                   newValues

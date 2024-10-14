@@ -18,13 +18,13 @@ const getPrefix = () => {
   } catch (error) {
     console.error("Error prefix:", error);
   }
-}
+};
 
-const fetchProtected = () =>{
-  return axios.get(`${apiUrl}/protected`,{
+const fetchProtected = () => {
+  return axios.get(`${apiUrl}/protected`, {
     withCredentials: true,
-  })
-}
+  });
+};
 
 const fetchUserProfile = async (): Promise<AxiosResponse<UserProfile>> => {
   // Return the axios.get promise with type
@@ -32,8 +32,6 @@ const fetchUserProfile = async (): Promise<AxiosResponse<UserProfile>> => {
     withCredentials: true, // ส่ง cookies ไปด้วย
   });
 };
-
-
 
 const Logout = async () => {
   try {
@@ -109,7 +107,7 @@ const addUsersToDepartment = async (payload: any) => {
 
 const getRole = async () => {
   try {
-    return await axios.get(`${apiUrl}/Role`,{withCredentials: true});
+    return await axios.get(`${apiUrl}/Role`, { withCredentials: true });
   } catch (error) {
     console.error("Error role:", error);
   }
@@ -122,7 +120,11 @@ const getDepartment = async () => {
     console.error("Error Department:", error);
   }
 };
-const getDepartmentById = async (departmentId: any , pageIndex :number, pageSize :number) => {
+const getDepartmentById = async (
+  departmentId: any,
+  pageIndex: number,
+  pageSize: number
+) => {
   // console.log(`page=${pageIndex}&size=${pageSize}`);
   try {
     const url = `${apiUrl}/department/${departmentId}?page=${pageIndex}&size=${pageSize}`;
@@ -142,10 +144,10 @@ const CreateDepartment = async (
   });
 };
 
-const updateDepartment = async (data:any) => {
+const updateDepartment = async (data: any) => {
   try {
     // console.log("formData",data);
-    
+
     return await axios.put(`${apiUrl}/department`, data, {
       withCredentials: true,
       headers: {
@@ -159,35 +161,105 @@ const updateDepartment = async (data:any) => {
 };
 
 // function api สำหรับ user เมื่อต้องการร้องขอ role
-const sendRoleRequest = async (userId : any, roleId :any) => {
+const sendRoleRequest = async (userId: any, roleId: any) => {
   try {
-    return await axios.post(`${apiUrl}/sendRoleRequest`, {
-      userId,// userId จะต้องเป็นค่าที่มาจากการล็อกอิน
-      roleId,
-    },{
-      withCredentials: true,
-    });
-  } catch (error) {
-    
-  }
-}
-
+    return await axios.post(
+      `${apiUrl}/sendRoleRequest`,
+      {
+        userId, // userId จะต้องเป็นค่าที่มาจากการล็อกอิน
+        roleId,
+      },
+      {
+        withCredentials: true,
+      }
+    );
+  } catch (error) {}
+};
 
 // function api สำหรับ Admin ที่ใช้ในการจัดการกับ การ Approve หรือ Reject เมื่อ user ร้องขอ role
-const resolveRole = async (requestId : string, status : string, userId :string) =>{
+const resolveRole = async (
+  requestId: string,
+  status: string,
+  userId: string
+) => {
   try {
-    return await axios.patch(`${apiUrl}/resolveRole`, {
-      requestId,
-      status,
-      userId,
-    },{
+    return await axios.patch(
+      `${apiUrl}/resolveRole`,
+      {
+        requestId,
+        status,
+        userId,
+      },
+      {
+        withCredentials: true,
+      }
+    );
+  } catch (error) {
+    console.error({ message: error });
+  }
+};
+
+const createForm = async (name: string) => {
+  try {
+    return await axios.post(
+      `${apiUrl}/form`,
+      {
+        name,
+      },
+      {
+        withCredentials: true,
+      }
+    );
+  } catch (error) {
+    console.error("API create form", { message: error });
+  }
+};
+
+const getForm = () => {
+  try {
+    return axios.get(`${apiUrl}/form`);
+  } catch (error) {
+    console.error("API get form", { message: error });
+  }
+};
+
+const updateForm = async (data: { id: string; name: string }) => {
+  try {
+    return axios.put(
+      `${apiUrl}/form`,
+      {
+        data,
+      },
+      {
+        withCredentials: true,
+      }
+    );
+  } catch (error) {
+    console.error("API update form", { message: error });
+  }
+};
+
+const deleteForm = async (id: string) => {
+  try {
+    return axios.delete(`${apiUrl}/form`, {
+      data: { id },
       withCredentials: true,
     });
   } catch (error) {
-    console.error({message : error});
-    
+    console.error("API delete form", { message: error });
   }
-}
+};
+
+const createPermission = async (data:any) => {
+  try {
+    return axios.post(`${apiUrl}/permission`, {
+      data: { data },
+      withCredentials: true,
+    });
+  } catch (error) {
+    console.error("API delete form", { message: error });
+  }
+};
 
 export default {
   fetchUserProfile,
@@ -205,5 +277,10 @@ export default {
   resolveRole,
   sendRoleRequest,
   fetchProtected,
-  getPrefix
+  getPrefix,
+  createForm,
+  getForm,
+  updateForm,
+  deleteForm,
+  createPermission
 };
