@@ -69,6 +69,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import GlobalApi from "@/app/_unit/GlobalApi";
 
 const formSchema = z.object({
   roleName: z
@@ -96,7 +97,7 @@ type Permissions = {
 };
 
 const ManageRole = () => {
-  const { roles } = useStore();
+  const { roles, setRole } = useStore();
   const [permissions, setPermissions] = useState<Permissions>(
     roles
       .filter(
@@ -119,11 +120,34 @@ const ManageRole = () => {
       roleLevel: undefined,
     },
   });
+
+  const deleteRole = async (id: string) => {
+    try {
+      const response = await GlobalApi.deleteRole(id);
+      console.log("response:", response);
+
+      // อัพเดท roles ใน store หลังจากลบสำเร็จ
+      const updatedRoles = roles.filter((role) => role.id !== id);
+      setRole(updatedRoles);
+
+      // อัพเดท permissions state ด้วย
+      setPermissions((prevPermissions) => {
+        const { [id]: deletedRole, ...restPermissions } = prevPermissions;
+        return restPermissions;
+      });
+      
+    } catch (error) {
+      console.error({ message: error });
+    }
+  };
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     console.log(permissions);
-    
+
     console.log(values);
     try {
+      const newRole  = await GlobalApi.createRole(values);
+      setRole([...roles, newRole?.data]);
+
       setLoading(true);
     } catch (error) {
       setLoading(false);
@@ -371,7 +395,11 @@ const ManageRole = () => {
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                               <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction>Continue</AlertDialogAction>
+                              <AlertDialogAction
+                                onClick={() => deleteRole(item.id)}
+                              >
+                                Continue
+                              </AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>
                         </AlertDialog>

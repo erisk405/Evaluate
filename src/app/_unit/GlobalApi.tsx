@@ -105,9 +105,28 @@ const addUsersToDepartment = async (payload: any) => {
   });
 };
 
+const createRole = (payload:any) => {
+  try {
+    return axios.post(`${apiUrl}/role`,payload,{ withCredentials: true });
+  } catch (error) {
+    console.error("Error role:", error);
+  }
+}
+
+const deleteRole = (id:string) => {
+  try {
+    return axios.delete(`${apiUrl}/role`,{ 
+      data:{id},
+      withCredentials: true
+    })
+  } catch (error) {
+    
+  }
+}
+
 const getRole = async () => {
   try {
-    return await axios.get(`${apiUrl}/Role`, { withCredentials: true });
+    return await axios.get(`${apiUrl}/role`, { withCredentials: true });
   } catch (error) {
     console.error("Error role:", error);
   }
@@ -282,5 +301,7 @@ export default {
   getForm,
   updateForm,
   deleteForm,
-  createPermission
+  createPermission,
+  createRole,
+  deleteRole
 };
