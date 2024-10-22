@@ -70,6 +70,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import GlobalApi from "@/app/_unit/GlobalApi";
+import UpdateRole from "./updateRole";
 
 const formSchema = z.object({
   roleName: z
@@ -121,38 +122,22 @@ const ManageRole = () => {
     },
   });
 
-  const deleteRole = async (id: string) => {
-    try {
-      const response = await GlobalApi.deleteRole(id);
-      console.log("response:", response);
 
-      // อัพเดท roles ใน store หลังจากลบสำเร็จ
-      const updatedRoles = roles.filter((role) => role.id !== id);
-      setRole(updatedRoles);
 
-      // อัพเดท permissions state ด้วย
-      setPermissions((prevPermissions) => {
-        const { [id]: deletedRole, ...restPermissions } = prevPermissions;
-        return restPermissions;
-      });
-      
-    } catch (error) {
-      console.error({ message: error });
-    }
-  };
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    setLoading(true);
     console.log(permissions);
 
     console.log(values);
     try {
-      const newRole  = await GlobalApi.createRole(values);
+      const newRole = await GlobalApi.createRole(values);
       setRole([...roles, newRole?.data]);
-
-      setLoading(true);
     } catch (error) {
       setLoading(false);
     }
   };
+
   // function ที่ใช้ เพื่อประกอบ JSON ออกมาแล้ว ส่งไปอัพเดท
   const handleFilterChange = (
     roleID: string,
@@ -268,7 +253,7 @@ const ManageRole = () => {
                   <h2>Set role permission form evaluate</h2>
                 </div>
                 {/* Set role permission form evaluate */}
-                <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-4 items-center shadow-inner p-2 gap-4 overflow-scroll h-[35dvh] scrollbar-gemini rounded-lg" >
                   {roles.map(
                     (item) =>
                       item.role_name !== "admin" &&
@@ -349,188 +334,8 @@ const ManageRole = () => {
       </div>
 
       {/* ส่วนของการปรับปรุงแก้ไขRole */}
-
-      <div className="flex flex-col  ">
-        {roles.map(
-          (item) =>
-            item.role_name !== "admin" &&
-            item.role_name !== "member" && (
-              <Accordion
-                type="single"
-                collapsible
-                className="w-full"
-                key={item.id}
-              >
-                <AccordionItem value="item-1">
-                  <AccordionTrigger>
-                    <div className="px-3 w-full h-14 rounded-xl flex justify-between items-center">
-                      <div className="flex items-center gap-1">
-                        <BadgeCheck className="text-white bg-blue-500 overflow-hidden rounded-full" />
-                        <h2 className="text-lg font-bold text-black">
-                          {item.role_name}
-                        </h2>
-                      </div>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <div className="w-full">
-                      <p className="text-lg">{item.description}</p>
-                      <div className="w-full flex justify-end gap-3 mt-2">
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button className="flex items-center gap-2 px-2 h-9 active:scale-95">
-                              ลบรายการ
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>
-                                Are you absolutely sure?
-                              </AlertDialogTitle>
-                              <AlertDialogDescription className="text-red-500">
-                                การดำเนินการนี้ไม่สามารถย้อนกลับได้
-                                การดำเนินการนี้จะลบบัญชีของคุณอย่างถาวรและลบตำแหน่งนี้
-                                ออกจากเซิร์ฟเวอร์ของเรา
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction
-                                onClick={() => deleteRole(item.id)}
-                              >
-                                Continue
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button className="flex items-center gap-2 px-2 h-9 active:scale-95 ">
-                              <Settings2 size={18} /> กำหนดสิทธิ
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent className="sm:max-w-[625px]">
-                            <DialogHeader>
-                              <DialogTitle>
-                                <div className="flex gap-2 items-center">
-                                  <div className="block p-1 bg-blue-100 rounded-full">
-                                    <ShieldPlus
-                                      size={40}
-                                      className="text-blue-500 "
-                                    />{" "}
-                                  </div>
-                                  <h2 className="text-xl">Edit role</h2>
-                                </div>
-                              </DialogTitle>
-                              <DialogDescription>
-                                Make changes to your profile here. Click save
-                                when you're done.
-                              </DialogDescription>
-                            </DialogHeader>
-                            <div className="grid gap-4 py-4 px-4">
-                              <div className="flex items-center gap-4">
-                                <Label htmlFor="name" className="">
-                                  Name
-                                </Label>
-                                <Input
-                                  id="name"
-                                  defaultValue="Dog role"
-                                  className="col-span-3"
-                                />
-                              </div>
-                              <hr />
-                              <div className="flex items-center gap-2 font-semibold">
-                                <BadgeAlert className="text-blue-500 bg-white rounded-full " />{" "}
-                                <h2>Set role permission form evaluate</h2>
-                              </div>
-                              <div className="grid grid-cols-4 items-center gap-4">
-                                {roles.map(
-                                  (item) =>
-                                    item.role_name !== "admin" &&
-                                    item.role_name !== "member" && (
-                                      <div
-                                        className="col-span-2 "
-                                        key={item.id}
-                                      >
-                                        <Label
-                                          htmlFor="permission"
-                                          className="text-left col-span-2"
-                                        >
-                                          {item.role_name}
-                                        </Label>
-
-                                        <div className="w-full mt-2">
-                                          <div className="ml-4">
-                                            <h2 className="text-sm">
-                                              ภายในกลุ่มงาน
-                                            </h2>
-                                            <FilterSection
-                                              selectedValues={
-                                                permissions[item.role_name]
-                                                  ?.internal || []
-                                              }
-                                              setSelectedValues={(newValues) =>
-                                                handleFilterChange(
-                                                  item.id,
-                                                  item.role_name,
-                                                  "internal",
-                                                  newValues
-                                                )
-                                              }
-                                            />
-                                          </div>
-                                          <div className="ml-4 mt-2">
-                                            <h2 className="text-sm">
-                                              ภายนอกกลุ่มงาน
-                                            </h2>
-                                            <FilterSection
-                                              selectedValues={
-                                                permissions[item.role_name]
-                                                  ?.external || []
-                                              }
-                                              setSelectedValues={(newValues) =>
-                                                handleFilterChange(
-                                                  item.id,
-                                                  item.role_name,
-                                                  "external",
-                                                  newValues
-                                                )
-                                              }
-                                            />
-                                          </div>
-                                        </div>
-                                      </div>
-                                    )
-                                )}
-                              </div>
-
-                              <div className="grid w-full gap-1.5">
-                                <Label htmlFor="message-2">
-                                  Your Describtion
-                                </Label>
-                                <Textarea
-                                  placeholder="Type your message here."
-                                  id="message-2"
-                                />
-                                <p className="text-sm text-muted-foreground">
-                                  Your message will be copied to the describtion
-                                  role.
-                                </p>
-                              </div>
-                            </div>
-                            <DialogFooter>
-                              <Button type="submit">Save changes</Button>
-                            </DialogFooter>
-                          </DialogContent>
-                        </Dialog>
-                      </div>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-            )
-        )}
-      </div>
+      <UpdateRole />
+  
     </div>
   );
 };

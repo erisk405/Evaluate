@@ -1,3 +1,4 @@
+type RoleLevel = "LEVEL_1" | "LEVEL_2" | "LEVEL_3" | "LEVEL_4";
 interface DepartmentImage {
   url: string; // Add any additional fields that may be part of the image object
 }
@@ -33,6 +34,7 @@ interface Role {
   id: string;
   description: string,
   role_name: string,
+  role_level: RoleLevel; 
 }
 
 interface RoleRequest {
@@ -55,5 +57,7 @@ interface Notification {
   };
   createdAt: string;
 }
+
+
 
 export type { DepartmentImage, Department, Role, User, RoleRequest, Notification };
