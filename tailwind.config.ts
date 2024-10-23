@@ -12,7 +12,7 @@ const config = {
     './components/**/*.{ts,tsx}',
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
-	],
+  ],
   prefix: "",
   theme: {
     container: {
@@ -23,6 +23,13 @@ const config = {
       },
     },
     extend: {
+      // containerQueries: {
+      //   sm: '640px',
+      //   md: '768px',
+      //   lg: '1024px',
+      //   xl: '1280px',
+      //   '2xl': '1400px',
+      // },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -81,7 +88,8 @@ const config = {
   },
   plugins: [
     require('tailwindcss-animate'),
-    plugin(function({ addUtilities }: PluginAPI) {
+    require('@tailwindcss/container-queries'),
+    plugin(function ({ addUtilities }: PluginAPI) {
       const newUtilities = {
         '.scrollbar-gemini': {
           '&::-webkit-scrollbar': {

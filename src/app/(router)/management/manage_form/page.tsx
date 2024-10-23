@@ -1,5 +1,6 @@
 "use client";
 import {
+  CircleHelp,
   EllipsisVertical,
   MessageCircleQuestion,
   Plus,
@@ -48,6 +49,26 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Textarea } from "@/components/ui/textarea";
+
 interface SlideStates {
   [key: string]: boolean;
 }
@@ -63,6 +84,42 @@ const formSchema = z.object({
     .min(5, { message: "Role name must be at least 5 characters." }) // ขั้นต่ำ 5 ตัวอักษร
     .max(50, { message: "Role name must not exceed 50 characters." }), // สูงสุด 50 ตัวอักษร
 });
+
+const DataQuestion = [
+  {
+    id: "Q001",
+    question: "ปริมาณผลงาน",
+  },
+  {
+    id: "Q002",
+    question: "ความอุสาหพยายาม",
+  },
+  {
+    id: "Q003",
+    question: "การบำรุงรักษาเครื่องมือและอุปกรณ์ที่ใช้",
+  },
+  {
+    id: "Q004",
+    question: "การตัดสินใจและแก้ปัญหาเฉพาะหน้า",
+  },
+  {
+    id: "Q005",
+    question: "ความคิดริเริ่มในการปฎิบัติงาน",
+  },
+  {
+    id: "Q006",
+    question:
+      "ความรับผิดชอบต่อหน้าที่ ที่ได้รับมอบหมายความรับผิดชอบต่อหน้าที่ ",
+  },
+  {
+    id: "Q007",
+    question: "ความรวดเร็วในการปฏิบัติงาน",
+  },
+  {
+    id: "Q008",
+    question: "ตรงต่อเวลาในการทำงาน",
+  },
+];
 
 const page = () => {
   const [slideStates, setSlideStates] = useState<SlideStates>({});
@@ -155,6 +212,10 @@ const page = () => {
         </div>
         <div className="grid grid-cols-5 h-[500px] ">
           <div className="col-span-2 border-r p-5 ">
+            <div className="flex justify-between my-2">
+              <h2 className="text-2xl font-bold">แบบฟอร์มทั้งหมด</h2>
+              <CircleHelp className="text-yellow-500" />
+            </div>
             {formState &&
               formState.map((item, index) => (
                 <div
@@ -258,7 +319,7 @@ const page = () => {
                                 <AlertDialogFooter>
                                   <AlertDialogCancel>Cancel</AlertDialogCancel>
                                   <AlertDialogAction
-                                    onClick={()=> deleteForm(item?.id)}
+                                    onClick={() => deleteForm(item?.id)}
                                   >
                                     Sure
                                   </AlertDialogAction>
@@ -300,10 +361,10 @@ const page = () => {
               onClick={() => addForm("untitle_" + (formState.length + 1))}
             >
               <Plus />
-              Create
+              Add form
             </Button>
           </div>
-          <div className="col-span-3 p-5 grid place-items-center">
+          <div className="col-span-3 p-5 grid ">
             {openForm.id === null ? (
               <div className="flex justify-center items-center gap-3 flex-col">
                 <div className="relative">
@@ -319,12 +380,82 @@ const page = () => {
                 <h2 className="text-lg">Click any form your created.</h2>
               </div>
             ) : (
-              <div>
-                <h2>
-                  Question{" "}
+              <div className="">
+                <h2 className="text-xl font-bold">
+                  คำถามของ{" "}
                   {formState.find((item) => item.id === openForm.id)?.name ||
                     "Unknow"}
                 </h2>
+                <div>
+                  <Table>
+                    <TableCaption>A list of your recent question.</TableCaption>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-[100px]">ลำดับ</TableHead>
+                        <TableHead className="w-full">ข้อคำถาม</TableHead>
+                        <TableHead className="text-right">action</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {DataQuestion.map((question, index) => (
+                        <TableRow key={question.id}>
+                          <TableCell className="font-medium text-center">
+                            {index + 1}
+                          </TableCell>
+                          <TableCell>{question.question}</TableCell>
+                          <TableCell className="text-right">
+                            <DropdownMenu>
+                              <DropdownMenuTrigger>
+                                <EllipsisVertical />
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent>
+                                <DropdownMenuLabel>Edit</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem>Edit</DropdownMenuItem>
+                                <DropdownMenuItem>Delete</DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full h-10 active:scale-95 transition-all mt-3 select-none gap-2"
+                    >
+                      <Plus />
+                      Add question
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[625px]">
+                    <DialogHeader>
+                      <DialogTitle>Craete Question</DialogTitle>
+                      <DialogDescription>
+                        Make changes to your profile here. Click save when
+                        you're done.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid w-full gap-1.5">
+                        <Label htmlFor="message-2">Your Message</Label>
+                        <Textarea
+                          placeholder="Type your message here."
+                          id="message-2"
+                        />
+                        <p className="text-sm text-muted-foreground">
+                          Your message will be copied to the support team.
+                        </p>
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button type="submit">Save Change</Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
               </div>
             )}
           </div>
