@@ -394,7 +394,7 @@ const page = () => {
                           </SheetTrigger>
                           <SheetContent
                             side="bottom"
-                            className="h-[calc(100vh-10%)] xl:mx-52 rounded-2xl overflow-scroll scrollbar-gemini"
+                            className="h-[calc(100vh-10%)] xl:mx-52 rounded-tr-2xl rounded-tl-2xl overflow-scroll scrollbar-gemini"
                           >
                             <SheetHeader>
                               <SheetTitle className="text-3xl text-center">
