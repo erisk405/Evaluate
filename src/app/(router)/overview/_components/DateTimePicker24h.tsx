@@ -10,7 +10,7 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { CalendarIcon } from 'lucide-react';
 
 interface DateTimePickerProps {
-  onTimeChange?: (date: Date) => void;
+  onTimeChange?: (date: Date) => void;// รับ function callback ที่จะรับ parameter เป็น Date
   defaultValue?: Date;
 }
 
@@ -63,7 +63,7 @@ export function DateTimePicker24h({ onTimeChange, defaultValue }: DateTimePicker
         newDate.setMinutes(value);
       }
       setSelectedDate(newDate);
-      onTimeChange?.(newDate);
+      onTimeChange?.(newDate); // ส่ง newDate กลับไปยัง parent component
     }
   };
 

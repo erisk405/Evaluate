@@ -29,11 +29,59 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { DateRange } from "react-day-picker";
 import { DateTimePicker24h } from "./DateTimePicker24h";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface TimeRange {
   from?: Date;
   to?: Date;
 }
+const PerioaData = [
+  {
+    id: "PD01",
+    title: "รอบที่ 1 ประจำปีงบประมาณ พ.ศ. 2567",
+    dateFrom: "01/07/2567",
+    dataTo: "09/08/2567",
+    timeFrom: "07:00",
+    timeTo: "17:00",
+    status: "start",
+  },
+  {
+    id: "PD02",
+    title: "รอบที่ 2 ประจำปีงบประมาณ พ.ศ. 2567",
+    dateFrom: "01/09/2567",
+    dataTo: "15/10/2567",
+    timeFrom: "12:00",
+    timeTo: "17:00",
+    status: "waiting",
+  },
+  {
+    id: "PD03",
+    title: "รอบที่ 1 ประจำปีงบประมาณ พ.ศ. 2568",
+    dateFrom: "28/01/2567",
+    dataTo: "10/02/2567",
+    timeFrom: "09:00",
+    timeTo: "17:00",
+    status: "end",
+  },
+  {
+    id: "PD04",
+    title: "รอบที่ 1 ประจำปีงบประมาณ พ.ศ. 2568",
+    dateFrom: "28/01/2567",
+    dataTo: "10/02/2567",
+    timeFrom: "09:00",
+    timeTo: "17:00",
+    status: "end",
+  },
+  {
+    id: "PD05",
+    title: "รอบที่ 1 ประจำปีงบประมาณ พ.ศ. 2568",
+    dateFrom: "28/01/2567",
+    dataTo: "10/02/2567",
+    timeFrom: "09:00",
+    timeTo: "17:00",
+    status: "end",
+  },
+];
 const RightSection = () => {
   const defaultDate = new Date(new Date().getFullYear(), new Date().getMonth()); // ปีและเดือนปัจจุบัน
   const [checkPermission, setCheckPermission] = useState();
@@ -55,16 +103,20 @@ const RightSection = () => {
     from: new Date(),
     to: new Date(),
   });
-  // Handler สำหรับจัดการการเปลี่ยนแปลงเวลา
-  const handleTimeChange = (type: "from" | "to") => (newTime: Date) => {
-    setTimeRange((prev) => ({
-      ...prev,
-      [type]: newTime,
-    }));
-  };
+  // แก้ไขฟังก์ชัน handleTimeChange สำหรับปุ่ม Save
+
   useEffect(() => {
     fetchProtected();
   }, []);
+  useEffect(() => {
+    if (timeRange?.from && timeRange?.to) {
+      console.log("TimeRange updated:", {
+        from: timeRange.from.toLocaleString(),
+        to: timeRange.to.toLocaleString(),
+      });
+    }
+    console.log("timeRange:", timeRange);
+  }, [timeRange]); // เพิ่ม timeRange เป็น dependency
   return (
     <div className="flex gap-3 flex-col h-full">
       <motion.div
@@ -125,10 +177,9 @@ const RightSection = () => {
           </div>
         </div>
       </motion.div>
-
+      {/* ส่่วนของ admin */}
       {checkPermission === "admin" ? (
         <motion.div
-          className="bg-white px-5 border h-full shadow-md rounded-2xl overflow-hidden"
           initial={{ opacity: 0, x: 100 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{
@@ -137,107 +188,146 @@ const RightSection = () => {
             delay: 0.1,
           }}
         >
-          <div className="font-bold text-xl flex items-center gap-3 py-5 bg-white relative z-30">
-            <TextEffect preset="slide">กำหนด วัน-เวลา การประเมิน</TextEffect>
-            <AlarmClockPlus className="text-blue-500" />
-          </div>
-          <div className="bg-white relative z-50 border-t border-b">
-            <div className="flex justify-between items-center my-3 shadow bg-neutral-50 hover:bg-neutral-100 w-full rounded-xl p-2">
-              <div>
-                <div className="flex items-center">
-                  <div className="relative">
-                    <Dot
-                      strokeWidth={6}
-                      className="absolute text-green-500 animate-ping"
-                    />
-                    <Dot strokeWidth={6} className="text-green-500" />
-                  </div>
-                  <h2>รอบที่ 1 ประจำปีงบประมาณ พ.ศ. 2567</h2>
-                </div>
-                <div className="px-6">
-                  <div className="flex items-center gap-1">
-                    <CalendarClock size={18} />
-                    <h2>24/10/67</h2>
-                    <ArrowRight size={18} />
-                    <h2>28/10/67</h2>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Clock9 size={18} />
-                    <h2>12:30 น.</h2>
-                    <ArrowRight size={18} />
-                    <h2>17:30 น.</h2>
-                  </div>
-                </div>
-              </div>
-              <DropdownMenu>
-                <DropdownMenuTrigger>
-                  <EllipsisVertical />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuLabel>เมนู</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>แก้ไข</DropdownMenuItem>
-                  <DropdownMenuItem>ลบรายการ</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+          <div
+            className={`bg-white px-5  
+            ${
+              show
+                ? "pb-72 transition-all ease-in-out duration-300"
+                : "pb-5 transition-all ease-in-out duration-300"
+            } 
+          border h-full shadow-md rounded-2xl overflow-hidden`}
+          >
+            <div className="font-bold text-xl flex items-center gap-3 py-5 bg-white relative z-30">
+              <TextEffect preset="slide">กำหนด วัน-เวลา การประเมิน</TextEffect>
+              <AlarmClockPlus className="text-blue-500" />
             </div>
-          </div>
-          <div className="w-full relative ">
-            <form
-              action=""
-              className={`absolute px-2 transition-all ease-in-out duration-300 w-full ${
-                show ? "translate-y-0 top-12" : "-translate-y-full"
-              }`}
-            >
-              <div className="flex flex-col gap-3 items-center w-full shadow-inner p-4 bg-neutral-100 rounded-lg">
-                {" "}
-                <div className="grid gap-2 items-center w-full">
-                  <Label className="">Title</Label>
-                  <div className="">
-                    <Input placeholder="รอบที่ x ประจำปีงบประมาณ พ.ศ. xxxx" />
+            <div className="bg-gray-50 rounded-lg shadow-inner relative z-30 border-t border-b">
+              <ScrollArea className="h-[410px] w-full px-2">
+                {PerioaData.map((item, index) => (
+                  <div
+                    key={item.id}
+                    className="flex justify-between items-center my-3 shadow bg-white hover:bg-neutral-100 w-full rounded-xl p-2"
+                  >
+                    <div >
+                      <div className="flex items-center">
+                        <div className="relative">
+                          <Dot
+                            strokeWidth={6}
+                            className={`absolute ${
+                              item.status == "start"
+                                ? "text-green-500 "
+                                : item.status == "waiting"
+                                ? "text-yellow-500"
+                                : "text-black"
+                            } animate-ping`}
+                          />
+                          <Dot
+                            strokeWidth={6}
+                            className={`${
+                              item.status == "start"
+                                ? "text-green-500 "
+                                : item.status == "waiting"
+                                ? "text-yellow-500"
+                                : "text-black"
+                            }`}
+                          />
+                        </div>
+                        <h2>{item.title}</h2>
+                      </div>
+                      <div className="px-6">
+                        <div className="flex items-center gap-1">
+                          <CalendarClock size={18} />
+                          <h2>{item.dateFrom}</h2>
+                          <ArrowRight size={18} />
+                          <h2>{item.dataTo}</h2>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Clock9 size={18} />
+                          <h2>{item.timeFrom} น.</h2>
+                          <ArrowRight size={18} />
+                          <h2>{item.timeTo} น.</h2>
+                        </div>
+                      </div>
+                    </div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger>
+                        <EllipsisVertical />
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuLabel>เมนู</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem>แก้ไข</DropdownMenuItem>
+                        <DropdownMenuItem>ลบรายการ</DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
-                </div>
-                <div className="grid grid-cols-4 items-center w-full">
-                  <Label className="col-span-1">From</Label>
-                  <div className="col-span-3">
-                    <DateTimePicker24h
-                      onTimeChange={(date) =>
-                        setTimeRange((prev) => ({ ...prev, from: date }))
-                      }
-                      defaultValue={timeRange.from}
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-4 items-center w-full">
-                  <Label className="col-span-1">To</Label>
-                  <div className="col-span-3">
-                    <DateTimePicker24h
-                      onTimeChange={(date) =>
-                        setTimeRange((prev) => ({ ...prev, to: date }))
-                      }
-                      defaultValue={timeRange.to}
-                    />
-                  </div>
-                </div>
-                <Button>Save</Button>
-              </div>
-            </form>
-            {/* ปุ่มเปิดแท็บ */}
-            <div className="relative bg-white">
-              <Button
-                className="w-full mt-3"
-                onClick={() => setShow(!show)}
-                variant={"outline"}
+                ))}
+              </ScrollArea>
+            </div>
+            <div className="w-full relative ">
+              {/* form */}
+              <div
+                className={`absolute px-2 transition-all ease-in-out duration-300 w-full ${
+                  show ? "translate-y-0 top-[100%]" : "-translate-y-full"
+                }`}
               >
-                <div className="flex items-center justify-between w-full">
-                  กำหนดช่วงเวลา
-                  <ChevronDown className={`${show ? 'rotate-180' : 'rotate-0'} transition-all`}/>
+                <div className="flex flex-col gap-3 items-center w-full shadow-inner p-4 bg-neutral-100 rounded-br-lg rounded-bl-lg">
+                  {" "}
+                  <div className="grid gap-2 items-center w-full">
+                    <Label className="">Title</Label>
+                    <div className="">
+                      <Input placeholder="รอบที่ x ประจำปีงบประมาณ พ.ศ. xxxx" />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-4 items-center w-full">
+                    <Label className="col-span-1">From</Label>
+                    <div className="col-span-3">
+                      <DateTimePicker24h
+                        onTimeChange={
+                          (
+                            date // date คือค่าที่ได้จาก newDate จาก DateTimePicker24h
+                          ) => setTimeRange((prev) => ({ ...prev, from: date })) // อัพเดท state โดยเก็บค่าเดิมและอัพเดทเฉพาะ from
+                        }
+                        defaultValue={timeRange.from}
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-4 items-center w-full">
+                    <Label className="col-span-1">To</Label>
+                    <div className="col-span-3">
+                      <DateTimePicker24h
+                        onTimeChange={(date) =>
+                          setTimeRange((prev) => ({ ...prev, to: date }))
+                        }
+                        defaultValue={timeRange.to}
+                      />
+                    </div>
+                  </div>
+                  <Button type="submit">Save</Button>
                 </div>
-              </Button>
+              </div>
+              {/* ปุ่มเปิดแท็บ */}
+              <div className="relative bg-white">
+                <Button
+                  className="w-full mt-3"
+                  onClick={() => setShow(!show)}
+                  variant={"outline"}
+                >
+                  <div className="flex items-center justify-between w-full">
+                    กำหนดช่วงเวลา
+                    <ChevronDown
+                      className={`${
+                        show ? "rotate-180" : "rotate-0"
+                      } transition-all`}
+                    />
+                  </div>
+                </Button>
+              </div>
             </div>
           </div>
         </motion.div>
       ) : (
+        // ส่วนของ user เท่าไป
         <motion.div
           className="bg-white p-5 border h-full shadow-md rounded-2xl"
           initial={{ opacity: 0, x: 100 }}
