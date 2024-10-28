@@ -15,7 +15,7 @@ const layout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
         </div>
         <div className="flex justify-center bg-gradient-to-b from-gray-50 to-neutral-100 relative">
           <div className="flex-1 min-h-screen  max-w-[1560px]">
-            <div className="flex  flex-grow text-neutral-700">
+            <div className="flex flex-grow text-neutral-700">
               <div className="">
                 <SideBar />
               </div>

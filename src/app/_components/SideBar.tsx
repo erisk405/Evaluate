@@ -92,7 +92,7 @@ const SideBar = () => {
                 key={item?.id}
                 className="group [&_summary::-webkit-details-marker]:hidden hidden md:block"
               >
-                <summary className="group flex gap-5 items-center justify-between rounded-lg px-4 py-2 hover:bg-gray-100 hover:text-gray-700">
+                <summary className="group flex gap-3 items-center justify-between rounded-lg px-4 py-2 hover:bg-gray-100 hover:text-gray-700">
                   <div className="flex items-center justify-between gap-3">
                     {/* icon mangement */}
                     {item?.icon}

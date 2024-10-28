@@ -31,6 +31,9 @@ import { DateRange } from "react-day-picker";
 import { DateTimePicker24h } from "./DateTimePicker24h";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
+type RightSectionProps = {
+  permission?: string; // ใส่ ? เพื่อบอกว่าอาจเป็น undefined ได้
+};
 interface TimeRange {
   from?: Date;
   to?: Date;
@@ -82,19 +85,9 @@ const PerioaData = [
     status: "end",
   },
 ];
-const RightSection = () => {
+const RightSection = ({ permission }: RightSectionProps) => {
   const defaultDate = new Date(new Date().getFullYear(), new Date().getMonth()); // ปีและเดือนปัจจุบัน
-  const [checkPermission, setCheckPermission] = useState();
-
   const [time, setTime] = useState<Date | undefined>(undefined);
-  const fetchProtected = async () => {
-    try {
-      const response = await GlobalApi.fetchProtected();
-      setCheckPermission(response?.data?.role);
-    } catch (error) {
-      console.error({ message: error });
-    }
-  };
   const [show, setShow] = useState(false);
   // State สำหรับเก็บค่า date range
   const [date, setDate] = useState<DateRange | undefined>();
@@ -104,10 +97,6 @@ const RightSection = () => {
     to: new Date(),
   });
   // แก้ไขฟังก์ชัน handleTimeChange สำหรับปุ่ม Save
-
-  useEffect(() => {
-    fetchProtected();
-  }, []);
   useEffect(() => {
     if (timeRange?.from && timeRange?.to) {
       console.log("TimeRange updated:", {
@@ -178,7 +167,7 @@ const RightSection = () => {
         </div>
       </motion.div>
       {/* ส่่วนของ admin */}
-      {checkPermission === "admin" ? (
+      {permission === "admin" ? (
         <motion.div
           initial={{ opacity: 0, x: 100 }}
           animate={{ opacity: 1, x: 0 }}
@@ -187,82 +176,82 @@ const RightSection = () => {
             ease: [0, 0.71, 0.2, 1.01],
             delay: 0.1,
           }}
+          className="bg-white p-5 border h-full shadow-md rounded-2xl"
         >
           <div
-            className={`bg-white px-5  
+            className={`bg-white w-full 
             ${
               show
                 ? "pb-72 transition-all ease-in-out duration-300"
                 : "pb-5 transition-all ease-in-out duration-300"
-            } 
-          border h-full shadow-md rounded-2xl overflow-hidden`}
+            }  overflow-hidden`}
           >
             <div className="font-bold text-xl flex items-center gap-3 py-5 bg-white relative z-30">
               <TextEffect preset="slide">กำหนด วัน-เวลา การประเมิน</TextEffect>
               <AlarmClockPlus className="text-blue-500" />
             </div>
             <div className="bg-gray-50 rounded-lg shadow-inner relative z-30 border-t border-b">
-              <ScrollArea className="h-[410px] w-full px-2">
-                {PerioaData.map((item, index) => (
-                  <div
-                    key={item.id}
-                    className="flex justify-between items-center my-3 shadow bg-white hover:bg-neutral-100 w-full rounded-xl p-2"
-                  >
-                    <div >
-                      <div className="flex items-center">
-                        <div className="relative">
-                          <Dot
-                            strokeWidth={6}
-                            className={`absolute ${
-                              item.status == "start"
-                                ? "text-green-500 "
-                                : item.status == "waiting"
-                                ? "text-yellow-500"
-                                : "text-black"
-                            } animate-ping`}
-                          />
-                          <Dot
-                            strokeWidth={6}
-                            className={`${
-                              item.status == "start"
-                                ? "text-green-500 "
-                                : item.status == "waiting"
-                                ? "text-yellow-500"
-                                : "text-black"
-                            }`}
-                          />
+                <ScrollArea className="h-[410px] w-full px-3">
+                  {PerioaData.map((item, index) => (
+                    <div
+                      key={item.id}
+                      className="flex justify-between items-center my-3 shadow bg-white hover:bg-neutral-100 w-auto rounded-xl p-2"
+                    >
+                      <div className="w-full">
+                        <div className="flex items-center">
+                          <div className="relative">
+                            <Dot
+                              strokeWidth={6}
+                              className={`absolute ${
+                                item.status == "start"
+                                  ? "text-green-500 "
+                                  : item.status == "waiting"
+                                  ? "text-yellow-500"
+                                  : "text-black"
+                              } animate-ping`}
+                            />
+                            <Dot
+                              strokeWidth={6}
+                              className={`${
+                                item.status == "start"
+                                  ? "text-green-500 "
+                                  : item.status == "waiting"
+                                  ? "text-yellow-500"
+                                  : "text-black"
+                              }`}
+                            />
+                          </div>
+                          <h2>{item.title}</h2>
                         </div>
-                        <h2>{item.title}</h2>
+                        <div className="px-6">
+                          <div className="flex items-center gap-1">
+                            <CalendarClock size={18} />
+                            <h2>{item.dateFrom}</h2>
+                            <ArrowRight size={18} />
+                            <h2>{item.dataTo}</h2>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Clock9 size={18} />
+                            <h2>{item.timeFrom} น.</h2>
+                            <ArrowRight size={18} />
+                            <h2>{item.timeTo} น.</h2>
+                          </div>
+                        </div>
                       </div>
-                      <div className="px-6">
-                        <div className="flex items-center gap-1">
-                          <CalendarClock size={18} />
-                          <h2>{item.dateFrom}</h2>
-                          <ArrowRight size={18} />
-                          <h2>{item.dataTo}</h2>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Clock9 size={18} />
-                          <h2>{item.timeFrom} น.</h2>
-                          <ArrowRight size={18} />
-                          <h2>{item.timeTo} น.</h2>
-                        </div>
-                      </div>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger>
+                          <EllipsisVertical />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                          <DropdownMenuLabel>เมนู</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem>แก้ไข</DropdownMenuItem>
+                          <DropdownMenuItem>ลบรายการ</DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger>
-                        <EllipsisVertical />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuLabel>เมนู</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>แก้ไข</DropdownMenuItem>
-                        <DropdownMenuItem>ลบรายการ</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                ))}
-              </ScrollArea>
+                  ))}
+                </ScrollArea>
             </div>
             <div className="w-full relative ">
               {/* form */}
