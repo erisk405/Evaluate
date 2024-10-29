@@ -17,21 +17,22 @@ import {
 } from "@/components/ui/chart";
 export const description = "A multiple bar chart";
 const chartData = [
-  { month: "January", desktop: 186, mobile: 80 },
-  { month: "February", desktop: 305, mobile: 200 },
-  { month: "March", desktop: 237, mobile: 120 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { month: "June", desktop: 214, mobile: 140 },
+  { week: "Sunday", evaluated: 186, evaluate: 80 },
+  { week: "Monday", evaluated: 305, evaluate: 200 },
+  { week: "Tuesday", evaluated: 237, evaluate: 120 },
+  { week: "Wednesday", evaluated: 73, evaluate: 190 },
+  { week: "Thursday", evaluated: 209, evaluate: 130 },
+  { week: "Friday", evaluated: 214, evaluate: 140 },
+  { week: "Saturday", evaluated: 214, evaluate: 140 },
 ];
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
-    color: "hsl(var(--chart-1))",
-  },
-  mobile: {
-    label: "Mobile",
+  evaluated: {
+    label: "evaluated",
     color: "hsl(var(--chart-2))",
+  },
+  evaluate: {
+    label: "evaluate",
+    color: "#BFECFF",
   },
 } satisfies ChartConfig;
 
@@ -39,15 +40,15 @@ const BarChartMultiple = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Bar Chart - Multiple</CardTitle>
+        <CardTitle>จำนวนผู้ประเมินในแต่ละวัน</CardTitle>
         <CardDescription>January - June 2024</CardDescription>
       </CardHeader>
       <CardContent >
-        <ChartContainer config={chartConfig} className="max-h-[250px]">
+        <ChartContainer config={chartConfig} className="max-h-[300px]">
           <BarChart accessibilityLayer data={chartData}>
             <CartesianGrid vertical={false} />
             <XAxis
-              dataKey="month"
+              dataKey="week"
               tickLine={false}
               tickMargin={10}
               axisLine={false}
@@ -57,8 +58,8 @@ const BarChartMultiple = () => {
               cursor={false}
               content={<ChartTooltipContent indicator="dashed" />}
             />
-            <Bar dataKey="desktop" fill="var(--color-desktop)" radius={4} />
-            <Bar dataKey="mobile" fill="var(--color-mobile)" radius={4} />
+            <Bar dataKey="evaluated" fill="var(--color-evaluated)" radius={4} />
+            <Bar dataKey="evaluate" fill="var(--color-evaluate)" radius={4} />
           </BarChart>
         </ChartContainer>
       </CardContent>
