@@ -102,10 +102,10 @@ export const columns: ColumnDef<User>[] = [
       <div className="capitalize flex items-center gap-3">
         <Image
           src={row.original.image ? row.original.image.url : "/profiletest.jpg"} // ดึง url จาก image object row.original.image.url เข้าถึง property image ซึ่งเป็น object แล้วดึง url จาก UserImage object นั้น
-          width={50}
-          height={50}
+          width={40}
+          height={40}
           alt="profiletable"
-          className="w-[50px] h-[50px] rounded-full object-cover"
+          className="w-[40px] h-[40px] rounded-full object-cover"
         />
         {row.getValue("name")}
       </div>

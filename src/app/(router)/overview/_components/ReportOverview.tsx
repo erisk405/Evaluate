@@ -5,6 +5,9 @@ import RadarChartSection from "./RadarChartSection";
 import BarChartMultiple from "./BarChartMultiple";
 import {
   Building2,
+  CircleCheck,
+  CircleDotDashed,
+  CircleX,
   Container,
   Handshake,
   Package,
@@ -31,15 +34,15 @@ const invoices = [
   {
     id: "DE01",
     department: "งานพัฒนาวิชาการและส่งเสริมการศึกษา",
-    evaluated: 61,
-    evaluate: 12,
+    evaluated: 73,
+    evaluate: 0,
     member: 73,
   },
   {
     id: "DE02",
     department: "งานทะเบียนและประมวลผล",
-    evaluated: 51,
-    evaluate: 7,
+    evaluated: 58,
+    evaluate: 0,
     member: 58,
   },
   {
@@ -59,8 +62,8 @@ const invoices = [
   {
     id: "DE05",
     department: "งานบริหารงานทั่วไป",
-    evaluated: 22,
-    evaluate: 11,
+    evaluated: 33,
+    evaluate: 0,
     member: 33,
   },
   {
@@ -205,8 +208,11 @@ const ReportOverview = () => {
                 <TableHead className="w-[100px]">ลำดับ</TableHead>
                 <TableHead>หน่วยงาน</TableHead>
                 <TableHead className="text-center">สามาชิกทั้งหมด</TableHead>
-                <TableHead className="text-center text-green-500">ผู้ที่ประเมินเสร็จสิ้นแล้ว</TableHead>
-                <TableHead className="text-center text-yellow-500">ยังไม่แล้วเสร็จ</TableHead>
+                <TableHead className="text-center ">
+                  ผู้ที่ประเมินเสร็จสิ้นแล้ว
+                </TableHead>
+                <TableHead className="text-center ">ยังไม่แล้วเสร็จ</TableHead>
+                <TableHead className="text-center ">status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -222,6 +228,13 @@ const ReportOverview = () => {
                   </TableCell>
                   <TableCell className="text-center">
                     {invoice.evaluate}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    {invoice.evaluated === invoice.member ? (
+                      <CircleCheck className="text-white bg-green-500 rounded-full" />
+                    ) : (
+                      <CircleDotDashed className="text-white bg-amber-500 rounded-full" />
+                    )}
                   </TableCell>
                 </TableRow>
               ))}

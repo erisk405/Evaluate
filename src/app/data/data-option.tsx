@@ -66,12 +66,12 @@ const OptionSideBar = [
             {
                 id: 'subOSide4',
                 name: 'All result',
-                path: '/All_result',
+                path: '/evaluation/all_result',
             },
             {
                 id: 'subOSide5',
                 name: 'Export',
-                path: '/Export',
+                path: '/evaluation/export',
             },
         ]
     },
