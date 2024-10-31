@@ -148,7 +148,7 @@ const NotificationSection: React.FC = () => {
           const SenderName = receive.AdminName;
           const SenderStatus = receive.SendRes.status;
           const updateAt = receive.updatedAt;
-          const { id, role_name, description } = receive.SendRes.role;
+          const { id, role_name, description,role_level } = receive.SendRes.role;
 
           const dataSender = {
             id: receive.SendRes.id,
@@ -169,6 +169,7 @@ const NotificationSection: React.FC = () => {
                   id,
                   role_name,
                   description,
+                  role_level
                 }, // ส่ง role เข้าไปอัพเดทUser คนนั้น
                 roleRequests: [],
               })
@@ -222,7 +223,7 @@ const NotificationSection: React.FC = () => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          console.log(entry.isIntersecting);
+          // console.log(entry.isIntersecting);
 
           loadMore();
         }

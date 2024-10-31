@@ -146,7 +146,6 @@ const page = () => {
               />
             </div>
             <div className="flex items-center gap-5">
-              <FilterSection />
               <div>
                 <Dialog>
                   <TooltipProvider>

@@ -12,22 +12,14 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { AlignCenter, ArrowUpDown, ChevronDown } from "lucide-react";
+import { ArrowUpDown, ChevronDown } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -254,29 +246,17 @@ export function ListAllEmployee() {
     <div className="w-full ">
       <div className="flex items-center justify-between py-4">
         {/* ปุ่มค้นหาชื่อหรือ email */}
-        <div className="flex items-center gap-3">
+        <div className="grid grid-cols-4 items-center gap-3">
           <Input
             placeholder="Filter by name or email..."
             value={globalFilter}
             onChange={(event) => setGlobalFilter(event.target.value)}
-            className="max-w-sm rounded-lg"
+            className="max-w-sm rounded-lg col-span-2"
           />
-          {/* filter แต่ว่าจะเอารอบไหร */}
-          <Select>
-            <SelectTrigger className="w-[280px]">
-              <SelectValue placeholder="Select a department" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel>Fruits</SelectLabel>
-                <SelectItem value="apple">Apple</SelectItem>
-                <SelectItem value="banana">Banana</SelectItem>
-                <SelectItem value="blueberry">Blueberry</SelectItem>
-                <SelectItem value="grapes">Grapes</SelectItem>
-                <SelectItem value="pineapple">Pineapple</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+          <div className="flex items-center space-x-2 w-full col-span-1">
+            <Switch id="airplane-mode" />
+            <Label htmlFor="airplane-mode">Airplane Mode</Label>
+          </div>
         </div>
         <div className="flex items-center gap-3">
           {/* เมนูเมือต้องการจะ export */}
@@ -358,10 +338,7 @@ export function ListAllEmployee() {
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead
-                      key={header.id}
-                      className="text-md bg-gray-100"
-                    >
+                    <TableHead key={header.id} className="text-md bg-gray-100">
                       {header.isPlaceholder
                         ? null
                         : flexRender(
