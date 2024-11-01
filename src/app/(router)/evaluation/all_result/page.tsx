@@ -30,6 +30,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+
 import useStore from "@/app/store/store";
 import GlobalApi from "@/app/_unit/GlobalApi";
 const items = [
@@ -137,6 +138,7 @@ const page = () => {
   return (
     <div className="m-5 grid grid-cols-4 w-full gap-3">
       <div className="w-full col-span-3">
+        <h2 className="text-3xl font-bold">รายชื่อทั้งหมด</h2>
         <ListAllEmployee />
       </div>
       <div className="col-span-1">

@@ -1,5 +1,4 @@
 "use client";
-
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -12,7 +11,20 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown } from "lucide-react";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import {
+  ArrowUpDown,
+  BriefcaseBusiness,
+  CalendarX,
+  ChevronDown,
+  Dot,
+  Download,
+  FileText,
+  Search,
+  Sheet,
+  UserPlus,
+  X,
+} from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import {
   DropdownMenu,
@@ -57,6 +69,24 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import ResultSection from "@/app/(router)/history/_components/ResultSection";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 export const columns: ColumnDef<User>[] = [
   {
     id: "select",
@@ -264,37 +294,132 @@ export function ListAllEmployee() {
             <DialogTrigger asChild>
               <Button variant="outline">Export</Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[525px]">
               <DialogHeader>
                 <DialogTitle>Export</DialogTitle>
                 <DialogDescription>
                   Make changes to your Export here. Click save when you're done.
                 </DialogDescription>
               </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="name" className="text-right">
-                    Name
-                  </Label>
-                  <Input
-                    id="name"
-                    defaultValue="Pedro Duarte"
-                    className="col-span-3"
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="username" className="text-right">
-                    Username
-                  </Label>
-                  <Input
-                    id="username"
-                    defaultValue="@peduarte"
-                    className="col-span-3"
-                  />
-                </div>
-              </div>
+              <Tabs defaultValue="detail" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger
+                    value="detail"
+                    className="flex items-center gap-2"
+                  >
+                    <BriefcaseBusiness size={18} />
+                    Detail
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="export"
+                    className="flex items-center gap-2"
+                  >
+                    <Download size={18} />
+                    Export
+                  </TabsTrigger>
+                </TabsList>
+                {/* ใช้ในการ ตรวจสอบข้อมูลการจะ export */}
+                <TabsContent value="detail">
+                  {/* search bor */}
+                  <div className="relative space-y-6">
+                    <Search
+                      className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500"
+                      size={14}
+                    />
+                    <Input
+                      className="w-full pl-7"
+                      placeholder="Add other people"
+                    />
+                  </div>
+                  {/* เลือกรอบการประเมินที่จะ export ออกมา */}
+                  <h2 className="my-3 text-sm">กำหนดการตั้งค่าต่างๆ</h2>
+                  <div className="grid grid-cols-1 w-full">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="p-2 bg-gray-200 rounded-full">
+                          <CalendarX size={18} />
+                        </div>
+                        <h2>รอบการประเมิน</h2>
+                      </div>
+                      <Select>
+                        <SelectTrigger className="w-auto">
+                          <SelectValue placeholder="รอบการประเมิน" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectLabel>การประเมิน</SelectLabel>
+                            <SelectItem value="apple">
+                              รอบที่ 1 ประจำปีงบประมาณ 2568
+                            </SelectItem>
+                            <SelectItem value="banana">
+                              รอบที่ 2 ประจำปีงบประมาณ 2568
+                            </SelectItem>
+                            <SelectItem value="blueberry">
+                              รอบที่ 1 ประจำปีงบประมาณ 2567
+                            </SelectItem>
+                            <SelectItem value="grapes">
+                              รอบที่ 2 ประจำปีงบประมาณ 2567
+                            </SelectItem>
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  {/* รายชื่อทั้งหมดที่กำลังจะดำเนินการต่อใป ในการ export */}
+                  <h2 className="my-3 text-sm">รายชื่อที่จะดำเนินการทั้งหมด</h2>
+                  <div className="flex flex-wrap gap-2">
+                    {allUser.map((item, index) => (
+                      <div
+                        key={item.id}
+                        className="inline-flex px-2 items-center gap-1 rounded-xl border"
+                      >
+                        <Dot strokeWidth={6} className="text-blue-500" />
+                        <h2 className="text-sm">{item.name}</h2>
+                        <X size={14} />
+                      </div>
+                    ))}
+                  </div>
+                </TabsContent>
+                <TabsContent value="export">
+                  {/* รายชื่อทั้งหมดที่กำลังจะดำเนินการต่อใป ในการ export */}
+                  <h2 className="my-3 text-sm">รายชื่อที่จะดำเนินการทั้งหมด ของรอบการประเมินที่ 1 ประจำปีงบประมาณ 2567</h2>
+                  <div className="flex flex-wrap gap-2">
+                    {allUser.map((item, index) => (
+                      <div
+                        key={item.id}
+                        className="inline-flex px-2 items-center gap-1 rounded-xl border"
+                      >
+                        <Dot strokeWidth={6} className="text-blue-500" />
+                        <h2 className="text-sm">{item.name}</h2>
+                      </div>
+                    ))}
+                  </div>
+                  <Separator className="my-3" />
+                  <h2 className="text-sm">
+                    โปรดเลือกว่าจะ export เป็นไฟล์อะไร
+                  </h2>
+                  <ToggleGroup type="multiple">
+                    <div className="grid grid-cols-2 w-full gap-3 my-3">
+                      <ToggleGroupItem
+                        value="bold"
+                        className="flex items-center gap-3 border"
+                      >
+                        <Sheet size={20} />
+                        <h2 className="text-md">Excel file</h2>
+                      </ToggleGroupItem>
+                      <ToggleGroupItem
+                        value="italic"
+                        className="flex items-center gap-3 border"
+                      >
+                        <FileText size={20} />
+                        <h2 className="text-md">PDF file</h2>
+                      </ToggleGroupItem>
+                    </div>
+                  </ToggleGroup>
+                </TabsContent>
+              </Tabs>
               <DialogFooter>
-                <Button type="submit">Save changes</Button>
+                <Button type="submit">Export file</Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
