@@ -59,24 +59,6 @@ const items = [
     label: "งานฝึกประสบการณ์วิชาชีพนักศึกษา",
   },
 ] as const;
-const itemsPeriod = [
-  {
-    id: "IP01",
-    label: "รอบที่ 1 ประจำปีงบประมาณ พ.ศ. 2568",
-  },
-  {
-    id: "IP02",
-    label: "รอบที่ 2 ประจำปีงบประมาณ พ.ศ. 2568",
-  },
-  {
-    id: "IP03",
-    label: "รอบที่ 1 ประจำปีงบประมาณ พ.ศ. 2567",
-  },
-  {
-    id: "IP04",
-    label: "รอบที่ 2 ประจำปีงบประมาณ พ.ศ. 2567",
-  },
-] as const;
 
 const page = () => {
   const [open, setOpen] = useState(true);
@@ -132,9 +114,9 @@ const page = () => {
   useEffect(() => {
     fetchRole();
   }, []);
-  useEffect(() => {
-    console.log(roles);
-  }, [roles]);
+  // useEffect(() => {
+  //   console.log(roles);
+  // }, [roles]);
   return (
     <div className="m-5 grid grid-cols-4 w-full gap-3">
       <div className="w-full col-span-3">
@@ -271,71 +253,6 @@ const page = () => {
                                   </FormControl>
                                   <FormLabel className="font-normal">
                                     {item.role_name}
-                                  </FormLabel>
-                                </FormItem>
-                              )}
-                            />
-                          ))}
-                        </CollapsibleContent>
-                      </Collapsible>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="itemsPeriod"
-                  render={() => (
-                    <FormItem>
-                      <Collapsible
-                        open={openPeriod}
-                        onOpenChange={setOpenPeriod}
-                      >
-                        <CollapsibleTrigger className="w-full">
-                          <div className="flex items-center justify-between w-full text-left mb-4">
-                            <div>
-                              <FormLabel className="text-base">
-                                รอบการประเมิน
-                              </FormLabel>
-                              <FormDescription>
-                                เลือกรอบการประเมินที่ต้องการจะกรองข้อมูล
-                              </FormDescription>
-                            </div>
-                            <ChevronDown
-                              className={`h-6 w-6 transition-transform duration-200 ${
-                                openPeriod ? "transform rotate-180" : ""
-                              }`}
-                            />
-                          </div>
-                        </CollapsibleTrigger>
-
-                        <CollapsibleContent className="space-y-4 pl-6">
-                          {itemsPeriod.map((item) => (
-                            <FormField
-                              key={item.id}
-                              control={form.control}
-                              name="itemsPeriod"
-                              render={({ field }) => (
-                                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                                  <FormControl>
-                                    <Checkbox
-                                      checked={field.value?.includes(item.id)}
-                                      onCheckedChange={(checked) => {
-                                        return checked
-                                          ? field.onChange([
-                                              ...field.value,
-                                              item.id,
-                                            ])
-                                          : field.onChange(
-                                              field.value?.filter(
-                                                (value) => value !== item.id
-                                              )
-                                            );
-                                      }}
-                                    />
-                                  </FormControl>
-                                  <FormLabel className="font-normal">
-                                    {item.label}
                                   </FormLabel>
                                 </FormItem>
                               )}

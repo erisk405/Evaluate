@@ -79,14 +79,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import FilterPeriod from "./FilterPeriod";
 export const columns: ColumnDef<User>[] = [
   {
     id: "select",
@@ -237,9 +231,6 @@ export function ListAllEmployee() {
   useEffect(() => {
     getDataOfEmployee();
   }, []);
-  useEffect(() => {
-    console.log(allUser);
-  }, [allUser]);
 
   const table = useReactTable({
     data: allUser ?? [],
@@ -274,18 +265,25 @@ export function ListAllEmployee() {
 
   return (
     <div className="w-full ">
-      <div className="flex items-center justify-between py-4">
-        {/* ปุ่มค้นหาชื่อหรือ email */}
-        <div className="grid grid-cols-4 items-center gap-3">
-          <Input
-            placeholder="Filter by name or email..."
-            value={globalFilter}
-            onChange={(event) => setGlobalFilter(event.target.value)}
-            className="max-w-sm rounded-lg col-span-2"
-          />
+      <div className="flex items-center w-full gap-3 justify-between py-4">
+        <div className="grid grid-cols-2 xl:grid-cols-4 items-center gap-3 w-full">
+          {/* ปุ่มค้นหาชื่อหรือ email */}
+          <div className="col-span-2 w-full">
+            <Input
+              placeholder="Filter by name or email..."
+              value={globalFilter}
+              onChange={(event) => setGlobalFilter(event.target.value)}
+              className=" rounded-lg "
+            />
+          </div>
+          <div className="col-span-1 w-full">
+            <FilterPeriod
+            />
+          </div>
+          {/* ปุ้ม switch ที่ใช้ในเลือกเฉพาะที่ดำเนินการเสร็จแล้ว */}
           <div className="flex items-center space-x-2 w-full col-span-1">
             <Switch id="airplane-mode" />
-            <Label htmlFor="airplane-mode">Airplane Mode</Label>
+            <Label htmlFor="airplane-mode">success</Label>
           </div>
         </div>
         <div className="flex items-center gap-3">
@@ -382,7 +380,10 @@ export function ListAllEmployee() {
                 </TabsContent>
                 <TabsContent value="export">
                   {/* รายชื่อทั้งหมดที่กำลังจะดำเนินการต่อใป ในการ export */}
-                  <h2 className="my-3 text-sm">รายชื่อที่จะดำเนินการทั้งหมด ของรอบการประเมินที่ 1 ประจำปีงบประมาณ 2567</h2>
+                  <h2 className="my-3 text-sm">
+                    รายชื่อที่จะดำเนินการทั้งหมด ของรอบการประเมินที่ 1
+                    ประจำปีงบประมาณ 2567
+                  </h2>
                   <div className="flex flex-wrap gap-2">
                     {allUser.map((item, index) => (
                       <div

@@ -73,8 +73,6 @@ export default function SetStatusSection({ onRoleChange , defaultValue ,isPendin
           <CommandGroup>
             <CommandList>
               {roles.map((Role) => (
-                // <FormField
-                // />
                 <CommandItem
                   key={Role.id}
                   value={Role.role_name}

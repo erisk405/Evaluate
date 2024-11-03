@@ -141,13 +141,14 @@ export default function Myprofile() {
       // หาว่ามีการร้องขอมามั้ย ถ้ามีก็ให้ updateProfileDetailไว้ เพื่อคงสถานะ แล้วนำไปใช้ในการ disable button
       console.log("response:",response);
       
-      const { id, role_name, description } = response?.data.data.role;
+      const { id, role_name, description,role_level } = response?.data.data.role;
       const roleRequests: { role: Role; status: string }[] = [
         {
           role: {
             id,
             description,
             role_name,
+            role_level
           },
           status: "PENDING",
         },
