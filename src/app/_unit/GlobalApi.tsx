@@ -113,6 +113,16 @@ const createRole = (payload:any) => {
   }
 }
 
+const testupdate = (permissions)=>{
+  console.log(permissions);
+  
+  try {
+    return axios.put(`${apiUrl}/permissionRole`,permissions,{ withCredentials: true });
+  } catch (error) {
+    
+  }
+}
+
 const deleteRole = (id:string) => {
   try {
     return axios.delete(`${apiUrl}/role`,{ 
@@ -269,12 +279,11 @@ const deleteForm = async (id: string) => {
   }
 };
 
-const createPermission = async (data:any) => {
+const createPermission = async (data:any,assessorID:string) => {
+  console.log(data);
+  
   try {
-    return axios.post(`${apiUrl}/permission`, {
-      data: { data },
-      withCredentials: true,
-    });
+    return axios.post(`${apiUrl}/permission`,{data,assessorID}, {withCredentials: true,});
   } catch (error) {
     console.error("API delete form", { message: error });
   }
@@ -303,5 +312,6 @@ export default {
   deleteForm,
   createPermission,
   createRole,
-  deleteRole
+  deleteRole,
+  testupdate
 };

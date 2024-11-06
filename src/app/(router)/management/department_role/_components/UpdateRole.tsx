@@ -92,6 +92,19 @@ const UpdateRole = () => {
         {} as Permissions
       )
   );
+  const testupdate = async (permissions,id) => {
+    const data = {
+      assessorId:id,
+      permissions
+    }
+    try {
+      const response = await GlobalApi.testupdate(data);
+      console.log(response);
+      
+    } catch (error) {
+      
+    }
+  }
 
   const [loading, setLoading] = useState(false);
   const updateRole = useForm<z.infer<typeof formSchema>>({
@@ -103,12 +116,15 @@ const UpdateRole = () => {
     },
   });
 
-  const onUpdate = async (values: z.infer<typeof formSchema>) => {
+  const onUpdate = async (values: z.infer<typeof formSchema>,id:string) => {
     setLoading(true);
     console.log(permissions);
-
+    console.log(id);
+    
+    testupdate(permissions,id);
     console.log("value:", values);
     try {
+      
     } catch (error) {
       setLoading(false);
     }
@@ -227,7 +243,7 @@ const UpdateRole = () => {
                           </DialogHeader>
                           <Form {...updateRole}>
                             <form
-                              onSubmit={updateRole.handleSubmit(onUpdate)}
+                              onSubmit={updateRole.handleSubmit((values)=> onUpdate(values,item.id))}
                               className="grid gap-4 py-4 px-4"
                             >
                               {/* Role name */}

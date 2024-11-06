@@ -58,7 +58,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import useStore from "@/app/store/store";
 
-import { z } from "zod";
+import { object, z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import {
@@ -122,17 +122,25 @@ const ManageRole = () => {
     },
   });
 
-
-
+  function hasPermissionValues(permission: Permission): boolean {
+    return permission.internal.length > 0 || permission.external.length > 0;
+  }
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setLoading(true);
-    console.log(permissions);
-
-    console.log(values);
     try {
       const newRole = await GlobalApi.createRole(values);
       setRole([...roles, newRole?.data]);
+
+      if (Object.keys(permissions).length > 0) {
+        const assessorId: string = newRole?.data?.id;
+        const newPermission = await GlobalApi.createPermission(
+          permissions,
+          assessorId
+        );
+        console.log(newPermission);
+        
+      }
     } catch (error) {
       setLoading(false);
     }
@@ -253,7 +261,7 @@ const ManageRole = () => {
                   <h2>Set role permission form evaluate</h2>
                 </div>
                 {/* Set role permission form evaluate */}
-                <div className="grid grid-cols-4 items-center shadow-inner p-2 gap-4 overflow-scroll h-[35dvh] scrollbar-gemini rounded-lg" >
+                <div className="grid grid-cols-4 items-center shadow-inner p-2 gap-4 overflow-scroll h-[35dvh] scrollbar-gemini rounded-lg">
                   {roles.map(
                     (item) =>
                       item.role_name !== "admin" &&
@@ -335,7 +343,6 @@ const ManageRole = () => {
 
       {/* ส่วนของการปรับปรุงแก้ไขRole */}
       <UpdateRole />
-  
     </div>
   );
 };
