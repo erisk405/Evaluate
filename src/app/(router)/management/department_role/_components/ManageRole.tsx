@@ -4,7 +4,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -19,43 +18,22 @@ import {
 } from "@/components/ui/tooltip";
 import {
   BadgeAlert,
-  BadgeCheck,
   Plus,
-  Settings2,
   ShieldPlus,
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import FilterSection from "./FilterSection";
 import { Textarea } from "@/components/ui/textarea";
 
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import useStore from "@/app/store/store";
 
 import { object, z } from "zod";
@@ -70,7 +48,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import GlobalApi from "@/app/_unit/GlobalApi";
-import UpdateRole from "./updateRole";
+import UpdateRole from "./UpdateRole";
 
 const formSchema = z.object({
   roleName: z
@@ -122,17 +100,13 @@ const ManageRole = () => {
     },
   });
 
-  function hasPermissionValues(permission: Permission): boolean {
-    return permission.internal.length > 0 || permission.external.length > 0;
-  }
-
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    setLoading(true);
     try {
+      setLoading(true);
+      const permissionsKeys = Object.keys(permissions); //เพื่อรับรายการคีย์ของอ็อบเจ็กต์ permissions แล้วทำงานต่อด้วยอาร์เรย์นั้น 
       const newRole = await GlobalApi.createRole(values);
       setRole([...roles, newRole?.data]);
-
-      if (Object.keys(permissions).length > 0) {
+      if (permissionsKeys.length > 0) {
         const assessorId: string = newRole?.data?.id;
         const newPermission = await GlobalApi.createPermission(
           permissions,

@@ -41,7 +41,16 @@ interface RoleRequest {
   role: Role;
   status: string;
 }
+// Define the type for a single permission
+type Permission = {
+  internal: string[];
+  external: string[];
+};
 
+// Define the type for the permissions state
+type Permissions = {
+  [key: string]: Permission;
+};
 
 interface Notification {
   id: string;
@@ -60,4 +69,4 @@ interface Notification {
 
 
 
-export type { DepartmentImage, Department, Role, User, RoleRequest, Notification };
+export type { DepartmentImage, Department, Role, User, RoleRequest, Notification ,Permissions};

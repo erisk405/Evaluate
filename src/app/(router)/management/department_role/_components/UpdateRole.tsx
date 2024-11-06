@@ -52,16 +52,8 @@ import { Input } from "@/components/ui/input";
 import FilterSection from "./FilterSection";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-// Define the type for a single permission
-type Permission = {
-  internal: string[];
-  external: string[];
-};
+import { Permissions } from "@/types/interface";
 
-// Define the type for the permissions state
-type Permissions = {
-  [key: string]: Permission;
-};
 
 const formSchema = z.object({
   roleName: z
@@ -92,37 +84,32 @@ const UpdateRole = () => {
         {} as Permissions
       )
   );
-  const testupdate = async (permissions,id) => {
-    const data = {
-      assessorId:id,
-      permissions
-    }
+  const testupdate = async (id:string) => {
     try {
+      const data = {
+        assessorId:id,
+        permissions
+      }
       const response = await GlobalApi.testupdate(data);
       console.log(response);
       
     } catch (error) {
+      console.error({message:error});
       
     }
   }
 
   const [loading, setLoading] = useState(false);
   const updateRole = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      roleName: "",
-      description: "", // เพิ่มค่า default สำหรับ description
-      roleLevel: "LEVEL_1",
-    },
+    resolver: zodResolver(formSchema)
   });
 
   const onUpdate = async (values: z.infer<typeof formSchema>,id:string) => {
     setLoading(true);
-    console.log(permissions);
-    console.log(id);
-    
-    testupdate(permissions,id);
+    console.log("onUpdate",{permissions,id});
     console.log("value:", values);
+    
+    testupdate(id);
     try {
       
     } catch (error) {
@@ -259,6 +246,7 @@ const UpdateRole = () => {
                                           <Input
                                             placeholder="Enter name"
                                             {...field}
+                                            defaultValue={item.role_name}
                                           />
                                         </FormControl>
                                         <FormMessage />
@@ -277,7 +265,7 @@ const UpdateRole = () => {
                                           <FormLabel>Role level</FormLabel>
                                           <Select
                                             onValueChange={field.onChange}
-                                            defaultValue={field.value}
+                                            defaultValue={item.role_level}
                                           >
                                             <FormControl>
                                               <SelectTrigger className="w-full ">
@@ -383,6 +371,7 @@ const UpdateRole = () => {
                                         <Textarea
                                           placeholder="Type your message here."
                                           {...field}
+                                          defaultValue={item.description}
                                         />
                                       </FormControl>
                                       <p className="text-sm text-muted-foreground">
