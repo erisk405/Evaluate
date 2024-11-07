@@ -34,23 +34,34 @@ interface Role {
   id: string;
   description: string,
   role_name: string,
-  role_level: RoleLevel; 
+  role_level: RoleLevel;
+  permissionsAsAssessor: Permission[]
 }
+interface Permission {
+  assessorRole: {
+    id: string,
+    role_name: string
+  }
+  evaluatorRole: {
+    id: string,
+    role_name: string
+  };
+  permissionForm: PermissionForm[];
+}
+
+interface PermissionForm {
+  form: {
+    id: string;
+    name:string
+  };
+  ingroup: boolean;
+}
+
 
 interface RoleRequest {
   role: Role;
   status: string;
 }
-// Define the type for a single permission
-type Permission = {
-  internal: string[];
-  external: string[];
-};
-
-// Define the type for the permissions state
-type Permissions = {
-  [key: string]: Permission;
-};
 
 interface Notification {
   id: string;
@@ -67,6 +78,4 @@ interface Notification {
   createdAt: string;
 }
 
-
-
-export type { DepartmentImage, Department, Role, User, RoleRequest, Notification ,Permissions};
+export type { DepartmentImage, Department, Role, User, RoleRequest, Notification, Permission,PermissionForm };

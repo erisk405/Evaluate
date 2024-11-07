@@ -3,7 +3,6 @@ import { Input } from "@/components/ui/input";
 import { Loader, Plus, RotateCcw, Search } from "lucide-react";
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
-import FilterSection from "./_components/FilterSection";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -20,7 +19,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";

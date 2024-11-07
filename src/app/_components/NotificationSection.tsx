@@ -148,7 +148,7 @@ const NotificationSection: React.FC = () => {
           const SenderName = receive.AdminName;
           const SenderStatus = receive.SendRes.status;
           const updateAt = receive.updatedAt;
-          const { id, role_name, description,role_level } = receive.SendRes.role;
+          const { id, role_name, description,role_level,permissionsAsAssessor } = receive.SendRes.role;
 
           const dataSender = {
             id: receive.SendRes.id,
@@ -169,7 +169,8 @@ const NotificationSection: React.FC = () => {
                   id,
                   role_name,
                   description,
-                  role_level
+                  role_level,
+                  permissionsAsAssessor
                 }, // ส่ง role เข้าไปอัพเดทUser คนนั้น
                 roleRequests: [],
               })

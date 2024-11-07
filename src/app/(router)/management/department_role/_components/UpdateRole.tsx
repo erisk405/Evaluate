@@ -1,21 +1,6 @@
-import React, { useState } from "react";
+// UpdateRole.tsx
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Accordion,
   AccordionContent,
@@ -33,44 +18,36 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { BadgeCheck } from "lucide-react";
+import EditRoleDialog from "./EditRoleDialog";
 import useStore from "@/app/store/store";
 import GlobalApi from "@/app/_unit/GlobalApi";
-import { BadgeAlert, BadgeCheck, Settings2, ShieldPlus } from "lucide-react";
-
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import FilterSection from "./FilterSection";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Permissions } from "@/types/interface";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
+import { Settings2, ShieldPlus } from "lucide-react";
+// Define the type for a single permission
+type Permission = {
+  internal: string[];
+  external: string[];
+};
 
-const formSchema = z.object({
-  roleName: z
-    .string()
-    .min(5, { message: "Role name must be at least 5 characters." }) // ขั้นต่ำ 5 ตัวอักษร
-    .max(50, { message: "Role name must not exceed 50 characters." }), // สูงสุด 50 ตัวอักษร
-  description: z
-    .string()
-    .min(10, { message: "Description must be at least 10 characters." }) // ขั้นต่ำ 10 ตัวอักษร
-    .max(100, { message: "Description must not exceed 100 characters." }), // สูงสุด 100 ตัวอักษร
-  roleLevel: z.enum(["LEVEL_1", "LEVEL_2", "LEVEL_3", "LEVEL_4"], {
-    required_error: "Please select a role level.",
-  }),
-});
-
+// Define the type for the permissions state
+type Permissions = {
+  [key: string]: Permission;
+};
 const UpdateRole = () => {
   const { roles, setRole } = useStore();
+
+  //accumulator (หรือ acc) คือค่าเริ่มต้นที่เราให้ใน reduce (ในที่นี้คือ {}) และจะถูกอัปเดตเรื่อย ๆ ในแต่ละรอบการวนลูป
+  //currentValue (หรือ role) คือค่าใน array ที่เรากำลังประมวลผลในรอบนั้น ๆ.
+  //initialValue คือค่าที่กำหนดเริ่มต้นให้กับ accumulator ซึ่งในกรณีนี้คือ {} as Permissions หมายถึง object เปล่า.
   const [permissions, setPermissions] = useState<Permissions>(
     roles
       .filter(
@@ -84,47 +61,26 @@ const UpdateRole = () => {
         {} as Permissions
       )
   );
-  const testupdate = async (id:string) => {
+
+  const onUpdate = async (values: any, id: string) => {
     try {
       const data = {
-        assessorId:id,
-        permissions
-      }
+        assessorId: id,
+        permissions,
+      };
       const response = await GlobalApi.testupdate(data);
       console.log(response);
-      
     } catch (error) {
-      console.error({message:error});
-      
-    }
-  }
-
-  const [loading, setLoading] = useState(false);
-  const updateRole = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema)
-  });
-
-  const onUpdate = async (values: z.infer<typeof formSchema>,id:string) => {
-    setLoading(true);
-    console.log("onUpdate",{permissions,id});
-    console.log("value:", values);
-    
-    testupdate(id);
-    try {
-      
-    } catch (error) {
-      setLoading(false);
+      console.error({ message: error });
     }
   };
+
   const deleteRole = async (id: string) => {
     try {
       const response = await GlobalApi.deleteRole(id);
-      console.log("response:", response);
-
       // อัพเดท roles ใน store หลังจากลบสำเร็จ
       const updatedRoles = roles.filter((role) => role.id !== id);
       setRole(updatedRoles);
-
       // อัพเดท permissions state ด้วย
       setPermissions((prevPermissions) => {
         const { [id]: deletedRole, ...restPermissions } = prevPermissions;
@@ -134,24 +90,29 @@ const UpdateRole = () => {
       console.error({ message: error });
     }
   };
+
   // function ที่ใช้ เพื่อประกอบ JSON ออกมาแล้ว ส่งไปอัพเดท
   const handleFilterChange = (
     roleID: string,
     roleName: string, // อััพเดทที่ role id อะไร
-    type: "internal" | "external", //ภายในหรือภายนอกหน่วยงาน
+    type: "internal" | "external", //ภายในหรือภายนอกหน่วยงาน จะถูกนำมาเป็น key แล้วเอาform id มาใส่
     newValues: string[] // id ของแบบฟอร์ที่ส่งมาจาก Server
   ) => {
     setPermissions((prev) => ({
       ...prev,
       [roleName]: {
-        ...prev[roleName], // ถ้าไม่คัดลอกค่าเดิมไว้ ตอนSetใหม่ค่าเก่ามันจะหาย
-        ["id"]: roleID,
-        [type]: newValues,
-      } as any,
+        ...prev[roleName], // ถ้าไม่คัดลอกค่าเดิมไว้ ตอนSet formของroleอื่นใหม่ค่าเก่ามันจะหาย
+        ["id"]: roleID, // ต้องการ id ของ role ที่เป็น evaluator
+        [type]: newValues, // ต้องนำid ของform กลับมาว่าอยู่ภายนอกหรือภายในแล้ว id อะไร
+      },
     }));
   };
+
+  useEffect(() => {
+    console.log("roles:", roles);
+  }, [roles]);
   return (
-    <div className="flex flex-col  ">
+    <div className="flex flex-col">
       {roles.map(
         (item) =>
           item.role_name !== "admin" &&
@@ -206,7 +167,7 @@ const UpdateRole = () => {
                       </AlertDialog>
                       <Dialog>
                         <DialogTrigger asChild>
-                          <Button className="flex items-center gap-2 px-2 h-9 active:scale-95 ">
+                          <Button className="flex items-center gap-2 px-2 h-9 active:scale-95">
                             <Settings2 size={18} /> กำหนดสิทธิ
                           </Button>
                         </DialogTrigger>
@@ -217,8 +178,8 @@ const UpdateRole = () => {
                                 <div className="block p-1 bg-blue-100 rounded-full">
                                   <ShieldPlus
                                     size={40}
-                                    className="text-blue-500 "
-                                  />{" "}
+                                    className="text-blue-500"
+                                  />
                                 </div>
                                 <h2 className="text-xl">Edit role</h2>
                               </div>
@@ -228,165 +189,15 @@ const UpdateRole = () => {
                               you're done.
                             </DialogDescription>
                           </DialogHeader>
-                          <Form {...updateRole}>
-                            <form
-                              onSubmit={updateRole.handleSubmit((values)=> onUpdate(values,item.id))}
-                              className="grid gap-4 py-4 px-4"
-                            >
-                              {/* Role name */}
-                              <div className="grid grid-cols-2 gap-3">
-                                <div>
-                                  <FormField
-                                    control={updateRole.control}
-                                    name="roleName"
-                                    render={({ field }) => (
-                                      <FormItem>
-                                        <FormLabel>Role name</FormLabel>
-                                        <FormControl>
-                                          <Input
-                                            placeholder="Enter name"
-                                            {...field}
-                                            defaultValue={item.role_name}
-                                          />
-                                        </FormControl>
-                                        <FormMessage />
-                                      </FormItem>
-                                    )}
-                                  />
-                                </div>
-                                {/* Role level */}
-                                <div>
-                                  <div>
-                                    <FormField
-                                      control={updateRole.control}
-                                      name="roleLevel"
-                                      render={({ field }) => (
-                                        <FormItem>
-                                          <FormLabel>Role level</FormLabel>
-                                          <Select
-                                            onValueChange={field.onChange}
-                                            defaultValue={item.role_level}
-                                          >
-                                            <FormControl>
-                                              <SelectTrigger className="w-full ">
-                                                <SelectValue placeholder="Select a level " />
-                                              </SelectTrigger>
-                                            </FormControl>
-                                            <SelectContent>
-                                              <SelectItem value="LEVEL_1">
-                                                Level 1
-                                              </SelectItem>
-                                              <SelectItem value="LEVEL_2">
-                                                Level 2
-                                              </SelectItem>
-                                              <SelectItem value="LEVEL_3">
-                                                Level 3
-                                              </SelectItem>
-                                              <SelectItem value="LEVEL_4">
-                                                Level 4
-                                              </SelectItem>
-                                            </SelectContent>
-                                          </Select>
-                                        </FormItem>
-                                      )}
-                                    ></FormField>
-                                  </div>
-                                </div>
-                              </div>
-                              <hr />
-                              {/* body header */}
-                              <div className="flex items-center gap-2 font-semibold">
-                                <BadgeAlert className="text-blue-500 bg-white rounded-full " />{" "}
-                                <h2>Set role permission form evaluate</h2>
-                              </div>
-                              {/* Set role permission form evaluate */}
-                              <div className="grid grid-cols-4 items-center shadow-inner p-2 gap-4 overflow-scroll h-[35dvh] scrollbar-gemini rounded-lg">
-                                {roles.map(
-                                  (item) =>
-                                    item.role_name !== "admin" &&
-                                    item.role_name !== "member" && (
-                                      <div
-                                        className="col-span-2 "
-                                        key={item.id}
-                                      >
-                                        <Label
-                                          htmlFor="permission"
-                                          className="text-left col-span-2"
-                                        >
-                                          {item.role_name}
-                                        </Label>
-                                        <div className="w-full mt-2">
-                                          <div className="ml-4">
-                                            <h2 className="text-sm">
-                                              ภายในกลุ่มงาน
-                                            </h2>
-                                            <FilterSection
-                                              selectedValues={
-                                                permissions[item.role_name]
-                                                  ?.internal || []
-                                              }
-                                              setSelectedValues={(newValues) =>
-                                                handleFilterChange(
-                                                  item.id,
-                                                  item.role_name,
-                                                  "internal",
-                                                  newValues
-                                                )
-                                              }
-                                            />
-                                          </div>
-                                          <div className="ml-4 mt-2">
-                                            <h2 className="text-sm">
-                                              ภายนอกกลุ่มงาน
-                                            </h2>
-                                            <FilterSection
-                                              selectedValues={
-                                                permissions[item.role_name]
-                                                  ?.external || []
-                                              }
-                                              setSelectedValues={(newValues) =>
-                                                handleFilterChange(
-                                                  item.id,
-                                                  item.role_name,
-                                                  "external",
-                                                  newValues
-                                                )
-                                              }
-                                            />
-                                          </div>
-                                        </div>
-                                      </div>
-                                    )
-                                )}
-                              </div>
-                              {/* discription */}
-                              <div className="grid w-full gap-1.5">
-                                <FormField
-                                  control={updateRole.control}
-                                  name="description"
-                                  render={({ field }) => (
-                                    <FormItem>
-                                      <Label>Your Describtion</Label>
-                                      <FormControl>
-                                        <Textarea
-                                          placeholder="Type your message here."
-                                          {...field}
-                                          defaultValue={item.description}
-                                        />
-                                      </FormControl>
-                                      <p className="text-sm text-muted-foreground">
-                                        Your message will be copied to the
-                                        describtion role.
-                                      </p>
-                                      <FormMessage />
-                                    </FormItem>
-                                  )}
-                                />
-                              </div>
 
-                              <Button type="submit">Save changes</Button>
-                            </form>
-                          </Form>
+                          <EditRoleDialog
+                            role={item} //ส่งค่า item ซึ่งเป็นข้อมูลของ role ปัจจุบันที่กำลังถูกแก้ไขไปยัง EditRoleDialog component
+                            onUpdate={onUpdate} //ส่งฟังก์ชัน onUpdate ไปให้ EditRoleDialog เพื่อให้ component นี้เรียกใช้งานเมื่อต้องการอัปเดตข้อมูล role
+                            permissions={permissions} //ค่า permissions นี้ช่วยให้ component รู้ว่า permissions ที่มีอยู่ในระบบมีอะไรบ้าง เพื่อให้ผู้ใช้สามารถจัดการ permissions ได้
+                            handleFilterChange={handleFilterChange} //ส่งฟังก์ชัน handleFilterChange ไปยัง EditRoleDialog เพื่อให้ component นี้สามารถแจ้งกลับไปยัง component หลักเมื่อมีการเปลี่ยนแปลงค่าที่ใช้ในการกรอง (filter) รายการต่าง ๆ
+                            roles={roles} //ส่งค่า roles ซึ่งเป็นข้อมูลรายการของทุก role ที่มีอยู่ในระบบไปยัง EditRoleDialog
+                            defaultPermissions={item.permissionsAsAssessor} //ส่งค่า permissionsAsAssessor ของ item ไปเป็นค่า default permissions สำหรับการแสดงผลใน EditRoleDialog
+                          />
                         </DialogContent>
                       </Dialog>
                     </div>

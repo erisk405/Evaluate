@@ -19,42 +19,55 @@ import { useEffect, useState } from "react";
 import { CommandList } from "cmdk";
 import GlobalApi from "@/app/_unit/GlobalApi";
 
-
-interface FilterSectionProps {
+interface FormOptionProps {
   selectedValues: string[];
   setSelectedValues: (values: string[]) => void;
+  defaultValues?: string[]; // ใช้ string[] แทน []
 }
 interface formStates {
   id: string;
   name: string;
 }
 
-export default function FilterSection({
+export default function FormOption({
   selectedValues,
   setSelectedValues,
-}: FilterSectionProps) {
+  defaultValues = [],
+}: FormOptionProps) {
   const [open, setOpen] = useState(false);
-  const [form , setForm] = useState<formStates[]>([]);
+  const [form, setForm] = useState<formStates[]>([]);
+  // ใช้ useRef เพื่อบันทึกสถานะการตั้งค่า defaultValues
   const toggleValue = (value: string) => {
     setSelectedValues(
       selectedValues.includes(value)
         ? selectedValues.filter((v) => v !== value) // ถ้าเลือกอยู่แล้ว ให้เอาออก
         : [...selectedValues, value] // ถ้ายังไม่เลือก ให้เพิ่มเข้าไป
     );
+    console.log("selectedValues", selectedValues);
   };
-  const getForm = async () =>{
+  const getForm = async () => {
     try {
       const response = await GlobalApi.getForm();
       setForm(response?.data);
-      
+      // console.log("form",response?.data);
     } catch (error) {
-      console.error({message:error});
-      
+      console.error({ message: error });
     }
-  }
-  useEffect(()=>{
+  };
+  // จัดการ defaultValue เมื่อมีการโหลดข้อมูลครั้งแรก
+  // Handle default values on mount
+  useEffect(() => {
     getForm();
-  },[])
+  }, []);
+  // Set default values to selectedValues on mount
+  useEffect(() => {
+    if (defaultValues.length > 0) {
+      setSelectedValues(defaultValues);
+    }else{
+      setSelectedValues([]);
+    }
+  }, []);
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -76,26 +89,27 @@ export default function FilterSection({
           <CommandEmpty>No framework found.</CommandEmpty>
           <CommandGroup>
             <CommandList>
-              {form && form.map((item) => (
-                <CommandItem
-                  key={item.id}
-                  value={item.id}
-                  onSelect={() => {
-                    toggleValue(item.id);
-                  }}
-                >
-                  <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      (selectedValues ?? []).includes(item.id) // Fallback to an empty array if undefined
-                        ? "opacity-100"
-                        : "opacity-0"
-                    )}
-                  />
+              {form &&
+                form.map((item) => (
+                  <CommandItem
+                    key={item.id}
+                    value={item.id}
+                    onSelect={() => {
+                      toggleValue(item.id);
+                    }}
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        (selectedValues ?? []).includes(item.id) // Fallback to an empty array if undefined
+                          ? "opacity-100"
+                          : "opacity-0"
+                      )}
+                    />
 
-                  {item.name}
-                </CommandItem>
-              ))}
+                    {item.name}
+                  </CommandItem>
+                ))}
             </CommandList>
           </CommandGroup>
         </Command>

@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 
-import FilterSection from "./FilterSection";
+import FilterSection from "./FormOption";
 import { Textarea } from "@/components/ui/textarea";
 
 import {

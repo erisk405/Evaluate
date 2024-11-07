@@ -119,13 +119,10 @@ export default function Myprofile() {
       console.log('request role เดิม ',values.role,":  ",ProfileDetail.role.id);
     }
     else if (ProfileDetail.roleRequests?.length == 0) {
-
       requestRole(values.role);
     }else{
       console.log("don't request role ,cause have pending request!!");
-      
     }
-
     setIsLoading(true);
   }
 
@@ -148,7 +145,8 @@ export default function Myprofile() {
             id,
             description,
             role_name,
-            role_level
+            role_level,
+            permissionsAsAssessor: []
           },
           status: "PENDING",
         },

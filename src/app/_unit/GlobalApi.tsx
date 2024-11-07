@@ -113,7 +113,7 @@ const createRole = (payload:any) => {
   }
 }
 
-const testupdate = (permissions)=>{
+const testupdate = (permissions:any)=>{
   console.log(permissions);
   
   try {

@@ -50,7 +50,6 @@ const useStore = create<StoreState>((set) => ({
     role: null,
     roleRequests: null,
     department: null
-
   },
 
   openForm: {
