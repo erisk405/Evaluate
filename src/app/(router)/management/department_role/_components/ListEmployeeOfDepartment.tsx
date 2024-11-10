@@ -388,15 +388,15 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
                           </div>
 
                           {selectedItems.includes(item.id) ? (
-                            <div className="p-1 bg-blue-500 rounded-full">
+                            <div className="p-1 bg-black rounded-full">
                               <Check
                                 className="text-white"
-                                size={18}
+                                size={14}
                                 strokeWidth={4}
                               />
                             </div>
                           ) : (
-                            <div className="p-1 w-[26px] h-[26px] border border-blue-500 rounded-full"></div>
+                            <div className="p-1 w-[22px] h-[22px] border border-black rounded-full"></div>
                           )}
                         </ToggleGroupItem>
                       ))

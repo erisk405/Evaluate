@@ -5,7 +5,6 @@ import {
   Sheet,
   SheetContent,
   SheetDescription,
-  SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -25,7 +24,7 @@ import { useForm } from "react-hook-form";
 import { Department } from "@/types/interface";
 import GlobalApi from "@/app/_unit/GlobalApi";
 import { ListEmployeeOfDepartment } from "./ListEmployeeOfDepartment";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import useStore from "@/app/store/store";
 import { toast } from "@/components/ui/use-toast";
 import SetHeadOfDepartmentSection from "./SetHeadOfDepartmentSection";
@@ -335,7 +334,6 @@ export default function SettingSection({ department }: SettingSectionProps) {
             </div>
           </form>
         </Form>
-        <SheetFooter></SheetFooter>
       </SheetContent>
     </Sheet>
   );

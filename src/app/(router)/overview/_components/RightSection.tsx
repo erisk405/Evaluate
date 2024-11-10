@@ -23,7 +23,6 @@ import {
   Dot,
   EllipsisVertical,
 } from "lucide-react";
-import GlobalApi from "@/app/_unit/GlobalApi";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -190,7 +189,7 @@ const RightSection = ({ permission }: RightSectionProps) => {
               <TextEffect preset="slide">กำหนด วัน-เวลา การประเมิน</TextEffect>
               <AlarmClockPlus className="text-blue-500" />
             </div>
-            <div className="bg-gray-50 rounded-lg shadow-inner relative z-30 border-t border-b">
+            <div className="bg-neutral-50 rounded-lg shadow-inner relative z-30 border-t border-b">
                 <ScrollArea className="h-[410px] w-full px-3">
                   {PerioaData.map((item, index) => (
                     <div
@@ -254,13 +253,15 @@ const RightSection = ({ permission }: RightSectionProps) => {
                 </ScrollArea>
             </div>
             <div className="w-full relative ">
-              {/* form */}
+              {/* ------------------------------------ */}
+              {/* แบบฟอร์มในการสร้างกำหนดช่วงเวลสการประเมิน */}
+              {/* ------------------------------------ */}
               <div
                 className={`absolute px-2 transition-all ease-in-out duration-300 w-full ${
                   show ? "translate-y-0 top-[100%]" : "-translate-y-full"
                 }`}
               >
-                <div className="flex flex-col gap-3 items-center w-full shadow-inner p-4 bg-neutral-100 rounded-br-lg rounded-bl-lg">
+                <div className="flex flex-col gap-3 items-center w-full shadow-inner p-4 bg-white border rounded-br-lg rounded-bl-lg">
                   {" "}
                   <div className="grid gap-2 items-center w-full">
                     <Label className="">Title</Label>

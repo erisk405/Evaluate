@@ -18,7 +18,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { BadgeCheck } from "lucide-react";
+import { BadgeCheck, Dot } from "lucide-react";
 import EditRoleDialog from "./EditRoleDialog";
 import useStore from "@/app/store/store";
 import GlobalApi from "@/app/_unit/GlobalApi";
@@ -44,7 +44,16 @@ type Permissions = {
 };
 const UpdateRole = () => {
   const { roles, setRole } = useStore();
-
+  const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
+  const fetchRole = async () => {
+    try {
+      const response = await GlobalApi.getRole();
+      setRole(response?.data);
+    } catch (error) {
+      console.log({messsage:error});
+    }
+  };
   //accumulator (หรือ acc) คือค่าเริ่มต้นที่เราให้ใน reduce (ในที่นี้คือ {}) และจะถูกอัปเดตเรื่อย ๆ ในแต่ละรอบการวนลูป
   //currentValue (หรือ role) คือค่าใน array ที่เรากำลังประมวลผลในรอบนั้น ๆ.
   //initialValue คือค่าที่กำหนดเริ่มต้นให้กับ accumulator ซึ่งในกรณีนี้คือ {} as Permissions หมายถึง object เปล่า.
@@ -61,15 +70,18 @@ const UpdateRole = () => {
         {} as Permissions
       )
   );
-
   const onUpdate = async (values: any, id: string) => {
     try {
+      setLoading(true);
       const data = {
         assessorId: id,
         permissions,
       };
-      const response = await GlobalApi.testupdate(data);
+      const response = await GlobalApi.updatePermission(data);
       console.log(response);
+      fetchRole();
+      setLoading(false);
+      setOpen(false); // ปิด Dialog เมื่อ loading เสร็จสิ้น
     } catch (error) {
       console.error({ message: error });
     }
@@ -77,7 +89,7 @@ const UpdateRole = () => {
 
   const deleteRole = async (id: string) => {
     try {
-      const response = await GlobalApi.deleteRole(id);
+      await GlobalApi.deleteRole(id);
       // อัพเดท roles ใน store หลังจากลบสำเร็จ
       const updatedRoles = roles.filter((role) => role.id !== id);
       setRole(updatedRoles);
@@ -136,7 +148,64 @@ const UpdateRole = () => {
                 </AccordionTrigger>
                 <AccordionContent>
                   <div className="w-full">
-                    <p className="text-lg">{item.description}</p>
+                    <div className="pl-10">
+                      <div className="grid grid-cols-2 @[30rem]:grid-cols-3 gap-3 ">
+                        {item.permissionsAsAssessor?.map((element,index) => (
+                          <div
+                            className="border-b pb-3"
+                            key={"Assessor"+index}
+                          >
+                            <div className="font-bold">
+                              {element.evaluatorRole.role_name}
+                            </div>
+                            <div className="">
+                              <div className="mt-1 flex items-center">
+                                <Dot strokeWidth={4} />
+                                <h2>ภายในกลุ่มงาน</h2>
+                              </div>
+                              <div className="ml-3 border-l border-gray-400 pl-2">
+                                {element.permissionForm.length ? (
+                                  element.permissionForm // แสดงข้อมูลว่า Role นี้มีpermission ที่ใช้แบบฟอร์มตัวไหนบ้าง
+                                    .filter((p) => p.ingroup == true)
+                                    .map((form, index) => (
+                                      <div key={"FormId" + index}>
+                                        {form.form.name}
+                                      </div>
+                                    ))
+                                ) : (
+                                  <div>
+                                    <h2>ไม่ได้กำหนด</h2>
+                                  </div>
+                                )}
+                              </div>
+                              <div className="mt-1 flex items-center">
+                                <Dot strokeWidth={4} />
+                                <h2>ภายนอกกลุ่มงาน</h2>
+                              </div>
+                              <div className="ml-3 border-l border-gray-400 pl-2">
+                                {element.permissionForm.length ? (
+                                  element.permissionForm // แสดงข้อมูลว่า Role นี้มีpermission ที่ใช้แบบฟอร์มตัวไหนบ้าง
+                                    .filter((p) => p.ingroup == false)
+                                    .map((form, index) => (
+                                      <div key={"FormId" + index}>
+                                        {form.form.name}
+                                      </div>
+                                    ))
+                                ) : (
+                                  <div>
+                                    <h2>ไม่ได้กำหนด</h2>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      <p className="text-md mt-3">
+                        <span className="font-bold">Description :</span>{" "}
+                        {item.description}
+                      </p>
+                    </div>
                     <div className="w-full flex justify-end gap-3 mt-2">
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
@@ -165,7 +234,7 @@ const UpdateRole = () => {
                           </AlertDialogFooter>
                         </AlertDialogContent>
                       </AlertDialog>
-                      <Dialog>
+                      <Dialog open={open} onOpenChange={setOpen}>
                         <DialogTrigger asChild>
                           <Button className="flex items-center gap-2 px-2 h-9 active:scale-95">
                             <Settings2 size={18} /> กำหนดสิทธิ
@@ -197,6 +266,8 @@ const UpdateRole = () => {
                             handleFilterChange={handleFilterChange} //ส่งฟังก์ชัน handleFilterChange ไปยัง EditRoleDialog เพื่อให้ component นี้สามารถแจ้งกลับไปยัง component หลักเมื่อมีการเปลี่ยนแปลงค่าที่ใช้ในการกรอง (filter) รายการต่าง ๆ
                             roles={roles} //ส่งค่า roles ซึ่งเป็นข้อมูลรายการของทุก role ที่มีอยู่ในระบบไปยัง EditRoleDialog
                             defaultPermissions={item.permissionsAsAssessor} //ส่งค่า permissionsAsAssessor ของ item ไปเป็นค่า default permissions สำหรับการแสดงผลใน EditRoleDialog
+                            setLoading={setLoading}
+                            loading={loading}
                           />
                         </DialogContent>
                       </Dialog>

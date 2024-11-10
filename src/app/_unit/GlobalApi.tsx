@@ -113,11 +113,22 @@ const createRole = (payload:any) => {
   }
 }
 
-const testupdate = (permissions:any)=>{
+const updatePermission = (permissions:any)=>{
   console.log(permissions);
   
   try {
     return axios.put(`${apiUrl}/permissionRole`,permissions,{ withCredentials: true });
+  } catch (error) {
+    
+  }
+}
+
+const deletePermissionForm = (id:string) =>{
+  try {
+    return axios.delete(`${apiUrl}/permissionForm`,{ 
+      data:{id},
+      withCredentials: true
+    })
   } catch (error) {
     
   }
@@ -313,5 +324,6 @@ export default {
   createPermission,
   createRole,
   deleteRole,
-  testupdate
+  updatePermission,
+  deletePermissionForm
 };

@@ -38,6 +38,7 @@ interface Role {
   permissionsAsAssessor: Permission[]
 }
 interface Permission {
+  permission_id: string,
   assessorRole: {
     id: string,
     role_name: string

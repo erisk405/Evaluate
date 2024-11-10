@@ -1,7 +1,7 @@
 // EditRoleDialog.tsx
 import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Settings2, ShieldPlus, BadgeAlert } from "lucide-react";
+import { Settings2, ShieldPlus, BadgeAlert, Loader } from "lucide-react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -57,6 +57,8 @@ interface EditRoleDialogProps {
   ) => void;
   roles: any[];
   defaultPermissions?: Permission[];
+  setLoading: any;
+  loading: boolean;
 }
 
 const EditRoleDialog = ({
@@ -66,6 +68,8 @@ const EditRoleDialog = ({
   handleFilterChange,
   roles,
   defaultPermissions,
+  setLoading,
+  loading,
 }: EditRoleDialogProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -161,7 +165,7 @@ const EditRoleDialog = ({
                             .map((form) => form.form.id) || []
                         }
                         selectedValues={
-                          permissions[item.role_name]?.internal || [] // เช็คว่าroleที่กำหนดนี้ formId ไหนที่ถูกเลือกไว้ใน internal 
+                          permissions[item.role_name]?.internal || [] // เช็คว่าroleที่กำหนดนี้ formId ไหนที่ถูกเลือกไว้ใน internal
                         }
                         setSelectedValues={(newValues) =>
                           handleFilterChange(
@@ -221,8 +225,13 @@ const EditRoleDialog = ({
             </FormItem>
           )}
         />
-
-        <Button type="submit">Save changes</Button>
+        {!loading ? (
+          <Button type="submit">Save Change</Button>
+        ) : (
+          <Button className="animate-pulse" type="button">
+            <Loader className="animate-spin" />
+          </Button>
+        )}
       </form>
     </Form>
   );

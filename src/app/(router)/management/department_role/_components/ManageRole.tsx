@@ -16,11 +16,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  BadgeAlert,
-  Plus,
-  ShieldPlus,
-} from "lucide-react";
+import { BadgeAlert, Loader, Plus, ShieldPlus } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 
 import FilterSection from "./FormOption";
@@ -91,6 +87,7 @@ const ManageRole = () => {
       )
   );
   const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -99,13 +96,20 @@ const ManageRole = () => {
       roleLevel: undefined,
     },
   });
-
+  const fetchRole = async () => {
+    try {
+      const response = await GlobalApi.getRole();
+      // update Role เมื่อมีการอัพเดท
+      setRole(response?.data);
+    } catch (error) {
+      console.log({messsage:error});
+    }
+  };
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       setLoading(true);
-      const permissionsKeys = Object.keys(permissions); //เพื่อรับรายการคีย์ของอ็อบเจ็กต์ permissions แล้วทำงานต่อด้วยอาร์เรย์นั้น 
+      const permissionsKeys = Object.keys(permissions); //เพื่อรับรายการคีย์ของอ็อบเจ็กต์ permissions แล้วทำงานต่อด้วยอาร์เรย์นั้น
       const newRole = await GlobalApi.createRole(values);
-      setRole([...roles, newRole?.data]);
       if (permissionsKeys.length > 0) {
         const assessorId: string = newRole?.data?.id;
         const newPermission = await GlobalApi.createPermission(
@@ -113,10 +117,13 @@ const ManageRole = () => {
           assessorId
         );
         console.log(newPermission);
-        
       }
-    } catch (error) {
+      // อัพเดทRole
+      fetchRole();
       setLoading(false);
+      setOpen(false); // ปิด Dialog เมื่อ loading เสร็จสิ้น
+    } catch (error) {
+      console.log({ message: error });
     }
   };
 
@@ -137,7 +144,7 @@ const ManageRole = () => {
     }));
   };
   return (
-    <div>
+    <div className="@container">
       <h2 className="text-2xl font-bold">Manage Role</h2>
       <div className="flex justify-between items-center my-3">
         <div className="flex items-center space-x-2">
@@ -146,7 +153,7 @@ const ManageRole = () => {
         </div>
 
         {/* ส่วนของการสร้างRole */}
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -308,7 +315,13 @@ const ManageRole = () => {
                   />
                 </div>
 
-                <Button type="submit">Save changes</Button>
+                {!loading ? (
+                  <Button type="submit">Save Change</Button>
+                ) : (
+                  <Button className="animate-pulse" type="button">
+                    <Loader className="animate-spin" />
+                  </Button>
+                )}
               </form>
             </Form>
           </DialogContent>
