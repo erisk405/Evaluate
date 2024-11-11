@@ -157,7 +157,16 @@ const ReportOverview = () => {
             />
           </div>
         </motion.div>
-        <div className="col-span-3">
+        <motion.div
+          initial={{ opacity: 0, y: -100 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{
+            duration: 1.5,
+            delay: 0.1,
+            ease: [0, 0.71, 0.2, 1.01],
+          }}
+          className="col-span-3"
+        >
           <h2 className="text-xl font-bold">การประเมินแต่ละหน่วยงาน</h2>
           <div className="w-full bg-white grid grid-cols-3 overflow-hidden rounded-lg">
             <div className="w-full">
@@ -199,8 +208,17 @@ const ReportOverview = () => {
               <AreaChartSection />
             </div>
           </div>
-        </div>
-        <div className="col-span-3 bg-white rounded-lg">
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: -100 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{
+            duration: 1.5,
+            delay: 0.1,
+            ease: [0, 0.71, 0.2, 1.01],
+          }}
+          className="col-span-3 bg-white rounded-lg"
+        >
           <Table>
             <TableCaption>A list of your recent invoices.</TableCaption>
             <TableHeader>
@@ -240,7 +258,7 @@ const ReportOverview = () => {
               ))}
             </TableBody>
           </Table>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

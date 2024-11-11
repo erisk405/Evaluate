@@ -24,7 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import FormOption from "./FormOption";
-import { Permission } from "@/types/interface";
+import { Permission, Role } from "@/types/interface";
 const formSchema = z.object({
   roleName: z
     .string()
@@ -40,13 +40,7 @@ const formSchema = z.object({
 });
 
 interface EditRoleDialogProps {
-  role: {
-    id: string;
-    role_name: string;
-    description: string;
-    role_level: string;
-    defaultPermissions?: Permission[]; // เปลี่ยนจาก Permission เป็น Permission[]
-  };
+  role: Role;
   onUpdate: (values: any, id: string) => void;
   permissions: any;
   handleFilterChange: (
@@ -56,8 +50,6 @@ interface EditRoleDialogProps {
     newValues: string[]
   ) => void;
   roles: any[];
-  defaultPermissions?: Permission[];
-  setLoading: any;
   loading: boolean;
 }
 
@@ -67,8 +59,6 @@ const EditRoleDialog = ({
   permissions,
   handleFilterChange,
   roles,
-  defaultPermissions,
-  setLoading,
   loading,
 }: EditRoleDialogProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
@@ -85,7 +75,7 @@ const EditRoleDialog = ({
   });
 
   useEffect(() => {
-    console.log("defaultPermissions", defaultPermissions);
+    console.log("defaultPermissions", role.permissionsAsAssessor); // สามารถใช้ เป็น defaultValue ของ Permissions ได้
   }, []);
   return (
     <Form {...form}>
@@ -154,7 +144,7 @@ const EditRoleDialog = ({
                       <h2 className="text-sm">ภายในกลุ่มงาน</h2>
                       <FormOption
                         defaultValues={
-                          defaultPermissions
+                          role.permissionsAsAssessor
                             ?.find(
                               (permission) =>
                                 permission.evaluatorRole.id === item.id
@@ -181,7 +171,7 @@ const EditRoleDialog = ({
                       <h2 className="text-sm">ภายนอกกลุ่มงาน</h2>
                       <FormOption
                         defaultValues={
-                          defaultPermissions
+                          role.permissionsAsAssessor
                             ?.find(
                               (permission) =>
                                 permission.evaluatorRole.id === item.id

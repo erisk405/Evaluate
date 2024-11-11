@@ -1,30 +1,49 @@
+"use client";
 import useStore from "@/app/store/store";
 import React from "react";
-
-import {
-  Label,
-  PolarGrid,
-  PolarRadiusAxis,
-  RadialBar,
-  RadialBarChart,
-} from "recharts";
+import { Bar, BarChart, XAxis } from "recharts";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ChartConfig, ChartContainer } from "@/components/ui/chart";
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 import Link from "next/link";
-import ChartEvaluatedYou from "./ChartEvaluatedYou";
 import { TrendingUp } from "lucide-react";
 
 export const description = "A radial chart with a custom shape";
 const ChartEvaluatePersonnel = () => {
   const { departments } = useStore();
 
+  const chartData = [
+    { depart: "งานพัฒนาวิชาการ", finished: 450, unfinished: 300 },
+    { depart: "งานทะเบียนและประมวลผล", finished: 380, unfinished: 420 },
+    {
+      depart: "งานฝึกประสบการณ์วิชาชีพนักศึกษา",
+      finished: 520,
+      unfinished: 120,
+    },
+    { depart: "งานประกันคุณภาพและประเมินผล", finished: 140, unfinished: 550 },
+    { depart: "งานบริหารงานทั่วไป", finished: 600, unfinished: 350 },
+    { depart: "สำนักงานผู้อำนวยการ", finished: 480, unfinished: 400 },
+  ];
+  const chartConfig = {
+    finished: {
+      label: "เสร็จแล้ว",
+      color: "hsl(var(--chart-1))",
+    },
+    unfinished: {
+      label: "ยังไม่เสร็จ",
+      color: "hsl(var(--chart-2))",
+    },
+  } satisfies ChartConfig;
   const myQuest = [
     {
       id: "AOU01",
@@ -35,106 +54,32 @@ const ChartEvaluatePersonnel = () => {
       engle: 200,
     },
   ];
-  const chartConfig = {
-    quantity: {
-      label: "Already evaluated",
-    },
-  } satisfies ChartConfig;
+  const abbreviateDepartment = (departName: string): string => {
+    if (departName.length <= 8) {
+      return departName;
+    } else {
+      return `${departName.slice(0, 8)}...`;
+    }
+  };
   return (
-    <div className="">
+    <div className="w-full">
       {myQuest &&
         myQuest.map((item, index) => (
-          <div key={item.id}>
-            <Card className="grid grid-cols-2 border-none shadow-none">
-              <CardHeader className="items-center col-span-2 pb-0">
-                <CardTitle>{item.name}</CardTitle>
-                <CardDescription>January - June 2024</CardDescription>
-              </CardHeader>
-              <CardContent className="p-0 h-auto col-span-2">
-                <div className="flex-1 pb-0">
-                  <ChartContainer
-                    config={chartConfig}
-                    className="mx-auto aspect-square max-h-[250px]"
-                  >
-                    <RadialBarChart
-                      data={item.chartData}
-                      endAngle={item.engle}
-                      innerRadius={80}
-                      outerRadius={140}
-                    >
-                      <PolarGrid
-                        gridType="circle"
-                        radialLines={false}
-                        stroke="none"
-                        className="first:fill-muted last:fill-background"
-                        polarRadius={[86, 74]}
-                      />
-                      <RadialBar dataKey={"quantity"} background />
-                      <PolarRadiusAxis
-                        tick={false}
-                        tickLine={false}
-                        axisLine={false}
-                      >
-                        <Label
-                          content={({ viewBox }) => {
-                            if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                              return (
-                                <text
-                                  x={viewBox.cx}
-                                  y={viewBox.cy}
-                                  textAnchor="middle"
-                                  dominantBaseline="middle"
-                                >
-                                  <tspan
-                                    x={viewBox.cx}
-                                    y={viewBox.cy}
-                                    className="fill-foreground text-4xl font-bold"
-                                  >
-                                    {item.chartData[0].quantity.toLocaleString()}
-                                    /70
-                                  </tspan>
-                                  <tspan
-                                    x={viewBox.cx}
-                                    y={(viewBox.cy || 0) + 24}
-                                    className="fill-muted-foreground"
-                                  >
-                                    People
-                                  </tspan>
-                                </text>
-                              );
-                            }
-                          }}
-                        />
-                      </PolarRadiusAxis>
-                    </RadialBarChart>
-                  </ChartContainer>
-                </div>
-              </CardContent>
-              <CardFooter className="flex-col gap-2 col-span-2 text-sm">
-                <div className="flex items-center gap-2 font-medium leading-none">
-                  Trending up by 5.2% this month{" "}
-                  <TrendingUp className="h-4 w-4" />
-                </div>
-                <div className="leading-none text-muted-foreground">
-                  Showing total visitors for the last 6 months
-                </div>
-              </CardFooter>
-            </Card>
-
-            <div className="col-span-2">
-              <div className="grid sm:grid-cols-2 gap-4 text-sm  mx-6 mb-6">
+          <div key={item.id} className="grid grid-cols-3 p-4 items-center gap-3">
+            <div className="col-span-1">
+              <div className="grid sm:grid-cols-1 gap-4 text-sm ">
                 {departments.map((item, index) => (
                   <div
-                    className="flex justify-between gap-2"
+                    className="grid grid-cols-3 items-center gap-2 border p-3 rounded-full"
                     key={index + "Letgo"}
                   >
                     <Link
                       href={`/overview/department/${item.id}`}
-                      className="cursor-pointer hover:text-blue-500 transition-all active:scale-95"
+                      className="cursor-pointer w-full border-r col-span-2 truncate hover:text-blue-500 transition-all active:scale-95"
                     >
                       {item.department_name}
                     </Link>
-                    <div className="flex items-start gap-1 font-bold">
+                    <div className="col-span-1 text-end gap-1 font-bold">
                       25/32
                       <span>คน</span>
                     </div>
@@ -142,6 +87,81 @@ const ChartEvaluatePersonnel = () => {
                 ))}
               </div>
             </div>
+            <Card className="col-span-2">
+              <CardHeader>
+                <CardTitle>Tooltip - Advanced</CardTitle>
+                <CardDescription>
+                  Tooltip with custom formatter and total.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ChartContainer config={chartConfig}>
+                  <BarChart accessibilityLayer data={chartData}>
+                    <XAxis
+                      dataKey="depart"
+                      tickLine={false}
+                      tickMargin={10}
+                      axisLine={false}
+                      tickFormatter={abbreviateDepartment}
+                    />
+                    <Bar
+                      dataKey="finished"
+                      stackId="a"
+                      fill="var(--color-finished)"
+                      radius={[0, 0, 4, 4]}
+                    />
+                    <Bar
+                      dataKey="unfinished"
+                      stackId="a"
+                      fill="var(--color-unfinished)"
+                      radius={[4, 4, 0, 0]}
+                    />
+                    <ChartTooltip
+                      content={
+                        <ChartTooltipContent
+                          className="w-[180px]"
+                          formatter={(value, name, item, index) => (
+                            <>
+                              <div
+                                className="h-2.5 w-2.5 shrink-0 rounded-[2px] bg-[--color-bg]"
+                                style={
+                                  {
+                                    "--color-bg": `var(--color-${name})`,
+                                  } as React.CSSProperties
+                                }
+                              />
+                              {chartConfig[name as keyof typeof chartConfig]
+                                ?.label || name}
+                              <div className="ml-auto flex items-baseline gap-0.5 font-mono font-medium tabular-nums text-foreground">
+                                {value}
+                                <span className="font-normal text-muted-foreground">
+                                  คน
+                                </span>
+                              </div>
+                              {/* Add this after the last item */}
+                              {index === 1 && (
+                                <div className="mt-1.5 flex basis-full items-center border-t pt-1.5 text-xs font-medium text-foreground">
+                                  Total
+                                  <div className="ml-auto flex items-baseline gap-0.5 font-mono font-medium tabular-nums text-foreground">
+                                    {item.payload.finished +
+                                      item.payload.unfinished}
+                                    <span className="font-normal text-muted-foreground">
+                                      คน
+                                    </span>
+                                  </div>
+                                </div>
+                              )}
+                            </>
+                          )}
+                        />
+                      }
+                      cursor={false}
+                      defaultIndex={1}
+                    />
+                  </BarChart>
+                </ChartContainer>
+              </CardContent>
+            </Card>
           </div>
         ))}
     </div>

@@ -51,7 +51,7 @@ const UpdateRole = () => {
       const response = await GlobalApi.getRole();
       setRole(response?.data);
     } catch (error) {
-      console.log({messsage:error});
+      console.log({ messsage: error });
     }
   };
   //accumulator (หรือ acc) คือค่าเริ่มต้นที่เราให้ใน reduce (ในที่นี้คือ {}) และจะถูกอัปเดตเรื่อย ๆ ในแต่ละรอบการวนลูป
@@ -125,17 +125,12 @@ const UpdateRole = () => {
   }, [roles]);
   return (
     <div className="flex flex-col">
-      {roles.map(
-        (item) =>
-          item.role_name !== "admin" &&
-          item.role_name !== "member" && (
-            <Accordion
-              type="single"
-              collapsible
-              className="w-full"
-              key={item.id}
-            >
-              <AccordionItem value="item-1">
+      <Accordion type="single" collapsible className="w-full" >
+        {roles.map(
+          (item) =>
+            item.role_name !== "admin" &&
+            item.role_name !== "member" && (
+              <AccordionItem value={item.id} key={item.id}>
                 <AccordionTrigger>
                   <div className="px-3 w-full h-14 rounded-xl flex justify-between items-center">
                     <div className="flex items-center gap-1">
@@ -150,10 +145,10 @@ const UpdateRole = () => {
                   <div className="w-full">
                     <div className="pl-10">
                       <div className="grid grid-cols-2 @[30rem]:grid-cols-3 gap-3 ">
-                        {item.permissionsAsAssessor?.map((element,index) => (
+                        {item.permissionsAsAssessor?.map((element, index) => (
                           <div
                             className="border-b pb-3"
-                            key={"Assessor"+index}
+                            key={"Assessor" + index}
                           >
                             <div className="font-bold">
                               {element.evaluatorRole.role_name}
@@ -174,7 +169,9 @@ const UpdateRole = () => {
                                     ))
                                 ) : (
                                   <div>
-                                    <h2>ไม่ได้กำหนด</h2>
+                                    <h2 className="text-red-500">
+                                      ไม่ได้กำหนด
+                                    </h2>
                                   </div>
                                 )}
                               </div>
@@ -193,7 +190,9 @@ const UpdateRole = () => {
                                     ))
                                 ) : (
                                   <div>
-                                    <h2>ไม่ได้กำหนด</h2>
+                                    <h2 className="text-red-500">
+                                      ไม่ได้กำหนด
+                                    </h2>
                                   </div>
                                 )}
                               </div>
@@ -265,8 +264,6 @@ const UpdateRole = () => {
                             permissions={permissions} //ค่า permissions นี้ช่วยให้ component รู้ว่า permissions ที่มีอยู่ในระบบมีอะไรบ้าง เพื่อให้ผู้ใช้สามารถจัดการ permissions ได้
                             handleFilterChange={handleFilterChange} //ส่งฟังก์ชัน handleFilterChange ไปยัง EditRoleDialog เพื่อให้ component นี้สามารถแจ้งกลับไปยัง component หลักเมื่อมีการเปลี่ยนแปลงค่าที่ใช้ในการกรอง (filter) รายการต่าง ๆ
                             roles={roles} //ส่งค่า roles ซึ่งเป็นข้อมูลรายการของทุก role ที่มีอยู่ในระบบไปยัง EditRoleDialog
-                            defaultPermissions={item.permissionsAsAssessor} //ส่งค่า permissionsAsAssessor ของ item ไปเป็นค่า default permissions สำหรับการแสดงผลใน EditRoleDialog
-                            setLoading={setLoading}
                             loading={loading}
                           />
                         </DialogContent>
@@ -275,9 +272,9 @@ const UpdateRole = () => {
                   </div>
                 </AccordionContent>
               </AccordionItem>
-            </Accordion>
-          )
-      )}
+            )
+        )}
+      </Accordion>
     </div>
   );
 };

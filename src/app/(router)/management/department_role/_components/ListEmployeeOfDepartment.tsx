@@ -388,7 +388,7 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
                           </div>
 
                           {selectedItems.includes(item.id) ? (
-                            <div className="p-1 bg-black rounded-full">
+                            <div className="p-1 bg-blue-500 rounded-full">
                               <Check
                                 className="text-white"
                                 size={14}
