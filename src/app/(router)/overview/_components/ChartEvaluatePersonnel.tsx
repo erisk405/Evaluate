@@ -2,13 +2,7 @@
 import useStore from "@/app/store/store";
 import React from "react";
 import { Bar, BarChart, XAxis } from "recharts";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   ChartConfig,
   ChartContainer,
@@ -16,7 +10,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import Link from "next/link";
-import { TrendingUp } from "lucide-react";
+import RadarChartGridFilled from "./RadarChartGridFilled";
 
 export const description = "A radial chart with a custom shape";
 const ChartEvaluatePersonnel = () => {
@@ -58,41 +52,31 @@ const ChartEvaluatePersonnel = () => {
     if (departName.length <= 8) {
       return departName;
     } else {
-      return `${departName.slice(0, 8)}...`;
+      return `${departName.slice(0, 5)}...`;
     }
   };
   return (
     <div className="w-full">
       {myQuest &&
         myQuest.map((item, index) => (
-          <div key={item.id} className="grid grid-cols-3 p-4 items-center gap-3">
-            <div className="col-span-1">
-              <div className="grid sm:grid-cols-1 gap-4 text-sm ">
-                {departments.map((item, index) => (
-                  <div
-                    className="grid grid-cols-3 items-center gap-2 border p-3 rounded-full"
-                    key={index + "Letgo"}
-                  >
-                    <Link
-                      href={`/overview/department/${item.id}`}
-                      className="cursor-pointer w-full border-r col-span-2 truncate hover:text-blue-500 transition-all active:scale-95"
-                    >
-                      {item.department_name}
-                    </Link>
-                    <div className="col-span-1 text-end gap-1 font-bold">
-                      25/32
-                      <span>คน</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <Card className="col-span-2">
+          <div key={item.id} className="grid grid-cols-7 p-4 gap-3">
+            <Card className="col-span-4">
               <CardHeader>
-                <CardTitle>Tooltip - Advanced</CardTitle>
-                <CardDescription>
-                  Tooltip with custom formatter and total.
-                </CardDescription>
+                <CardTitle>รูปแบบของ Bar Chart </CardTitle>
+                <div className="grid grid-cols-3">
+                  <div className="flex flex-col justify-center">
+                    <h2 className="text-sm">ทั้งหมด</h2>
+                    <h2 className="font-bold">4268</h2>
+                  </div>
+                  <div className="flex flex-col justify-center">
+                    <h2 className="text-sm">เสร็จสิ้นแล้ว</h2>
+                    <h2 className="font-bold">215</h2>
+                  </div>
+                  <div className="flex flex-col justify-center">
+                    <h2 className="text-sm">ยังไม่เสร็จ</h2>
+                    <h2 className="font-bold">4020</h2>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
                 <ChartContainer config={chartConfig}>
@@ -108,13 +92,13 @@ const ChartEvaluatePersonnel = () => {
                       dataKey="finished"
                       stackId="a"
                       fill="var(--color-finished)"
-                      radius={[0, 0, 4, 4]}
+                      radius={[0, 0, 8, 8]}
                     />
                     <Bar
                       dataKey="unfinished"
                       stackId="a"
                       fill="var(--color-unfinished)"
-                      radius={[4, 4, 0, 0]}
+                      radius={[14, 14, 0, 0]}
                     />
                     <ChartTooltip
                       content={
@@ -160,8 +144,33 @@ const ChartEvaluatePersonnel = () => {
                     />
                   </BarChart>
                 </ChartContainer>
+
+                <div className="">
+                  <h2 className="text-xl font-bold my-3">คุณประเมินไปแล้ว</h2>
+                  <div className="grid sm:grid-cols-2 gap-4 text-sm ">
+                    {departments.map((item, index) => (
+                      <div key={index + "Letgo"}>
+                        <div className="grid grid-cols-3 items-center gap-2 border p-3 rounded-full">
+                          <Link
+                            href={`/overview/department/${item.id}`}
+                            className="cursor-pointer w-full border-r col-span-2 truncate hover:text-blue-500 transition-all active:scale-95"
+                          >
+                            {item.department_name}
+                          </Link>
+                          <div className="col-span-1 text-end truncate gap-1 font-bold">
+                            25/32
+                            <span>คน</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </CardContent>
             </Card>
+            <div className="col-span-3">
+              <RadarChartGridFilled />
+            </div>
           </div>
         ))}
     </div>

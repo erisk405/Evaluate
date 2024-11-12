@@ -6,7 +6,7 @@ import GlobalApi from "@/app/_unit/GlobalApi";
 import ReportOverview from "./_components/ReportOverview";
 import Loading from "@/app/_components/Loading";
 const page = () => {
-  const [checkPermission, setCheckPermission] = useState(null);// ใช้ในการcheckว่า คนนี้เป็น admin หรือ user เพื่อใช้ในการแสดงInterface ต่างๆ
+  const [checkPermission, setCheckPermission] = useState(null); // ใช้ในการcheckว่า คนนี้เป็น admin หรือ user เพื่อใช้ในการแสดงInterface ต่างๆ
 
   useEffect(() => {
     const fetchProtected = async () => {
@@ -23,7 +23,7 @@ const page = () => {
   }, []);
 
   if (checkPermission === null) {
-    return <Loading/>;
+    return <Loading />;
   }
 
   if (checkPermission === "error") {
@@ -32,6 +32,7 @@ const page = () => {
   return (
     <div className="m-5 grid grid-cols-6 gap-5 w-full">
       <div className="xl:col-span-4 col-span-6 w-full">
+        <h2 className="text-3xl font-bold">Overview</h2>
         {checkPermission && checkPermission !== "admin" ? (
           <MyEvaluated />
         ) : (
