@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -16,12 +15,36 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { BadgeAlert, Loader, Plus, ShieldPlus } from "lucide-react";
+import {
+  BadgeAlert,
+  BadgeCheck,
+  Dot,
+  Loader,
+  Plus,
+  Settings2,
+  ShieldPlus,
+} from "lucide-react";
 import { Switch } from "@/components/ui/switch";
-
+import { Button } from "@/components/ui/button";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import FilterSection from "./FormOption";
 import { Textarea } from "@/components/ui/textarea";
-
 import {
   Select,
   SelectContent,
@@ -29,7 +52,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
 import useStore from "@/app/store/store";
 
 import { object, z } from "zod";
@@ -45,6 +67,7 @@ import {
 } from "@/components/ui/form";
 import GlobalApi from "@/app/_unit/GlobalApi";
 import UpdateRole from "./UpdateRole";
+import EditRoleDialog from "./EditRoleDialog";
 
 const formSchema = z.object({
   roleName: z
@@ -102,7 +125,7 @@ const ManageRole = () => {
       // update Role เมื่อมีการอัพเดท
       setRole(response?.data);
     } catch (error) {
-      console.log({messsage:error});
+      console.log({ messsage: error });
     }
   };
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -126,6 +149,35 @@ const ManageRole = () => {
       console.log({ message: error });
     }
   };
+  const onUpdate = async (values: any, id: string) => {
+    try {
+      setLoading(true);
+      const data = {
+        assessorId: id,
+        permissions,
+      };
+      const response = await GlobalApi.updatePermission(data);
+      console.log(response);
+      fetchRole();
+      setLoading(false);
+      setOpen(false); // ปิด Dialog เมื่อ loading เสร็จสิ้น
+    } catch (error) {
+      console.error({ message: error });
+    }
+  };
+
+  const deleteRole = async (id: string) => {
+    try {
+      await GlobalApi.deleteRole(id);
+      // อัพเดท roles ใน store หลังจากลบสำเร็จ
+      const updatedRoles = roles.filter((role) => role.id !== id);
+      setRole(updatedRoles);
+      // อัพเดท permissions state ด้วย
+      setPermissions({});
+    } catch (error) {
+      console.error({ message: error });
+    }
+  };
 
   // function ที่ใช้ เพื่อประกอบ JSON ออกมาแล้ว ส่งไปอัพเดท
   const handleFilterChange = (
@@ -143,6 +195,10 @@ const ManageRole = () => {
       } as any,
     }));
   };
+
+  useEffect(() => {
+    console.log("permission", permissions);
+  }, [permissions]);
   return (
     <div className="@container">
       <h2 className="text-2xl font-bold">Manage Role</h2>
@@ -328,8 +384,162 @@ const ManageRole = () => {
         </Dialog>
       </div>
 
-      {/* ส่วนของการปรับปรุงแก้ไขRole */}
-      <UpdateRole />
+      {/* --------------------------------------------------------- */}
+      {/*                ส่วนของการปรับปรุงแก้ไขRole                    */}
+      {/* --------------------------------------------------------- */}
+      {/* <UpdateRole /> */}
+      <div className="flex flex-col">
+        <Accordion type="single" collapsible className="w-full">
+          {roles.map(
+            (item) =>
+              item.role_name !== "admin" &&
+              item.role_name !== "member" && (
+                <AccordionItem value={item.id} key={item.id}>
+                  <AccordionTrigger>
+                    <div className="px-3 w-full h-14 rounded-xl flex justify-between items-center">
+                      <div className="flex items-center gap-1">
+                        <BadgeCheck className="text-white bg-blue-500 overflow-hidden rounded-full" />
+                        <h2 className="text-lg font-bold text-black">
+                          {item.role_name}
+                        </h2>
+                      </div>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="w-full">
+                      <div className="pl-10">
+                        <div className="grid grid-cols-2 @[30rem]:grid-cols-3 gap-3 ">
+                          {item.permissionsAsAssessor?.map((element, index) => (
+                            <div
+                              className="border-b pb-3"
+                              key={"Assessor" + index}
+                            >
+                              <div className="font-bold">
+                                {element.evaluatorRole.role_name}
+                              </div>
+                              <div className="">
+                                <div className="mt-1 flex items-center">
+                                  <Dot strokeWidth={4} />
+                                  <h2>ภายในกลุ่มงาน</h2>
+                                </div>
+                                <div className="ml-3 border-l border-gray-400 pl-2">
+                                  {element.permissionForm.length ? (
+                                    element.permissionForm // แสดงข้อมูลว่า Role นี้มีpermission ที่ใช้แบบฟอร์มตัวไหนบ้าง
+                                      .filter((p) => p.ingroup == true)
+                                      .map((form, index) => (
+                                        <div key={"FormId" + index}>
+                                          {form.form.name}
+                                        </div>
+                                      ))
+                                  ) : (
+                                    <div>
+                                      <h2 className="text-red-500">
+                                        ไม่ได้กำหนด
+                                      </h2>
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="mt-1 flex items-center">
+                                  <Dot strokeWidth={4} />
+                                  <h2>ภายนอกกลุ่มงาน</h2>
+                                </div>
+                                <div className="ml-3 border-l border-gray-400 pl-2">
+                                  {element.permissionForm.length ? (
+                                    element.permissionForm // แสดงข้อมูลว่า Role นี้มีpermission ที่ใช้แบบฟอร์มตัวไหนบ้าง
+                                      .filter((p) => p.ingroup == false)
+                                      .map((form, index) => (
+                                        <div key={"FormId" + index}>
+                                          {form.form.name}
+                                        </div>
+                                      ))
+                                  ) : (
+                                    <div>
+                                      <h2 className="text-red-500">
+                                        ไม่ได้กำหนด
+                                      </h2>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        <p className="text-md mt-3">
+                          <span className="font-bold">Description :</span>{" "}
+                          {item.description}
+                        </p>
+                      </div>
+                      <div className="w-full flex justify-end gap-3 mt-2">
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button className="flex items-center gap-2 px-2 h-9 active:scale-95">
+                              ลบรายการ
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>
+                                Are you absolutely sure?
+                              </AlertDialogTitle>
+                              <AlertDialogDescription className="text-red-500">
+                                การดำเนินการนี้ไม่สามารถย้อนกลับได้
+                                การดำเนินการนี้จะลบบัญชีของคุณอย่างถาวรและลบตำแหน่งนี้
+                                ออกจากเซิร์ฟเวอร์ของเรา
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => deleteRole(item.id)}
+                              >
+                                Continue
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                        <Dialog open={open} onOpenChange={setOpen}>
+                          <DialogTrigger asChild>
+                            <Button className="flex items-center gap-2 px-2 h-9 active:scale-95">
+                              <Settings2 size={18} /> กำหนดสิทธิ
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="sm:max-w-[625px]">
+                            <DialogHeader>
+                              <DialogTitle>
+                                <div className="flex gap-2 items-center">
+                                  <div className="block p-1 bg-blue-100 rounded-full">
+                                    <ShieldPlus
+                                      size={40}
+                                      className="text-blue-500"
+                                    />
+                                  </div>
+                                  <h2 className="text-xl">Edit role</h2>
+                                </div>
+                              </DialogTitle>
+                              <DialogDescription>
+                                Make changes to your profile here. Click save
+                                when you're done.
+                              </DialogDescription>
+                            </DialogHeader>
+
+                            <EditRoleDialog
+                              role={item} //ส่งค่า item ซึ่งเป็นข้อมูลของ role ปัจจุบันที่กำลังถูกแก้ไขไปยัง EditRoleDialog component
+                              onUpdate={onUpdate} //ส่งฟังก์ชัน onUpdate ไปให้ EditRoleDialog เพื่อให้ component นี้เรียกใช้งานเมื่อต้องการอัปเดตข้อมูล role
+                              permissions={permissions} //ค่า permissions นี้ช่วยให้ component รู้ว่า permissions ที่มีอยู่ในระบบมีอะไรบ้าง เพื่อให้ผู้ใช้สามารถจัดการ permissions ได้
+                              handleFilterChange={handleFilterChange} //ส่งฟังก์ชัน handleFilterChange ไปยัง EditRoleDialog เพื่อให้ component นี้สามารถแจ้งกลับไปยัง component หลักเมื่อมีการเปลี่ยนแปลงค่าที่ใช้ในการกรอง (filter) รายการต่าง ๆ
+                              roles={roles} //ส่งค่า roles ซึ่งเป็นข้อมูลรายการของทุก role ที่มีอยู่ในระบบไปยัง EditRoleDialog
+                              loading={loading}
+                            />
+                          </DialogContent>
+                        </Dialog>
+                      </div>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              )
+          )}
+        </Accordion>
+      </div>
     </div>
   );
 };

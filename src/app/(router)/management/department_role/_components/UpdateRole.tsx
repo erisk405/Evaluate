@@ -98,6 +98,8 @@ const UpdateRole = () => {
         const { [id]: deletedRole, ...restPermissions } = prevPermissions;
         return restPermissions;
       });
+      console.log("");
+      
     } catch (error) {
       console.error({ message: error });
     }
