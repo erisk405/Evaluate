@@ -6,6 +6,7 @@ import {
   Plus,
   Settings2,
   ShieldAlert,
+  Trash,
   Trash2,
   X,
 } from "lucide-react";
@@ -208,30 +209,30 @@ const page = () => {
           <div className="bg-blue-100 p-2 rounded-full">
             <ShieldAlert size={40} className="text-blue-500" />
           </div>
-          <h2 className="text-3xl font-bold">Form setting</h2>
+          <h2 className="text-2xl text-stone-700 font-bold">Form setting</h2>
         </div>
-        <div className="grid grid-cols-5 h-[500px] ">
-          <div className="col-span-2 border-r p-5 ">
+        <div className="grid @container grid-cols-5 h-[500px] ">
+          <div className="col-span-5 @[65rem]:col-span-2 border-r p-5 ">
             <div className="flex justify-between my-2">
-              <h2 className="text-2xl font-bold">แบบฟอร์มทั้งหมด</h2>
+              <h2 className="text-xl text-stone-700 font-semibold">
+                แบบฟอร์มทั้งหมด
+              </h2>
               <CircleHelp className="text-yellow-500" />
             </div>
             {formState &&
               formState.map((item, index) => (
                 <div
                   key={item.id}
-                  className={`border-b w-full h-20 rounded-sm flex items-center p-3  group cursor-pointer ${
+                  className={`border-b w-full h-16 rounded-sm flex items-center p-3  group cursor-pointer ${
                     openForm.id === item.id
-                      ? "bg-neutral-100 text-black "
+                      ? "bg-neutral-100 text-stone-700 "
                       : "bg-white hover:bg-neutral-100"
                   }`}
                   onClick={() => handleItemClick(item.id)}
                 >
                   <div className="flex justify-between w-full items-center overflow-hidden">
-                    <h2 className="text-lg font-semibold select-none">
-                      {item.name}
-                    </h2>
-                    <div className="flex gap-3 ">
+                    <h2 className="text-md select-none truncate">{item.name}</h2>
+                    <div className={`flex justify-end gap-3 ${slideStates[item.id] ? 'pl-48' : 'w-auto'}`}>
                       <div className="relative">
                         <div
                           className={`absolute top-0 ${
@@ -243,8 +244,11 @@ const page = () => {
                           <div className="flex items-center gap-3">
                             <Dialog>
                               <DialogTrigger asChild>
-                                <div className="hover:bg-neutral-300 rounded-full">
-                                  <Settings2 />
+                                <div className="hover:bg-blue-100 hover:text-blue-500 rounded-lg">
+                                  <div className="w-[100px] flex gap-2 justify-center  items-center">
+                                    <Settings2 strokeWidth={1.25} size={20} />
+                                    <h2>เปลี่ยนชื่อ</h2>
+                                  </div>
                                 </div>
                               </DialogTrigger>
                               <DialogContent className="sm:max-w-[425px]">
@@ -303,7 +307,10 @@ const page = () => {
                             <AlertDialog>
                               <AlertDialogTrigger asChild>
                                 <div className="hover:bg-neutral-300 rounded-full">
-                                  <Trash2 />
+                                  <div className="w-[60px] flex gap-2 justify-center items-center">
+                                    <Trash2 strokeWidth={1.25} size={20} />
+                                    <h2>ลบ</h2>
+                                  </div>
                                 </div>
                               </AlertDialogTrigger>
                               <AlertDialogContent>
@@ -344,9 +351,9 @@ const page = () => {
                             } transition-all`}
                           >
                             {slideStates[item.id] ? (
-                              <X />
+                              <X strokeWidth={1.25} size={25} />
                             ) : (
-                              <EllipsisVertical />
+                              <EllipsisVertical strokeWidth={1.25} size={25} />
                             )}
                           </div>
                         </div>
@@ -364,7 +371,10 @@ const page = () => {
               Add form
             </Button>
           </div>
-          <div className="col-span-3 p-5 grid ">
+          <div className="col-span-5 @[65rem]:col-span-3 p-5 grid ">
+            {/* ------------------------------------------------------ */}
+            {/*                   Question Section                     */}
+            {/* ------------------------------------------------------- */}
             {openForm.id === null ? (
               <div className="flex justify-center items-center gap-3 flex-col">
                 <div className="relative">
@@ -380,13 +390,13 @@ const page = () => {
                 <h2 className="text-lg">Click any form your created.</h2>
               </div>
             ) : (
-              <div className="">
-                <h2 className="text-xl font-bold">
+              <div className="text-stone-700">
+                <h2 className="text-xl text-stone-700 my-3 font-bold">
                   คำถามของ{" "}
                   {formState.find((item) => item.id === openForm.id)?.name ||
                     "Unknow"}
                 </h2>
-                <div>
+                <div className="border rounded-lg">
                   <Table>
                     <TableCaption>A list of your recent question.</TableCaption>
                     <TableHeader>
@@ -441,9 +451,9 @@ const page = () => {
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
                       <div className="grid w-full gap-1.5">
-                        <Label htmlFor="message-2">Your Message</Label>
+                        <Label htmlFor="message-2">Your Content</Label>
                         <Textarea
-                          placeholder="Type your message here."
+                          placeholder="Type your content here."
                           id="message-2"
                         />
                         <p className="text-sm text-muted-foreground">

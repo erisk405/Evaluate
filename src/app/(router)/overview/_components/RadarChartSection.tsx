@@ -40,7 +40,7 @@ const RadarChartSection = () => {
   return (
     <Card>
       <CardHeader className="items-center pb-4">
-        <CardTitle>Radar Chart</CardTitle>
+        <CardTitle className="text-stone-700">Radar Chart</CardTitle>
         <CardDescription>
           Showing total visitors for the last 6 months
         </CardDescription>

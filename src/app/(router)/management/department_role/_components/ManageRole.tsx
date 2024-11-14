@@ -66,7 +66,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import GlobalApi from "@/app/_unit/GlobalApi";
-import UpdateRole from "./UpdateRole";
 import EditRoleDialog from "./EditRoleDialog";
 
 const formSchema = z.object({
@@ -201,7 +200,7 @@ const ManageRole = () => {
   }, [permissions]);
   return (
     <div className="@container">
-      <h2 className="text-2xl font-bold">Manage Role</h2>
+      <h2 className="text-2xl font-bold text-stone-700">Manage Role</h2>
       <div className="flex justify-between items-center my-3">
         <div className="flex items-center space-x-2">
           <Switch id="airplane-mode" />
@@ -399,7 +398,7 @@ const ManageRole = () => {
                     <div className="px-3 w-full h-14 rounded-xl flex justify-between items-center">
                       <div className="flex items-center gap-1">
                         <BadgeCheck className="text-white bg-blue-500 overflow-hidden rounded-full" />
-                        <h2 className="text-lg font-bold text-black">
+                        <h2 className="text-lg text-black">
                           {item.role_name}
                         </h2>
                       </div>

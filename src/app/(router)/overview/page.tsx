@@ -32,7 +32,7 @@ const page = () => {
   return (
     <div className="m-5 grid grid-cols-6 gap-5 w-full">
       <div className="xl:col-span-4 col-span-6 w-full">
-        <h2 className="text-3xl font-bold">Overview</h2>
+        <h2 className="text-3xl font-bold text-stone-700">Overview</h2>
         {checkPermission && checkPermission !== "admin" ? (
           <MyEvaluated />
         ) : (

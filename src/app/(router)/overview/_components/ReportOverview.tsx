@@ -118,13 +118,13 @@ const ReportOverview = () => {
                 </div>
                 <div className="grid gap-1 grid-cols-1">
                   <div className="flex gap-2 items-end">
-                    <h2 className="text-2xl font-bold">{item.quantity}</h2>
+                    <h2 className="text-2xl font-bold text-stone-700">{item.quantity}</h2>
                     <div className="flex items-center">
-                      <h2 className="text-green-500 text-sm">+1.92%</h2>
+                      <h2 className="text-green-500 text-sm ">+1.92%</h2>
                       <TrendingUp size={18} className="text-green-500" />
                     </div>
                   </div>
-                  <h2 className="text-sm">{item.title}</h2>
+                  <h2 className="text-sm text-stone-700">{item.title}</h2>
                 </div>
               </div>
             ))}
@@ -145,7 +145,7 @@ const ReportOverview = () => {
           <div className="grid grid-cols-1 p-3 relative rounded-2xl h-[100px] overflow-hidden border bg-white my-2">
             <h2>ทั้งหมดประเมินไปแล้ว</h2>
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold">182/250 คน</h2>
+              <h2 className="text-xl font-bold text-stone-700">182/250 คน</h2>
             </div>
             <h2>เฉลี่ยต่อวัน 10 คน</h2>
             <Image
@@ -167,7 +167,7 @@ const ReportOverview = () => {
           }}
           className="col-span-3"
         >
-          <h2 className="text-xl font-bold">การประเมินแต่ละหน่วยงาน</h2>
+          <h2 className="text-xl font-bold text-stone-700">การประเมินแต่ละหน่วยงาน</h2>
           <div className="w-full bg-white grid grid-cols-3 overflow-hidden rounded-lg">
             <div className="w-full">
               <Image

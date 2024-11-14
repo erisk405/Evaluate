@@ -40,7 +40,7 @@ const BarChartMultiple = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>จำนวนผู้ประเมินในแต่ละวัน</CardTitle>
+        <CardTitle className="text-stone-700">จำนวนผู้ประเมินในแต่ละวัน</CardTitle>
         <CardDescription>January - June 2024</CardDescription>
       </CardHeader>
       <CardContent >

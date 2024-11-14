@@ -206,7 +206,7 @@ const RightSection = ({ permission }: RightSectionProps) => {
                                   ? "text-green-500 "
                                   : item.status == "waiting"
                                   ? "text-yellow-500"
-                                  : "text-black"
+                                  : "text-blue-500"
                               } animate-ping`}
                             />
                             <Dot
@@ -216,7 +216,7 @@ const RightSection = ({ permission }: RightSectionProps) => {
                                   ? "text-green-500 "
                                   : item.status == "waiting"
                                   ? "text-yellow-500"
-                                  : "text-black"
+                                  : "text-blue-500"
                               }`}
                             />
                           </div>
