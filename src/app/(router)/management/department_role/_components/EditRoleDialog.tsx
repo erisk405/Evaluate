@@ -130,6 +130,9 @@ const EditRoleDialog = ({
           <BadgeAlert className="text-blue-500 bg-white rounded-full" />
           <h2>Set role permission form evaluate</h2>
         </div>
+        {/* ------------------------------------- */}
+        {/*           edit permission             */}
+        {/* ------------------------------------- */}
         <div className="grid grid-cols-4 items-center shadow-inner p-2 gap-4 overflow-scroll h-[35dvh] scrollbar-gemini rounded-lg">
           {roles.map(
             (item) =>

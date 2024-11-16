@@ -300,6 +300,22 @@ const createPermission = async (data:any,assessorID:string) => {
   }
 };
 
+const createQuestion = (data:{content:string,formId:string})=>{
+  try {
+    return axios.post(`${apiUrl}/question`,data,{withCredentials:true});
+  } catch (error) {
+    console.error("API createQuestion", { message: error });
+  }
+}
+const getQuestion = (formId:string) =>{
+  try {
+    return axios.get(`${apiUrl}/questions/${formId}`,{withCredentials:true});
+  } catch (error) {
+    console.error("API getQuestion", { message: error });
+    
+  }
+}
+
 export default {
   fetchUserProfile,
   Logout,
@@ -325,5 +341,7 @@ export default {
   createRole,
   deleteRole,
   updatePermission,
-  deletePermissionForm
+  deletePermissionForm,
+  createQuestion,
+  getQuestion
 };

@@ -54,8 +54,10 @@ import {
 } from "@/components/ui/pagination";
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetDescription,
+  SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -174,8 +176,8 @@ const page = () => {
   const params = useParams<{ departmentId: string }>();
   const { ProfileDetail, updateProfileDetail } = useStore();
   const [department_name, setDepartmentName] = useState("");
-  
-  // ใช้งานเพื่อจัดเรียงข้อมูล แต่ละหน้าของ ต่างๆภายใน table ออกมา 
+
+  // ใช้งานเพื่อจัดเรียงข้อมูล แต่ละหน้าของ ต่างๆภายใน table ออกมา
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 5 });
 
   const joinDepartment = async () => {
@@ -189,7 +191,11 @@ const page = () => {
   };
 
   const fetchDepartment = async () => {
-    const response = await GlobalApi.getDepartmentById(params.departmentId, pagination.pageIndex, pagination.pageSize);
+    const response = await GlobalApi.getDepartmentById(
+      params.departmentId,
+      pagination.pageIndex,
+      pagination.pageSize
+    );
     const { department_name } = response?.data.data;
     // console.log(department_name);
     setDepartmentName(department_name);
@@ -246,18 +252,14 @@ const page = () => {
           </AlertDialog>
         </div>
       </div>{" "}
-      {
-        department_name ? (
-          <h2 className="font-bold text-4xl">{department_name}</h2>
-        )
-        :
-        (
-          <div className="flex flex-col gap-3 animate-pulse">
-            <div className="h-3 w-64 bg-gray-400 rounded-full"></div>
-            <div className="h-3 w-32 bg-gray-400 rounded-full"></div>
-          </div>
-        )
-      }
+      {department_name ? (
+        <h2 className="font-bold text-4xl">{department_name}</h2>
+      ) : (
+        <div className="flex flex-col gap-3 animate-pulse">
+          <div className="h-3 w-64 bg-gray-400 rounded-full"></div>
+          <div className="h-3 w-32 bg-gray-400 rounded-full"></div>
+        </div>
+      )}
       <div className="flex justify-around gap-3 flex-wrap p-5 rounded-3xl">
         {OptionEmployee.map((item, index) => (
           <motion.div
@@ -357,6 +359,9 @@ const page = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
+                {/*  ---------------------------------- */}
+                {/*      รายชื่อ บุคคลกรภายในหน่วยงาน      */}
+                {/* ----------------------------------- */}
                 {data.map((item) => (
                   <TableRow key={item.id}>
                     <TableCell className="font-medium flex items-center gap-3">
@@ -397,15 +402,18 @@ const page = () => {
                             className="h-[calc(100vh-10%)] xl:mx-52 rounded-tr-2xl rounded-tl-2xl overflow-scroll scrollbar-gemini"
                           >
                             <SheetHeader>
-                              <SheetTitle className="text-3xl text-center">
-                                Eveluate Form
+                              <SheetTitle className="text-3xl text-center text-stone-700">
+                                แบบฟอร์มการประเมิน
                               </SheetTitle>
                             </SheetHeader>
+                            {/* ------------------------------------------------------- */}
+                            {/*        Conponent   Question and score input              */}
+                            {/* ------------------------------------------------------- */}
                             <EvaluaateSection />
                             <SheetDescription>
                               Make changes to your profile here. Click save when
                               you're done.
-                            </SheetDescription>
+                            </SheetDescription>{" "}
                           </SheetContent>
                         </Sheet>
                       </div>

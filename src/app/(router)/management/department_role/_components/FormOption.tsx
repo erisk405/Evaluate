@@ -36,15 +36,22 @@ export default function FormOption({
 }: FormOptionProps) {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<formStates[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
   // ใช้ useRef เพื่อบันทึกสถานะการตั้งค่า defaultValues
-  const toggleValue = (value: string) => {
+  const toggleValue = (selectedName: string) => {
+     // หารายการที่ตรงกับชื่อที่เลือก
+    const selectedItem = form.find((item) => item.name === selectedName);
+    if (!selectedItem) return;
+
+    // อัพเดท selectedValues
     setSelectedValues(
-      selectedValues.includes(value)
-        ? selectedValues.filter((v) => v !== value) // ถ้าเลือกอยู่แล้ว ให้เอาออก
-        : [...selectedValues, value] // ถ้ายังไม่เลือก ให้เพิ่มเข้าไป
+      selectedValues.includes(selectedItem.id)
+        ? selectedValues.filter((v) => v !== selectedItem.id) // ถ้าเลือกอยู่แล้ว ให้เอาออก
+        : [...selectedValues, selectedItem.id] // ถ้ายังไม่เลือก ให้เพิ่มเข้าไป หรือ อัพเดท
     );
-    console.log("selectedValues", selectedValues);
+    // console.log("selectedValues", selectedValues);
   };
+  // ฟังก์ชันดึงข้อมูลฟอร์มจาก API
   const getForm = async () => {
     try {
       const response = await GlobalApi.getForm();
@@ -60,10 +67,14 @@ export default function FormOption({
     getForm();
   }, []);
   // Set default values to selectedValues on mount
+  // จัดการค่า defaultValues เมื่อคอมโพเนนต์ถูกโหลด
+
+
+  
   useEffect(() => {
     if (defaultValues.length > 0) {
       setSelectedValues(defaultValues);
-    }else{
+    } else {
       setSelectedValues([]);
     }
   }, []);
@@ -85,31 +96,42 @@ export default function FormOption({
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
         <Command>
-          <CommandInput placeholder="Search form..." />
+        {/* ช่องค้นหา */}
+          <CommandInput
+            placeholder="Search form..."
+            value={searchTerm}
+            onValueChange={setSearchTerm}  // อัพเดทค่า searchTerm เมื่อพิมพ์
+          />
+          {/* ข้อความเมื่อไม่พบรายการ */}
           <CommandEmpty>No framework found.</CommandEmpty>
           <CommandGroup>
             <CommandList>
               {form &&
-                form.map((item) => (
-                  <CommandItem
-                    key={item.id}
-                    value={item.id}
-                    onSelect={() => {
-                      toggleValue(item.id);
-                    }}
-                  >
-                    <Check
-                      className={cn(
-                        "mr-2 h-4 w-4",
-                        (selectedValues ?? []).includes(item.id) // Fallback to an empty array if undefined
-                          ? "opacity-100"
-                          : "opacity-0"
-                      )}
-                    />
+                form
+                // กรองรายการตาม searchTerm
+                  .filter((item) =>
+                    item.name.toLowerCase().includes(searchTerm.toLowerCase())
+                  )
+                  .map((item) => (
+                    <CommandItem
+                      key={item.id}
+                      value={item.name} // เปลี่ยนจาก id เป็น name เพราะจะ search ผ่านname
+                      onSelect={(currentValue) => {
+                        toggleValue(currentValue);
+                      }}
+                    >
+                      <Check
+                        className={cn(
+                          "mr-2 h-4 w-4",
+                          (selectedValues ?? []).includes(item.id) // Fallback to an empty array if undefined
+                            ? "opacity-100"
+                            : "opacity-0"
+                        )}
+                      />
 
-                    {item.name}
-                  </CommandItem>
-                ))}
+                      {item.name}
+                    </CommandItem>
+                  ))}
             </CommandList>
           </CommandGroup>
         </Command>

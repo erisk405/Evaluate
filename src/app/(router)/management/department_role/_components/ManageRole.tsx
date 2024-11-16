@@ -110,6 +110,7 @@ const ManageRole = () => {
   );
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  const [openUpdate, setOpenUpdate] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -130,8 +131,8 @@ const ManageRole = () => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       setLoading(true);
-      const permissionsKeys = Object.keys(permissions); //เพื่อรับรายการคีย์ของอ็อบเจ็กต์ permissions แล้วทำงานต่อด้วยอาร์เรย์นั้น
       const newRole = await GlobalApi.createRole(values);
+      const permissionsKeys = Object.keys(permissions); //เพื่อรับรายการคีย์ของอ็อบเจ็กต์ permissions แล้วทำงานต่อด้วยอาร์เรย์นั้น
       if (permissionsKeys.length > 0) {
         const assessorId: string = newRole?.data?.id;
         const newPermission = await GlobalApi.createPermission(
@@ -150,6 +151,8 @@ const ManageRole = () => {
   };
   const onUpdate = async (values: any, id: string) => {
     try {
+      console.log('values',values);
+      
       setLoading(true);
       const data = {
         assessorId: id,
@@ -159,7 +162,7 @@ const ManageRole = () => {
       console.log(response);
       fetchRole();
       setLoading(false);
-      setOpen(false); // ปิด Dialog เมื่อ loading เสร็จสิ้น
+      setOpenUpdate(false); // ปิด Dialog เมื่อ loading เสร็จสิ้น
     } catch (error) {
       console.error({ message: error });
     }
@@ -195,9 +198,9 @@ const ManageRole = () => {
     }));
   };
 
-  useEffect(() => {
-    console.log("permission", permissions);
-  }, [permissions]);
+  // useEffect(() => {
+  //   console.log("permission", permissions);
+  // }, [permissions]);
   return (
     <div className="@container">
       <h2 className="text-2xl font-bold text-stone-700">Manage Role</h2>
@@ -496,7 +499,7 @@ const ManageRole = () => {
                             </AlertDialogFooter>
                           </AlertDialogContent>
                         </AlertDialog>
-                        <Dialog open={open} onOpenChange={setOpen}>
+                        <Dialog open={openUpdate} onOpenChange={setOpenUpdate}>
                           <DialogTrigger asChild>
                             <Button className="flex items-center gap-2 px-2 h-9 active:scale-95">
                               <Settings2 size={18} /> กำหนดสิทธิ

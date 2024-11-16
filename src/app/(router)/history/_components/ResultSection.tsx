@@ -147,14 +147,14 @@ const ResultSection = () => {
         <TableCaption>A list of your recent invoices.</TableCaption>
         <TableHeader>
           <TableRow className="text-lg bg-blue-300">
-            <TableHead className="w-[50px] text-center text-black">
+            <TableHead className="w-[50px] text-center text-stone-700">
               ลำดับ
             </TableHead>
-            <TableHead className="text-black">หัวข้อคำถาม</TableHead>
-            <TableHead className="w-[500px] text-black">ข้อคำถาม</TableHead>
-            <TableHead className="text-center text-black">ค่าเฉลี่ย</TableHead>
-            <TableHead className="text-center text-black">ค่า sd</TableHead>
-            <TableHead className="text-center text-black">เพิ่ม / ลด</TableHead>
+            <TableHead className="text-stone-700">หัวข้อคำถาม</TableHead>
+            <TableHead className="w-[500px] text-stone-700">ข้อคำถาม</TableHead>
+            <TableHead className="text-center text-stone-700">ค่าเฉลี่ย</TableHead>
+            <TableHead className="text-center text-stone-700">ค่า sd</TableHead>
+            <TableHead className="text-center text-stone-700">เพิ่ม / ลด</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>

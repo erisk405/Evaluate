@@ -6,7 +6,6 @@ import {
   Plus,
   Settings2,
   ShieldAlert,
-  Trash,
   Trash2,
   X,
 } from "lucide-react";
@@ -50,25 +49,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Textarea } from "@/components/ui/textarea";
+import { QuestionList } from "./_components/QuestionList";
 
 interface SlideStates {
   [key: string]: boolean;
@@ -85,42 +66,6 @@ const formSchema = z.object({
     .min(5, { message: "Role name must be at least 5 characters." }) // ขั้นต่ำ 5 ตัวอักษร
     .max(50, { message: "Role name must not exceed 50 characters." }), // สูงสุด 50 ตัวอักษร
 });
-
-const DataQuestion = [
-  {
-    id: "Q001",
-    question: "ปริมาณผลงาน",
-  },
-  {
-    id: "Q002",
-    question: "ความอุสาหพยายาม",
-  },
-  {
-    id: "Q003",
-    question: "การบำรุงรักษาเครื่องมือและอุปกรณ์ที่ใช้",
-  },
-  {
-    id: "Q004",
-    question: "การตัดสินใจและแก้ปัญหาเฉพาะหน้า",
-  },
-  {
-    id: "Q005",
-    question: "ความคิดริเริ่มในการปฎิบัติงาน",
-  },
-  {
-    id: "Q006",
-    question:
-      "ความรับผิดชอบต่อหน้าที่ ที่ได้รับมอบหมายความรับผิดชอบต่อหน้าที่ ",
-  },
-  {
-    id: "Q007",
-    question: "ความรวดเร็วในการปฏิบัติงาน",
-  },
-  {
-    id: "Q008",
-    question: "ตรงต่อเวลาในการทำงาน",
-  },
-];
 
 const page = () => {
   const [slideStates, setSlideStates] = useState<SlideStates>({});
@@ -202,17 +147,21 @@ const page = () => {
   useEffect(() => {
     fetchForm();
   }, []);
+  useEffect(() => {
+    console.log("openForm",openForm);
+    
+  }, [openForm]);
   return (
-    <div className="m-5 w-full">
-      <div className="bg-white shadow h-screen p-6">
+    <div className="m-5 w-full rounded-lg h-full">
+      <div className="bg-white shadow p-6">
         <div className="flex items-center gap-3">
           <div className="bg-blue-100 p-2 rounded-full">
             <ShieldAlert size={40} className="text-blue-500" />
           </div>
           <h2 className="text-2xl text-stone-700 font-bold">Form setting</h2>
         </div>
-        <div className="grid @container grid-cols-5 h-[500px] ">
-          <div className="col-span-5 @[65rem]:col-span-2 border-r p-5 ">
+        <div className="grid @container grid-cols-5 h-full ">
+          <div className="col-span-5 @[65rem]:col-span-2 @[65rem]:border-r p-5 ">
             <div className="flex justify-between my-2">
               <h2 className="text-xl text-stone-700 font-semibold">
                 แบบฟอร์มทั้งหมด
@@ -225,14 +174,20 @@ const page = () => {
                   key={item.id}
                   className={`border-b w-full h-16 rounded-sm flex items-center p-3  group cursor-pointer ${
                     openForm.id === item.id
-                      ? "bg-neutral-100 text-stone-700 "
-                      : "bg-white hover:bg-neutral-100"
+                      ? "bg-neutral-100 text-stone-700"
+                      : "bg-white hover:bg-neutral-50"
                   }`}
                   onClick={() => handleItemClick(item.id)}
                 >
                   <div className="flex justify-between w-full items-center overflow-hidden">
-                    <h2 className="text-md select-none truncate">{item.name}</h2>
-                    <div className={`flex justify-end gap-3 ${slideStates[item.id] ? 'pl-48' : 'w-auto'}`}>
+                    <h2 className="text-md select-none truncate">
+                      {item.name}
+                    </h2>
+                    <div
+                      className={`flex justify-end gap-3 ${
+                        slideStates[item.id] ? "pl-48" : "w-auto"
+                      }`}
+                    >
                       <div className="relative">
                         <div
                           className={`absolute top-0 ${
@@ -341,14 +296,14 @@ const page = () => {
                           ${
                             openForm.id === item.id
                               ? "bg-neutral-100 text-black "
-                              : "bg-white text-black group-hover:bg-neutral-100"
+                              : "bg-white text-black group-hover:bg-neutral-50"
                           }  
                     `}
                         >
                           <div
                             className={`${
                               slideStates[item.id] ? "rotate-180" : "rotate-0"
-                            } transition-all`}
+                            } transition-all rounded-md hover:bg-neutral-200`}
                           >
                             {slideStates[item.id] ? (
                               <X strokeWidth={1.25} size={25} />
@@ -375,7 +330,7 @@ const page = () => {
             {/* ------------------------------------------------------ */}
             {/*                   Question Section                     */}
             {/* ------------------------------------------------------- */}
-            {openForm.id === null ? (
+            {openForm.id === null ? ( // openForm.id คือจะเก็บ id ของ form นั้นๆไว้
               <div className="flex justify-center items-center gap-3 flex-col">
                 <div className="relative">
                   <MessageCircleQuestion
@@ -396,76 +351,9 @@ const page = () => {
                   {formState.find((item) => item.id === openForm.id)?.name ||
                     "Unknow"}
                 </h2>
-                <div className="border rounded-lg">
-                  <Table>
-                    <TableCaption>A list of your recent question.</TableCaption>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="w-[100px]">ลำดับ</TableHead>
-                        <TableHead className="w-full">ข้อคำถาม</TableHead>
-                        <TableHead className="text-right">action</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {DataQuestion.map((question, index) => (
-                        <TableRow key={question.id}>
-                          <TableCell className="font-medium text-center">
-                            {index + 1}
-                          </TableCell>
-                          <TableCell>{question.question}</TableCell>
-                          <TableCell className="text-right">
-                            <DropdownMenu>
-                              <DropdownMenuTrigger>
-                                <EllipsisVertical />
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent>
-                                <DropdownMenuLabel>Edit</DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem>Edit</DropdownMenuItem>
-                                <DropdownMenuItem>Delete</DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                <div className="">
+                  <QuestionList formId={openForm.id} />
                 </div>
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="w-full h-10 active:scale-95 transition-all mt-3 select-none gap-2"
-                    >
-                      <Plus />
-                      Add question
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[625px]">
-                    <DialogHeader>
-                      <DialogTitle>Craete Question</DialogTitle>
-                      <DialogDescription>
-                        Make changes to your profile here. Click save when
-                        you're done.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                      <div className="grid w-full gap-1.5">
-                        <Label htmlFor="message-2">Your Content</Label>
-                        <Textarea
-                          placeholder="Type your content here."
-                          id="message-2"
-                        />
-                        <p className="text-sm text-muted-foreground">
-                          Your message will be copied to the support team.
-                        </p>
-                      </div>
-                    </div>
-                    <DialogFooter>
-                      <Button type="submit">Save Change</Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
               </div>
             )}
           </div>
