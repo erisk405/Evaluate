@@ -380,10 +380,8 @@ const page = () => {
                       <h2
                         className={` ${
                           item.status === "success"
-                            ? "font-semibold text-emerald-600 bg-emerald-100 rounded-xl border p-1  border-emerald-500"
-                            : item.status === "processing"
-                            ? "font-semibold text-yellow-600 bg-yellow-100 rounded-xl border p-1  border-yellow-500"
-                            : "font-semibold text-red-600 bg-red-100 rounded-xl border p-1  border-red-500"
+                            ? "font-semibold text-blue-600 bg-blue-100 rounded-lg border p-1  border-blue-500"
+                            : "font-semibold text-yellow-600 bg-yellow-100 rounded-lg border p-1  border-yellow-500"
                         } text-center`}
                       >
                         {item.status}

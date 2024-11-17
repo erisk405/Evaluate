@@ -105,45 +105,41 @@ const addUsersToDepartment = async (payload: any) => {
   });
 };
 
-const createRole = (payload:any) => {
+const createRole = (payload: any) => {
   try {
-    return axios.post(`${apiUrl}/role`,payload,{ withCredentials: true });
+    return axios.post(`${apiUrl}/role`, payload, { withCredentials: true });
   } catch (error) {
     console.error("Error role:", error);
   }
-}
+};
 
-const updatePermission = (permissions:any)=>{
+const updatePermission = (permissions: any) => {
   console.log(permissions);
-  
-  try {
-    return axios.put(`${apiUrl}/permissionRole`,permissions,{ withCredentials: true });
-  } catch (error) {
-    
-  }
-}
 
-const deletePermissionForm = (id:string) =>{
   try {
-    return axios.delete(`${apiUrl}/permissionForm`,{ 
-      data:{id},
-      withCredentials: true
-    })
-  } catch (error) {
-    
-  }
-}
+    return axios.put(`${apiUrl}/permissionRole`, permissions, {
+      withCredentials: true,
+    });
+  } catch (error) {}
+};
 
-const deleteRole = (id:string) => {
+const deletePermissionForm = (id: string) => {
   try {
-    return axios.delete(`${apiUrl}/role`,{ 
-      data:{id},
-      withCredentials: true
-    })
-  } catch (error) {
-    
-  }
-}
+    return axios.delete(`${apiUrl}/permissionForm`, {
+      data: { id },
+      withCredentials: true,
+    });
+  } catch (error) {}
+};
+
+const deleteRole = (id: string) => {
+  try {
+    return axios.delete(`${apiUrl}/role`, {
+      data: { id },
+      withCredentials: true,
+    });
+  } catch (error) {}
+};
 
 const getRole = async () => {
   try {
@@ -290,31 +286,54 @@ const deleteForm = async (id: string) => {
   }
 };
 
-const createPermission = async (data:any,assessorID:string) => {
+const createPermission = async (data: any, assessorID: string) => {
   console.log(data);
-  
+
   try {
-    return axios.post(`${apiUrl}/permission`,{data,assessorID}, {withCredentials: true,});
+    return axios.post(
+      `${apiUrl}/permission`,
+      { data, assessorID },
+      { withCredentials: true }
+    );
   } catch (error) {
     console.error("API delete form", { message: error });
   }
 };
 
-const createQuestion = (data:{content:string,formId:string})=>{
+const createQuestion = (data: { content: string; formId: string }) => {
   try {
-    return axios.post(`${apiUrl}/question`,data,{withCredentials:true});
+    return axios.post(`${apiUrl}/question`, data, { withCredentials: true });
   } catch (error) {
     console.error("API createQuestion", { message: error });
   }
-}
-const getQuestion = (formId:string) =>{
+};
+const getQuestion = (formId: string) => {
   try {
-    return axios.get(`${apiUrl}/questions/${formId}`,{withCredentials:true});
+    return axios.get(`${apiUrl}/questions/${formId}`, {
+      withCredentials: true,
+    });
   } catch (error) {
     console.error("API getQuestion", { message: error });
-    
   }
-}
+};
+const deleteQuestion = (payload: {}) => {
+  try {
+    return axios.delete(`${apiUrl}/question`, {
+      data: payload, // Send the payload directly
+      withCredentials: true,
+    });
+  } catch (error) {
+    console.error("API deleteQuestion", { message: error });
+  }
+};
+
+const updateQuestion = (payload: {}) => {
+  try {
+    return axios.put(`${apiUrl}/question`,payload, {withCredentials: true});
+  } catch (error) {
+    console.error("API updateQuestion", { message: error });
+  }
+};
 
 export default {
   fetchUserProfile,
@@ -343,5 +362,7 @@ export default {
   updatePermission,
   deletePermissionForm,
   createQuestion,
-  getQuestion
+  getQuestion,
+  deleteQuestion,
+  updateQuestion,
 };

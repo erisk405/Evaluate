@@ -68,47 +68,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import GlobalApi from "@/app/_unit/GlobalApi";
+import EditQuestionDialog from "./EditQuestionDialog";
 
 export type questionProp = {
   id: string;
-  question: string;
+  content: string;
 };
-
-const data: questionProp[] = [
-  {
-    id: "Q001",
-    question: "ปริมาณผลงาน",
-  },
-  {
-    id: "Q002",
-    question: "ความอุสาหพยายาม",
-  },
-  {
-    id: "Q003",
-    question: "การบำรุงรักษาเครื่องมือและอุปกรณ์ที่ใช้",
-  },
-  {
-    id: "Q004",
-    question: "การตัดสินใจและแก้ปัญหาเฉพาะหน้า",
-  },
-  {
-    id: "Q005",
-    question: "ความคิดริเริ่มในการปฎิบัติงาน",
-  },
-  {
-    id: "Q006",
-    question:
-      "ความรับผิดชอบต่อหน้าที่ ที่ได้รับมอบหมายความรับผิดชอบต่อหน้าที่ ",
-  },
-  {
-    id: "Q007",
-    question: "ความรวดเร็วในการปฏิบัติงาน",
-  },
-  {
-    id: "Q008",
-    question: "ตรงต่อเวลาในการทำงาน",
-  },
-];
 
 const formSchema = z.object({
   content: z
@@ -141,10 +106,17 @@ export const columns: ColumnDef<questionProp>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "question",
+    accessorKey: "index",
+    header: "ลำดับ",
+    cell: ({ row }) => (
+      <div className="capitalize text-center">{row.index + 1}</div>
+    ),
+  },
+  {
+    accessorKey: "content",
     header: "ข้อคำถาม",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("question")}</div>
+      <div className="capitalize ">{row.getValue("content")}</div>
     ),
   },
   {
@@ -152,27 +124,53 @@ export const columns: ColumnDef<questionProp>[] = [
     enableHiding: false,
     cell: ({ row }) => {
       const question = row.original;
-
+      const [open, setOpen] = useState(false);
+      const handleUpdate = async (values: any) => {
+        try {
+          const payload = {
+            questionId: question.id, 
+            content: values.content,
+          }
+          // console.log("value",payload);
+          const response = await GlobalApi.updateQuestion(payload);
+          if (!response) {
+            throw new Error("Question update fail");
+          }
+        } catch (error) {
+          console.error({ message: error });
+        }
+      };
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(question.id)}
-            >
-              Copy question ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View question details</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuItem
+                onClick={() => navigator.clipboard.writeText(question.content)}
+              >
+                Copy question
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              {/* Edit section  */}
+              <DropdownMenuItem onSelect={() => setOpen(true)}>
+                Edit
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          {/* 1. การส่ง Props ไปยัง EditQuestionDialog */}
+          <EditQuestionDialog
+            open={open} // สถานะการเปิด/ปิด Dialog (boolean)
+            setOpen={setOpen} // function สำหรับเปลี่ยนสถานะ Dialog
+            question={question} // ข้อมูล question ที่ต้องการแก้ไข
+            onUpdate={handleUpdate} // function callback สำหรับการ update
+          />
+        </>
       );
     },
   },
@@ -185,7 +183,8 @@ export function QuestionList({ formId }: QuestionListProp) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
-  const [question, setQuestion] = useState({});
+  const [question, setQuestion] = useState([]);
+  const [open, setOpen] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -201,13 +200,33 @@ export function QuestionList({ formId }: QuestionListProp) {
       };
       const response = await GlobalApi.createQuestion(data);
       console.log("response", response);
+      fetchQuestion();
+      setOpen(false);
     } catch (error) {
       console.log(error);
     }
   };
+  const deleteQuestion = async () => {
+    try {
+      const selectData = table
+        .getSelectedRowModel()
+        .rows.map((row) => row.original);
+      console.log("payload", selectData);
+
+      const response = await GlobalApi.deleteQuestion(selectData);
+      console.log("response", response);
+      if (!response) {
+        throw new Error("Question delete fail");
+      }
+      fetchQuestion();
+    } catch (error) {
+      console.error({ message: error });
+    }
+  };
   const fetchQuestion = async () => {
     const response = await GlobalApi.getQuestion(formId);
-    console.log("response.data", response?.data);
+    setQuestion(response?.data);
+    console.log(response?.data);
   };
   useEffect(() => {
     fetchQuestion();
@@ -219,7 +238,7 @@ export function QuestionList({ formId }: QuestionListProp) {
     console.log("rowSelection", selectData);
   }, [rowSelection]);
   const table = useReactTable({
-    data,
+    data: question,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -242,11 +261,9 @@ export function QuestionList({ formId }: QuestionListProp) {
       <div className="flex items-center py-4">
         <Input
           placeholder="Filter question..."
-          value={
-            (table.getColumn("question")?.getFilterValue() as string) ?? ""
-          }
+          value={(table.getColumn("content")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("question")?.setFilterValue(event.target.value)
+            table.getColumn("content")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
@@ -282,18 +299,20 @@ export function QuestionList({ formId }: QuestionListProp) {
                         key={item.id}
                         className="rounded-full border py-1 text-stone-700 text-sm px-2"
                       >
-                        {item.question}
+                        {item.content}
                       </div>
                     ))}
                 </div>
               </ScrollArea>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction>Continue</AlertDialogAction>
+                <AlertDialogAction onClick={() => deleteQuestion()}>
+                  Continue
+                </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
-          <Dialog>
+          <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
               <Button
                 variant="outline"
@@ -353,7 +372,12 @@ export function QuestionList({ formId }: QuestionListProp) {
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead
+                      className={`${
+                        header.id === "index" ? "text-center" : ""
+                      }`}
+                      key={header.id}
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(

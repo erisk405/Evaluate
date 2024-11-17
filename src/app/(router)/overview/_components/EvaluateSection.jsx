@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -153,8 +153,24 @@ const data = [
 ];
 
 const EvaluateSection = () => {
-  const [selectedValues, setSelectedValues] = useState(invoices.map(() => "3"));
+  const [selectedValues, setSelectedValues] = useState(Array(18).fill("3"));
 
+  const [payload, setPayload] = useState(
+    data.reduce(
+      (acc, curr) => ({
+        ...acc,
+        [curr.HeadTitle]: {
+          formId: curr.id,
+          question: curr.subData.map((item) => ({
+            questionId: item.id,
+            content: item.content,
+            score: "3",
+          })),
+        },
+      }),
+      {}
+    )
+  );
   const handleValueChange = (index, value) => {
     console.log(value);
     const newSelectedValues = [...selectedValues];
@@ -162,6 +178,40 @@ const EvaluateSection = () => {
     setSelectedValues(newSelectedValues);
   };
 
+  const handlePayloadChange = (headTitle, formId, newValues) => {
+    // ใช้ setPayload เพื่ออัพเดท state โดยรับ previous state (prev) เป็น parameter
+    setPayload((prev) => {
+      // ดึงข้อมูลคำถามทั้งหมดของหัวข้อนั้นๆ จาก previous state
+      // prev[headTitle] คือการเข้าถึงข้อมูลของหัวข้อนั้นๆ เช่น "ทักษะการปฎิบัติงาน"
+      // .question คือการเข้าถึง array ของคำถามทั้งหมดในหัวข้อนั้น
+      const currentQuestions = prev[headTitle].question;
+      console.log("currentQuestions:", currentQuestions);
+
+      // สร้าง array ใหม่โดยการ map ข้อมูลเดิม
+      const updatedQuestions = currentQuestions.map((question) =>
+        // นำค่าใหม่ newValues ที่ user กดมาอัพเดทลง state ใหม่ ก็เลย เอาquestion.questionId === newValues.id  เพื่ออัพเดทค่าไปใหม่
+        // ถ้าตรง: สร้าง object ใหม่โดย
+        // ...question = copy ข้อมูลเดิมทั้งหมดของคำถามนั้น (questionId, content)
+        // score: newValues.score = อัพเดทค่า score เป็นค่าใหม่ที่ user เลือก
+        question.questionId === newValues.id
+          ? { ...question, score: newValues.score }
+          : question // ถ้าไม่ตรง: ส่งคืนข้อมูลเดิมโดยไม่มีการเปลี่ยนแปลง
+      );
+
+    // สร้าง object ใหม่สำหรับ state
+      return {
+        ...prev, // copy ข้อมูลทั้งหมดจาก previous state
+        [headTitle]: {  // อัพเดทเฉพาะหัวข้อที่มีการเปลี่ยนแปลง
+          formID: formId,    // กำหนด formID
+          question: updatedQuestions, // ใส่ array คำถามที่อัพเดทแล้ว
+        },
+      };
+    });
+  };
+
+  useEffect(() => {
+    console.log("payload", payload);
+  }, [payload]);
   return (
     <div className="mt-3">
       <div className="flex items-center w-full flex-col">
@@ -208,9 +258,14 @@ const EvaluateSection = () => {
                         <RadioGroup
                           defaultValue="3"
                           className="flex gap-3 justify-around flex-wrap "
-                          onValueChange={(value) =>
-                            handleValueChange(index, value)
-                          }
+                          onValueChange={(value) => {
+                            handleValueChange(index, value);
+                            handlePayloadChange(item.HeadTitle, item.id, {
+                              id: sup.id,
+                              content: sup.content,
+                              score: value,
+                            });
+                          }}
                         >
                           {/* ---------------------------------- */}
                           {/*            score contenct          */}

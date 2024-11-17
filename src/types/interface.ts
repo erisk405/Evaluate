@@ -53,7 +53,7 @@ interface Permission {
 interface PermissionForm {
   form: {
     id: string;
-    name:string
+    name: string
   };
   ingroup: boolean;
 }
@@ -79,4 +79,9 @@ interface Notification {
   createdAt: string;
 }
 
-export type { DepartmentImage, Department, Role, User, RoleRequest, Notification, Permission,PermissionForm };
+interface FormQuestion {
+  id: string;
+  form_id?: string;
+  content: string;
+}
+export type { DepartmentImage, Department, Role, User, RoleRequest, Notification, Permission, PermissionForm, FormQuestion };
