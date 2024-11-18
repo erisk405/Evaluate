@@ -14,51 +14,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
-import { ChevronUp } from "lucide-react";
 
-const invoices = [
-  {
-    id: "001",
-    totalAmount: "$250.00",
-    question: "ปริมาณผลงาน",
-  },
-  {
-    id: "002",
-    totalAmount: "$150.00",
-    question: "ความอุสาหพยายาม",
-  },
-  {
-    id: "003",
-    totalAmount: "$350.00",
-    question: "การบำรุงรักษาเครื่องมือและอุปกรณ์ที่ใช้",
-  },
-  {
-    id: "004",
-    totalAmount: "$450.00",
-    question: "การตัดสินใจและแก้ปัญหาเฉพาะหน้า",
-  },
-  {
-    id: "005",
-    totalAmount: "$550.00",
-    question: "ความคิดริเริ่มในการปฎิบัติงาน",
-  },
-  {
-    id: "006",
-    totalAmount: "$200.00",
-    question:
-      "ความรับผิดชอบต่อหน้าที่ ที่ได้รับมอบหมายความรับผิดชอบต่อหน้าที่ ",
-  },
-  {
-    id: "007",
-    totalAmount: "$300.00",
-    question: "ความรวดเร็วในการปฏิบัติงาน",
-  },
-  {
-    id: "008",
-    totalAmount: "$300.00",
-    question: "ตรงต่อเวลาในการทำงาน",
-  },
-];
 const data = [
   {
     id: "CO01",
@@ -172,7 +128,7 @@ const EvaluateSection = () => {
     )
   );
   const handleValueChange = (index, value) => {
-    console.log(value);
+    // console.log(value);
     const newSelectedValues = [...selectedValues];
     newSelectedValues[index] = value;
     setSelectedValues(newSelectedValues);
@@ -185,29 +141,51 @@ const EvaluateSection = () => {
       // prev[headTitle] คือการเข้าถึงข้อมูลของหัวข้อนั้นๆ เช่น "ทักษะการปฎิบัติงาน"
       // .question คือการเข้าถึง array ของคำถามทั้งหมดในหัวข้อนั้น
       const currentQuestions = prev[headTitle].question;
-      console.log("currentQuestions:", currentQuestions);
+      // console.log("currentQuestions:", currentQuestions);
 
       // สร้าง array ใหม่โดยการ map ข้อมูลเดิม
-      const updatedQuestions = currentQuestions.map((question) =>
-        // นำค่าใหม่ newValues ที่ user กดมาอัพเดทลง state ใหม่ ก็เลย เอาquestion.questionId === newValues.id  เพื่ออัพเดทค่าไปใหม่
-        // ถ้าตรง: สร้าง object ใหม่โดย
-        // ...question = copy ข้อมูลเดิมทั้งหมดของคำถามนั้น (questionId, content)
-        // score: newValues.score = อัพเดทค่า score เป็นค่าใหม่ที่ user เลือก
-        question.questionId === newValues.id
-          ? { ...question, score: newValues.score }
-          : question // ถ้าไม่ตรง: ส่งคืนข้อมูลเดิมโดยไม่มีการเปลี่ยนแปลง
+      const updatedQuestions = currentQuestions.map(
+        (question) =>
+          // นำค่าใหม่ newValues ที่ user กดมาอัพเดทลง state ใหม่ ก็เลย เอาquestion.questionId === newValues.id  เพื่ออัพเดทค่าไปใหม่
+          // ถ้าตรง: สร้าง object ใหม่โดย
+          // ...question = copy ข้อมูลเดิมทั้งหมดของคำถามนั้น (questionId, content)
+          // score: newValues.score = อัพเดทค่า score เป็นค่าใหม่ที่ user เลือก
+          question.questionId === newValues.id
+            ? { ...question, score: newValues.score }
+            : question // ถ้าไม่ตรง: ส่งคืนข้อมูลเดิมโดยไม่มีการเปลี่ยนแปลง
       );
 
-    // สร้าง object ใหม่สำหรับ state
+      // สร้าง object ใหม่สำหรับ state
       return {
         ...prev, // copy ข้อมูลทั้งหมดจาก previous state
-        [headTitle]: {  // อัพเดทเฉพาะหัวข้อที่มีการเปลี่ยนแปลง
-          formID: formId,    // กำหนด formID
+        [headTitle]: {
+          // อัพเดทเฉพาะหัวข้อที่มีการเปลี่ยนแปลง
+          formId: formId, // กำหนด formID
           question: updatedQuestions, // ใส่ array คำถามที่อัพเดทแล้ว
         },
       };
     });
   };
+
+  const handleRaioColorChange = (formId, questionId) => {
+    // console.log("formId",formId,"questionId",questionId);
+    const section = Object.values(payload).find(
+      (section) => section.formId === formId
+    );
+    if (section) {
+      const question = section.question.find(
+        (q) => q.questionId === questionId
+      );
+      if (question) {
+        // Return a color class based on the score
+        return question.score;
+      }
+      return ""; // Return empty string if no match found
+    }
+  };
+  useEffect(() => {
+    console.log("selectedValues", selectedValues);
+  }, [selectedValues]);
 
   useEffect(() => {
     console.log("payload", payload);
@@ -280,7 +258,7 @@ const EvaluateSection = () => {
                             <Label
                               htmlFor={"r5" + sup.id}
                               className={`${
-                                selectedValues[index] === "5"
+                                handleRaioColorChange(item.id, sup.id) === "5"
                                   ? "bg-blue-500 text-white"
                                   : "bg-white text-black"
                               }
@@ -303,7 +281,7 @@ const EvaluateSection = () => {
                             <Label
                               htmlFor={"r4" + sup.id}
                               className={`${
-                                selectedValues[index] === "4"
+                                handleRaioColorChange(item.id, sup.id) === "4"
                                   ? "bg-blue-500 text-white"
                                   : "bg-white text-black"
                               }
@@ -326,7 +304,7 @@ const EvaluateSection = () => {
                             <Label
                               htmlFor={"r3" + sup.id}
                               className={`${
-                                selectedValues[index] === "3"
+                                handleRaioColorChange(item.id, sup.id) === "3"
                                   ? "bg-blue-500 text-white"
                                   : "bg-white text-black"
                               }
@@ -349,7 +327,7 @@ const EvaluateSection = () => {
                             <Label
                               htmlFor={"r2" + sup.id}
                               className={`${
-                                selectedValues[index] === "2"
+                                handleRaioColorChange(item.id, sup.id) === "2"
                                   ? "bg-blue-500 text-white"
                                   : "bg-white text-black"
                               }
@@ -372,7 +350,7 @@ const EvaluateSection = () => {
                             <Label
                               htmlFor={"r1" + sup.id}
                               className={`${
-                                selectedValues[index] === "1"
+                                handleRaioColorChange(item.id, sup.id) === "1"
                                   ? "bg-blue-500 text-white"
                                   : "bg-white text-black"
                               }

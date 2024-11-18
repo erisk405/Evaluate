@@ -405,7 +405,7 @@ const page = () => {
                               </SheetTitle>
                             </SheetHeader>
                             {/* ------------------------------------------------------- */}
-                            {/*        Conponent   Question and score input              */}
+                            {/*        Conponent   Question and score input             */}
                             {/* ------------------------------------------------------- */}
                             <EvaluaateSection />
                             <SheetDescription>
