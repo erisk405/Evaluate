@@ -47,6 +47,10 @@ const Logout = async () => {
   }
 };
 
+
+// -----------------------------------------------------------
+//                       for user
+// -----------------------------------------------------------
 // New function to update user image
 const updateUserImage = async (
   formData: FormData
@@ -105,31 +109,16 @@ const addUsersToDepartment = async (payload: any) => {
   });
 };
 
+
+// -----------------------------------------------------------
+//                       Role Table
+// -----------------------------------------------------------
 const createRole = (payload: any) => {
   try {
     return axios.post(`${apiUrl}/role`, payload, { withCredentials: true });
   } catch (error) {
     console.error("Error role:", error);
   }
-};
-
-const updatePermission = (permissions: any) => {
-  console.log(permissions);
-
-  try {
-    return axios.put(`${apiUrl}/permissionRole`, permissions, {
-      withCredentials: true,
-    });
-  } catch (error) {}
-};
-
-const deletePermissionForm = (id: string) => {
-  try {
-    return axios.delete(`${apiUrl}/permissionForm`, {
-      data: { id },
-      withCredentials: true,
-    });
-  } catch (error) {}
 };
 
 const deleteRole = (id: string) => {
@@ -148,6 +137,48 @@ const getRole = async () => {
     console.error("Error role:", error);
   }
 };
+// function api สำหรับ user เมื่อต้องการร้องขอ role
+const sendRoleRequest = async (userId: any, roleId: any) => {
+  try {
+    return await axios.post(
+      `${apiUrl}/sendRoleRequest`,
+      {
+        userId, // userId จะต้องเป็นค่าที่มาจากการล็อกอิน
+        roleId,
+      },
+      {
+        withCredentials: true,
+      }
+    );
+  } catch (error) {}
+};
+
+// function api สำหรับ Admin ที่ใช้ในการจัดการกับ การ Approve หรือ Reject เมื่อ user ร้องขอ role
+const resolveRole = async (
+  requestId: string,
+  status: string,
+  userId: string
+) => {
+  try {
+    return await axios.patch(
+      `${apiUrl}/resolveRole`,
+      {
+        requestId,
+        status,
+        userId,
+      },
+      {
+        withCredentials: true,
+      }
+    );
+  } catch (error) {
+    console.error({ message: error });
+  }
+};
+
+// -----------------------------------------------------------
+//                       Department Table
+// -----------------------------------------------------------
 
 const getDepartment = async () => {
   try {
@@ -196,45 +227,11 @@ const updateDepartment = async (data: any) => {
   }
 };
 
-// function api สำหรับ user เมื่อต้องการร้องขอ role
-const sendRoleRequest = async (userId: any, roleId: any) => {
-  try {
-    return await axios.post(
-      `${apiUrl}/sendRoleRequest`,
-      {
-        userId, // userId จะต้องเป็นค่าที่มาจากการล็อกอิน
-        roleId,
-      },
-      {
-        withCredentials: true,
-      }
-    );
-  } catch (error) {}
-};
 
-// function api สำหรับ Admin ที่ใช้ในการจัดการกับ การ Approve หรือ Reject เมื่อ user ร้องขอ role
-const resolveRole = async (
-  requestId: string,
-  status: string,
-  userId: string
-) => {
-  try {
-    return await axios.patch(
-      `${apiUrl}/resolveRole`,
-      {
-        requestId,
-        status,
-        userId,
-      },
-      {
-        withCredentials: true,
-      }
-    );
-  } catch (error) {
-    console.error({ message: error });
-  }
-};
 
+// -----------------------------------------------------------
+//                       Form Table
+// -----------------------------------------------------------
 const createForm = async (name: string) => {
   try {
     return await axios.post(
@@ -286,6 +283,11 @@ const deleteForm = async (id: string) => {
   }
 };
 
+
+// -----------------------------------------------------------
+//                       Permission Table
+// -----------------------------------------------------------
+
 const createPermission = async (data: any, assessorID: string) => {
   console.log(data);
 
@@ -300,6 +302,28 @@ const createPermission = async (data: any, assessorID: string) => {
   }
 };
 
+const updatePermission = (permissions: any) => {
+  console.log(permissions);
+
+  try {
+    return axios.put(`${apiUrl}/permissionRole`, permissions, {
+      withCredentials: true,
+    });
+  } catch (error) {}
+};
+
+const deletePermissionForm = (id: string) => {
+  try {
+    return axios.delete(`${apiUrl}/permissionForm`, {
+      data: { id },
+      withCredentials: true,
+    });
+  } catch (error) {}
+};
+
+// -----------------------------------------------------------
+//                       Question Table
+// -----------------------------------------------------------
 const createQuestion = (data: { content: string; formId: string }) => {
   try {
     return axios.post(`${apiUrl}/question`, data, { withCredentials: true });
@@ -329,11 +353,41 @@ const deleteQuestion = (payload: {}) => {
 
 const updateQuestion = (payload: {}) => {
   try {
-    return axios.put(`${apiUrl}/question`,payload, {withCredentials: true});
+    return axios.put(`${apiUrl}/question`, payload, { withCredentials: true });
   } catch (error) {
     console.error("API updateQuestion", { message: error });
   }
 };
+
+// -----------------------------------------------------------
+//                       Period Table
+// -----------------------------------------------------------
+const createPeriod = (payload: {
+  title: string;
+  start: string;
+  end: string;
+}) => {
+  try {
+    return axios.post(`${apiUrl}/period`, payload, { withCredentials: true });
+  } catch (error) {
+    console.error("API createPeriod", { message: error });
+  }
+};
+const getPeriod = () => {
+  try {
+    return axios.get(`${apiUrl}/periods`, { withCredentials: true });
+  } catch (error) {
+    console.error("API createPeriod", { message: error });
+  }
+};
+const deletePeriod = (id:string)=>{
+  try {
+    return axios.delete(`${apiUrl}/period/${id}`, { withCredentials: true });
+  } catch (error) {
+    console.error("API createPeriod", { message: error });
+  }
+}
+
 
 export default {
   fetchUserProfile,
@@ -365,4 +419,7 @@ export default {
   getQuestion,
   deleteQuestion,
   updateQuestion,
+  createPeriod,
+  getPeriod,
+  deletePeriod
 };

@@ -70,6 +70,7 @@ import {
 import GlobalApi from "@/app/_unit/GlobalApi";
 import EditQuestionDialog from "./EditQuestionDialog";
 
+import { toast } from "sonner"
 export type questionProp = {
   id: string;
   content: string;
@@ -199,9 +200,12 @@ export function QuestionList({ formId }: QuestionListProp) {
         formId: formId,
       };
       const response = await GlobalApi.createQuestion(data);
-      console.log("response", response);
+      // console.log("response", response);
       fetchQuestion();
       setOpen(false);
+      toast("Event has been created", {
+        description: `ชื่อคำถาม : ${response?.data.content}`,
+      })
     } catch (error) {
       console.log(error);
     }
@@ -218,15 +222,27 @@ export function QuestionList({ formId }: QuestionListProp) {
       if (!response) {
         throw new Error("Question delete fail");
       }
+      toast("Event has been delete", {
+        description: `message : ${response?.data.message}`,
+      })
       fetchQuestion();
-    } catch (error) {
+    } catch (error:any) {
       console.error({ message: error });
+      toast("เกิดข้อผิดพลาด", {
+        description: (
+          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+            <code className="text-white">
+              {JSON.stringify(error?.response?.data?.message, null, 2)}
+            </code>
+          </pre>
+        ),
+      });
     }
   };
   const fetchQuestion = async () => {
     const response = await GlobalApi.getQuestion(formId);
     setQuestion(response?.data);
-    console.log(response?.data);
+    // console.log(response?.data);
   };
   useEffect(() => {
     fetchQuestion();

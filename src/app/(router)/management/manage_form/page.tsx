@@ -50,6 +50,7 @@ import {
 } from "@/components/ui/form";
 
 import { QuestionList } from "./_components/QuestionList";
+import { toast } from "sonner";
 
 interface SlideStates {
   [key: string]: boolean;
@@ -86,17 +87,41 @@ const page = () => {
       const response = await GlobalApi.createForm(name);
       const newform = response?.data;
       setFormState((prev) => [...prev, newform]);
-    } catch (error) {
+      toast("Event has been created", {
+        description: `ชื่อฟอร์ม : ${response?.data.name}`,
+      });
+    } catch (error: any) {
       console.error({ message: error });
+      toast("เกิดข้อผิดพลาด", {
+        description: (
+          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+            <code className="text-white">
+              {JSON.stringify(error?.response?.data?.message, null, 2)}
+            </code>
+          </pre>
+        ),
+      });
     }
   };
 
   const deleteForm = async (id: string) => {
     try {
-      await GlobalApi.deleteForm(id);
+      const response = await GlobalApi.deleteForm(id);
+      toast("Event has been deleted form", {
+        description: `ชื่อฟอร์ม : ${response?.data.name}`,
+      });
       fetchForm();
-    } catch (error) {
+    } catch (error: any) {
       console.error({ message: error });
+      toast("เกิดข้อผิดพลาด", {
+        description: (
+          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+            <code className="text-white">
+              {JSON.stringify(error?.response?.data?.message, null, 2)}
+            </code>
+          </pre>
+        ),
+      });
     }
   };
 
@@ -148,8 +173,7 @@ const page = () => {
     fetchForm();
   }, []);
   useEffect(() => {
-    console.log("openForm",openForm);
-    
+    console.log("openForm", openForm);
   }, [openForm]);
   return (
     <div className="m-5 w-full rounded-lg h-full">

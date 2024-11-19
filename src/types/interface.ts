@@ -57,7 +57,13 @@ interface PermissionForm {
   };
   ingroup: boolean;
 }
-
+interface PeriodType{
+  period_id:string,
+  title:string,
+  start:string,
+  end:string
+  isAction:boolean
+}
 
 interface RoleRequest {
   role: Role;
@@ -84,4 +90,4 @@ interface FormQuestion {
   form_id?: string;
   content: string;
 }
-export type { DepartmentImage, Department, Role, User, RoleRequest, Notification, Permission, PermissionForm, FormQuestion };
+export type { DepartmentImage, Department, Role, User, RoleRequest, Notification, Permission, PermissionForm, FormQuestion ,PeriodType};

@@ -67,6 +67,7 @@ import {
 } from "@/components/ui/form";
 import GlobalApi from "@/app/_unit/GlobalApi";
 import EditRoleDialog from "./EditRoleDialog";
+import { toast } from "@/components/ui/use-toast";
 
 const formSchema = z.object({
   roleName: z
@@ -141,18 +142,32 @@ const ManageRole = () => {
         );
         console.log(newPermission);
       }
+
       // อัพเดทRole
       fetchRole();
       setLoading(false);
       setOpen(false); // ปิด Dialog เมื่อ loading เสร็จสิ้น
+      toast({
+        title: "ดำเนินการเสร็จเรียบร้อยแล้ว ✅",
+        description: "ระบบได้สร้าง Role เรียบร้อยแล้ว",
+      });
     } catch (error) {
-      console.log({ message: error });
+      toast({
+        title: "เกิดข้อผิดพลาด",
+        description: (
+          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+            <code className="text-white">
+              {JSON.stringify({ message: error }, null, 2)}
+            </code>
+          </pre>
+        ),
+      });
     }
   };
   const onUpdate = async (values: any, id: string) => {
     try {
-      console.log('values',values);
-      
+      console.log("values", values);
+
       setLoading(true);
       const data = {
         assessorId: id,
@@ -163,8 +178,28 @@ const ManageRole = () => {
       fetchRole();
       setLoading(false);
       setOpenUpdate(false); // ปิด Dialog เมื่อ loading เสร็จสิ้น
+
+      toast({
+        title: "อัพเดทเสร็จเรียบร้อยแล้ว ✅",
+        description: (
+          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+            <code className="text-white">
+              {JSON.stringify(response?.data.message, null, 2)}
+            </code>
+          </pre>
+        ),
+      });
     } catch (error) {
-      console.error({ message: error });
+      toast({
+        title: "เกิดข้อผิดพลาด",
+        description: (
+          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+            <code className="text-white">
+              {JSON.stringify({ message: error }, null, 2)}
+            </code>
+          </pre>
+        ),
+      });
     }
   };
 
@@ -176,8 +211,23 @@ const ManageRole = () => {
       setRole(updatedRoles);
       // อัพเดท permissions state ด้วย
       setPermissions({});
-    } catch (error) {
-      console.error({ message: error });
+      toast({
+        title: "ดำเนินการเสร็จเรียบร้อยแล้ว ✅",
+        description: "ระบบได้ลบ Role เรียบร้อยแล้ว",
+      });
+    } catch (error: any) {
+      console.log("error", { message: error });
+
+      toast({
+        title: "เกิดข้อผิดพลาด: โปรดตรวจสอบให้แน่ใจว่า ไม่มีผู้ใช้คนไหนกำลังใช้Role นี้อยู่",
+        description: (
+          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+            <code className="text-white">
+              {JSON.stringify(error?.response?.data?.message, null, 2)}
+            </code>
+          </pre>
+        ),
+      });
     }
   };
 
@@ -401,9 +451,7 @@ const ManageRole = () => {
                     <div className="px-3 w-full h-14 rounded-xl flex justify-between items-center">
                       <div className="flex items-center gap-1">
                         <BadgeCheck className="text-white bg-blue-500 overflow-hidden rounded-full" />
-                        <h2 className="text-lg text-black">
-                          {item.role_name}
-                        </h2>
+                        <h2 className="text-lg text-black">{item.role_name}</h2>
                       </div>
                     </div>
                   </AccordionTrigger>

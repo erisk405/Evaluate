@@ -26,9 +26,21 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { DateRange } from "react-day-picker";
 import { DateTimePicker24h } from "./DateTimePicker24h";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
+import GlobalApi from "@/app/_unit/GlobalApi";
+import { PeriodType } from "@/types/interface";
+import DeletePariod from "./DeletePariod";
 
 type RightSectionProps = {
   permission?: string; // ใส่ ? เพื่อบอกว่าอาจเป็น undefined ได้
@@ -37,64 +49,86 @@ interface TimeRange {
   from?: Date;
   to?: Date;
 }
-const PerioaData = [
-  {
-    id: "PD01",
-    title: "รอบที่ 1 ประจำปีงบประมาณ พ.ศ. 2567",
-    dateFrom: "01/07/2567",
-    dataTo: "09/08/2567",
-    timeFrom: "07:00",
-    timeTo: "17:00",
-    status: "start",
-  },
-  {
-    id: "PD02",
-    title: "รอบที่ 2 ประจำปีงบประมาณ พ.ศ. 2567",
-    dateFrom: "01/09/2567",
-    dataTo: "15/10/2567",
-    timeFrom: "12:00",
-    timeTo: "17:00",
-    status: "waiting",
-  },
-  {
-    id: "PD03",
-    title: "รอบที่ 1 ประจำปีงบประมาณ พ.ศ. 2568",
-    dateFrom: "28/01/2567",
-    dataTo: "10/02/2567",
-    timeFrom: "09:00",
-    timeTo: "17:00",
-    status: "end",
-  },
-  {
-    id: "PD04",
-    title: "รอบที่ 1 ประจำปีงบประมาณ พ.ศ. 2568",
-    dateFrom: "28/01/2567",
-    dataTo: "10/02/2567",
-    timeFrom: "09:00",
-    timeTo: "17:00",
-    status: "end",
-  },
-  {
-    id: "PD05",
-    title: "รอบที่ 1 ประจำปีงบประมาณ พ.ศ. 2568",
-    dateFrom: "28/01/2567",
-    dataTo: "10/02/2567",
-    timeFrom: "09:00",
-    timeTo: "17:00",
-    status: "end",
-  },
-];
+const formSchema = z.object({
+  title: z
+    .string()
+    .min(3, { message: "massage must be least 10 characters." })
+    .max(100, { message: "massage must not exceed 50 characters." }),
+});
+
+export const formatThaiDateTime = (isoString: string) => {
+  const date = new Date(isoString);
+
+  // สร้าง formatter สำหรับวันที่ภาษาไทย
+  const dateFormatter = new Intl.DateTimeFormat("th-TH", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+
+  // สร้าง formatter สำหรับเวลา
+  const timeFormatter = new Intl.DateTimeFormat("th-TH", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+  const thaiDate = dateFormatter.format(date);
+  const thaiTime = timeFormatter.format(date);
+
+  return {
+    date: thaiDate,
+    time: `${thaiTime}`,
+  };
+};
 const RightSection = ({ permission }: RightSectionProps) => {
   const defaultDate = new Date(new Date().getFullYear(), new Date().getMonth()); // ปีและเดือนปัจจุบัน
-  const [time, setTime] = useState<Date | undefined>(undefined);
   const [show, setShow] = useState(false);
-  // State สำหรับเก็บค่า date range
-  const [date, setDate] = useState<DateRange | undefined>();
+  const [period, setPeriod] = useState<PeriodType[]>([]);
+  const [deletePeriod, setDeletePeroid] = useState("");
   // State สำหรับเก็บค่าเวลา
+  const [openAlert, setOpenAlert] = useState(false);
+
   const [timeRange, setTimeRange] = useState<TimeRange>({
     from: new Date(),
     to: new Date(),
   });
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      title: "",
+    },
+  });
+
+  const fetchPeriod = async () => {
+    try {
+      const response = await GlobalApi.getPeriod();
+      setPeriod(response?.data);
+      console.log(response?.data);
+    } catch (error) {
+      console.error({ message: error });
+    }
+  };
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    const data = {
+      title: values.title,
+      start: timeRange.from!.toISOString(),
+      end: timeRange.to!.toISOString(),
+    };
+    const response = await GlobalApi.createPeriod(data);
+    fetchPeriod();
+    setShow(false);
+    console.log("period response", response);
+    try {
+    } catch (error) {
+      console.error({ message: error });
+    }
+  };
+
+  useEffect(() => {
+    fetchPeriod();
+  }, []);
   // แก้ไขฟังก์ชัน handleTimeChange สำหรับปุ่ม Save
   useEffect(() => {
     if (timeRange?.from && timeRange?.to) {
@@ -103,7 +137,7 @@ const RightSection = ({ permission }: RightSectionProps) => {
         to: timeRange.to.toLocaleString(),
       });
     }
-    console.log("timeRange:", timeRange);
+    // console.log("timeRange:", timeRange);
   }, [timeRange]); // เพิ่ม timeRange เป็น dependency
   return (
     <div className="flex gap-3 flex-col h-full">
@@ -190,67 +224,74 @@ const RightSection = ({ permission }: RightSectionProps) => {
               <AlarmClockPlus className="text-blue-500" />
             </div>
             <div className="bg-neutral-50 rounded-lg shadow-inner relative z-30 border-t border-b">
-                <ScrollArea className="h-[410px] w-full px-3">
-                  {PerioaData.map((item, index) => (
-                    <div
-                      key={item.id}
-                      className="flex justify-between items-center my-3 shadow bg-white hover:bg-neutral-100 w-auto rounded-xl p-2"
-                    >
-                      <div className="w-full">
-                        <div className="flex items-center">
-                          <div className="relative">
-                            <Dot
-                              strokeWidth={6}
-                              className={`absolute ${
-                                item.status == "start"
-                                  ? "text-green-500 "
-                                  : item.status == "waiting"
-                                  ? "text-yellow-500"
-                                  : "text-blue-500"
-                              } animate-ping`}
-                            />
-                            <Dot
-                              strokeWidth={6}
-                              className={`${
-                                item.status == "start"
-                                  ? "text-green-500 "
-                                  : item.status == "waiting"
-                                  ? "text-yellow-500"
-                                  : "text-blue-500"
-                              }`}
-                            />
-                          </div>
-                          <h2>{item.title}</h2>
+              <ScrollArea className="h-[410px] w-full px-3">
+                {period?.map((item, index) => (
+                  <div
+                    key={item.period_id}
+                    className="flex justify-between items-center my-3 shadow bg-white hover:bg-neutral-100 w-auto rounded-xl p-2"
+                  >
+                    <div className="w-full">
+                      <div className="flex items-center">
+                        <div className="relative">
+                          <Dot
+                            strokeWidth={6}
+                            className={`absolute ${
+                              item.isAction
+                                ? "text-green-500 "
+                                : "text-blue-500"
+                            } animate-ping`}
+                          />
+                          <Dot
+                            strokeWidth={6}
+                            className={`${
+                              item.isAction
+                                ? "text-green-500 "
+                                : "text-blue-500"
+                            }`}
+                          />
                         </div>
-                        <div className="px-6">
-                          <div className="flex items-center gap-1">
-                            <CalendarClock size={18} />
-                            <h2>{item.dateFrom}</h2>
-                            <ArrowRight size={18} />
-                            <h2>{item.dataTo}</h2>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Clock9 size={18} />
-                            <h2>{item.timeFrom} น.</h2>
-                            <ArrowRight size={18} />
-                            <h2>{item.timeTo} น.</h2>
-                          </div>
+                        <h2>{item.title}</h2>
+                      </div>
+                      <div className="px-6">
+                        <div className="flex items-center gap-1">
+                          <CalendarClock size={18} />
+                          <h2>{formatThaiDateTime(item.start).date}</h2>
+                          <ArrowRight size={18} />
+                          <h2>{formatThaiDateTime(item.end).date}</h2>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Clock9 size={18} />
+                          <h2>{formatThaiDateTime(item.start).time} น.</h2>
+                          <ArrowRight size={18} />
+                          <h2>{formatThaiDateTime(item.end).time} น.</h2>
                         </div>
                       </div>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger>
-                          <EllipsisVertical />
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                          <DropdownMenuLabel>เมนู</DropdownMenuLabel>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem>แก้ไข</DropdownMenuItem>
-                          <DropdownMenuItem>ลบรายการ</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
                     </div>
-                  ))}
-                </ScrollArea>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger>
+                        <EllipsisVertical />
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuLabel>เมนู</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem>แก้ไข</DropdownMenuItem>
+                        <DropdownMenuItem
+                          onSelect={() => {
+                            setOpenAlert(true);
+                            setDeletePeroid(item.period_id)
+                          }}
+                        >
+                          ลบ
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                ))}
+              </ScrollArea>
+              {/* -------------------------------------------- */}
+              {/*         componentเมื่อต้องการลบ Period          */}
+              {/* -------------------------------------------- */}
+              <DeletePariod openAlert={openAlert} setOpenAlert={setOpenAlert} periodId={deletePeriod} refresh={fetchPeriod} />
             </div>
             <div className="w-full relative ">
               {/* ------------------------------------ */}
@@ -261,40 +302,62 @@ const RightSection = ({ permission }: RightSectionProps) => {
                   show ? "translate-y-0 top-[100%]" : "-translate-y-full"
                 }`}
               >
-                <div className="flex flex-col gap-3 items-center w-full shadow-inner p-4 bg-white border rounded-br-lg rounded-bl-lg">
-                  {" "}
-                  <div className="grid gap-2 items-center w-full">
-                    <Label className="">Title</Label>
-                    <div className="">
-                      <Input placeholder="รอบที่ x ประจำปีงบประมาณ พ.ศ. xxxx" />
+                <Form {...form}>
+                  <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="flex flex-col gap-3 items-center w-full shadow-inner p-4 bg-white border rounded-br-lg rounded-bl-lg"
+                  >
+                    <FormField
+                      control={form.control}
+                      name="title"
+                      render={({ field }) => (
+                        <FormItem className="w-full">
+                          <FormControl>
+                            <div className="grid gap-2 items-center w-full">
+                              <Label className="">Title</Label>
+                              <div className="w-full">
+                                <Input
+                                  placeholder="รอบที่ x ประจำปีงบประมาณ พ.ศ. xxxx"
+                                  {...field}
+                                />
+                              </div>
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <div className="grid grid-cols-4 items-center w-full">
+                      <Label className="col-span-1">From</Label>
+                      <div className="col-span-3">
+                        <DateTimePicker24h
+                          onTimeChange={
+                            (
+                              date // date คือค่าที่ได้จาก newDate จาก DateTimePicker24h
+                            ) =>
+                              setTimeRange((prev) => ({
+                                ...prev,
+                                from: date,
+                              })) // อัพเดท state โดยเก็บค่าเดิมและอัพเดทเฉพาะ from
+                          }
+                          defaultValue={timeRange.from}
+                        />
+                      </div>
                     </div>
-                  </div>
-                  <div className="grid grid-cols-4 items-center w-full">
-                    <Label className="col-span-1">From</Label>
-                    <div className="col-span-3">
-                      <DateTimePicker24h
-                        onTimeChange={
-                          (
-                            date // date คือค่าที่ได้จาก newDate จาก DateTimePicker24h
-                          ) => setTimeRange((prev) => ({ ...prev, from: date })) // อัพเดท state โดยเก็บค่าเดิมและอัพเดทเฉพาะ from
-                        }
-                        defaultValue={timeRange.from}
-                      />
+                    <div className="grid grid-cols-4 items-center w-full">
+                      <Label className="col-span-1">To</Label>
+                      <div className="col-span-3">
+                        <DateTimePicker24h
+                          onTimeChange={(date) =>
+                            setTimeRange((prev) => ({ ...prev, to: date }))
+                          }
+                          defaultValue={timeRange.to}
+                        />
+                      </div>
                     </div>
-                  </div>
-                  <div className="grid grid-cols-4 items-center w-full">
-                    <Label className="col-span-1">To</Label>
-                    <div className="col-span-3">
-                      <DateTimePicker24h
-                        onTimeChange={(date) =>
-                          setTimeRange((prev) => ({ ...prev, to: date }))
-                        }
-                        defaultValue={timeRange.to}
-                      />
-                    </div>
-                  </div>
-                  <Button type="submit">Save</Button>
-                </div>
+                    <Button type="submit">Create Period</Button>
+                  </form>
+                </Form>
               </div>
               {/* ปุ่มเปิดแท็บ */}
               <div className="relative bg-white">
