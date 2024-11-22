@@ -44,7 +44,7 @@ const BarChartMultiple = () => {
         <CardDescription>January - June 2024</CardDescription>
       </CardHeader>
       <CardContent >
-        <ChartContainer config={chartConfig} className="max-h-[300px]">
+        <ChartContainer config={chartConfig} className="max-h-[300px] mx-auto">
           <BarChart accessibilityLayer data={chartData}>
             <CartesianGrid vertical={false} />
             <XAxis

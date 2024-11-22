@@ -8,16 +8,22 @@ import {
 } from '@/components/ui/popover';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { CalendarIcon } from 'lucide-react';
+import { toast } from '@/components/ui/use-toast';
 
 interface DateTimePickerProps {
   onTimeChange?: (date: Date) => void;// รับ function callback ที่จะรับ parameter เป็น Date
   defaultValue?: Date;
+  type: 'from' | 'to'; // Add a type prop to distinguish between from and to pickers
+  otherDate?: Date; // Add prop to pass the other date for comparison
 }
 
-export function DateTimePicker24h({ onTimeChange, defaultValue }: DateTimePickerProps) {
+export function DateTimePicker24h({ onTimeChange, defaultValue  ,type, 
+  otherDate }: DateTimePickerProps) {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(defaultValue);
 
   useEffect(() => {
+    console.log("defaultValue",defaultValue);
+    
     if (defaultValue) {
       setSelectedDate(defaultValue);
     }
@@ -32,10 +38,45 @@ export function DateTimePicker24h({ onTimeChange, defaultValue }: DateTimePicker
     const minutes = String(date.getMinutes()).padStart(2, '0');
     return `${month}/${day}/${year} ${hours}:${minutes}`;
   };
+  const isValidDate = (newDate: Date): boolean => {
+    if (!otherDate) return true;
 
+    if (type === 'from') {
+      const toDate = new Date(otherDate);
+      return newDate < toDate;
+    } else {
+      const fromDate = new Date(otherDate);
+      return newDate > fromDate;
+    }
+  };
   const handleDateSelect = (date: Date | undefined) => {
     if (date) {
       const newDate = new Date(date);
+      
+      // Validation logic
+      if (type === 'from' && otherDate) {
+        const toDate = new Date(otherDate);
+        if (newDate >= toDate) {
+          toast({
+            title: "Invalid Date",
+            description: "From date must be earlier than To date",
+            variant: "destructive"
+          });
+          return;
+        }
+      } else if (type === 'to' && otherDate) {
+        const fromDate = new Date(otherDate);
+        if (newDate <= fromDate) {
+          toast({
+            title: "Invalid Date",
+            description: "To date must be later than From date",
+            variant: "destructive"
+          });
+          return;
+        }
+      }
+
+      // Preserve existing time if a date was already selected
       if (selectedDate) {
         newDate.setHours(selectedDate.getHours());
         newDate.setMinutes(selectedDate.getMinutes());
@@ -45,26 +86,29 @@ export function DateTimePicker24h({ onTimeChange, defaultValue }: DateTimePicker
     }
   };
 
-  const handleTimeChange = (type: "hour" | "minute", value: number) => {
-    if (selectedDate) {
-      const newDate = new Date(selectedDate);
-      if (type === "hour") {
-        newDate.setHours(value);
-      } else {
-        newDate.setMinutes(value);
-      }
-      setSelectedDate(newDate);
-      onTimeChange?.(newDate);
+  const handleTimeChange = (timeType: "hour" | "minute", value: number) => {
+    const newDate = selectedDate ? new Date(selectedDate) : new Date();
+    
+    if (timeType === "hour") {
+      newDate.setHours(value);
     } else {
-      const newDate = new Date();
-      if (type === "hour") {
-        newDate.setHours(value);
-      } else {
-        newDate.setMinutes(value);
-      }
-      setSelectedDate(newDate);
-      onTimeChange?.(newDate); // ส่ง newDate กลับไปยัง parent component
+      newDate.setMinutes(value);
     }
+
+    // Validation logic
+    if (!isValidDate(newDate)) {
+      toast({
+        title: "Invalid Time",
+        description: type === 'from' 
+          ? "From date must be earlier than To date"
+          : "To date must be later than From date",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setSelectedDate(newDate);
+    onTimeChange?.(newDate);
   };
 
   return (
@@ -90,6 +134,9 @@ export function DateTimePicker24h({ onTimeChange, defaultValue }: DateTimePicker
               selected={selectedDate}
               onSelect={handleDateSelect}
               initialFocus
+              disabled={(date) =>
+                date < new Date() || date < new Date("1900-01-01")
+              }
             />
             <div className="flex flex-col sm:flex-row sm:h-[300px] divide-y sm:divide-y-0 sm:divide-x">
               <ScrollArea className="w-64 sm:w-auto">

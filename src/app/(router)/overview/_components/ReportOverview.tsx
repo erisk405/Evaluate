@@ -99,7 +99,7 @@ const data = [
 const ReportOverview = () => {
   return (
     <div className="h-full flex flex-col gap-5">
-      <div className="w-full grid grid-cols-3 lg:grid-cols-3 gap-5 ">
+      <div className="@container w-full grid grid-cols-3 lg:grid-cols-3 gap-5 ">
         <motion.div
           initial={{ opacity: 0, y: -100 }}
           animate={{ opacity: 1, y: 0 }}
@@ -108,17 +108,22 @@ const ReportOverview = () => {
             delay: 0.1,
             ease: [0, 0.71, 0.2, 1.01],
           }}
-          className="col-span-2 rounded-2xl"
+          className="col-span-3 @[45rem]:col-span-2 rounded-2xl"
         >
-          <div className="flex gap-5 justify-between mb-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 justify-center mb-2">
             {data.map((item, index) => (
-              <div key={item.id} className="flex gap-3 items-center">
+              <div
+                key={item.id}
+                className="flex gap-3 w-full justify-center items-center"
+              >
                 <div className="bg-white border rounded-full p-4">
                   {item.icon}
                 </div>
                 <div className="grid gap-1 grid-cols-1">
                   <div className="flex gap-2 items-end">
-                    <h2 className="text-2xl font-bold text-stone-700">{item.quantity}</h2>
+                    <h2 className="text-2xl font-bold text-stone-700">
+                      {item.quantity}
+                    </h2>
                     <div className="flex items-center">
                       <h2 className="text-green-500 text-sm ">+1.92%</h2>
                       <TrendingUp size={18} className="text-green-500" />
@@ -139,7 +144,7 @@ const ReportOverview = () => {
             delay: 0.1,
             ease: [0, 0.71, 0.2, 1.01],
           }}
-          className="col-span-1 rounded-2xl"
+          className="col-span-3 @[45rem]:col-span-1 rounded-2xl"
         >
           <RadarChartSection />
           <div className="grid grid-cols-1 p-3 relative rounded-2xl h-[100px] overflow-hidden border bg-white my-2">
@@ -167,9 +172,11 @@ const ReportOverview = () => {
           }}
           className="col-span-3"
         >
-          <h2 className="text-xl font-bold text-stone-700">การประเมินแต่ละหน่วยงาน</h2>
+          <h2 className="text-xl font-bold text-stone-700">
+            การประเมินแต่ละหน่วยงาน
+          </h2>
           <div className="w-full bg-white grid grid-cols-3 overflow-hidden rounded-lg">
-            <div className="w-full">
+            <div className="w-full col-span-3 sm:col-span-1">
               <Image
                 width={300}
                 height={300}
@@ -178,34 +185,38 @@ const ReportOverview = () => {
                 className="w-full h-full object-cover"
               />
             </div>
-            <div className="p-3 flex flex-col justify-between">
-              <div className="flex items-center gap-3">
-                <div className="p-2 border rounded-full ">
-                  <Building2 />
+            <div className="grid grid-cols-2 col-span-3 sm:col-span-2">
+              <div className="p-3 flex flex-col col-span-1 lg:col-span-1 justify-between ">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 border rounded-full ">
+                    <Building2 />
+                  </div>
+                  <h2 className="">
+                    งานพัฒนาวิชาการและส่งเสริมการศึกษา
+                  </h2>
                 </div>
-                <h2>งานพัฒนาวิชาการและส่งเสริมการศึกษา</h2>
+                <div className="flex items-center gap-3">
+                  <div className="p-2 border rounded-full ">
+                    <UserRoundCheck />
+                  </div>
+                  <div className="grid grid-cols-1">
+                    <h2 className="text-lg font-bold">192 คน</h2>
+                    <h2 className="text-sm">เสร็จสิ้นแล้วทั้งหมด</h2>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="p-2 border rounded-full ">
+                    <UserRoundX />
+                  </div>
+                  <div className="grid grid-cols-1">
+                    <h2 className="text-lg font-bold">42 คน</h2>
+                    <h2 className="text-sm">ยังไม่เสร็จ</h2>
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="p-2 border rounded-full ">
-                  <UserRoundCheck />
-                </div>
-                <div className="grid grid-cols-1">
-                  <h2 className="text-lg font-bold">192 คน</h2>
-                  <h2 className="text-sm">เสร็จสิ้นแล้วทั้งหมด</h2>
-                </div>
+              <div className="w-full border-l p-3">
+                <AreaChartSection />
               </div>
-              <div className="flex items-center gap-3">
-                <div className="p-2 border rounded-full ">
-                  <UserRoundX />
-                </div>
-                <div className="grid grid-cols-1">
-                  <h2 className="text-lg font-bold">42 คน</h2>
-                  <h2 className="text-sm">ยังไม่เสร็จ</h2>
-                </div>
-              </div>
-            </div>
-            <div className="w-full border-l p-3">
-              <AreaChartSection />
             </div>
           </div>
         </motion.div>

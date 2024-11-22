@@ -126,6 +126,32 @@ const RightSection = ({ permission }: RightSectionProps) => {
     }
   };
 
+  const fetchClosestPeriod = () => {
+    const today = new Date();
+
+    // กรอง periods ที่ยังไม่สิ้นสุด
+    const validPeriods = period.filter((p) => new Date(p.end) >= today);
+
+    // ถ้าไม่เจอ period ให้คืนค่าเป็น null
+    if (validPeriods.length === 0) return null;
+    // เรียง periods ตามความใกล้ของ `start` กับวันปัจจุบัน
+    const closestPeriod = validPeriods.sort((a, b) => {
+      const startA = new Date(a.start).getTime();
+      const startB = new Date(b.start).getTime();
+      return (
+        Math.abs(startA - today.getTime()) - Math.abs(startB - today.getTime())
+      );
+    })[0]; // เอา period ที่ใกล้ที่สุดตัวแรก
+
+    // console.log("Closest Period:", closestPeriod);
+    return closestPeriod;
+  };
+
+  // useEffect(() => {
+  //   if (period.length > 0) {
+  //     const nearestPeriod = fetchClosestPeriod();
+  //   }
+  // }, [period]);
   useEffect(() => {
     fetchPeriod();
   }, []);
@@ -155,7 +181,7 @@ const RightSection = ({ permission }: RightSectionProps) => {
             className="border-b @[23rem]:border-r"
             classNames={{
               day_selected:
-                "w-full  bg-primary rounded-md text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+                "w-full bg-green-500 rounded-md text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
               day_today: "bg-blue-500 rounded-md text-white",
               day_outside: "text-gray-500 opacity-50",
               day_disabled: "text-gray-500 opacity-50",
@@ -168,8 +194,12 @@ const RightSection = ({ permission }: RightSectionProps) => {
             defaultMonth={defaultDate}
             // selected prop ควรเป็น Date หรือ { from: Date, to: Date } สำหรับ mode="range"
             selected={{
-              from: new Date(2024, 9, 24),
-              to: new Date(2024, 9, 28),
+              from: fetchClosestPeriod()?.start
+                ? new Date(fetchClosestPeriod()!.start)
+                : undefined,
+              to: fetchClosestPeriod()?.end
+                ? new Date(fetchClosestPeriod()!.end)
+                : undefined,
             }}
             numberOfMonths={1}
           />
@@ -187,10 +217,10 @@ const RightSection = ({ permission }: RightSectionProps) => {
               </div>
               <div className="flex items-center">
                 <div className="relative">
-                  <Dot strokeWidth={8} />
+                  <Dot strokeWidth={8} className="text-green-500" />
                   <Dot
                     strokeWidth={8}
-                    className="absolute top-0 animate-ping"
+                    className="absolute top-0 text-green-500 animate-ping"
                   />
                 </div>
                 <h2>วันเริ่ม-สิ้นสุด</h2>
@@ -209,7 +239,7 @@ const RightSection = ({ permission }: RightSectionProps) => {
             ease: [0, 0.71, 0.2, 1.01],
             delay: 0.1,
           }}
-          className="bg-white p-5 border h-full shadow-md rounded-2xl"
+          className="bg-white px-5 border h-full shadow-md rounded-2xl"
         >
           <div
             className={`bg-white w-full 
@@ -228,38 +258,40 @@ const RightSection = ({ permission }: RightSectionProps) => {
                 {period?.map((item, index) => (
                   <div
                     key={item.period_id}
-                    className="flex justify-between items-center my-3 shadow bg-white hover:bg-neutral-100 w-auto rounded-xl p-2"
+                    className="flex items-center my-3 shadow bg-white hover:bg-neutral-100 w-auto rounded-xl p-2"
                   >
-                    <div className="w-full">
-                      <div className="flex items-center">
+                    <div className="">
+                      <div className="flex items-center ">
                         <div className="relative">
                           <Dot
                             strokeWidth={6}
                             className={`absolute ${
-                              item.isAction
-                                ? "text-green-500 "
-                                : "text-blue-500"
+                              new Date() > new Date(item.end)
+                                ? "text-blue-500 "
+                                : "text-emerald-500"
                             } animate-ping`}
                           />
                           <Dot
                             strokeWidth={6}
                             className={`${
-                              item.isAction
-                                ? "text-green-500 "
-                                : "text-blue-500"
+                              new Date() > new Date(item.end)
+                                ? "text-blue-500 "
+                                : "text-green-500"
                             }`}
                           />
                         </div>
-                        <h2>{item.title}</h2>
+                        <div className="">
+                          <h2>{item.title}</h2>
+                        </div>
                       </div>
-                      <div className="px-6">
+                      <div className="pl-6 ">
                         <div className="flex items-center gap-1">
                           <CalendarClock size={18} />
                           <h2>{formatThaiDateTime(item.start).date}</h2>
                           <ArrowRight size={18} />
                           <h2>{formatThaiDateTime(item.end).date}</h2>
                         </div>
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center  gap-1">
                           <Clock9 size={18} />
                           <h2>{formatThaiDateTime(item.start).time} น.</h2>
                           <ArrowRight size={18} />
@@ -268,7 +300,7 @@ const RightSection = ({ permission }: RightSectionProps) => {
                       </div>
                     </div>
                     <DropdownMenu>
-                      <DropdownMenuTrigger>
+                      <DropdownMenuTrigger className="ml-auto">
                         <EllipsisVertical />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent>
@@ -278,7 +310,7 @@ const RightSection = ({ permission }: RightSectionProps) => {
                         <DropdownMenuItem
                           onSelect={() => {
                             setOpenAlert(true);
-                            setDeletePeroid(item.period_id)
+                            setDeletePeroid(item.period_id);
                           }}
                         >
                           ลบ
@@ -291,7 +323,12 @@ const RightSection = ({ permission }: RightSectionProps) => {
               {/* -------------------------------------------- */}
               {/*         componentเมื่อต้องการลบ Period          */}
               {/* -------------------------------------------- */}
-              <DeletePariod openAlert={openAlert} setOpenAlert={setOpenAlert} periodId={deletePeriod} refresh={fetchPeriod} />
+              <DeletePariod
+                openAlert={openAlert}
+                setOpenAlert={setOpenAlert}
+                periodId={deletePeriod}
+                refresh={fetchPeriod}
+              />
             </div>
             <div className="w-full relative ">
               {/* ------------------------------------ */}
@@ -305,7 +342,7 @@ const RightSection = ({ permission }: RightSectionProps) => {
                 <Form {...form}>
                   <form
                     onSubmit={form.handleSubmit(onSubmit)}
-                    className="flex flex-col gap-3 items-center w-full shadow-inner p-4 bg-white border rounded-br-lg rounded-bl-lg"
+                    className="flex flex-col gap-3 items-center w-full shadow p-4 bg-white rounded-br-lg rounded-bl-lg"
                   >
                     <FormField
                       control={form.control}
@@ -331,6 +368,8 @@ const RightSection = ({ permission }: RightSectionProps) => {
                       <Label className="col-span-1">From</Label>
                       <div className="col-span-3">
                         <DateTimePicker24h
+                          type="from"
+                          otherDate={timeRange.to} // Pass the 'to' date for comparison
                           onTimeChange={
                             (
                               date // date คือค่าที่ได้จาก newDate จาก DateTimePicker24h
@@ -348,6 +387,8 @@ const RightSection = ({ permission }: RightSectionProps) => {
                       <Label className="col-span-1">To</Label>
                       <div className="col-span-3">
                         <DateTimePicker24h
+                          type="to"
+                          otherDate={timeRange.from} // Pass the 'from' date for comparison
                           onTimeChange={(date) =>
                             setTimeRange((prev) => ({ ...prev, to: date }))
                           }
