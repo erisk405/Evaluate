@@ -31,12 +31,12 @@ const SideBar = () => {
       setIsAdmin(false); // ในกรณีที่ดึงข้อมูลไม่สำเร็จ หรือตรวจสอบ role ไม่ผ่าน
     }
   };
-  useEffect(()=>{
+  useEffect(() => {
     Protected();
-  },[])
+  }, []);
 
   return (
-    <div className="sticky top-32">
+    <div className="sticky top-32 z-50">
       {/* option */}
       <div className="my-9 mx-2 flex flex-col gap-3 w-auto">
         {OptionSideBar.map((item) =>
@@ -46,85 +46,95 @@ const SideBar = () => {
               href={item?.path}
               className={`${
                 pathUrl.includes(item?.path)
-                  ? "bg-neutral-800 text-white transition-all"
-                  : "text-neutral-600 hover:bg-gray-100"
+                  ? "bg-stone-800 text-white transition-all"
+                  : "text-stone-600 hover:bg-gray-100"
               }
-               ${isAdmin ? '' : 'pr-20'}
-              rounded-2xl px-4 py-2 `}
+               ${isAdmin ? "" : "pr-20"}
+              rounded-2xl px-4 py-2 relative group`}
             >
-              <div className="flex gap-3 items-center">
+              <div className="flex gap-3 items-center ">
                 {item?.icon}
                 <h2 className="text-lg hidden md:block">{item.name}</h2>
               </div>
+              <div className="block md:hidden">
+                <div className="absolute md:block z-50 ease-in-out bg-stone-800 text-white transition-all translate-x-full right-1/4 group-hover:-right-1 group-hover:visible invisible top-1/2 px-2 py-1 rounded-sm -translate-y-1/2">
+                  <h2 className="text-sm">{item.name}</h2>
+                </div>
+              </div>
             </Link>
           ) : (
-            isAdmin &&
-            <div  key={item.id} >
-              <div className="block md:hidden ">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="border-none bg-neutral-50"
-                    >
+            isAdmin && (
+              <div key={item.id}>
+                <div className="block md:hidden relative">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="border-none bg-neutral-50 relative group"
+                      >
+                        {item?.icon}
+                        <div className="block md:hidden">
+                          <div className="absolute md:block z-50 ease-in-out bg-stone-800 text-white transition-all translate-x-full right-1/4 group-hover:-right-1 group-hover:visible invisible top-1/2 px-2 py-1 rounded-sm -translate-y-1/2">
+                            <h2 className="text-sm">{item.name}</h2>
+                          </div>
+                        </div>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-56">
+                      <DropdownMenuLabel>
+                        {item.name === "OSideAdmin" ? "Department" : "Evaluate"}
+                      </DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuRadioGroup
+                        value={position}
+                        onValueChange={setPosition}
+                      >
+                        {item?.SubOptionSideBar?.map((item) => (
+                          <Link href={item?.path} key={item.id}>
+                            <DropdownMenuRadioItem value={item?.name}>
+                              {item?.name}
+                            </DropdownMenuRadioItem>
+                          </Link>
+                        ))}
+                      </DropdownMenuRadioGroup>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+                <details
+                  key={item?.id}
+                  className="group [&_summary::-webkit-details-marker]:hidden hidden md:block"
+                >
+                  <summary className="group flex gap-3 items-center justify-between rounded-lg px-4 py-2 hover:bg-gray-100 hover:text-gray-700">
+                    <div className="flex items-center justify-between gap-3">
+                      {/* icon mangement */}
                       {item?.icon}
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-56">
-                    <DropdownMenuLabel>{item.name === 'OSideAdmin' ? 'Department' : 'Evaluate'}</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuRadioGroup
-                      value={position}
-                      onValueChange={setPosition}
-                    >
-                      {item?.SubOptionSideBar?.map((item) => (
-                        <Link href={item?.path} key={item.id} className={` `}>
-                          <DropdownMenuRadioItem value={item?.name}>
-                            {item?.name}
-                          </DropdownMenuRadioItem>
-                        </Link>
-                      ))}
-                    </DropdownMenuRadioGroup>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-              <details
-                key={item?.id}
-                className="group [&_summary::-webkit-details-marker]:hidden hidden md:block"
-              >
-                <summary className="group flex gap-3 items-center justify-between rounded-lg px-4 py-2 hover:bg-gray-100 hover:text-gray-700">
-                  <div className="flex items-center justify-between gap-3">
-                    {/* icon mangement */}
-                    {item?.icon}
-                    <span className="text-lg ">
-                      {" "}
-                      {item?.name}{" "}
+                      <span className="text-lg "> {item?.name} </span>
+                    </div>
+                    <span className="transition duration-300 group-open:-rotate-180 ">
+                      <ChevronDown />
                     </span>
-                  </div>
-                  <span className="transition duration-300 group-open:-rotate-180 ">
-                    <ChevronDown />
-                  </span>
-                </summary>
-                <ul className="mt-2 space-y-1 px-4  ">
-                  {item?.SubOptionSideBar?.map((item) => (
-                    <li key={item?.id}>
-                      <Link
-                        href={item?.path}
-                        className={`block rounded-lg px-4 
+                  </summary>
+                  <ul className="mt-2 space-y-1 px-4  ">
+                    {item?.SubOptionSideBar?.map((item) => (
+                      <li key={item?.id}>
+                        <Link
+                          href={item?.path}
+                          className={`block rounded-lg px-4 
                         py-2 text-sm font-medium 
                         ${
                           pathUrl.includes(item?.path)
-                            ? "bg-neutral-800 text-white transition-all"
-                            : "text-neutral-600 hover:bg-gray-100  "
+                            ? "bg-stone-800 text-white transition-all"
+                            : "text-stone-600 hover:bg-gray-100  "
                         }`}
-                      >
-                        {item?.name}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </details>
-            </div>
+                        >
+                          {item?.name}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+              </div>
+            )
           )
         )}
       </div>

@@ -17,10 +17,19 @@ import {
   ArrowUpDown,
   Building2,
   ChevronDown,
+  Hexagon,
   Pencil,
   Ribbon,
   UserRoundCog,
 } from "lucide-react";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -40,43 +49,46 @@ import {
 } from "@/components/ui/table";
 import Image from "next/image";
 
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import UserProfile from "./UserProfile";
-import GlobalApi from "@/app/_unit/GlobalApi";
 import { User } from "@/types/interface";
+import EvaluateSection from "./EvaluateSection";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 export const columns: ColumnDef<User>[] = [
   {
+    accessorKey: "index",
+    header: "ลำดับ",
+    cell: ({ row }) => {
+      return (
+        <div className="capitalize flex justify-center items-center gap-3">
+          <span className="text-md">{row.index + 1}</span>
+        </div>
+      );
+    },
+  },
+  {
     accessorKey: "name",
-    header: "Name",
+    header: "ชื่อ-นามสกุล",
     cell: ({ row }) => {
       const image = row.original.image;
-      console.log("image :", image);
-
+      // console.log("image :", image);
       return (
         <div className="capitalize flex items-center gap-3">
           {image?.url ? (
             <Image
               src={image?.url}
-              width={50}
-              height={50}
+              width={40}
+              height={40}
               alt="profiletable"
-              className="w-[50px] h-[50px] rounded-full object-cover"
+              className="w-[40px] h-[40px] rounded-full object-cover"
             />
           ) : (
             <Image
               src="/profiletest.jpg"
-              width={50}
-              height={50}
+              width={40}
+              height={40}
               alt="profiletable"
-              className="w-[50px] h-[50px] rounded-full object-cover"
+              className="w-[40px] h-[40px] rounded-full object-cover"
             />
           )}
           {row.getValue("name")}
@@ -86,78 +98,35 @@ export const columns: ColumnDef<User>[] = [
   },
   {
     accessorKey: "role",
-    header: "Role",
+    header: "ตำแหน่ง",
     cell: ({ row }) => {
       const role_name = row.original.role.role_name;
       return (
         <div
-          className={`capitalize font-semibold inline-flex items-center gap-2
-            border border-gray-200 p-2 rounded-lg 
+          className={`capitalize inline-flex items-center
             ${role_name != "member" ? "text-black" : "text-gray-500"}
           `}
         >
-          <div
-            className={`p-1 rounded-full ${
-              role_name != "member"
-                ? "bg-emerald-50 text-emerald-500"
-                : "text-gray-500"
-            } `}
-          >
-            <Ribbon size={20} />
-          </div>
           {role_name}
         </div>
       );
     },
   },
   {
-    accessorKey: "email",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="text-[16px] font-semibold text-neutral-800"
-        >
-          Email
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
-  },
-  {
-    accessorKey: "phone",
-    header: "Phone",
-    cell: ({ row }) => {
-      return (
-        <div className="capitalize flex items-center gap-3">
-          {row.getValue("phone")}
-        </div>
-      );
-    },
-  },
-  {
     accessorKey: "department",
-    header: "Department",
+    header: "หน่วยงาน/กำกับดูแล",
     cell: ({ row }) => {
       const NameOfDepartment = row.original.department;
+
       return (
         <div
-          className="inline-flex items-center font-semibold
-        justify-center gap-2 border border-gray-200 px-3 py-1 rounded-xl max-w-52"
+          className="inline-flex items-center
+        justify-start gap-2 border-gray-200 py-1"
         >
-          <div
-            className={`p-2 ${
-              NameOfDepartment
-                ? "bg-cyan-50 text-cyan-500"
-                : "bg-gray-100 text-gray-500"
-            } rounded-full`}
-          >
-            <Building2 strokeWidth={2} size={20} />
-          </div>
           <h2
-            className={`${NameOfDepartment ? "text-stone-800" : "text-gray-500"}`}
+            className={`${
+              NameOfDepartment ? "text-stone-800" : "text-gray-500"
+            }`}
           >
             {NameOfDepartment
               ? NameOfDepartment.department_name
@@ -173,41 +142,41 @@ export const columns: ColumnDef<User>[] = [
     header: "Action",
     cell: ({ row }) => {
       return (
-        <Dialog>
-          <DialogTrigger asChild>
-            <div className="active:scale-90  transition-all">
-              <Button variant="outline" className="flex gap-1">
-                <div className="bg-blue-100 p-1 rounded-full items-center justify-center text-blue-500">
-                  <Pencil size={16} />
-                </div>
-                Edit
+        <div className="flex justify-center">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button
+                variant="ghost"
+                className="flex border items-center gap-3 active:scale-95 transition-all"
+              >
+                <Hexagon /> ประเมิน
               </Button>
-            </div>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[565px]">
-            <DialogHeader>
-              <DialogTitle>
-                <div className="flex items-center gap-2">
-                  <div className="bg-cyan-50 p-2 rounded-full">
-                    <UserRoundCog size={30} className="text-blue-500" />
-                  </div>
-                  <h2 className="text-2xl">Edit user</h2>
-                </div>
-              </DialogTitle>
-              <DialogDescription>
+            </SheetTrigger>
+            <SheetContent
+              side="bottom"
+              className="h-[calc(100vh-10%)] xl:mx-52 rounded-tr-2xl rounded-tl-2xl overflow-scroll scrollbar-gemini"
+            >
+              <SheetHeader>
+                <SheetTitle className="text-3xl text-center text-stone-700">
+                  แบบฟอร์มการประเมิน
+                </SheetTitle>
+              </SheetHeader>
+              {/* ------------------------------------------------------- */}
+              {/*        Conponent   Question and score input             */}
+              {/* ------------------------------------------------------- */}
+              <EvaluateSection />
+              <SheetDescription>
                 Make changes to your profile here. Click save when you're done.
-              </DialogDescription>
-            </DialogHeader>
-            {/* User Profile */}
-            <UserProfile userDetail = {row.original} />
-          </DialogContent>
-        </Dialog>
+              </SheetDescription>
+            </SheetContent>
+          </Sheet>
+        </div>
       );
     },
   },
 ];
 
-export function ListEmployee() {
+export function UserInDepartment({ member }: { member: User[] | undefined }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -217,16 +186,8 @@ export function ListEmployee() {
   const [rowSelection, setRowSelection] = React.useState({});
   const [globalFilter, setGlobalFilter] = React.useState("");
 
-  const [allUser, SetAllUser] = React.useState();
-
-  const fetchUserList = async () => {
-    const response = await GlobalApi.getAllUsers();
-    // console.log("AllUser", response?.data);
-    SetAllUser(response?.data);
-  };
-
   const table = useReactTable({
-    data: allUser ?? [],
+    data: member ?? [],
     columns,
     state: {
       sorting,
@@ -244,27 +205,24 @@ export function ListEmployee() {
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
     onGlobalFilterChange: setGlobalFilter,
-    globalFilterFn: (row, columnId, filterValue) => {
-      const name = row.original.name.toLowerCase();
-      const email = row.original.email.toLowerCase();
-      const searchValue = filterValue.toLowerCase();
-      return name.includes(searchValue) || email.includes(searchValue);
-    },
   });
-
-  React.useEffect(() => {
-    fetchUserList();
-  }, []);
 
   return (
     <div className="w-full ">
       <div className="flex items-center py-4">
-        <Input
-          placeholder="Filter by name or email..."
-          value={globalFilter}
-          onChange={(event) => setGlobalFilter(event.target.value)}
-          className="max-w-sm rounded-2xl"
-        />
+        <div className="flex items-center w-full gap-3">
+          <Input
+            placeholder="Filter by name or email..."
+            value={globalFilter}
+            onChange={(event) => setGlobalFilter(event.target.value)}
+            className="max-w-sm rounded-lg"
+          />
+          {/* ปุ้ม switch ที่ใช้ในเลือกเฉพาะที่ดำเนินการเสร็จแล้ว */}
+          <div className="flex items-center space-x-2 w-full col-span-1">
+            <Switch id="airplane-mode" />
+            <Label htmlFor="airplane-mode">success</Label>
+          </div>
+        </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
@@ -292,7 +250,7 @@ export function ListEmployee() {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="rounded-2xl border bg-white">
+      <div className="rounded-xl border bg-white overflow-hidden">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -301,7 +259,11 @@ export function ListEmployee() {
                   return (
                     <TableHead
                       key={header.id}
-                      className="text-[16px] font-semibold text-neutral-800"
+                      className={`text-md ${
+                        header.id === "actions" || header.id === "index"
+                          ? "text-center"
+                          : ""
+                      }  bg-gray-100`}
                     >
                       {header.isPlaceholder
                         ? null

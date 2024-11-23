@@ -14,7 +14,31 @@ import {
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
+import { FormQuestion } from "@/types/interface";
+type SubData = {
+  id: string;
+  content: string;
+};
 
+type Data = {
+  id: string;
+  HeadTitle: string;
+  subData: SubData[];
+};
+
+type PayloadQuestion = {
+  questionId: string;
+  content: string;
+  score: string;
+};
+
+type Payload = Record<
+  string,
+  {
+    formId: string;
+    question: PayloadQuestion[];
+  }
+>;
 const data = [
   {
     id: "CO01",
@@ -109,10 +133,11 @@ const data = [
 ];
 
 const EvaluateSection = () => {
-  const [selectedValues, setSelectedValues] = useState(Array(18).fill("3"));
-
+  const [selectedValues, setSelectedValues] = useState<string[]>(
+    Array(18).fill("3")
+  );
   const [payload, setPayload] = useState(
-    data.reduce(
+    data.reduce<Payload>(
       (acc, curr) => ({
         ...acc,
         [curr.HeadTitle]: {
@@ -127,22 +152,25 @@ const EvaluateSection = () => {
       {}
     )
   );
-  const handleValueChange = (index, value) => {
-    // console.log(value);
+  const handleValueChange = (index: number, value: string) => {
     const newSelectedValues = [...selectedValues];
     newSelectedValues[index] = value;
     setSelectedValues(newSelectedValues);
   };
 
-  const handlePayloadChange = (headTitle, formId, newValues) => {
+  const handlePayloadChange = (
+    headTitle: string,
+    formId: string,
+    newValues: { id: string; content: string; score: string }
+  ) => {
     // ใช้ setPayload เพื่ออัพเดท state โดยรับ previous state (prev) เป็น parameter
+
     setPayload((prev) => {
       // ดึงข้อมูลคำถามทั้งหมดของหัวข้อนั้นๆ จาก previous state
       // prev[headTitle] คือการเข้าถึงข้อมูลของหัวข้อนั้นๆ เช่น "ทักษะการปฎิบัติงาน"
       // .question คือการเข้าถึง array ของคำถามทั้งหมดในหัวข้อนั้น
       const currentQuestions = prev[headTitle].question;
       // console.log("currentQuestions:", currentQuestions);
-
       // สร้าง array ใหม่โดยการ map ข้อมูลเดิม
       const updatedQuestions = currentQuestions.map(
         (question) =>
@@ -167,7 +195,7 @@ const EvaluateSection = () => {
     });
   };
 
-  const handleRaioColorChange = (formId, questionId) => {
+  const handleRaioColorChange = (formId: string, questionId: string) => {
     // console.log("formId",formId,"questionId",questionId);
     const section = Object.values(payload).find(
       (section) => section.formId === formId
@@ -262,7 +290,7 @@ const EvaluateSection = () => {
                                   ? "bg-blue-500 text-white"
                                   : "bg-white text-black"
                               }
-                              absolute -top-1/2 left-1/2 -translate-x-1/2 w-10 h-10 rounded-full 
+                              absolute left-1/2 -translate-x-1/2 w-10 h-10 rounded-full 
                               border border-neutral-500
                               flex justify-center items-center transition-all
                               z-10
@@ -285,7 +313,7 @@ const EvaluateSection = () => {
                                   ? "bg-blue-500 text-white"
                                   : "bg-white text-black"
                               }
-                              absolute w-10 h-10 rounded-full -top-1/2 left-1/2 -translate-x-1/2 
+                              absolute w-10 h-10 rounded-full left-1/2 -translate-x-1/2 
                               border border-neutral-500 transition-all
                               flex justify-center items-center 
                               z-10
@@ -308,7 +336,7 @@ const EvaluateSection = () => {
                                   ? "bg-blue-500 text-white"
                                   : "bg-white text-black"
                               }
-                              absolute w-10 h-10 rounded-full -top-1/2 left-1/2 -translate-x-1/2 
+                              absolute w-10 h-10 rounded-full left-1/2 -translate-x-1/2 
                               border border-neutral-500 transition-all
                               flex justify-center items-center
                               z-10
@@ -331,7 +359,7 @@ const EvaluateSection = () => {
                                   ? "bg-blue-500 text-white"
                                   : "bg-white text-black"
                               }
-                              absolute w-10 h-10 rounded-full -top-1/2 left-1/2 -translate-x-1/2 
+                              absolute w-10 h-10 rounded-full left-1/2 -translate-x-1/2 
                               border border-neutral-500 transition-all
                               flex justify-center items-center
                               z-10
@@ -354,7 +382,7 @@ const EvaluateSection = () => {
                                   ? "bg-blue-500 text-white"
                                   : "bg-white text-black"
                               }
-                              absolute w-10 h-10 rounded-full -top-1/2 left-1/2 -translate-x-1/2 
+                              absolute w-10 h-10 rounded-full left-1/2 -translate-x-1/2 
                               border border-neutral-500 transition-all
                               flex justify-center items-center
                               z-10

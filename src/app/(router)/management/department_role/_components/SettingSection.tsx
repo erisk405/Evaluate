@@ -249,7 +249,6 @@ export default function SettingSection({ department }: SettingSectionProps) {
                                 <SetHeadOfDepartmentSection
                                   onDeputyChange={handleDeputyChange}
                                   department={department}
-                                  defaultValue={department.deputyDirector}
                                 />
                               </div>
                             </div>
@@ -275,7 +274,6 @@ export default function SettingSection({ department }: SettingSectionProps) {
                                 <SetHeadOfDepartmentSection
                                   onHeadChange={handleHeadChange}
                                   department={department}
-                                  defaultValue={department.headOfDepartment}
                                 />
                               </div>
                             </div>
@@ -299,17 +297,17 @@ export default function SettingSection({ department }: SettingSectionProps) {
                     <div className="grid grid-cols-3 gap-3">
                       <h2 className="text-right font-bold">รองผู้อำนวยการ</h2>
                       <div className="col-span-2">
-                        {department.deputyDirector
+                        {/* {department.deputyDirector
                           ? department.deputyDirector.name
-                          : "-"}
+                          : "-"} */}
                       </div>
                     </div>
                     <div className="grid grid-cols-3 gap-3">
                       <h2 className="text-right font-bold">หัวหน้างาน</h2>
                       <div className="col-span-2">
-                        {department.headOfDepartment
+                        {/* {department.headOfDepartment
                           ? department.headOfDepartment.name
-                          : "-"}
+                          : "-"} */}
                       </div>
                     </div>
                   </div>

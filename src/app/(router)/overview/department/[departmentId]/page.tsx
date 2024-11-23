@@ -20,16 +20,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import Link from "next/link";
-import EvaluaateSection from "../../_components/EvaluateSection";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 import {
   AlertDialog,
@@ -52,22 +42,15 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+
 import { useParams } from "next/navigation";
 import axios from "axios";
 import { apiUrl } from "@/app/data/data-option";
 import useStore from "@/app/store/store";
 import GlobalApi from "@/app/_unit/GlobalApi";
 import { motion } from "framer-motion";
+import { UserInDepartment } from "./_components/UserInDepartment";
+import { Department } from "@/types/interface";
 
 const data: employee[] = [
   {
@@ -175,10 +158,7 @@ const OptionEmployee = [
 const page = () => {
   const params = useParams<{ departmentId: string }>();
   const { ProfileDetail, updateProfileDetail } = useStore();
-  const [department_name, setDepartmentName] = useState("");
-
-  // ใช้งานเพื่อจัดเรียงข้อมูล แต่ละหน้าของ ต่างๆภายใน table ออกมา
-  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 5 });
+  const [department, setDepartment] = useState<Department>();
 
   const joinDepartment = async () => {
     const response = await axios.put(`${apiUrl}/usersDepartment`, params, {
@@ -191,14 +171,10 @@ const page = () => {
   };
 
   const fetchDepartment = async () => {
-    const response = await GlobalApi.getDepartmentById(
-      params.departmentId,
-      pagination.pageIndex,
-      pagination.pageSize
-    );
-    const { department_name } = response?.data.data;
-    // console.log(department_name);
-    setDepartmentName(department_name);
+    const response = await GlobalApi.getDepartmentById(params.departmentId);
+    const data = response?.data.department_data;
+    console.log(data);
+    setDepartment(data);
   };
   useEffect(() => {
     fetchDepartment();
@@ -206,248 +182,143 @@ const page = () => {
 
   return (
     <div className="m-5 w-full flex flex-col gap-3">
-      <div className="flex justify-between">
-        <Link href={"/overview"} className="flex items-center gap-3 group">
-          <div className="bg-white shadow rounded-lg group-hover:bg-black group-hover:text-white">
-            <ChevronLeft size={28} />
-          </div>
-          <span className="cursor-pointer">Back to overview</span>
-        </Link>
-        <div>
-          <AlertDialog>
-            {department_name ? (
-              ProfileDetail.department === department_name ? (
-                <h2 className="flex items-center gap-2 py-1 px-2 rounded-lg text-lg font-bold text-emerald-500 bg-emerald-100">
-                  <Check />
-                  คุณอยู่ในหน่วยงานนี้แล้ว
-                </h2>
-              ) : (
-                <AlertDialogTrigger asChild>
-                  <Button className="flex gap-3">
-                    <CirclePlus /> Join this department
-                  </Button>
-                </AlertDialogTrigger>
-              )
-            ) : (
-              <div className="bg-gray-300 w-[200px] h-[40px] rounded-lg animate-pulse"></div>
-            )}
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle className="text-xl">
-                  คูณแน่ใจที่จะเข้า
-                  <span className="underline">{department_name}</span>{" "}
-                  ใช่หรือไม่ ?
-                </AlertDialogTitle>
-                <AlertDialogDescription className="text-red-500 text-lg">
-                  หากยืนยัน บันทึกการประเมินทั้งหมดของคุณจะถูกลบทิ้ง
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={joinDepartment}>
-                  Confirm
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </div>
-      </div>{" "}
-      {department_name ? (
-        <h2 className="font-bold text-4xl">{department_name}</h2>
-      ) : (
-        <div className="flex flex-col gap-3 animate-pulse">
-          <div className="h-3 w-64 bg-gray-400 rounded-full"></div>
-          <div className="h-3 w-32 bg-gray-400 rounded-full"></div>
-        </div>
-      )}
-      <div className="flex justify-around gap-3 flex-wrap p-5 rounded-3xl">
-        {OptionEmployee.map((item, index) => (
-          <motion.div
-            key={item?.id}
-            className="flex-1 min-w-[250px] max-w-full cursor-pointer "
-            initial={{ opacity: 0, y: 100 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: 1,
-              ease: [0, 0.71, 0.2, 1.01],
-              delay: index * 0.2,
-            }}
-          >
-            <div
-              className={`flex rounded-2xl gap-3 relative overflow-hidden
-              items-center px-8 py-4 shadow-xl 
-              bg-gradient-to-tl from-neutral-800 from-20% to-neutral-900 to-50%  group 
-              transition-all `}
-            >
-              <div className="text-white w-full group-hover:text-white z-10">
-                <div className="flex gap-3">
-                  <Image
-                    src={"/profiletest.jpg"}
-                    width={100}
-                    height={100}
-                    alt="imageProsiden"
-                    className="w-[70px] h-[80px] object-cover rounded-xl"
-                  />
-                  <div>
-                    <h2 className="text-md text-gray-300">{item?.role}</h2>
-                    <h2 className="text-lg">{item?.name}</h2>
-                    <div
-                      className="inline-flex items-center gap-2 bg-neutral-800 
-                    px-4 py-1 rounded-full text-neutral-400"
-                    >
-                      <GraduationCap size={20} />
-                      <h2 className="text-sm">หน่วยงานวิชาการ</h2>
-                    </div>
-                  </div>
-                </div>
-                <div className="inline-flex w-full justify-end mt-3 ">
-                  <h2
-                    className="flex items-center gap-3 bg-neutral-800 hover:bg-neutral-700 
-                  text-neutral-200 px-2 py-1 rounded-xl transition-all active:scale-95"
-                  >
-                    <Hexagon /> ประเมิน
-                  </h2>
-                </div>
+      {/* ----------------------------------------------- */}
+      {/*                    Header                       */}
+      {/* ----------------------------------------------- */}
+      {department && (
+        <>
+          <div className="flex justify-between">
+            <Link href={"/overview"} className="flex items-center gap-3 group">
+              <div className="bg-white shadow rounded-lg group-hover:bg-black group-hover:text-white">
+                <ChevronLeft size={28} />
               </div>
-            </div>
-          </motion.div>
-        ))}
-      </div>
-      <motion.div
-        className="xl:col-span-6 col-span-6"
-        initial={{ opacity: 0, y: 100 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{
-          duration: 1.6,
-          ease: [0, 0.71, 0.2, 1.01],
-          delay: 0.3,
-        }}
-      >
-        <div className="bg-white w-full shadow rounded-xl p-8">
-          <div className="flex justify-between items-center">
-            <Input
-              type="text"
-              placeholder="Search..."
-              className="max-w-[400px] rounded-xl"
-            />
-            <div className="">
-              <Select>
-                <SelectTrigger className="w-[180px] flex items-center">
-                  <ListFilter size={17} />
-                  <SelectValue placeholder="Select a filter" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Evaluate</SelectLabel>
-                    <SelectItem value="All">All</SelectItem>
-                    <SelectItem value="success">Success</SelectItem>
-                    <SelectItem value="processing">Processing</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+              <span className="cursor-pointer">Back to overview</span>
+            </Link>
+            <div>
+              <AlertDialog>
+                {department.department_name ? (
+                  ProfileDetail.department === department.department_name ? (
+                    <h2 className="flex items-center gap-2 py-1 px-2 rounded-lg text-lg font-bold text-emerald-500 bg-emerald-100">
+                      <Check />
+                      คุณอยู่ในหน่วยงานนี้แล้ว
+                    </h2>
+                  ) : (
+                    <AlertDialogTrigger asChild>
+                      <Button className="flex gap-3">
+                        <CirclePlus /> Join this department
+                      </Button>
+                    </AlertDialogTrigger>
+                  )
+                ) : (
+                  <div className="bg-gray-300 w-[200px] h-[40px] rounded-lg animate-pulse"></div>
+                )}
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle className="text-xl">
+                      คูณแน่ใจที่จะเข้า
+                      <span className="underline">{department.department_name}</span>{" "}
+                      ใช่หรือไม่ ?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription className="text-red-500 text-lg">
+                      หากยืนยัน บันทึกการประเมินทั้งหมดของคุณจะถูกลบทิ้ง
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={joinDepartment}>
+                      Confirm
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           </div>
-          <div>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="max-w-[250px]">Name</TableHead>
-                  <TableHead>email</TableHead>
-                  <TableHead>role</TableHead>
-                  <TableHead className="text-center">Status</TableHead>
-                  <TableHead className="text-right">Action</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {/*  ---------------------------------- */}
-                {/*      รายชื่อ บุคคลกรภายในหน่วยงาน      */}
-                {/* ----------------------------------- */}
-                {data.map((item) => (
-                  <TableRow key={item.id}>
-                    <TableCell className="font-medium flex items-center gap-3">
-                      <Image
-                        src={item.img}
-                        width={100}
-                        height={100}
-                        alt="profileUser"
-                        className="w-[50px] h-[50px] rounded-full"
-                      />
-                      {item.name}
-                    </TableCell>
-                    <TableCell>{item.email}</TableCell>
-                    <TableCell>{item.role}</TableCell>
-                    <TableCell className="text-center w-[150px]">
-                      <h2
-                        className={` ${
-                          item.status === "success"
-                            ? "font-semibold text-blue-600 bg-blue-100 rounded-lg border p-1  border-blue-500"
-                            : "font-semibold text-yellow-600 bg-yellow-100 rounded-lg border p-1  border-yellow-500"
-                        } text-center`}
-                      >
-                        {item.status}
-                      </h2>
-                    </TableCell>
-                    <TableCell className="">
-                      <div className="flex justify-end">
-                        <Sheet>
-                          <SheetTrigger asChild>
-                            <Button className="flex items-center gap-3 active:scale-95 transition-all">
-                              <Hexagon /> ประเมิน
-                            </Button>
-                          </SheetTrigger>
-                          <SheetContent
-                            side="bottom"
-                            className="h-[calc(100vh-10%)] xl:mx-52 rounded-tr-2xl rounded-tl-2xl overflow-scroll scrollbar-gemini"
-                          >
-                            <SheetHeader>
-                              <SheetTitle className="text-3xl text-center text-stone-700">
-                                แบบฟอร์มการประเมิน
-                              </SheetTitle>
-                            </SheetHeader>
-                            {/* ------------------------------------------------------- */}
-                            {/*        Conponent   Question and score input             */}
-                            {/* ------------------------------------------------------- */}
-                            <EvaluaateSection />
-                            <SheetDescription>
-                              Make changes to your profile here. Click save when
-                              you're done.
-                            </SheetDescription>{" "}
-                          </SheetContent>
-                        </Sheet>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+          {department.department_name ? (
+            <div>
+              <h2 className="font-bold text-4xl">{department.department_name}</h2>
 
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious href="#" />
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationLink href="#">1</PaginationLink>
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationLink href="#" isActive>
-                    2
-                  </PaginationLink>
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationLink href="#">3</PaginationLink>
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationEllipsis />
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationNext href="#" />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
-          </div>
-        </div>
-      </motion.div>
+              {/* ----------------------------------------------- */}
+              {/*                 Body List                       */}
+              {/* ----------------------------------------------- */}
+              <div className="flex justify-around gap-3 flex-wrap p-5 rounded-3xl">
+                {OptionEmployee.map((item, index) => (
+                  <motion.div
+                    key={item?.id}
+                    className="flex-1 min-w-[250px] max-w-full cursor-pointer "
+                    initial={{ opacity: 0, y: 100 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      duration: 1,
+                      ease: [0, 0.71, 0.2, 1.01],
+                      delay: index * 0.2,
+                    }}
+                  >
+                    <div
+                      className={`flex rounded-2xl gap-3 relative overflow-hidden
+                items-center px-8 py-4 shadow-xl 
+                bg-gradient-to-tl from-neutral-800 from-20% to-neutral-900 to-50%  group 
+                transition-all `}
+                    >
+                      <div className="text-white w-full group-hover:text-white z-10">
+                        <div className="flex gap-3">
+                          <Image
+                            src={"/profiletest.jpg"}
+                            width={100}
+                            height={100}
+                            alt="imageProsiden"
+                            className="w-[70px] h-[80px] object-cover rounded-xl"
+                          />
+                          <div>
+                            <h2 className="text-md text-gray-300">
+                              {item?.role}
+                            </h2>
+                            <h2 className="text-lg">{item?.name}</h2>
+                            <div
+                              className="inline-flex items-center gap-2 bg-neutral-800 
+                      px-4 py-1 rounded-full text-neutral-400"
+                            >
+                              <GraduationCap size={20} />
+                              <h2 className="text-sm">หน่วยงานวิชาการ</h2>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="inline-flex w-full justify-end mt-3 ">
+                          <h2
+                            className="flex items-center gap-3 bg-neutral-800 hover:bg-neutral-700 
+                    text-neutral-200 px-2 py-1 rounded-xl transition-all active:scale-95"
+                          >
+                            <Hexagon /> ประเมิน
+                          </h2>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+              {/* ----------------------------------------------------------*/}
+              {/*                 Employee Indepartment                     */}
+              {/* ------------------------------------------------------ -- */}
+              <motion.div
+                className="xl:col-span-6 col-span-6"
+                initial={{ opacity: 0, y: 100 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 1.6,
+                  ease: [0, 0.71, 0.2, 1.01],
+                  delay: 0.3,
+                }}
+              >
+                <UserInDepartment member={department.user} />
+              </motion.div>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-3 animate-pulse">
+              <div className="h-3 w-64 bg-gray-400 rounded-full"></div>
+              <div className="h-3 w-32 bg-gray-400 rounded-full"></div>
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 };

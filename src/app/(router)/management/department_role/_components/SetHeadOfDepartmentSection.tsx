@@ -30,11 +30,10 @@ export default function SetHeadOfDepartmentSection({
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
   const [users, setUser] = useState<any>();
-  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 5 });
   const fetchRole = async () => {
     try {
       // Set default value based on fetched roles
-      const response = await GlobalApi.getDepartmentById(department.id, pagination.pageIndex, pagination.pageSize)
+      const response = await GlobalApi.getDepartmentById(department.id)
       setUser(response?.data?.data.user);
       if (defaultValue) {
         onHeadChange ? onHeadChange(defaultValue.id) : onDeputyChange && onDeputyChange(defaultValue.id)

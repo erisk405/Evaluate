@@ -14,8 +14,10 @@ import {
 } from "@tanstack/react-table";
 import {
   ArrowUpDown,
+  BringToFront,
   Check,
   ChevronDown,
+  ChevronUp,
   CirclePlus,
   EllipsisVertical,
   Loader,
@@ -123,22 +125,6 @@ export const columns: ColumnDef<User>[] = [
     },
   },
   {
-    accessorKey: "email",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="text-[16px] font-semibold text-neutral-800"
-        >
-          Email
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
-  },
-  {
     accessorKey: "phone",
     header: "Phone",
     cell: ({ row }) => {
@@ -162,12 +148,12 @@ export const columns: ColumnDef<User>[] = [
           <DropdownMenuContent className="w-32">
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                <Trash2 className="mr-2 h-4 w-4" />
-                <span>Delete</span>
+                <BringToFront className="mr-2 h-4 w-4" />
+                <span>Move to</span>
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <Pencil className="mr-2 h-4 w-4" />
-                <span>Edit</span>
+                <ChevronUp className="mr-2 h-4 w-4" />
+                <span>Supervise</span>
               </DropdownMenuItem>
             </DropdownMenuGroup>
           </DropdownMenuContent>
@@ -187,8 +173,6 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
   const [globalFilter, setGlobalFilter] = useState("");
   const [allUser, setAllUser] = useState<User[]>([]);
 
-  // ใช้งานเพื่อจัดเรียงข้อมูล แต่ละหน้าของ ต่างๆภายใน table ออกมา
-  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 5 });
   // จำนวนpage ทั้งหมด อิง
   const [totalPages, setTotalPages] = useState(0);
 
@@ -238,13 +222,12 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
   };
 
   const getDataOfEmployee = async () => {
-    const response = await GlobalApi.getDepartmentById(
-      department.id,
-      pagination.pageIndex,
-      pagination.pageSize
-    );
-    if (response?.data) {
-      setAllUser(response.data.data.user);
+    const response = await GlobalApi.getDepartmentById(department.id);
+    console.log("response",response?.data?.department_data);
+    const result =response?.data?.department_data;
+    
+    if (result) {
+      setAllUser(result.user);
 
       setTotalPages(response?.data.totalPages); // ตั้งค่าจำนวนหน้าทั้งหมด
     } else {
@@ -278,7 +261,7 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
 
   useEffect(() => {
     getDataOfEmployee();
-  }, [pagination.pageIndex, pagination.pageSize, usersEmptyDepartment]);
+  }, [usersEmptyDepartment]);
 
   const table = useReactTable({
     data: allUser ?? [],
@@ -290,10 +273,7 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
       columnVisibility,
       rowSelection,
       globalFilter,
-      pagination,
     },
-    manualPagination: true, // กำหนดว่า pagination ทำที่ backend
-    onPaginationChange: setPagination, // ใช้ในการจัดหน้าใน ตาราง
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),

@@ -6,12 +6,11 @@ interface DepartmentCount {
   user: number; // Add any additional fields that may be part of the image object
 }
 interface Department {
-  headOfDepartment?: User;
-  deputyDirector?: User;
   id: string;
   department_name: string;
   image: DepartmentImage;
   _count: DepartmentCount
+  user?:User[];
   // เพิ่มข้อมูลที่จำเป็นตามโครงสร้างข้อมูลจริง
 }
 interface UserImage {

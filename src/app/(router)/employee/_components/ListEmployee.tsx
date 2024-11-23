@@ -102,10 +102,10 @@ export const columns: ColumnDef<employee>[] = [
       <div className="capitalize flex items-center gap-3">
         <Image
           src="/profiletest.jpg"
-          width={50}
-          height={50}
+          width={40}
+          height={40}
           alt="profiletable"
-          className="w-[50px] h-[50px] rounded-full object-cover"
+          className="w-[40px] h-[40px] rounded-full object-cover"
         />
         {row.getValue("name")}
       </div>

@@ -47,7 +47,6 @@ const Logout = async () => {
   }
 };
 
-
 // -----------------------------------------------------------
 //                       for user
 // -----------------------------------------------------------
@@ -108,7 +107,6 @@ const addUsersToDepartment = async (payload: any) => {
     },
   });
 };
-
 
 // -----------------------------------------------------------
 //                       Role Table
@@ -187,14 +185,10 @@ const getDepartment = async () => {
     console.error("Error Department:", error);
   }
 };
-const getDepartmentById = async (
-  departmentId: any,
-  pageIndex: number,
-  pageSize: number
-) => {
+const getDepartmentById = async (departmentId: string) => {
   // console.log(`page=${pageIndex}&size=${pageSize}`);
   try {
-    const url = `${apiUrl}/department/${departmentId}?page=${pageIndex}&size=${pageSize}`;
+    const url = `${apiUrl}/department/${departmentId}`;
     return await axios.get(url, { withCredentials: true });
   } catch (error) {
     console.error("Error Department:", error);
@@ -226,8 +220,6 @@ const updateDepartment = async (data: any) => {
     throw error;
   }
 };
-
-
 
 // -----------------------------------------------------------
 //                       Form Table
@@ -282,7 +274,6 @@ const deleteForm = async (id: string) => {
     console.error("API delete form", { message: error });
   }
 };
-
 
 // -----------------------------------------------------------
 //                       Permission Table
@@ -380,14 +371,13 @@ const getPeriod = () => {
     console.error("API createPeriod", { message: error });
   }
 };
-const deletePeriod = (id:string)=>{
+const deletePeriod = (id: string) => {
   try {
     return axios.delete(`${apiUrl}/period/${id}`, { withCredentials: true });
   } catch (error) {
     console.error("API createPeriod", { message: error });
   }
-}
-
+};
 
 export default {
   fetchUserProfile,
@@ -421,5 +411,5 @@ export default {
   updateQuestion,
   createPeriod,
   getPeriod,
-  deletePeriod
+  deletePeriod,
 };
