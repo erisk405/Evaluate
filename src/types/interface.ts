@@ -10,7 +10,7 @@ interface Department {
   department_name: string;
   image: DepartmentImage;
   _count: DepartmentCount
-  user?:User[];
+  user?: User[];
   // เพิ่มข้อมูลที่จำเป็นตามโครงสร้างข้อมูลจริง
 }
 interface UserImage {
@@ -56,12 +56,12 @@ interface PermissionForm {
   };
   ingroup: boolean;
 }
-interface PeriodType{
-  period_id:string,
-  title:string,
-  start:string,
-  end:string
-  isAction:boolean
+interface PeriodType {
+  period_id: string,
+  title: string,
+  start: string,
+  end: string
+  isAction: boolean
 }
 
 interface RoleRequest {
@@ -89,4 +89,7 @@ interface FormQuestion {
   form_id?: string;
   content: string;
 }
-export type { DepartmentImage, Department, Role, User, RoleRequest, Notification, Permission, PermissionForm, FormQuestion ,PeriodType};
+
+
+type PageNumber = number | 'ellipsis' | 'ellipsis1' | 'ellipsis2';
+export type { DepartmentImage, Department, Role, User, RoleRequest, Notification, Permission, PermissionForm, FormQuestion, PeriodType, PageNumber };

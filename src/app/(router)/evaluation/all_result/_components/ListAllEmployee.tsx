@@ -41,10 +41,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import Image from "next/image";
-import { User } from "@/types/interface";
+import { PageNumber, User } from "@/types/interface";
 import GlobalApi from "@/app/_unit/GlobalApi";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
@@ -211,11 +220,6 @@ export function ListAllEmployee() {
   const [globalFilter, setGlobalFilter] = useState("");
   const [allUser, setAllUser] = useState<User[]>([]);
 
-  // ใช้งานเพื่อจัดเรียงข้อมูล แต่ละหน้าของ ต่างๆภายใน table ออกมา
-  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 5 });
-  // จำนวนpage ทั้งหมด อิง
-  const [totalPages, setTotalPages] = useState(0);
-
   // select ตัวนี้ใช้กับ การที่ต้องการ select ข้อมูลทั้งตารางมาใช้ได้ในส่วนของ employee ในdepartment นั้นๆ
   const [rowSelection, setRowSelection] = useState({});
 
@@ -235,17 +239,19 @@ export function ListAllEmployee() {
   const table = useReactTable({
     data: allUser ?? [],
     columns,
-    pageCount: totalPages, // จำนวนหน้าทั้งหมดที่ได้จาก backend
     state: {
       sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
       globalFilter,
-      pagination,
     },
-    manualPagination: true, // กำหนดว่า pagination ทำที่ backend
-    onPaginationChange: setPagination, // ใช้ในการจัดหน้าใน ตาราง
+    initialState: {
+      pagination: {
+        pageSize: 12,
+        pageIndex: 0,
+      },
+    },
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -255,14 +261,49 @@ export function ListAllEmployee() {
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
     onGlobalFilterChange: setGlobalFilter,
-    // globalFilterFn: (row, columnId, filterValue) => {
-    //   const name = row.original.name.toLowerCase();
-    //   const email = row.original.email.toLowerCase();
-    //   const searchValue = filterValue.toLowerCase();
-    //   return name.includes(searchValue) || email.includes(searchValue);
-    // },
   });
+  // สร้างฟังก์ชันสำหรับสร้าง pagination items
 
+  const totalPages = Math.ceil(
+    allUser.length / table.getState().pagination.pageSize
+  );
+  const currentPage = table.getState().pagination.pageIndex + 1;
+  // สร้างฟังก์ชันสำหรับคำนวณว่าควรแสดงหน้าไหนบ้าง
+  const getPageNumbers = (): PageNumber[] => {
+    const pageNumbers: PageNumber[] = [];
+    if (totalPages <= 7) {
+      // ถ้ามีหน้าน้อยกว่า 7 หน้า แสดงทั้งหมด
+      for (let i = 1; i <= totalPages; i++) {
+        pageNumbers.push(i);
+      }
+    } else {
+      // ถ้ามีหน้ามากกว่า 7 หน้า ให้แสดงแบบมี ellipsis
+      if (currentPage <= 4) {
+        // กรณีอยู่ใกล้หน้าแรก
+        for (let i = 1; i <= 5; i++) {
+          pageNumbers.push(i);
+        }
+        pageNumbers.push("ellipsis");
+        pageNumbers.push(totalPages);
+      } else if (currentPage >= totalPages - 3) {
+        // กรณีอยู่ใกล้หน้าสุดท้าย
+        pageNumbers.push(1);
+        pageNumbers.push("ellipsis");
+        for (let i = totalPages - 2; i <= totalPages; i++) {
+          pageNumbers.push(i);
+        }
+      } else {
+        pageNumbers.push(1);
+        pageNumbers.push("ellipsis1");
+        for (let i = currentPage - 2; i <= currentPage + 2; i++) {
+          pageNumbers.push(i);
+        }
+        pageNumbers.push("ellipsis2");
+        pageNumbers.push(totalPages);
+      }
+    }
+    return pageNumbers;
+  };
   return (
     <div className="w-full ">
       <div className="flex items-center w-full gap-3 justify-between py-4">
@@ -277,8 +318,7 @@ export function ListAllEmployee() {
             />
           </div>
           <div className="col-span-1 w-full">
-            <FilterPeriod
-            />
+            <FilterPeriod />
           </div>
           {/* ปุ้ม switch ที่ใช้ในเลือกเฉพาะที่ดำเนินการเสร็จแล้ว */}
           <div className="flex items-center space-x-2 w-full col-span-1">
@@ -515,24 +555,62 @@ export function ListAllEmployee() {
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
         <div className="space-x-2">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    table.previousPage();
+                  }}
+                  className={
+                    !table.getCanPreviousPage()
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer"
+                  }
+                  aria-disabled={!table.getCanPreviousPage()}
+                />
+              </PaginationItem>
+              {getPageNumbers().map((pageNumber, index) => (
+                <React.Fragment key={index}>
+                  {typeof pageNumber === "string" ? (
+                    <PaginationItem>
+                      <PaginationEllipsis />
+                    </PaginationItem>
+                  ) : (
+                    <PaginationItem>
+                      <PaginationLink
+                        href="#"
+                        isActive={pageNumber === currentPage}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          table.setPageIndex(pageNumber - 1);
+                        }}
+                      >
+                        {pageNumber}
+                      </PaginationLink>
+                    </PaginationItem>
+                  )}
+                </React.Fragment>
+              ))}
+              <PaginationItem>
+                <PaginationNext
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    table.nextPage();
+                  }}
+                  className={
+                    !table.getCanNextPage()
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer"
+                  }
+                  aria-disabled={!table.getCanNextPage()}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
         </div>
       </div>
     </div>

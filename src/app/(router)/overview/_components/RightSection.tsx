@@ -41,6 +41,7 @@ import {
 import GlobalApi from "@/app/_unit/GlobalApi";
 import { PeriodType } from "@/types/interface";
 import DeletePariod from "./DeletePariod";
+import { toast } from "@/components/ui/use-toast";
 
 type RightSectionProps = {
   permission?: string; // ใส่ ? เพื่อบอกว่าอาจเป็น undefined ได้
@@ -111,18 +112,28 @@ const RightSection = ({ permission }: RightSectionProps) => {
   };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    const data = {
-      title: values.title,
-      start: timeRange.from!.toISOString(),
-      end: timeRange.to!.toISOString(),
-    };
-    const response = await GlobalApi.createPeriod(data);
-    fetchPeriod();
-    setShow(false);
-    console.log("period response", response);
     try {
-    } catch (error) {
+      const data = {
+        title: values.title,
+        start: timeRange.from!.toISOString(),
+        end: timeRange.to!.toISOString(),
+      };
+      const response = await GlobalApi.createPeriod(data);
+      fetchPeriod();
+      setShow(false);
+      console.log("period response", response);
+    } catch (error: any) {
       console.error({ message: error });
+      toast({
+        title: "เกิดข้อผิดพลาด",
+        description: (
+          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-x-auto">
+            <code className="text-white whitespace-pre-wrap break-words">
+              {JSON.stringify(error.response.data.message, null, 2)}
+            </code>
+          </pre>
+        ),
+      });
     }
   };
 
@@ -147,11 +158,6 @@ const RightSection = ({ permission }: RightSectionProps) => {
     return closestPeriod;
   };
 
-  // useEffect(() => {
-  //   if (period.length > 0) {
-  //     const nearestPeriod = fetchClosestPeriod();
-  //   }
-  // }, [period]);
   useEffect(() => {
     fetchPeriod();
   }, []);

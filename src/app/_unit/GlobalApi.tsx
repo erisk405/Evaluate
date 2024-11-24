@@ -361,7 +361,7 @@ const createPeriod = (payload: {
   try {
     return axios.post(`${apiUrl}/period`, payload, { withCredentials: true });
   } catch (error) {
-    console.error("API createPeriod", { message: error });
+    // console.error("API createPeriod", { message: error });
   }
 };
 const getPeriod = () => {

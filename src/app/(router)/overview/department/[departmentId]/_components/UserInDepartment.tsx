@@ -14,14 +14,15 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import {
-  ArrowUpDown,
-  Building2,
-  ChevronDown,
-  Hexagon,
-  Pencil,
-  Ribbon,
-  UserRoundCog,
-} from "lucide-react";
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { ChevronDown, Hexagon } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -49,7 +50,7 @@ import {
 } from "@/components/ui/table";
 import Image from "next/image";
 
-import { User } from "@/types/interface";
+import { PageNumber, User } from "@/types/interface";
 import EvaluateSection from "./EvaluateSection";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -196,6 +197,12 @@ export function UserInDepartment({ member }: { member: User[] | undefined }) {
       rowSelection,
       globalFilter,
     },
+    initialState: {
+      pagination: {
+        pageSize: 7,
+        pageIndex: 0, // หน้าเริ่มต้น
+      },
+    },
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -206,7 +213,49 @@ export function UserInDepartment({ member }: { member: User[] | undefined }) {
     onRowSelectionChange: setRowSelection,
     onGlobalFilterChange: setGlobalFilter,
   });
+  // สร้างฟังก์ชันสำหรับสร้าง pagination items
+  const totalPages = Math.ceil(
+    member!.length / table.getState().pagination.pageSize
+  );
+  const currentPage = table.getState().pagination.pageIndex + 1;
+  // สร้างฟังก์ชันสำหรับคำนวณว่าควรแสดงหน้าไหนบ้าง
+  const getPageNumbers = (): PageNumber[] => {
+    const pageNumbers: PageNumber[] = [];
 
+    if (totalPages <= 7) {
+      // ถ้ามีหน้าน้อยกว่า 7 หน้า แสดงทั้งหมด
+      for (let i = 1; i <= totalPages; i++) {
+        pageNumbers.push(i);
+      }
+    } else {
+      // ถ้ามีหน้ามากกว่า 7 หน้า ให้แสดงแบบมี ellipsis
+      if (currentPage <= 4) {
+        // กรณีอยู่ใกล้หน้าแรก
+        for (let i = 1; i <= 5; i++) {
+          pageNumbers.push(i);
+        }
+        pageNumbers.push("ellipsis");
+        pageNumbers.push(totalPages);
+      } else if (currentPage >= totalPages - 3) {
+        // กรณีอยู่ใกล้หน้าสุดท้าย
+        pageNumbers.push(1);
+        pageNumbers.push("ellipsis");
+        for (let i = totalPages - 4; i <= totalPages; i++) {
+          pageNumbers.push(i);
+        }
+      } else {
+        // กรณีอยู่ตรงกลาง
+        pageNumbers.push(1);
+        pageNumbers.push("ellipsis1");
+        for (let i = currentPage - 1; i <= currentPage + 1; i++) {
+          pageNumbers.push(i);
+        }
+        pageNumbers.push("ellipsis2");
+        pageNumbers.push(totalPages);
+      }
+    }
+    return pageNumbers;
+  };
   return (
     <div className="w-full ">
       <div className="flex items-center py-4">
@@ -310,22 +359,64 @@ export function UserInDepartment({ member }: { member: User[] | undefined }) {
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground"></div>
         <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    table.previousPage();
+                  }}
+                  className={
+                    !table.getCanPreviousPage()
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer"
+                  }
+                  aria-disabled={!table.getCanPreviousPage()}
+                />
+              </PaginationItem>
+
+              {getPageNumbers().map((pageNumber, index) => (
+                <React.Fragment key={index}>
+                  {typeof pageNumber === "string" ? (
+                    <PaginationItem>
+                      <PaginationEllipsis />
+                    </PaginationItem>
+                  ) : (
+                    <PaginationItem>
+                      <PaginationLink
+                        href="#"
+                        isActive={pageNumber === currentPage}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          table.setPageIndex(pageNumber - 1);
+                        }}
+                      >
+                        {pageNumber}
+                      </PaginationLink>
+                    </PaginationItem>
+                  )}
+                </React.Fragment>
+              ))}
+
+              <PaginationItem>
+                <PaginationNext
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    table.nextPage();
+                  }}
+                  className={
+                    !table.getCanNextPage()
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer"
+                  }
+                  aria-disabled={!table.getCanNextPage()}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
         </div>
       </div>
     </div>

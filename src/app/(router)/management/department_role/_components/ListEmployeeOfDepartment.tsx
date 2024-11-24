@@ -24,7 +24,15 @@ import {
   Pencil,
   Trash2,
 } from "lucide-react";
-
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -44,7 +52,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Image from "next/image";
-import { Department, User } from "@/types/interface";
+import { Department, PageNumber, User } from "@/types/interface";
 import SetStatusSection from "./SetStatusSection";
 import GlobalApi from "@/app/_unit/GlobalApi";
 import {
@@ -59,7 +67,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 
 import {
@@ -166,15 +174,14 @@ interface SettingSectionProps {
   department: Department; // Replace 'string' with the appropriate type for departmentId
 }
 
+
+
 export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [globalFilter, setGlobalFilter] = useState("");
   const [allUser, setAllUser] = useState<User[]>([]);
-
-  // จำนวนpage ทั้งหมด อิง
-  const [totalPages, setTotalPages] = useState(0);
 
   // select ตัวนี้ใช้กับ การที่ต้องการ select ข้อมูลทั้งตารางมาใช้ได้ในส่วนของ employee ในdepartment นั้นๆ
   const [rowSelection, setRowSelection] = useState({});
@@ -223,13 +230,11 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
 
   const getDataOfEmployee = async () => {
     const response = await GlobalApi.getDepartmentById(department.id);
-    console.log("response",response?.data?.department_data);
-    const result =response?.data?.department_data;
-    
+    console.log("response", response?.data?.department_data);
+    const result = response?.data?.department_data;
+
     if (result) {
       setAllUser(result.user);
-
-      setTotalPages(response?.data.totalPages); // ตั้งค่าจำนวนหน้าทั้งหมด
     } else {
       setAllUser([]);
     }
@@ -255,9 +260,6 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
       console.log("message:", { message: error });
     }
   };
-  // useEffect(() => {
-  //   console.log("rowSelection:", rowSelection);
-  // }, [rowSelection]);
 
   useEffect(() => {
     getDataOfEmployee();
@@ -266,13 +268,18 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
   const table = useReactTable({
     data: allUser ?? [],
     columns,
-    pageCount: totalPages, // จำนวนหน้าทั้งหมดที่ได้จาก backend
     state: {
       sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
       globalFilter,
+    },
+    initialState: {
+      pagination: {
+        pageSize: 7,
+        pageIndex: 0, // หน้าเริ่มต้น
+      },
     },
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -283,14 +290,50 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
     onGlobalFilterChange: setGlobalFilter,
-    // globalFilterFn: (row, columnId, filterValue) => {
-    //   const name = row.original.name.toLowerCase();
-    //   const email = row.original.email.toLowerCase();
-    //   const searchValue = filterValue.toLowerCase();
-    //   return name.includes(searchValue) || email.includes(searchValue);
-    // },
   });
+  // สร้างฟังก์ชันสำหรับสร้าง pagination items
+  const totalPages = Math.ceil(
+    allUser.length / table.getState().pagination.pageSize
+  );
+  const currentPage = table.getState().pagination.pageIndex + 1;
+  // สร้างฟังก์ชันสำหรับคำนวณว่าควรแสดงหน้าไหนบ้าง
+  const getPageNumbers = ():PageNumber[] => {
+    const pageNumbers: PageNumber[] = [];
 
+    if (totalPages <= 7) {
+      // ถ้ามีหน้าน้อยกว่า 7 หน้า แสดงทั้งหมด
+      for (let i = 1; i <= totalPages; i++) {
+        pageNumbers.push(i);
+      }
+    } else {
+      // ถ้ามีหน้ามากกว่า 7 หน้า ให้แสดงแบบมี ellipsis
+      if (currentPage <= 4) {
+        // กรณีอยู่ใกล้หน้าแรก
+        for (let i = 1; i <= 5; i++) {
+          pageNumbers.push(i);
+        }
+        pageNumbers.push("ellipsis");
+        pageNumbers.push(totalPages);
+      } else if (currentPage >= totalPages - 3) {
+        // กรณีอยู่ใกล้หน้าสุดท้าย
+        pageNumbers.push(1);
+        pageNumbers.push("ellipsis");
+        for (let i = totalPages - 4; i <= totalPages; i++) {
+          pageNumbers.push(i);
+        }
+      } else {
+        // กรณีอยู่ตรงกลาง
+        pageNumbers.push(1);
+        pageNumbers.push("ellipsis1");
+        for (let i = currentPage - 1; i <= currentPage + 1; i++) {
+          pageNumbers.push(i);
+        }
+        pageNumbers.push("ellipsis2");
+        pageNumbers.push(totalPages);
+      }
+    }
+    return pageNumbers;
+  };
   return (
     <div className="w-full ">
       <div className="flex items-center justify-between py-4">
@@ -523,24 +566,64 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
         <div className="space-x-2">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    table.previousPage();
+                  }}
+                  className={
+                    !table.getCanPreviousPage()
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer"
+                  }
+                  aria-disabled={!table.getCanPreviousPage()}
+                />
+              </PaginationItem>
+
+              {getPageNumbers().map((pageNumber, index) => (
+                <React.Fragment key={index}>
+                  {typeof pageNumber === 'string' ? (
+                    <PaginationItem>
+                      <PaginationEllipsis />
+                    </PaginationItem>
+                  ) : (
+                    <PaginationItem>
+                      <PaginationLink
+                        href="#"
+                        isActive={pageNumber === currentPage}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          table.setPageIndex(pageNumber - 1);
+                        }}
+                      >
+                        {pageNumber}
+                      </PaginationLink>
+                    </PaginationItem>
+                  )}
+                </React.Fragment>
+              ))}
+
+              <PaginationItem>
+                <PaginationNext
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    table.nextPage();
+                  }}
+                  className={
+                    !table.getCanNextPage()
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer"
+                  }
+                  aria-disabled={!table.getCanNextPage()}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
         </div>
       </div>
     </div>
