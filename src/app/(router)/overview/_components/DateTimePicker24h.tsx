@@ -22,7 +22,7 @@ export function DateTimePicker24h({ onTimeChange, defaultValue  ,type,
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(defaultValue);
 
   useEffect(() => {
-    console.log("defaultValue",defaultValue);
+    // console.log("defaultValue",defaultValue);
     
     if (defaultValue) {
       setSelectedDate(defaultValue);

@@ -230,8 +230,8 @@ export function QuestionList({ formId }: QuestionListProp) {
       console.error({ message: error });
       toast("เกิดข้อผิดพลาด", {
         description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">
+          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-x-auto">
+            <code className="text-white whitespace-pre-wrap break-words">
               {JSON.stringify(error?.response?.data?.message, null, 2)}
             </code>
           </pre>

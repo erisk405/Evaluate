@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import CarouselSection from "./CarouselSection";
 import { TextEffect } from "@/app/_components/motion/TextEffect";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import DepartmentSection from "./DepartmentSection";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -19,6 +19,7 @@ import {
   ArrowRight,
   CalendarClock,
   ChevronDown,
+  ChevronUp,
   Clock9,
   Dot,
   EllipsisVertical,
@@ -39,22 +40,20 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import GlobalApi from "@/app/_unit/GlobalApi";
-import { PeriodType } from "@/types/interface";
+import { PeriodType, TimeRange } from "@/types/interface";
 import DeletePariod from "./DeletePariod";
 import { toast } from "@/components/ui/use-toast";
+import EditPariod from "./EditPariod";
 
 type RightSectionProps = {
   permission?: string; // ใส่ ? เพื่อบอกว่าอาจเป็น undefined ได้
 };
-interface TimeRange {
-  from?: Date;
-  to?: Date;
-}
+
 const formSchema = z.object({
   title: z
     .string()
     .min(3, { message: "massage must be least 10 characters." })
-    .max(100, { message: "massage must not exceed 50 characters." }),
+    .max(100, { message: "massage must not exceed 100 characters." }),
 });
 
 export const formatThaiDateTime = (isoString: string) => {
@@ -84,6 +83,7 @@ export const formatThaiDateTime = (isoString: string) => {
 const RightSection = ({ permission }: RightSectionProps) => {
   const defaultDate = new Date(new Date().getFullYear(), new Date().getMonth()); // ปีและเดือนปัจจุบัน
   const [show, setShow] = useState(false);
+  const [expandedPeriodId, setExpandedPeriodId] = useState<string | null>(null); // เปิดถาดสำหรับการแก้ไขช่วงเวลา
   const [period, setPeriod] = useState<PeriodType[]>([]);
   const [deletePeriod, setDeletePeroid] = useState("");
   // State สำหรับเก็บค่าเวลา
@@ -121,7 +121,16 @@ const RightSection = ({ permission }: RightSectionProps) => {
       const response = await GlobalApi.createPeriod(data);
       fetchPeriod();
       setShow(false);
-      console.log("period response", response);
+      toast({
+        title: "กำหนดช่วงเวลาเรียบร้อยแล้ว",
+        description: (
+          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-x-auto">
+            <code className="text-white whitespace-pre-wrap break-words">
+              {JSON.stringify(response?.data, null, 2)}
+            </code>
+          </pre>
+        ),
+      });
     } catch (error: any) {
       console.error({ message: error });
       toast({
@@ -260,69 +269,123 @@ const RightSection = ({ permission }: RightSectionProps) => {
               <AlarmClockPlus className="text-blue-500" />
             </div>
             <div className="bg-neutral-50 rounded-lg shadow-inner relative z-30 border-t border-b">
-              <ScrollArea className="h-[410px] w-full px-3">
+              <ScrollArea className="max-h-[800px] w-full px-3">
                 {period?.map((item, index) => (
                   <div
                     key={item.period_id}
-                    className="flex items-center my-3 shadow bg-white hover:bg-neutral-100 w-auto rounded-xl p-2"
+                    className="grid transition-all my-3 shadow bg-white w-auto rounded-xl p-2"
                   >
-                    <div className="">
-                      <div className="flex items-center ">
-                        <div className="relative">
-                          <Dot
-                            strokeWidth={6}
-                            className={`absolute ${
-                              new Date() > new Date(item.end)
-                                ? "text-blue-500 "
-                                : "text-emerald-500"
-                            } animate-ping`}
-                          />
-                          <Dot
-                            strokeWidth={6}
-                            className={`${
-                              new Date() > new Date(item.end)
-                                ? "text-blue-500 "
-                                : "text-green-500"
-                            }`}
-                          />
+                    <div className="flex items-center">
+                      <div className="relative">
+                        {/*-------------------------------------------- ------*/}
+                        {/*               card ของ ช่วงเวลา                    */}
+                        {/*-------------------------------------------- ------*/}
+                        <div className="flex items-center ">
+                          {/* Dot สถานะ */}
+                          <div className="relative">
+                            <Dot
+                              strokeWidth={6}
+                              className={`absolute ${
+                                new Date() > new Date(item.end)
+                                  ? "text-blue-500 "
+                                  : "text-emerald-500"
+                              } animate-ping`}
+                            />
+                            <Dot
+                              strokeWidth={6}
+                              className={`${
+                                new Date() > new Date(item.end)
+                                  ? "text-blue-500 "
+                                  : "text-green-500"
+                              }`}
+                            />
+                          </div>
+                          {/* ชื่อรอบของช่วงเวลา */}
+                          <div className="">
+                            <h2>{item.title}</h2>
+                          </div>
                         </div>
-                        <div className="">
-                          <h2>{item.title}</h2>
+                        {/* การแสดงผลช่วงเวลา */}
+                        <div className="pl-6 ">
+                          <div className="flex items-center gap-1">
+                            <CalendarClock size={18} />
+                            <h2>{formatThaiDateTime(item.start).date}</h2>
+                            <ArrowRight size={18} />
+                            <h2>{formatThaiDateTime(item.end).date}</h2>
+                          </div>
+                          <div className="flex items-center  gap-1">
+                            <Clock9 size={18} />
+                            <h2>{formatThaiDateTime(item.start).time} น.</h2>
+                            <ArrowRight size={18} />
+                            <h2>{formatThaiDateTime(item.end).time} น.</h2>
+                          </div>
                         </div>
                       </div>
-                      <div className="pl-6 ">
-                        <div className="flex items-center gap-1">
-                          <CalendarClock size={18} />
-                          <h2>{formatThaiDateTime(item.start).date}</h2>
-                          <ArrowRight size={18} />
-                          <h2>{formatThaiDateTime(item.end).date}</h2>
-                        </div>
-                        <div className="flex items-center  gap-1">
-                          <Clock9 size={18} />
-                          <h2>{formatThaiDateTime(item.start).time} น.</h2>
-                          <ArrowRight size={18} />
-                          <h2>{formatThaiDateTime(item.end).time} น.</h2>
-                        </div>
-                      </div>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger className="ml-auto">
+                          <EllipsisVertical />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                          <DropdownMenuLabel>เมนู</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            onSelect={() =>
+                              setExpandedPeriodId(
+                                expandedPeriodId === item.period_id
+                                  ? null
+                                  : item.period_id
+                              )
+                            }
+                          >
+                            แก้ไข
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onSelect={() => {
+                              setOpenAlert(true);
+                              setDeletePeroid(item.period_id);
+                            }}
+                          >
+                            ลบ
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger className="ml-auto">
-                        <EllipsisVertical />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuLabel>เมนู</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>แก้ไข</DropdownMenuItem>
-                        <DropdownMenuItem
-                          onSelect={() => {
-                            setOpenAlert(true);
-                            setDeletePeroid(item.period_id);
-                          }}
+                    {/*------------------------------------------------------*/}
+                    {/*               card ของการแก้ไข ช่วงเวลา                */}
+                    {/*-----------------------------------------------------*/}
+                    {/* Edit section shown conditionally */}
+                    {/* AnimatePresence มีไว้เพื่อ {expandedPeriodId === item.period_id && <motion.div>}) หรือเมื่อองค์ประกอบถูกลบ */}
+                    {/* AnimatePresence จะ "สังเกต" การเปลี่ยนแปลงใน children และ:
+                        ช่วยให้ animation ของ exit ทำงานเมื่อองค์ประกอบถูกลบ
+                        ช่วยให้ animation ของ initial และ animate ทำงานเมื่อองค์ประกอบถูกเพิ่ม */}
+                    <AnimatePresence mode="wait">
+                      {expandedPeriodId === item.period_id && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.3 }}
+                          className="overflow-hidden"
                         >
-                          ลบ
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                          <div className="px-6">
+                            <hr className="mt-3" />
+                            <div
+                              onClick={() => setExpandedPeriodId(null)}
+                              className="flex justify-center w-full hover:bg-gray-50 rounded-lg"
+                            >
+                              <ChevronUp />
+                            </div>
+                            <EditPariod
+                              defaultPeriod={item}
+                              setTimeRange={setTimeRange}
+                              timeRange={timeRange}
+                              fetchPeriod={fetchPeriod}
+                              setExpandedPeriodId={setExpandedPeriodId}
+                            />
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 ))}
               </ScrollArea>

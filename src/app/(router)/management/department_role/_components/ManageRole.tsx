@@ -155,8 +155,8 @@ const ManageRole = () => {
       toast({
         title: "เกิดข้อผิดพลาด",
         description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">
+          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-x-auto">
+            <code className="text-white whitespace-pre-wrap break-words">
               {JSON.stringify({ message: error }, null, 2)}
             </code>
           </pre>
@@ -182,8 +182,8 @@ const ManageRole = () => {
       toast({
         title: "อัพเดทเสร็จเรียบร้อยแล้ว ✅",
         description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">
+          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-x-auto">
+            <code className="text-white whitespace-pre-wrap break-words">
               {JSON.stringify(response?.data.message, null, 2)}
             </code>
           </pre>
@@ -193,8 +193,8 @@ const ManageRole = () => {
       toast({
         title: "เกิดข้อผิดพลาด",
         description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">
+          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-x-auto">
+            <code className="text-white whitespace-pre-wrap break-words">
               {JSON.stringify({ message: error }, null, 2)}
             </code>
           </pre>
@@ -221,8 +221,8 @@ const ManageRole = () => {
       toast({
         title: "เกิดข้อผิดพลาด: โปรดตรวจสอบให้แน่ใจว่า ไม่มีผู้ใช้คนไหนกำลังใช้Role นี้อยู่",
         description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">
+          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-x-auto">
+            <code className="text-white whitespace-pre-wrap break-words">
               {JSON.stringify(error?.response?.data?.message, null, 2)}
             </code>
           </pre>

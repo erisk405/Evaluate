@@ -1,6 +1,6 @@
 "use client";
 
-import { Department } from "@/types/interface";
+import { Department, PeriodType } from "@/types/interface";
 import axios, { AxiosResponse } from "axios";
 interface UserProfile {
   [x: string]: any;
@@ -378,6 +378,13 @@ const deletePeriod = (id: string) => {
     console.error("API createPeriod", { message: error });
   }
 };
+const updatePeriod = (payload:PeriodType) => {
+  try {
+    return axios.put(`${apiUrl}/period`, payload, { withCredentials: true });
+  } catch (error) {
+    console.error("API createPeriod", { message: error });
+  }
+};
 
 export default {
   fetchUserProfile,
@@ -412,4 +419,5 @@ export default {
   createPeriod,
   getPeriod,
   deletePeriod,
+  updatePeriod
 };

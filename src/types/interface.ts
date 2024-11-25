@@ -89,7 +89,10 @@ interface FormQuestion {
   form_id?: string;
   content: string;
 }
-
+interface TimeRange {
+  from?: Date;
+  to?: Date;
+}
 
 type PageNumber = number | 'ellipsis' | 'ellipsis1' | 'ellipsis2';
-export type { DepartmentImage, Department, Role, User, RoleRequest, Notification, Permission, PermissionForm, FormQuestion, PeriodType, PageNumber };
+export type { DepartmentImage, Department, Role, User, RoleRequest, Notification, Permission, PermissionForm, FormQuestion, PeriodType, PageNumber,TimeRange };
