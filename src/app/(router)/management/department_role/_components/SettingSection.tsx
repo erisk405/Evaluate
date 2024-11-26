@@ -9,7 +9,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Cog, Loader } from "lucide-react";
+import { Cog, GraduationCap, Loader, MoonStar, Star } from "lucide-react";
 import Image from "next/image";
 import {
   Form,
@@ -21,38 +21,27 @@ import {
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Department } from "@/types/interface";
+import { Department, ImageType } from "@/types/interface";
 import GlobalApi from "@/app/_unit/GlobalApi";
 import { ListEmployeeOfDepartment } from "./ListEmployeeOfDepartment";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useStore from "@/app/store/store";
 import { toast } from "@/components/ui/use-toast";
 import SetHeadOfDepartmentSection from "./SetHeadOfDepartmentSection";
 
-const formSchema = z
-  .object({
-    name: z.string().min(1, { message: "Name is required" }),
-    image: z.any().optional(),
-    head: z.string().nullable().optional(),
-    deputy: z.string().nullable().optional(),
-  })
-  .refine(
-    (data) => {
-      if (data.head && data.deputy) {
-        return data.head !== data.deputy;
-      }
-      return true;
-    },
-    {
-      message: "Head and Deputy cannot be the same person",
-      path: ["deputy"],
-    }
-  );
-
+const formSchema = z.object({
+  name: z.string().min(1, { message: "Name is required" }),
+  image: z.any().optional(),
+  supervise: z.string().nullable().optional(),
+});
 interface SettingSectionProps {
   department: Department; // Replace 'string' with the appropriate type for departmentId
+  fetchDepart: () => void;
 }
-export default function SettingSection({ department }: SettingSectionProps) {
+export default function SettingSection({
+  department,
+  fetchDepart,
+}: SettingSectionProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -60,11 +49,6 @@ export default function SettingSection({ department }: SettingSectionProps) {
       image: undefined,
     },
   });
-  
-  // useEffect(()=>{
-  //   console.log("department: ",department.department_name);
-  // })
-  const { setDepartments } = useStore();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   // for change when select file image
   const [selectedImage, setSelectImage] = useState<string | null>(null);
@@ -79,20 +63,15 @@ export default function SettingSection({ department }: SettingSectionProps) {
       reader.readAsDataURL(file);
     }
   };
-  const getDepartment = async () => {
-    try {
-      const response = await GlobalApi.getDepartment();
-      setDepartments(response?.data); // ตั้งค่าเป็นอาเรย์ว่างถ้าไม่มีข้อมูล
-    } catch (error) {
-      console.error("Error fetching department data:", error);
-    }
-  };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     // console.log(department);
     console.log("values", values);
     try {
       setIsLoading(false);
+      // ----------------------------
+      // อัพเดทรูปหรือเพิ่มรูปใน department
+      // ----------------------------
       if (values.image) {
         const formData = new FormData();
         formData.append("image", values.image as File);
@@ -102,18 +81,45 @@ export default function SettingSection({ department }: SettingSectionProps) {
         );
         console.log("responseChangeImage", response);
       }
-      if (values.head != values.deputy || values.name != department.department_name) {
-        const data = {
-          department_id: department.id,
-          department_name: values.name,
-          headOfDepartment_id: values.head || null,
-          deputyDirector_id: values.deputy || null,
-        };
+      // ----------------------------
+      // อัพเดทเปลี่ยนชื่อ ของ department
+      // ----------------------------
+      const data = {
+        department_id: department.id,
+        department_name: values.name,
+      };
 
-        await GlobalApi.updateDepartment(data);
+      await GlobalApi.updateDepartment(data);
+      // ----------------------------
+      // อัพเดทส่วนของ supervise
+      // ----------------------------
+      // ถ้าไม่มีหรือไม่ได้กำหนด ก็จะเข้าเงื่อนไข if จะเป็นการสร้างขึ้น ในครั้งแรก
+      const supervise = department?.supervise;
+      const userId = values?.supervise;
+      // ตรวจสอบเงื่อนไขก่อนดำเนินการ
+      if (userId) {
+        if (!supervise) {
+          // กรณีไม่มี supervise ให้สร้างใหม่
+          const payload = {
+            userId,
+            departmentId: department.id,
+          };
+          const response = await GlobalApi.createSupervise(payload);
+          console.log("createSupervise", response?.data);
+        } else {
+          // กรณีมี supervise แล้ว ให้อัพเดท
+          const payload = {
+            superviseId: supervise.supervise_id,
+            userId,
+            departmentId: department.id,
+          };
+          const updateSupervise = await GlobalApi.updateSupervise(payload);
+          console.log("updateSupervise", updateSupervise?.data);
+        }
       }
 
-      getDepartment();
+      // ถ้าตรวจพบ supervise ว่ามีอยู่แล้วใน หน่วยงานนี้ จะเป็นการ Update แทน
+      fetchDepart();
       toast({
         description: `✅ Your are edit department success`,
       });
@@ -128,12 +134,13 @@ export default function SettingSection({ department }: SettingSectionProps) {
   };
 
   const { setValue } = form;
-  const handleHeadChange: any = (newHead: any) => {
-    setValue("head", newHead);
+  const handleSuperviseChange: any = (newHead: any) => {
+    setValue("supervise", newHead);
   };
-  const handleDeputyChange: any = (newDeputy: any) => {
-    setValue("deputy", newDeputy);
-  };
+
+  useEffect(() => {
+    fetchDepart();
+  }, []);
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -141,7 +148,10 @@ export default function SettingSection({ department }: SettingSectionProps) {
           <Cog scale={13} /> Edit
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="overflow-y-scroll sm:max-w-5xl scrollbar-gemini pb-10">
+      <SheetContent
+        side="right"
+        className="overflow-y-scroll sm:max-w-5xl scrollbar-gemini pb-10"
+      >
         <SheetHeader>
           <SheetTitle>Edit Department</SheetTitle>
           <SheetDescription>
@@ -154,25 +164,15 @@ export default function SettingSection({ department }: SettingSectionProps) {
               <div className="flex justify-center items-end gap-3 my-5">
                 <div
                   onClick={handleImageClick}
-                  className="relative cursor-pointer overflow-hidden group rounded-full"
+                  className="relative cursor-pointer overflow-hidden group border rounded-lg"
                 >
-                  {department.image ? (
-                    <Image
-                      src={selectedImage ? selectedImage : department.image.url}
-                      width={400}
-                      height={300}
-                      alt="ProfileDepartment"
-                      className="w-[200px] h-[200px] object-cover rounded-full"
-                    />
-                  ) : (
-                    <Image
-                      src={selectedImage ? selectedImage : "/test.png"}
-                      width={400}
-                      height={300}
-                      alt="ProfileDepartment"
-                      className="w-[200px] h-[200px] object-cover rounded-full"
-                    />
-                  )}
+                  <Image
+                    src={selectedImage || department.image?.url || "/test.png"}
+                    width={400}
+                    height={300}
+                    alt="ProfileDepartment"
+                    className="w-[300px] h-[200px] object-cover object-center rounded-lg"
+                  />
                   <div
                     className="absolute top-0 bg-black bg-opacity-70
                             left-0 bottom-0 right-0 text-white rounded-lg   
@@ -231,49 +231,27 @@ export default function SettingSection({ department }: SettingSectionProps) {
                       </FormItem>
                     )}
                   />
+                  {/* ---------------------------- */}
+                  {/* Select รองผู้อำนวยการ/กำกับดูแล  */}
+                  {/* ---------------------------- */}
                   <div className="grid grid-cols-2 gap-3">
                     <FormField
                       control={form.control}
-                      name="deputy"
+                      name="supervise"
                       render={({ field }) => (
                         <FormItem className="">
                           <FormControl>
                             <div className="grid grid-cols-4 items-center gap-2">
                               <Label
-                                htmlFor="deputy"
+                                htmlFor="supervise"
                                 className="text-left col-span-4"
                               >
-                                รองผู้อำนวยการ
+                                รองผู้อำนวยการ/กำกับดูแล
                               </Label>
                               <div className="col-span-4">
                                 <SetHeadOfDepartmentSection
-                                  onDeputyChange={handleDeputyChange}
-                                  department={department}
-                                />
-                              </div>
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="head"
-                      render={({ field }) => (
-                        <FormItem className="">
-                          <FormControl>
-                            <div className="grid grid-cols-4 items-center gap-2">
-                              <Label
-                                htmlFor="head"
-                                className="text-left col-span-4"
-                              >
-                                หัวหน้างาน
-                              </Label>
-                              <div className="col-span-4">
-                                <SetHeadOfDepartmentSection
-                                  onHeadChange={handleHeadChange}
-                                  department={department}
+                                  onSuperviserChange={handleSuperviseChange}
+                                  defaultValue={department?.supervise}
                                 />
                               </div>
                             </div>
@@ -286,7 +264,7 @@ export default function SettingSection({ department }: SettingSectionProps) {
                 </div>
               </div>
               <div className="my-4">
-                <div className="flex justify-between">
+                <div className="flex items-end justify-between">
                   <div>
                     <h2 className="font-semibold ">Team Members</h2>
                     <p className="text-sm text-neutral-500">
@@ -294,20 +272,48 @@ export default function SettingSection({ department }: SettingSectionProps) {
                     </p>
                   </div>
                   <div>
-                    <div className="grid grid-cols-3 gap-3">
-                      <h2 className="text-right font-bold">รองผู้อำนวยการ</h2>
-                      <div className="col-span-2">
-                        {/* {department.deputyDirector
-                          ? department.deputyDirector.name
-                          : "-"} */}
+                    <div className="grid grid-cols-2 gap-2 rounded-lg">
+                      <div className="flex justify-end items-center gap-2">
+                        <MoonStar strokeWidth={1.5} className="text-blue-500" />
+                        รองผู้อำนวยการ/กำกับดูแล :{" "}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Image
+                          src={
+                            typeof department?.supervise?.user?.image ===
+                            "string"
+                              ? department?.supervise?.user?.image
+                              : (
+                                  department?.supervise?.user
+                                    ?.image as ImageType
+                                )?.url || "/test.png"
+                          }
+                          width={30}
+                          height={30}
+                          alt="ProfileDepartment"
+                          className="w-[30px] h-[30px] object-cover object-center rounded-full"
+                        />
+                        <h2 className="text-right text-stone-700">
+                          {department?.supervise?.user?.name}
+                        </h2>
                       </div>
                     </div>
-                    <div className="grid grid-cols-3 gap-3">
-                      <h2 className="text-right font-bold">หัวหน้างาน</h2>
-                      <div className="col-span-2">
-                        {/* {department.headOfDepartment
-                          ? department.headOfDepartment.name
-                          : "-"} */}
+
+                    <div className="grid grid-cols-2 gap-3 p-1 rounded-lg">
+                      <div className="flex justify-end items-center gap-2">
+                        <GraduationCap
+                          strokeWidth={1.5}
+                          className="text-red-500"
+                        />
+                        สังกัดที่หน่วยงาน :{" "}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <h2 className="text-right text-stone-700">
+                          {
+                            department?.supervise?.user?.department
+                              ?.department_name
+                          }
+                        </h2>
                       </div>
                     </div>
                   </div>
@@ -315,7 +321,10 @@ export default function SettingSection({ department }: SettingSectionProps) {
 
                 {/* List Team of department */}
                 <div className="">
-                  <ListEmployeeOfDepartment department={department} />
+                  <ListEmployeeOfDepartment
+                    department={department}
+                    fetchData={fetchDepart}
+                  />
                 </div>
               </div>
             </div>

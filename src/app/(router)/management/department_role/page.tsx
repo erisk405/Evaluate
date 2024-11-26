@@ -34,6 +34,7 @@ import AllListDepartment from "./_components/AllListDepartment";
 import { toast } from "@/components/ui/use-toast";
 import useStore from "@/app/store/store";
 import ManageRole from "./_components/ManageRole";
+import { Department } from "@/types/interface";
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
@@ -44,7 +45,8 @@ const formSchema = z.object({
 
 const page = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const { setDepartments, setRole } = useStore();
+  const { setRole } = useStore();
+  const [departmentData, setDepartmentData] = useState<Department[]>([]);
   // for load button
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -73,10 +75,9 @@ const page = () => {
 
   const getDepartment = async () => {
     try {
-      const response = await GlobalApi.getDepartment();
-      // console.log("Department :",response.data);
-
-      setDepartments(response?.data); // ตั้งค่าเป็นอาเรย์ว่างถ้าไม่มีข้อมูล
+      const response = await GlobalApi.getDepartmentForAdmin();
+      // console.log("Department :",response?.data);
+      setDepartmentData(response?.data); // ตั้งค่าเป็นอาเรย์ว่างถ้าไม่มีข้อมูล
     } catch (error) {
       console.error("Error fetching department data:", error);
     }
@@ -118,7 +119,9 @@ const page = () => {
       <div className="col-span-6 xl:col-span-4 ">
         <div className="bg-white w-full h-full shadow rounded-xl p-5">
           <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold text-stone-700 ">Department manage</h2>
+            <h2 className="text-2xl font-bold text-stone-700 ">
+              Department manage
+            </h2>
             <div
               className="hover:bg-blue-100 p-2 hover:text-blue-500 
               rounded-full active:scale-95 hover:scale-110 transition-all
@@ -132,14 +135,14 @@ const page = () => {
           </div>
           <div className="flex justify-between items-center mt-3 ">
             <div className="flex-1 max-w-[300px] relative">
+              <Search
+                size={18}
+                className="absolute top-1/2 left-0 -translate-y-1/2 translate-x-1/2 text-gray-500"
+              />
               <Input
                 type="text"
                 placeholder="Department"
-                className="rounded-full"
-              />
-              <Search
-                size={18}
-                className="absolute top-1/2 right-0 -translate-y-1/2 -translate-x-1/2 text-gray-500"
+                className="rounded-lg pl-8"
               />
             </div>
             <div className="flex items-center gap-5">
@@ -279,7 +282,7 @@ const page = () => {
             </div>
           </div>
           {/* All list departmemt */}
-          <AllListDepartment />
+          <AllListDepartment department={departmentData} fetchDepart={getDepartment} />
         </div>
       </div>
       <div className="col-span-6 xl:col-span-2 ">

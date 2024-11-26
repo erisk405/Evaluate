@@ -118,6 +118,13 @@ const createRole = (payload: any) => {
     console.error("Error role:", error);
   }
 };
+const updateRole = (payload: any) => {
+  try {
+    return axios.put(`${apiUrl}/role`, payload, { withCredentials: true });
+  } catch (error) {
+    console.error("Error role:", error);
+  }
+};
 
 const deleteRole = (id: string) => {
   try {
@@ -185,10 +192,27 @@ const getDepartment = async () => {
     console.error("Error Department:", error);
   }
 };
+
+const getDepartmentForAdmin = async () => {
+  try {
+    return await axios.get(`${apiUrl}/department/admin`, { withCredentials: true });
+  } catch (error) {
+    console.error("Error Department:", error);
+  }
+};
 const getDepartmentById = async (departmentId: string) => {
   // console.log(`page=${pageIndex}&size=${pageSize}`);
   try {
     const url = `${apiUrl}/department/${departmentId}`;
+    return await axios.get(url, { withCredentials: true });
+  } catch (error) {
+    console.error("Error Department:", error);
+  }
+};
+const getDepartmentByIdForAdmin = async (departmentId: string) => {
+  // console.log(`page=${pageIndex}&size=${pageSize}`);
+  try {
+    const url = `${apiUrl}/department/admin/${departmentId}`;
     return await axios.get(url, { withCredentials: true });
   } catch (error) {
     console.error("Error Department:", error);
@@ -378,7 +402,7 @@ const deletePeriod = (id: string) => {
     console.error("API createPeriod", { message: error });
   }
 };
-const updatePeriod = (payload:PeriodType) => {
+const updatePeriod = (payload: PeriodType) => {
   try {
     return axios.put(`${apiUrl}/period`, payload, { withCredentials: true });
   } catch (error) {
@@ -386,6 +410,27 @@ const updatePeriod = (payload:PeriodType) => {
   }
 };
 
+// -----------------------------------------------------------
+//                       supervises Table
+// -----------------------------------------------------------
+const createSupervise = (payload: { userId: string; departmentId: string }) => {
+  try {
+    return axios.post(`${apiUrl}/supervise`, payload, {
+      withCredentials: true,
+    });
+  } catch (error) {
+    // console.error("API createPeriod", { message: error });
+  }
+};
+const updateSupervise = (payload: {superviseId:string, userId: string; departmentId: string }) => {
+  try {
+    return axios.put(`${apiUrl}/supervise`, payload, {
+      withCredentials: true,
+    });
+  } catch (error) {
+    // console.error("API createPeriod", { message: error });
+  }
+};
 export default {
   fetchUserProfile,
   Logout,
@@ -419,5 +464,10 @@ export default {
   createPeriod,
   getPeriod,
   deletePeriod,
-  updatePeriod
+  updatePeriod,
+  updateRole,
+  createSupervise,
+  updateSupervise,
+  getDepartmentByIdForAdmin,
+  getDepartmentForAdmin
 };

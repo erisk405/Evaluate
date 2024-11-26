@@ -167,14 +167,37 @@ const ManageRole = () => {
   const onUpdate = async (values: any, id: string) => {
     try {
       console.log("values", values);
-
+      // --------------------------------------------
+      // update ข้อมูลของ Role พวก ชื่อ คำอธิบาย และ Level
+      // --------------------------------------------
+      const payload = {
+        role_id: id,
+        roleName: values.roleName,
+        description: values.description,
+        roleLevel: values.roleLevel,
+      };
       setLoading(true);
+      const response = await GlobalApi.updateRole(payload);
+      toast({
+        title: "อัพเดทเสร็จเรียบร้อยแล้ว ✅",
+        description: (
+          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-x-auto">
+            <code className="text-white whitespace-pre-wrap break-words">
+              {JSON.stringify(response?.data.message, null, 2)}
+            </code>
+          </pre>
+        ),
+      });
+      
+      // -----------------------------------------------------
+      // update ข้อมูลของ Role พวก permission การจัดการ form ต่างๆ
+      // -----------------------------------------------------
       const data = {
         assessorId: id,
         permissions,
       };
-      const response = await GlobalApi.updatePermission(data);
-      console.log(response);
+      const responsePermis = await GlobalApi.updatePermission(data);
+      console.log(responsePermis);
       fetchRole();
       setLoading(false);
       setOpenUpdate(false); // ปิด Dialog เมื่อ loading เสร็จสิ้น
@@ -184,7 +207,7 @@ const ManageRole = () => {
         description: (
           <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-x-auto">
             <code className="text-white whitespace-pre-wrap break-words">
-              {JSON.stringify(response?.data.message, null, 2)}
+              {JSON.stringify(responsePermis?.data.message, null, 2)}
             </code>
           </pre>
         ),
@@ -219,7 +242,8 @@ const ManageRole = () => {
       console.log("error", { message: error });
 
       toast({
-        title: "เกิดข้อผิดพลาด: โปรดตรวจสอบให้แน่ใจว่า ไม่มีผู้ใช้คนไหนกำลังใช้Role นี้อยู่",
+        title:
+          "เกิดข้อผิดพลาด: โปรดตรวจสอบให้แน่ใจว่า ไม่มีผู้ใช้คนไหนกำลังใช้Role นี้อยู่",
         description: (
           <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-x-auto">
             <code className="text-white whitespace-pre-wrap break-words">

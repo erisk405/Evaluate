@@ -107,7 +107,7 @@ export const columns: ColumnDef<User>[] = [
   },
   {
     accessorKey: "name",
-    header: "Name",
+    header: "ชื่อ-นามสกุล",
     cell: ({ row }) => (
       <div className="capitalize flex items-center gap-3">
         <Image
@@ -123,18 +123,34 @@ export const columns: ColumnDef<User>[] = [
   },
   {
     accessorKey: "role",
-    header: "Role",
+    header: "ตำแหน่ง",
     cell: ({ row }) => {
       return (
         <div className="flex items-center">
-          <SetStatusSection defaultValue={row.original.role.role_name} />
+          <h2>{row.original.role.role_name}</h2>
+          {/* <SetStatusSection defaultValue={row.original.role.role_name} /> */}
         </div>
       );
     },
   },
   {
+    accessorKey: "email",
+    header: ({ column }) => {
+      return (
+        <div
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="text-md inline-flex p-2 items-center cursor-pointer select-none hover:bg-gray-100 rounded-lg"
+        >
+          <h2>Email</h2>
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </div>
+      );
+    },
+    cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
+  },
+  {
     accessorKey: "phone",
-    header: "Phone",
+    header: "เบอร์โทร",
     cell: ({ row }) => {
       return (
         <div className="capitalize flex items-center gap-3">
@@ -171,17 +187,18 @@ export const columns: ColumnDef<User>[] = [
   },
 ];
 interface SettingSectionProps {
-  department: Department; // Replace 'string' with the appropriate type for departmentId
+  department: Department | undefined; // Replace 'string' with the appropriate type for departmentId
+  fetchData: () => void;
 }
 
-
-
-export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
+export function ListEmployeeOfDepartment({
+  department,
+  fetchData,
+}: SettingSectionProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [globalFilter, setGlobalFilter] = useState("");
-  const [allUser, setAllUser] = useState<User[]>([]);
 
   // select ตัวนี้ใช้กับ การที่ต้องการ select ข้อมูลทั้งตารางมาใช้ได้ในส่วนของ employee ในdepartment นั้นๆ
   const [rowSelection, setRowSelection] = useState({});
@@ -214,7 +231,7 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
       setIsLoading(false);
       const payload = {
         userIds: selectedItems, // selectedItems is an array of user IDs
-        departmentId: department.id,
+        departmentId: department?.id,
       };
       console.log("Payload:", payload); // For debugging
 
@@ -225,18 +242,6 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
       setIsLoading(true);
     } catch (error) {
       console.log(error);
-    }
-  };
-
-  const getDataOfEmployee = async () => {
-    const response = await GlobalApi.getDepartmentById(department.id);
-    console.log("response", response?.data?.department_data);
-    const result = response?.data?.department_data;
-
-    if (result) {
-      setAllUser(result.user);
-    } else {
-      setAllUser([]);
     }
   };
 
@@ -262,11 +267,11 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
   };
 
   useEffect(() => {
-    getDataOfEmployee();
+    fetchData();
   }, [usersEmptyDepartment]);
 
   const table = useReactTable({
-    data: allUser ?? [],
+    data: department?.user ?? [], // user ที่อยู่ภายในหน่วยงานนี้ทั้งหมด
     columns,
     state: {
       sorting,
@@ -293,11 +298,11 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
   });
   // สร้างฟังก์ชันสำหรับสร้าง pagination items
   const totalPages = Math.ceil(
-    allUser.length / table.getState().pagination.pageSize
+    (department?.user?.length ?? 0) / table.getState().pagination.pageSize
   );
   const currentPage = table.getState().pagination.pageIndex + 1;
   // สร้างฟังก์ชันสำหรับคำนวณว่าควรแสดงหน้าไหนบ้าง
-  const getPageNumbers = ():PageNumber[] => {
+  const getPageNumbers = (): PageNumber[] => {
     const pageNumbers: PageNumber[] = [];
 
     if (totalPages <= 7) {
@@ -341,7 +346,7 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
           placeholder="Filter by name or email..."
           value={globalFilter}
           onChange={(event) => setGlobalFilter(event.target.value)}
-          className="max-w-sm rounded-2xl"
+          className="max-w-sm rounded-lg"
         />
         <div className="flex items-center gap-3">
           {/* for add employee button  */}
@@ -514,10 +519,7 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead
-                      key={header.id}
-                      className="text-[16px] font-semibold text-neutral-800"
-                    >
+                    <TableHead key={header.id} className=" text-neutral-800">
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -586,7 +588,7 @@ export function ListEmployeeOfDepartment({ department }: SettingSectionProps) {
 
               {getPageNumbers().map((pageNumber, index) => (
                 <React.Fragment key={index}>
-                  {typeof pageNumber === 'string' ? (
+                  {typeof pageNumber === "string" ? (
                     <PaginationItem>
                       <PaginationEllipsis />
                     </PaginationItem>
