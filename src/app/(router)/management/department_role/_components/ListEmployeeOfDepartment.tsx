@@ -54,7 +54,7 @@ import {
 import Image from "next/image";
 import { Department, PageNumber, User } from "@/types/interface";
 import SetStatusSection from "./SetStatusSection";
-import GlobalApi from "@/app/_unit/GlobalApi";
+import GlobalApi from "@/app/_util/GlobalApi";
 import {
   Dialog,
   DialogContent,

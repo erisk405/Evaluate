@@ -29,7 +29,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import GlobalApi from "@/app/_unit/GlobalApi";
+import GlobalApi from "@/app/_util/GlobalApi";
 import AllListDepartment from "./_components/AllListDepartment";
 import { toast } from "@/components/ui/use-toast";
 import useStore from "@/app/store/store";

@@ -47,7 +47,7 @@ import { useParams } from "next/navigation";
 import axios from "axios";
 import { apiUrl } from "@/app/data/data-option";
 import useStore from "@/app/store/store";
-import GlobalApi from "@/app/_unit/GlobalApi";
+import GlobalApi from "@/app/_util/GlobalApi";
 import { motion } from "framer-motion";
 import { UserInDepartment } from "./_components/UserInDepartment";
 import { Department } from "@/types/interface";

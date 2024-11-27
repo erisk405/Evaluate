@@ -9,7 +9,7 @@ import useStore from "../store/store";
 import { toast } from "sonner";
 import moment from "moment-timezone";
 import { Notification } from "@/types/interface";
-import GlobalApi from "../_unit/GlobalApi";
+import GlobalApi from "../_util/GlobalApi";
 
 const TIMEZONE = "Asia/Bangkok";
 const PAGE_LIMIT = 4;

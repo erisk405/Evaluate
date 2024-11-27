@@ -21,7 +21,7 @@ import { useRef, useState } from "react";
 import { toast } from "@/components/ui/use-toast";
 import { Role, User } from "@/types/interface";
 import useStore from "@/app/store/store";
-import GlobalApi from "@/app/_unit/GlobalApi";
+import GlobalApi from "@/app/_util/GlobalApi";
 import SetRoleUserOptions from "./SetRoleUserOptions";
 import SetDepartmentUserOptions from "./SetDepartmentUserOptions";
 

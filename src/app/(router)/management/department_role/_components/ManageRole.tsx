@@ -65,7 +65,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import GlobalApi from "@/app/_unit/GlobalApi";
+import GlobalApi from "@/app/_util/GlobalApi";
 import EditRoleDialog from "./EditRoleDialog";
 import { toast } from "@/components/ui/use-toast";
 

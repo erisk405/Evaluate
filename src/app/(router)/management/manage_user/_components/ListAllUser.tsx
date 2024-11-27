@@ -57,7 +57,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import UserProfile from "./UserProfile";
-import GlobalApi from "@/app/_unit/GlobalApi";
+import GlobalApi from "@/app/_util/GlobalApi";
 import { PageNumber, User } from "@/types/interface";
 
 export const columns: ColumnDef<User>[] = [
@@ -73,10 +73,10 @@ export const columns: ColumnDef<User>[] = [
           {image?.url ? (
             <Image
               src={image?.url}
-              width={50}
-              height={50}
+              width={40}
+              height={40}
               alt="profiletable"
-              className="w-[50px] h-[50px] rounded-full object-cover"
+              className="w-[40px] h-[40px] rounded-full object-cover"
             />
           ) : (
             <Image
@@ -84,10 +84,10 @@ export const columns: ColumnDef<User>[] = [
               width={50}
               height={50}
               alt="profiletable"
-              className="w-[50px] h-[50px] rounded-full object-cover"
+              className="w-[40px] h-[40px] rounded-full object-cover"
             />
           )}
-          {row.getValue("name")}
+          <h2 className="truncate">{row.getValue("name")}</h2>
         </div>
       );
     },
@@ -99,9 +99,8 @@ export const columns: ColumnDef<User>[] = [
       const role_name = row.original.role.role_name;
       return (
         <div
-          className={`capitalize font-semibold inline-flex items-center gap-2
-            border border-gray-200 p-2 rounded-lg 
-            ${role_name != "member" ? "text-black" : "text-gray-500"}
+          className={`capitalize inline-flex items-center gap-2 p-2 rounded-lg 
+            ${role_name != "member" ? "text-stone-800" : "text-gray-500"}
           `}
         >
           <div
@@ -125,7 +124,7 @@ export const columns: ColumnDef<User>[] = [
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="text-[16px] font-semibold text-neutral-800"
+          className="text-neutral-800"
         >
           Email
           <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -152,8 +151,8 @@ export const columns: ColumnDef<User>[] = [
       const NameOfDepartment = row.original.department;
       return (
         <div
-          className="inline-flex items-center font-semibold
-        justify-center gap-2 border border-gray-200 px-3 py-1 rounded-xl max-w-52"
+          className="inline-flex items-center text-stone-800
+        justify-center gap-2  rounded-xl max-w-52"
         >
           <div
             className={`p-2 ${
@@ -167,7 +166,7 @@ export const columns: ColumnDef<User>[] = [
           <h2
             className={`${
               NameOfDepartment ? "text-stone-800" : "text-gray-500"
-            }`}
+            } truncate`}
           >
             {NameOfDepartment
               ? NameOfDepartment.department_name
@@ -323,7 +322,7 @@ export function ListEmployee() {
           placeholder="Filter by name or email..."
           value={globalFilter}
           onChange={(event) => setGlobalFilter(event.target.value)}
-          className="max-w-sm rounded-2xl"
+          className="max-w-sm rounded-xl"
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -352,7 +351,7 @@ export function ListEmployee() {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="rounded-2xl border bg-white">
+      <div className="rounded-xl border bg-white">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -361,7 +360,7 @@ export function ListEmployee() {
                   return (
                     <TableHead
                       key={header.id}
-                      className="text-[16px] font-semibold text-neutral-800"
+                      className="text-neutral-800"
                     >
                       {header.isPlaceholder
                         ? null

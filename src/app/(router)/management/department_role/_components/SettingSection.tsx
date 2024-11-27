@@ -22,7 +22,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Department, ImageType } from "@/types/interface";
-import GlobalApi from "@/app/_unit/GlobalApi";
+import GlobalApi from "@/app/_util/GlobalApi";
 import { ListEmployeeOfDepartment } from "./ListEmployeeOfDepartment";
 import { useEffect, useRef, useState } from "react";
 import useStore from "@/app/store/store";

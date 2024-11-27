@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import MyEvaluated from "./_components/MyEvaluated";
 import RightSection from "./_components/RightSection";
-import GlobalApi from "@/app/_unit/GlobalApi";
+import GlobalApi from "@/app/_util/GlobalApi";
 import ReportOverview from "./_components/ReportOverview";
 import Loading from "@/app/_components/Loading";
 const page = () => {

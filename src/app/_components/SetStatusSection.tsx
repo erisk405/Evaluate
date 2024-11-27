@@ -19,7 +19,7 @@ import {
 import { CommandList } from "cmdk";
 import { useEffect, useState } from "react";
 import useStore from "../store/store";
-import GlobalApi from "../_unit/GlobalApi";
+import GlobalApi from "../_util/GlobalApi";
 
 export default function SetStatusSection({ onRoleChange , defaultValue ,isPending} : any) {
   const [open, setOpen] = useState(false);

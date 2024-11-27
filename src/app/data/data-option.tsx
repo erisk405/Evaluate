@@ -47,6 +47,11 @@ const OptionSideBar = [
                 name: 'User',
                 path: '/management/manage_user',
             },
+            {
+                id: 'subOSide4',
+                name: 'Prefix',
+                path: '/management/prefix',
+            },
         ]
     },
     {

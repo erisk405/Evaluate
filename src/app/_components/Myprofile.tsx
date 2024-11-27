@@ -21,7 +21,7 @@ import { Separator } from "@/components/ui/separator";
 import SetStatusSection from "./SetStatusSection";
 import { useRef, useState } from "react";
 import useStore from "../store/store";
-import GlobalApi from "../_unit/GlobalApi";
+import GlobalApi from "../_util/GlobalApi";
 import { toast } from "@/components/ui/use-toast";
 import axios from "axios";
 import { apiUrl } from "../data/data-option";

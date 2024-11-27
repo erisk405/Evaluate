@@ -39,7 +39,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import GlobalApi from "@/app/_unit/GlobalApi";
+import GlobalApi from "@/app/_util/GlobalApi";
 import { PeriodType, TimeRange } from "@/types/interface";
 import DeletePariod from "./DeletePariod";
 import { toast } from "@/components/ui/use-toast";

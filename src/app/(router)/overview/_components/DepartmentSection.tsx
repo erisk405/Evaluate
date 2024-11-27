@@ -1,5 +1,5 @@
 "use client";
-import GlobalApi from "@/app/_unit/GlobalApi";
+import GlobalApi from "@/app/_util/GlobalApi";
 import useStore from "@/app/store/store";
 import { ImageType } from "@/types/interface";
 import Image from "next/image";

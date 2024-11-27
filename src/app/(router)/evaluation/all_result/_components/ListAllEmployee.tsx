@@ -52,7 +52,7 @@ import {
 } from "@/components/ui/pagination";
 import Image from "next/image";
 import { PageNumber, User } from "@/types/interface";
-import GlobalApi from "@/app/_unit/GlobalApi";
+import GlobalApi from "@/app/_util/GlobalApi";
 import React, { useEffect, useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import {

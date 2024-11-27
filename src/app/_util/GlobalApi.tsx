@@ -1,6 +1,6 @@
 "use client";
 
-import { Department, PeriodType } from "@/types/interface";
+import { Department, PeriodType, PrefixType } from "@/types/interface";
 import axios, { AxiosResponse } from "axios";
 interface UserProfile {
   [x: string]: any;
@@ -12,6 +12,9 @@ interface UserProfile {
 }
 const apiUrl = process.env.NEXT_PUBLIC_API_URL || `http://localhost:8000/api`;
 
+// -----------------------------------------------------------
+//                       prefix table
+// -----------------------------------------------------------
 const getPrefix = () => {
   try {
     return axios.get(`${apiUrl}/prefix`);
@@ -20,6 +23,28 @@ const getPrefix = () => {
   }
 };
 
+const createPrefix = (data:{prefix_name:string}) => {
+  try {
+    return axios.post(`${apiUrl}/prefix`, data, { withCredentials: true });
+  } catch (error) {
+    console.error("Error prefix:", error);
+  }
+};
+const deletePrefix= (payload: {}) => {
+  try {
+    return axios.delete(`${apiUrl}/prefix`, {
+      data: payload, // Send the payload directly
+      withCredentials: true,
+    });
+  } catch (error) {
+    console.error("API deletePrefix", { message: error });
+  }
+};
+
+
+// -----------------------------------------------------------
+//                       untitle
+// -----------------------------------------------------------
 const fetchProtected = () => {
   return axios.get(`${apiUrl}/protected`, {
     withCredentials: true,
@@ -469,5 +494,7 @@ export default {
   createSupervise,
   updateSupervise,
   getDepartmentByIdForAdmin,
-  getDepartmentForAdmin
+  getDepartmentForAdmin,
+  createPrefix,
+  deletePrefix
 };

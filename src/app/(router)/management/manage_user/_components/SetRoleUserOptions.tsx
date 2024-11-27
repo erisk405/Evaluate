@@ -19,7 +19,7 @@ import {
 import { CommandList } from "cmdk";
 import { useEffect, useState } from "react";
 import useStore from "@/app/store/store";
-import GlobalApi from "@/app/_unit/GlobalApi";
+import GlobalApi from "@/app/_util/GlobalApi";
 
 export default function SetRoleUserOptions({ onRoleChange , defaultValue} : any) {
   const [open, setOpen] = useState(false);

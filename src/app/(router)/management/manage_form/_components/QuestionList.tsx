@@ -11,7 +11,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal, Plus } from "lucide-react";
+import { MoreHorizontal, Plus } from "lucide-react";
 
 import {
   AlertDialog,
@@ -67,7 +67,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import GlobalApi from "@/app/_unit/GlobalApi";
+import GlobalApi from "@/app/_util/GlobalApi";
 import EditQuestionDialog from "./EditQuestionDialog";
 
 import { toast } from "sonner"

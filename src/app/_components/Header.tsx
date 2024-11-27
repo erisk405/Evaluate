@@ -19,7 +19,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import Myprofile from "./Myprofile";
-import GlobalApi from "../_unit/GlobalApi";
+import GlobalApi from "../_util/GlobalApi";
 import useStore from "../store/store";
 import socket from "@/lib/socket";
 import NotificationSection from "./NotificationSection";

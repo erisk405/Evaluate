@@ -1,5 +1,5 @@
 // store.ts
-import { Department, Role, RoleRequest } from '@/types/interface';
+import { Department, PrefixType, Role, RoleRequest } from '@/types/interface';
 import { create } from 'zustand';
 
 interface StoreState {
@@ -38,6 +38,9 @@ interface StoreState {
 
   roles: Role[];
   setRole: (roles: Role[]) => void;
+
+  prefixes: PrefixType[];
+  setPrefix: (prefixes: PrefixType[]) => void;
 }
 
 
@@ -92,6 +95,9 @@ const useStore = create<StoreState>((set) => ({
   setDepartments: (departments) => set(() => ({ departments })),
   roles: [],
   setRole: (roles) => set(() => ({ roles })),
+
+  prefixes: [],
+  setPrefix: (prefixes) => set(() => ({ prefixes })),
 }));
 
 export default useStore;

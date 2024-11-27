@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/popover";
 import { CommandList } from "cmdk";
 import { useEffect, useState } from "react";
-import GlobalApi from "@/app/_unit/GlobalApi";
+import GlobalApi from "@/app/_util/GlobalApi";
 import { User } from "@/types/interface";
 import Image from "next/image";
 

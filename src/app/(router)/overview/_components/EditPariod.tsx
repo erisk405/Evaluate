@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import GlobalApi from "@/app/_unit/GlobalApi";
+import GlobalApi from "@/app/_util/GlobalApi";
 import { toast } from "@/components/ui/use-toast";
 import { PeriodType, TimeRange } from "@/types/interface";
 import { Switch } from "@/components/ui/switch";
@@ -153,7 +153,7 @@ const EditPariod = ({
               <FormControl>
                 <div className="grid grid-cols-4 items-center w-full">
                   <Label htmlFor="period-active">
-                    Active(เปิด/ปิดการใช้งาน)
+                    Active
                   </Label>
                   <Switch
                     id="period-active"

@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/popover";
 import { useEffect, useState } from "react";
 import { CommandList } from "cmdk";
-import GlobalApi from "@/app/_unit/GlobalApi";
+import GlobalApi from "@/app/_util/GlobalApi";
 
 interface FormOptionProps {
   selectedValues: string[];

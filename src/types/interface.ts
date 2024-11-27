@@ -1,7 +1,7 @@
 type RoleLevel = "LEVEL_1" | "LEVEL_2" | "LEVEL_3" | "LEVEL_4";
 type PageNumber = number | 'ellipsis' | 'ellipsis1' | 'ellipsis2';
 interface ImageType {
-  id:string;
+  id: string;
   url: string; // Add any additional fields that may be part of the image object
   public_id: String;
 }
@@ -13,7 +13,7 @@ interface Department {
   department_name: string;
   image: ImageType;
   _count: DepartmentCount
-  supervise?:Supervise | null;
+  supervise?: Supervise | null;
   user?: User[];
   // เพิ่มข้อมูลที่จำเป็นตามโครงสร้างข้อมูลจริง
 }
@@ -22,7 +22,7 @@ interface dataDepartmentByAdmin {
   department_name: string;
   image: ImageType;
   _count: DepartmentCount
-  supervise?:Supervise | null;
+  supervise?: Supervise | null;
   user?: User[];
   // เพิ่มข้อมูลที่จำเป็นตามโครงสร้างข้อมูลจริง
 }
@@ -111,7 +111,18 @@ interface Supervise {
   supervise_id: string;
   user_id: string;
   department_id: string;
-  user?:User;
+  user?: User;
 }
 
-export type { ImageType, Department, Role, User, RoleRequest, Notification, Permission, PermissionForm, FormQuestion, PeriodType, PageNumber, TimeRange, Supervise };
+interface PrefixType {
+  prefix_id: string;
+  prefix_name: string;
+}
+
+export type {
+  ImageType, Department, Role,
+  User, RoleRequest, Notification,
+  Permission, PermissionForm,
+  FormQuestion, PeriodType, PageNumber,
+  TimeRange, Supervise, PrefixType
+};

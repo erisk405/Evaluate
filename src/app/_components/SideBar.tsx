@@ -15,7 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import GlobalApi from "../_unit/GlobalApi";
+import GlobalApi from "../_util/GlobalApi";
 const SideBar = () => {
   const [position, setPosition] = useState("");
   const [isAdmin, setIsAdmin] = useState(false); // สถานะของ admin
