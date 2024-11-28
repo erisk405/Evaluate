@@ -142,6 +142,8 @@ export const columns: ColumnDef<User>[] = [
     enableHiding: false,
     header: "Action",
     cell: ({ row }) => {
+      // console.log(row.original);
+      
       return (
         <div className="flex justify-center">
           <Sheet>
@@ -165,7 +167,7 @@ export const columns: ColumnDef<User>[] = [
               {/* ------------------------------------------------------- */}
               {/*        Conponent   Question and score input             */}
               {/* ------------------------------------------------------- */}
-              <EvaluateSection />
+              <EvaluateSection evaluatorUserIdTarget={row.original.id} evaluatorRoleTarget={row.original.role.id} />
               <SheetDescription>
                 Make changes to your profile here. Click save when you're done.
               </SheetDescription>
@@ -182,8 +184,7 @@ export function UserInDepartment({ member }: { member: User[] | undefined }) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
   const [globalFilter, setGlobalFilter] = React.useState("");
 

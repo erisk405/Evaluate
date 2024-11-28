@@ -14,7 +14,14 @@ import {
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
-import { FormQuestion } from "@/types/interface";
+import {
+  FormQuestion,
+  PermissionFormItem,
+  PermissionItem,
+} from "@/types/interface";
+import useStore from "@/app/store/store";
+import { useParams } from "next/navigation";
+import GlobalApi from "@/app/_util/GlobalApi";
 type SubData = {
   id: string;
   content: string;
@@ -39,119 +46,47 @@ type Payload = Record<
     question: PayloadQuestion[];
   }
 >;
-const data = [
-  {
-    id: "CO01",
-    HeadTitle: "ทักษะการปฎิบัติงาน",
-    subData: [
-      {
-        id: "11",
-        content: "ปริมาณผลงาน",
-      },
-      {
-        id: "12",
-        content: "ความอุสาหพยายาม",
-      },
-      {
-        id: "13",
-        content: "การบำรุงรักษาเครื่องมือและอุปกรณ์ที่ใช้",
-      },
-      {
-        id: "14",
-        content: "การตัดสินใจและแก้ปัญหาเฉพาะหน้า",
-      },
-      {
-        id: "15",
-        content: "ความคิดริเริ่มในการปฎิบัติงาน",
-      },
-      {
-        id: "16",
-        content: "ความรับผิดชอบต่อหน้าที่ที่ได้รับมอบหมาย",
-      },
-      {
-        id: "17",
-        content: "ความรวดเร็วในการปฎิบัติงาน",
-      },
-      {
-        id: "18",
-        content: "ตรงต่อเวลาในการทำงาน",
-      },
-    ],
-  },
-  {
-    id: "CO02",
-    HeadTitle: "ความรู้เชิงวิชาการ",
-    subData: [
-      {
-        id: "06",
-        content: "มีความคิดริเริ่ม/การนำวิธี่ที่มีประสิทธิภาพมาใช้",
-      },
-      {
-        id: "07",
-        content: "ความใฝ่หาความรู้และคุณภาพงาน",
-      },
-      {
-        id: "08",
-        content: "การจัดระบบบริหารควบคุมและติดตามผลงาน",
-      },
-      {
-        id: "09",
-        content: "ทักษะและเทคนิคในการทำงาน",
-      },
-      {
-        id: "10",
-        content: "การวางแผนและการเตรียมอุปกรณ์ก่อนการทำงาน",
-      },
-    ],
-  },
-  {
-    id: "CO03",
-    HeadTitle: "จิตพิสัยในการทำงาน",
-    subData: [
-      {
-        id: "01",
-        content: "การอุทิศเวลาให้แก่ราชการอย่างสม่ำเสมอ",
-      },
-      {
-        id: "02",
-        content: "ลักษณะการเป็นผู้นำและผู้ตามที่ดี",
-      },
-      {
-        id: "03",
-        content: "การให้คำปรึกษาและประสานงานกับผู้เกี่ยวข้อง",
-      },
-      {
-        id: "04",
-        content: "ความประพฤติและการควบคุมอารมณ์",
-      },
-      {
-        id: "05",
-        content: "บุคลิกภาพและการแต่งกาย",
-      },
-    ],
-  },
-];
 
-const EvaluateSection = () => {
+type evaluateSection = {
+  evaluatorUserIdTarget: string;
+  evaluatorRoleTarget: string;
+};
+
+const EvaluateSection = ({
+  evaluatorUserIdTarget,
+  evaluatorRoleTarget,
+}: evaluateSection) => {
   const [selectedValues, setSelectedValues] = useState<string[]>(
     Array(18).fill("3")
   );
-  const [payload, setPayload] = useState(
-    data.reduce<Payload>(
-      (acc, curr) => ({
-        ...acc,
-        [curr.HeadTitle]: {
-          formId: curr.id,
-          question: curr.subData.map((item) => ({
-            questionId: item.id,
-            content: item.content,
-            score: "3",
-          })),
-        },
-      }),
-      {}
-    )
-  );
+  const params = useParams<{ departmentId: string }>();
+  const [formEvaluation, setFormEvaluation] = useState<
+    PermissionFormItem[] | undefined
+  >([]);
+  const { ProfileDetail, updateProfileDetail } = useStore();
+
+  const [payload, setPayload] = useState<Payload>({});
+
+  // เพิ่ม useEffect เพื่อ initialize payload เมื่อ formEvaluation เปลี่ยน
+  useEffect(() => {
+    if (formEvaluation && formEvaluation.length > 0) {
+      const initialPayload = formEvaluation.reduce<Payload>(
+        (acc, curr) => ({
+          ...acc,
+          [curr.form.name]: {
+            formId: curr.form.id,
+            question: curr.form.questions.map((item) => ({
+              questionId: item.id,
+              content: item.content,
+              score: "3",
+            })),
+          },
+        }),
+        {}
+      );
+      setPayload(initialPayload);
+    }
+  }, [formEvaluation]);
   const handleValueChange = (index: number, value: string) => {
     const newSelectedValues = [...selectedValues];
     newSelectedValues[index] = value;
@@ -211,13 +146,50 @@ const EvaluateSection = () => {
       return ""; // Return empty string if no match found
     }
   };
-  useEffect(() => {
-    console.log("selectedValues", selectedValues);
-  }, [selectedValues]);
 
+  const handleSubmit = async () => {
+    try {
+      const allQuestions = Object.values(payload).flatMap((item) =>
+        item.question.map((q) => ({
+          questionId: q.questionId,
+          score: q.score,
+        }))
+      );
+      const data = {
+        period_id:"c9ca7297-ad51-4d8f-8362-14f2d85d40a6",
+        assessor_id: ProfileDetail.id,
+        evaluator_id: evaluatorUserIdTarget,
+        questions: allQuestions,
+      };
+      console.log("data",data);
+      
+      // const response = await GlobalApi.createEvaluate(data);
+      // console.log("response",response);
+      
+    } catch (error) {
+      console.log({ message: error });
+    }
+  };
   useEffect(() => {
-    console.log("payload", payload);
-  }, [payload]);
+    const ingroup = params.departmentId === ProfileDetail?.department?.id;
+    // console.log("ingroup", ProfileDetail);
+    // Find the appropriate permission for the evaluator
+    const matchedPermission = ProfileDetail?.role?.permissionsAsAssessor.find(
+      (item) => item.evaluator_role_id === evaluatorRoleTarget
+    );
+    // console.log("filteredPermissions", matchedPermission);
+    // Filter the forms based on the `ingroup` value
+    const Form = matchedPermission?.permissionForm.filter(
+      (item) => item.ingroup === ingroup
+    );
+    console.log("Form", Form);
+    // Update the state with the filtered forms
+    if (Form) {
+      setFormEvaluation(Form);
+    } else {
+      setFormEvaluation([]);
+    }
+  }, [params.departmentId, evaluatorRoleTarget]);
   return (
     <div className="mt-3">
       <div className="flex items-center w-full flex-col">
@@ -247,28 +219,28 @@ const EvaluateSection = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {data.map((item) => (
-                <React.Fragment key={item.id}>
+              {formEvaluation?.map((item) => (
+                <React.Fragment key={item.form.id}>
                   <TableRow className="text-[16px] bg-blue-100">
                     <TableCell colSpan={3} className="font-bold text-stone-700">
-                      {item.HeadTitle}
+                      {item.form.name}
                     </TableCell>
                   </TableRow>
-                  {item.subData.map((sup, index) => (
-                    <TableRow key={sup.id} className="text-[16px]">
+                  {item.form.questions?.map((ques, index) => (
+                    <TableRow key={ques.id} className="text-[16px]">
                       <TableCell className="font-medium text-center">
                         {index + 1}
                       </TableCell>
-                      <TableCell>{sup.content}</TableCell>
+                      <TableCell>{ques.content}</TableCell>
                       <TableCell className="text-center min-w-[50px] w-[400px] max-w-[400px]">
                         <RadioGroup
                           defaultValue="3"
                           className="flex gap-3 justify-around flex-wrap "
                           onValueChange={(value) => {
                             handleValueChange(index, value);
-                            handlePayloadChange(item.HeadTitle, item.id, {
-                              id: sup.id,
-                              content: sup.content,
+                            handlePayloadChange(item.form.name, item.form.id, {
+                              id: ques.id,
+                              content: ques.content,
                               score: value,
                             });
                           }}
@@ -276,121 +248,35 @@ const EvaluateSection = () => {
                           {/* ---------------------------------- */}
                           {/*            score contenct          */}
                           {/* ---------------------------------- */}
-                          {/*  score 5 */}
-                          <div className="flex items-center relative  ">
-                            <RadioGroupItem
-                              value="5"
-                              id={"r5" + sup.id}
-                              className="z-0 w-10 h-10"
-                            />
-                            <Label
-                              htmlFor={"r5" + sup.id}
-                              className={`${
-                                handleRaioColorChange(item.id, sup.id) === "5"
-                                  ? "bg-blue-500 text-white"
-                                  : "bg-white text-black"
-                              }
-                              absolute left-1/2 -translate-x-1/2 w-10 h-10 rounded-full 
-                              border border-neutral-500
-                              flex justify-center items-center transition-all
-                              z-10
-                          `}
+                          {[5, 4, 3, 2, 1].map((score) => (
+                            <div
+                              key={score}
+                              className="flex items-center relative"
                             >
-                              5
-                            </Label>
-                          </div>
-                          {/*  score 4 */}
-                          <div className="flex items-center relative">
-                            <RadioGroupItem
-                              value="4"
-                              id={"r4" + sup.id}
-                              className="w-10 h-10"
-                            />
-                            <Label
-                              htmlFor={"r4" + sup.id}
-                              className={`${
-                                handleRaioColorChange(item.id, sup.id) === "4"
-                                  ? "bg-blue-500 text-white"
-                                  : "bg-white text-black"
-                              }
-                              absolute w-10 h-10 rounded-full left-1/2 -translate-x-1/2 
-                              border border-neutral-500 transition-all
-                              flex justify-center items-center 
-                              z-10
-                          `}
-                            >
-                              4
-                            </Label>
-                          </div>
-                          {/*  score 3 */}
-                          <div className="flex items-center relative">
-                            <RadioGroupItem
-                              value="3"
-                              id={"r3" + sup.id}
-                              className="w-10 h-10"
-                            />
-                            <Label
-                              htmlFor={"r3" + sup.id}
-                              className={`${
-                                handleRaioColorChange(item.id, sup.id) === "3"
-                                  ? "bg-blue-500 text-white"
-                                  : "bg-white text-black"
-                              }
-                              absolute w-10 h-10 rounded-full left-1/2 -translate-x-1/2 
-                              border border-neutral-500 transition-all
-                              flex justify-center items-center
-                              z-10
-                          `}
-                            >
-                              3
-                            </Label>
-                          </div>
-                          {/*  score 2 */}
-                          <div className="flex items-center relative">
-                            <RadioGroupItem
-                              value="2"
-                              id={"r2" + sup.id}
-                              className="w-10 h-10"
-                            />
-                            <Label
-                              htmlFor={"r2" + sup.id}
-                              className={`${
-                                handleRaioColorChange(item.id, sup.id) === "2"
-                                  ? "bg-blue-500 text-white"
-                                  : "bg-white text-black"
-                              }
-                              absolute w-10 h-10 rounded-full left-1/2 -translate-x-1/2 
-                              border border-neutral-500 transition-all
-                              flex justify-center items-center
-                              z-10
-                          `}
-                            >
-                              2
-                            </Label>
-                          </div>
-                          {/*  score 1 */}
-                          <div className="flex items-center relative">
-                            <RadioGroupItem
-                              value="1"
-                              id={"r1" + sup.id}
-                              className="w-10 h-10"
-                            />
-                            <Label
-                              htmlFor={"r1" + sup.id}
-                              className={`${
-                                handleRaioColorChange(item.id, sup.id) === "1"
-                                  ? "bg-blue-500 text-white"
-                                  : "bg-white text-black"
-                              }
-                              absolute w-10 h-10 rounded-full left-1/2 -translate-x-1/2 
-                              border border-neutral-500 transition-all
-                              flex justify-center items-center
-                              z-10
-                          `}
-                            >
-                              1
-                            </Label>
-                          </div>
+                              <RadioGroupItem
+                                value={score.toString()}
+                                id={`r${score}${ques.id}`}
+                                className="z-0 w-10 h-10"
+                              />
+                              <Label
+                                htmlFor={`r${score}${ques.id}`}
+                                className={`
+                        ${
+                          handleRaioColorChange(item.form.id, ques.id) ===
+                          score.toString()
+                            ? "bg-blue-500 text-white"
+                            : "bg-white text-black"
+                        }
+                        absolute w-10 h-10 rounded-full left-1/2 -translate-x-1/2 
+                        border border-neutral-500 transition-all
+                        flex justify-center items-center 
+                        z-10 cursor-pointer
+                      `}
+                              >
+                                {score}
+                              </Label>
+                            </div>
+                          ))}
                         </RadioGroup>
                       </TableCell>
                     </TableRow>
@@ -401,7 +287,9 @@ const EvaluateSection = () => {
           </Table>
         </div>
         <div className="flex justify-center my-3">
-          <Button type="submit">Save inform</Button>
+          <Button type="submit" onClick={handleSubmit}>
+            Save inform
+          </Button>
         </div>
       </div>
     </div>

@@ -47,8 +47,25 @@ interface Role {
   description: string,
   role_name: string,
   role_level: RoleLevel;
-  permissionsAsAssessor: Permission[]
+  permissionsAsAssessor: PermissionItem[];
 }
+
+interface PermissionItem {
+  assessor_role_id: string;
+  evaluator_role_id: string;
+  permissionForm: PermissionFormItem[]; // Replace 'any' with the specific type if known
+  permission_id: string;
+}
+interface PermissionFormItem {
+  form: {
+    id: string;
+    name: string;
+    questions: FormQuestion[];
+  };
+  ingroup: boolean;
+
+}
+
 interface Permission {
   permission_id: string,
   assessorRole: {
@@ -124,5 +141,6 @@ export type {
   User, RoleRequest, Notification,
   Permission, PermissionForm,
   FormQuestion, PeriodType, PageNumber,
-  TimeRange, Supervise, PrefixType
+  TimeRange, Supervise, PrefixType, PermissionFormItem,
+  PermissionItem, dataDepartmentByAdmin
 };

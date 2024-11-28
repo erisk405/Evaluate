@@ -165,20 +165,28 @@ const page = () => {
       withCredentials: true,
     });
     const { department } = response.data;
+    // console.log("department",department);
+    
     updateProfileDetail({
-      department: department ? department.department_name : null,
+      department: department ? department : null,
     });
   };
 
   const fetchDepartment = async () => {
     const response = await GlobalApi.getDepartmentById(params.departmentId);
     const data = response?.data.department_data;
-    console.log(data);
+    // console.log(data);
     setDepartment(data);
   };
   useEffect(() => {
+    console.log("ProfileDetail",ProfileDetail);
+    
     fetchDepartment();
   }, []);
+  // useEffect(() => {
+  //   console.log("ProfileDetail",ProfileDetail);
+    
+  // }, [ProfileDetail]);
 
   return (
     <div className="m-5 w-full flex flex-col gap-3">
@@ -197,7 +205,7 @@ const page = () => {
             <div>
               <AlertDialog>
                 {department.department_name ? (
-                  ProfileDetail.department === department.department_name ? (
+                  ProfileDetail.department?.department_name === department.department_name ? (
                     <h2 className="flex items-center gap-2 py-1 px-2 rounded-lg text-lg font-bold text-emerald-500 bg-emerald-100">
                       <Check />
                       คุณอยู่ในหน่วยงานนี้แล้ว
@@ -308,7 +316,8 @@ const page = () => {
                   delay: 0.3,
                 }}
               >
-                <UserInDepartment member={department.user} />
+                {/* ตั้งเงื่อนไขเพื่อไม่ให้เห็นชื่อตัวเองภายในหน่วยงานในตอนที่จะทำการประเมิน */}
+                <UserInDepartment member={department.user?.filter((users)=> users.id !== ProfileDetail.id)} /> 
               </motion.div>
             </div>
           ) : (

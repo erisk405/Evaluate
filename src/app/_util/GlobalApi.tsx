@@ -23,14 +23,14 @@ const getPrefix = () => {
   }
 };
 
-const createPrefix = (data:{prefix_name:string}) => {
+const createPrefix = (data: { prefix_name: string }) => {
   try {
     return axios.post(`${apiUrl}/prefix`, data, { withCredentials: true });
   } catch (error) {
     console.error("Error prefix:", error);
   }
 };
-const deletePrefix= (payload: {}) => {
+const deletePrefix = (payload: {}) => {
   try {
     return axios.delete(`${apiUrl}/prefix`, {
       data: payload, // Send the payload directly
@@ -40,7 +40,6 @@ const deletePrefix= (payload: {}) => {
     console.error("API deletePrefix", { message: error });
   }
 };
-
 
 // -----------------------------------------------------------
 //                       untitle
@@ -220,7 +219,9 @@ const getDepartment = async () => {
 
 const getDepartmentForAdmin = async () => {
   try {
-    return await axios.get(`${apiUrl}/department/admin`, { withCredentials: true });
+    return await axios.get(`${apiUrl}/department/admin`, {
+      withCredentials: true,
+    });
   } catch (error) {
     console.error("Error Department:", error);
   }
@@ -447,13 +448,36 @@ const createSupervise = (payload: { userId: string; departmentId: string }) => {
     // console.error("API createPeriod", { message: error });
   }
 };
-const updateSupervise = (payload: {superviseId:string, userId: string; departmentId: string }) => {
+const updateSupervise = (payload: {
+  superviseId: string;
+  userId: string;
+  departmentId: string;
+}) => {
   try {
     return axios.put(`${apiUrl}/supervise`, payload, {
       withCredentials: true,
     });
   } catch (error) {
     // console.error("API createPeriod", { message: error });
+  }
+};
+
+// -----------------------------------------------------------
+//                       Evaluate Table
+// -----------------------------------------------------------
+type createEvaluateType = {
+  period_id:string;
+  assessor_id: string;
+  evaluator_id: string;
+  questions: { questionId: string; score: string }[];
+};
+const createEvaluate = (payload: createEvaluateType) => {
+  try {
+    return axios.post(`${apiUrl}/evaluate`, payload, {
+      withCredentials: true,
+    });
+  } catch (error) {
+    console.error("API evaluate", { message: error });
   }
 };
 export default {
@@ -496,5 +520,6 @@ export default {
   getDepartmentByIdForAdmin,
   getDepartmentForAdmin,
   createPrefix,
-  deletePrefix
+  deletePrefix,
+  createEvaluate,
 };

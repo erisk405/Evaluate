@@ -82,7 +82,7 @@ export default function Myprofile() {
       lastName: ProfileDetail?.name?.split(" ")[1],
       image: undefined,
       email: ProfileDetail?.email ? ProfileDetail?.email : "",
-      Department: ProfileDetail?.department? ProfileDetail.department : 'no department',
+      Department: ProfileDetail?.department? ProfileDetail.department.department_name : 'no department',
       role: ProfileDetail?.role?.id,
     },
   });
