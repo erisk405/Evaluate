@@ -22,6 +22,8 @@ import {
 import useStore from "@/app/store/store";
 import { useParams } from "next/navigation";
 import GlobalApi from "@/app/_util/GlobalApi";
+import { toast } from "@/components/ui/use-toast";
+import axios from "axios";
 type SubData = {
   id: string;
   content: string;
@@ -56,9 +58,7 @@ const EvaluateSection = ({
   evaluatorUserIdTarget,
   evaluatorRoleTarget,
 }: evaluateSection) => {
-  const [selectedValues, setSelectedValues] = useState<string[]>(
-    Array(18).fill("3")
-  );
+  const [selectedValues, setSelectedValues] = useState<string[]>([]);
   const params = useParams<{ departmentId: string }>();
   const [formEvaluation, setFormEvaluation] = useState<
     PermissionFormItem[] | undefined
@@ -156,18 +156,64 @@ const EvaluateSection = ({
         }))
       );
       const data = {
-        period_id:"c9ca7297-ad51-4d8f-8362-14f2d85d40a6",
-        assessor_id: ProfileDetail.id,
+        period_id: "c9ca7297-ad51-4d8f-8362-14f2d85d40a6",
+        assessor_id: ProfileDetail.id!, // Ensuring non-null
         evaluator_id: evaluatorUserIdTarget,
-        questions: allQuestions,
+        questions: allQuestions, // ตอนแรกเป็นarrays เลยส่งไปแบบ object ที่มีความสัมพันธ์แบบ key value
       };
-      console.log("data",data);
-      
-      // const response = await GlobalApi.createEvaluate(data);
-      // console.log("response",response);
-      
-    } catch (error) {
-      console.log({ message: error });
+      console.log("data", data);
+
+      const response = await GlobalApi.createEvaluate(data);
+      console.log("response", response);
+      toast({
+        title: "บันทึกข้อมูลเรียบร้อยแล้ว",
+        description: (
+          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-x-auto">
+            <code className="text-white whitespace-pre-wrap break-words">
+              {JSON.stringify(response?.data, null, 2)}
+            </code>
+          </pre>
+        ),
+      });
+    } catch (error: unknown) {
+      // ตรวจสอบว่า error เป็น instance ของ AxiosError หรือไม่
+      if (axios.isAxiosError(error)) {
+        // ถ้าเป็น AxiosError ให้ดึงข้อมูลจาก response
+        toast({
+          title: "เกิดข้อผิดพลาด",
+          description: (
+            <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-x-auto">
+              <code className="text-white whitespace-pre-wrap break-words">
+                {JSON.stringify(error.response?.data?.message, null, 2)}
+              </code>
+            </pre>
+          ),
+        });
+      } else if (error instanceof Error) {
+        // ถ้าเป็น instance ของ Error ทั่วไป
+        toast({
+          title: "เกิดข้อผิดพลาด",
+          description: (
+            <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-x-auto">
+              <code className="text-white whitespace-pre-wrap break-words">
+                {JSON.stringify(error.message, null, 2)}
+              </code>
+            </pre>
+          ),
+        });
+      } else {
+        // กรณีที่ไม่สามารถระบุประเภทข้อผิดพลาดได้
+        toast({
+          title: "เกิดข้อผิดพลาดที่ไม่รู้จัก",
+          description: (
+            <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-x-auto">
+              <code className="text-white whitespace-pre-wrap break-words">
+                {JSON.stringify(error, null, 2)}
+              </code>
+            </pre>
+          ),
+        });
+      }
     }
   };
   useEffect(() => {

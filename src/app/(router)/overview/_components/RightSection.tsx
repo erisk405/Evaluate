@@ -44,6 +44,7 @@ import { PeriodType, TimeRange } from "@/types/interface";
 import DeletePariod from "./DeletePariod";
 import { toast } from "@/components/ui/use-toast";
 import EditPariod from "./EditPariod";
+import axios from "axios";
 
 type RightSectionProps = {
   permission?: string; // ใส่ ? เพื่อบอกว่าอาจเป็น undefined ได้
@@ -131,18 +132,45 @@ const RightSection = ({ permission }: RightSectionProps) => {
           </pre>
         ),
       });
-    } catch (error: any) {
-      console.error({ message: error });
-      toast({
-        title: "เกิดข้อผิดพลาด",
-        description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-x-auto">
-            <code className="text-white whitespace-pre-wrap break-words">
-              {JSON.stringify(error.response.data.message, null, 2)}
-            </code>
-          </pre>
-        ),
-      });
+    } catch (error: unknown) {
+      // ตรวจสอบว่า error เป็น instance ของ AxiosError หรือไม่
+      if (axios.isAxiosError(error)) {
+        // ถ้าเป็น AxiosError ให้ดึงข้อมูลจาก response
+        toast({
+          title: "เกิดข้อผิดพลาด",
+          description: (
+            <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-x-auto">
+              <code className="text-white whitespace-pre-wrap break-words">
+                {JSON.stringify(error.response?.data?.message, null, 2)}
+              </code>
+            </pre>
+          ),
+        });
+      } else if (error instanceof Error) {
+        // ถ้าเป็น instance ของ Error ทั่วไป
+        toast({
+          title: "เกิดข้อผิดพลาด",
+          description: (
+            <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-x-auto">
+              <code className="text-white whitespace-pre-wrap break-words">
+                {JSON.stringify(error.message, null, 2)}
+              </code>
+            </pre>
+          ),
+        });
+      } else {
+        // กรณีที่ไม่สามารถระบุประเภทข้อผิดพลาดได้
+        toast({
+          title: "เกิดข้อผิดพลาดที่ไม่รู้จัก",
+          description: (
+            <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-x-auto">
+              <code className="text-white whitespace-pre-wrap break-words">
+                {JSON.stringify(error, null, 2)}
+              </code>
+            </pre>
+          ),
+        });
+      }
     }
   };
 

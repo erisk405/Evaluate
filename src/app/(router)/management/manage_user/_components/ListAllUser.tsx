@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -59,185 +58,185 @@ import {
 import UserProfile from "./UserProfile";
 import GlobalApi from "@/app/_util/GlobalApi";
 import { PageNumber, User } from "@/types/interface";
+import React, { useEffect, useState } from "react";
 
-export const columns: ColumnDef<User>[] = [
-  {
-    accessorKey: "name",
-    header: "Name",
-    cell: ({ row }) => {
-      const image = row.original.image;
-      console.log("image :", image);
-
-      return (
-        <div className="capitalize flex items-center gap-3">
-          {image?.url ? (
-            <Image
-              src={image?.url}
-              width={40}
-              height={40}
-              alt="profiletable"
-              className="w-[40px] h-[40px] rounded-full object-cover"
-            />
-          ) : (
-            <Image
-              src="/profiletest.jpg"
-              width={50}
-              height={50}
-              alt="profiletable"
-              className="w-[40px] h-[40px] rounded-full object-cover"
-            />
-          )}
-          <h2 className="truncate">{row.getValue("name")}</h2>
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "role",
-    header: "Role",
-    cell: ({ row }) => {
-      const role_name = row.original.role.role_name;
-      return (
-        <div
-          className={`capitalize inline-flex items-center gap-2 p-2 rounded-lg 
-            ${role_name != "member" ? "text-stone-800" : "text-gray-500"}
-          `}
-        >
-          <div
-            className={`p-1 rounded-full ${
-              role_name != "member"
-                ? "bg-emerald-50 text-emerald-500"
-                : "text-gray-500"
-            } `}
-          >
-            <Ribbon size={20} />
-          </div>
-          {role_name}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "email",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="text-neutral-800"
-        >
-          Email
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
-  },
-  {
-    accessorKey: "phone",
-    header: "Phone",
-    cell: ({ row }) => {
-      return (
-        <div className="capitalize flex items-center gap-3">
-          {row.getValue("phone")}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "department",
-    header: "Department",
-    cell: ({ row }) => {
-      const NameOfDepartment = row.original.department;
-      return (
-        <div
-          className="inline-flex items-center text-stone-800
-        justify-center gap-2  rounded-xl max-w-52"
-        >
-          <div
-            className={`p-2 ${
-              NameOfDepartment
-                ? "bg-cyan-50 text-cyan-500"
-                : "bg-gray-100 text-gray-500"
-            } rounded-full`}
-          >
-            <Building2 strokeWidth={2} size={20} />
-          </div>
-          <h2
-            className={`${
-              NameOfDepartment ? "text-stone-800" : "text-gray-500"
-            } truncate`}
-          >
-            {NameOfDepartment
-              ? NameOfDepartment.department_name
-              : "No Department"}
-          </h2>
-        </div>
-      );
-    },
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    header: "Action",
-    cell: ({ row }) => {
-      return (
-        <Dialog>
-          <DialogTrigger asChild>
-            <div className="active:scale-90  transition-all">
-              <Button variant="outline" className="flex gap-1">
-                <div className="bg-blue-100 p-1 rounded-full items-center justify-center text-blue-500">
-                  <Pencil size={16} />
-                </div>
-                Edit
-              </Button>
-            </div>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[565px]">
-            <DialogHeader>
-              <DialogTitle>
-                <div className="flex items-center gap-2">
-                  <div className="bg-cyan-50 p-2 rounded-full">
-                    <UserRoundCog size={30} className="text-blue-500" />
-                  </div>
-                  <h2 className="text-2xl">Edit user</h2>
-                </div>
-              </DialogTitle>
-              <DialogDescription>
-                Make changes to your profile here. Click save when you're done.
-              </DialogDescription>
-            </DialogHeader>
-            {/* User Profile */}
-            <UserProfile userDetail={row.original} />
-          </DialogContent>
-        </Dialog>
-      );
-    },
-  },
-];
 
 export function ListEmployee() {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  );
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
-  const [globalFilter, setGlobalFilter] = React.useState("");
-
-  const [allUser, setAllUser] = React.useState<User[]>([]);
-
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = useState({});
+  const [globalFilter, setGlobalFilter] = useState("");
+  const [allUser, setAllUser] = useState<User[]>([]);
   const fetchUserList = async () => {
     const response = await GlobalApi.getAllUsers();
     // console.log("AllUser", response?.data);
     setAllUser(response?.data);
   };
-
-
-  React.useEffect(() => {
+  useEffect(() => {
     fetchUserList();
   }, []);
+  const columns: ColumnDef<User>[] = [
+    {
+      accessorKey: "name",
+      header: "Name",
+      cell: ({ row }) => {
+        const image = row.original.image;
+        console.log("image :", image);
+
+        return (
+          <div className="capitalize flex items-center gap-3">
+            {image?.url ? (
+              <Image
+                src={image?.url}
+                width={40}
+                height={40}
+                alt="profiletable"
+                className="w-[40px] h-[40px] rounded-full object-cover"
+              />
+            ) : (
+              <Image
+                src="/profiletest.jpg"
+                width={50}
+                height={50}
+                alt="profiletable"
+                className="w-[40px] h-[40px] rounded-full object-cover"
+              />
+            )}
+            <h2 className="truncate">{row.getValue("name")}</h2>
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "role",
+      header: "Role",
+      cell: ({ row }) => {
+        const role_name = row.original.role.role_name;
+        return (
+          <div
+            className={`capitalize inline-flex items-center gap-2 p-2 rounded-lg 
+              ${role_name != "member" ? "text-stone-800" : "text-gray-500"}
+            `}
+          >
+            <div
+              className={`p-1 rounded-full ${
+                role_name != "member"
+                  ? "bg-emerald-50 text-emerald-500"
+                  : "text-gray-500"
+              } `}
+            >
+              <Ribbon size={20} />
+            </div>
+            {role_name}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "email",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="text-neutral-800"
+          >
+            Email
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="lowercase">{row.getValue("email")}</div>
+      ),
+    },
+    {
+      accessorKey: "phone",
+      header: "Phone",
+      cell: ({ row }) => {
+        return (
+          <div className="capitalize flex items-center gap-3">
+            {row.getValue("phone")}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "department",
+      header: "Department",
+      cell: ({ row }) => {
+        const NameOfDepartment = row.original.department;
+        return (
+          <div
+            className="inline-flex items-center text-stone-800
+          justify-center gap-2  rounded-xl max-w-52"
+          >
+            <div
+              className={`p-2 ${
+                NameOfDepartment
+                  ? "bg-cyan-50 text-cyan-500"
+                  : "bg-gray-100 text-gray-500"
+              } rounded-full`}
+            >
+              <Building2 strokeWidth={2} size={20} />
+            </div>
+            <h2
+              className={`${
+                NameOfDepartment ? "text-stone-800" : "text-gray-500"
+              } truncate`}
+            >
+              {NameOfDepartment
+                ? NameOfDepartment.department_name
+                : "No Department"}
+            </h2>
+          </div>
+        );
+      },
+    },
+    {
+      id: "actions",
+      enableHiding: false,
+      header: "Action",
+      cell: ({ row }) => {
+        return (
+          <Dialog>
+            <DialogTrigger asChild>
+              <div className="active:scale-90  transition-all">
+                <Button variant="outline" className="flex gap-1">
+                  <div className="bg-blue-100 p-1 rounded-full items-center justify-center text-blue-500">
+                    <Pencil size={16} />
+                  </div>
+                  Edit
+                </Button>
+              </div>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[565px]">
+              <DialogHeader>
+                <DialogTitle>
+                  <div className="flex items-center gap-2">
+                    <div className="bg-cyan-50 p-2 rounded-full">
+                      <UserRoundCog size={30} className="text-blue-500" />
+                    </div>
+                    <h2 className="text-2xl">Edit user</h2>
+                  </div>
+                </DialogTitle>
+                <DialogDescription>
+                  Make changes to your profile here. Click save when you're
+                  done.
+                </DialogDescription>
+              </DialogHeader>
+              {/* User Profile */}
+              <UserProfile
+                userDetail={row.original}
+                refreshData={fetchUserList}
+              />
+            </DialogContent>
+          </Dialog>
+        );
+      },
+    },
+  ];
   const table = useReactTable({
     data: allUser ?? [],
     columns,
@@ -270,7 +269,7 @@ export function ListEmployee() {
       return name.includes(searchValue) || email.includes(searchValue);
     },
   });
-  
+
   // สร้างฟังก์ชันสำหรับสร้าง pagination items
   const totalPages = Math.ceil(
     allUser?.length / table.getState().pagination.pageSize
@@ -358,10 +357,7 @@ export function ListEmployee() {
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead
-                      key={header.id}
-                      className="text-neutral-800"
-                    >
+                    <TableHead key={header.id} className="text-neutral-800">
                       {header.isPlaceholder
                         ? null
                         : flexRender(

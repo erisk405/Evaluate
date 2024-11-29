@@ -25,7 +25,6 @@ export default function SetStatusSection({ onRoleChange , defaultValue ,isPendin
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
   const { roles, setRole } = useStore();
-  const { ProfileDetail } = useStore();
   const fetchRole = async () => {
     try {
       const response = await GlobalApi.getRole();
@@ -47,8 +46,7 @@ export default function SetStatusSection({ onRoleChange , defaultValue ,isPendin
   useEffect(() => {
     
     fetchRole();
-    console.log("ProfileDetail",ProfileDetail);
-  }, [ProfileDetail.roleRequests]);
+  }, []);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

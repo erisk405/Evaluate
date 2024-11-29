@@ -19,36 +19,30 @@ import {
 import { CommandList } from "cmdk";
 import { useEffect, useState } from "react";
 import useStore from "@/app/store/store";
-import GlobalApi from "@/app/_util/GlobalApi";
 
-export default function SetRoleUserOptions({ onRoleChange , defaultValue} : any) {
+export default function SetRoleUserOptions({
+  onRoleChange,
+  defaultValue,
+}: any) {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
-  const { roles, setRole } = useStore();
-  const { ProfileDetail } = useStore();
-  const fetchRole = async () => {
-    try {
-      const response = await GlobalApi.getRole();
-      console.log("role:", response);
-      setRole(response?.data);
+  const { roles } = useStore();
 
-      // Set default value based on fetched roles
-      const defaultRole = response?.data.find(
-        (role: any) => role.role_name === defaultValue
-      );
-      if (defaultRole) {
-        setValue(defaultRole.role_name);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
   // ให้ เรียกใช้ function ใหม่หากเกิดการเปลี่ยนแปลงที่ rolRequest
   useEffect(() => {
+    console.log("roles", roles);
+
+    // Set default value based on fetched roles
+    const defaultRole = roles.find(
+      (role: any) => role.id === defaultValue.id
+    );
+    console.log("defaultRole",defaultRole);
     
-    fetchRole();
-    console.log("ProfileDetail",ProfileDetail);
-  }, [ProfileDetail.roleRequests]);
+    if (defaultRole) {
+      setValue(defaultRole.role_name);
+    }
+
+  }, []);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -72,8 +66,6 @@ export default function SetRoleUserOptions({ onRoleChange , defaultValue} : any)
           <CommandGroup>
             <CommandList>
               {roles.map((Role) => (
-                // <FormField
-                // />
                 <CommandItem
                   key={Role.id}
                   value={Role.role_name}

@@ -123,13 +123,31 @@ const updateDepartmentImage = async (
   );
 };
 
+//  ใช้ ที่หน้า department & role path menagement ตอนที่จะเลือกเข้าuser คนไหนเข้าหน่วยงาน
 const addUsersToDepartment = async (payload: any) => {
-  return await axios.put(`${apiUrl}/usersToDepartment`, payload, {
-    withCredentials: true,
-    headers: {
-      "Content-Type": "application/json", // Set content type to JSON
-    },
-  });
+  try {
+    return await axios.put(`${apiUrl}/usersToDepartment`, payload, {
+      withCredentials: true,
+      headers: {
+        "Content-Type": "application/json", // Set content type to JSON
+      },
+    });
+  } catch (error) {
+    console.error("Error usersToDepartment:", error);
+  }
+};
+
+const updateUserProfileByAdmin = async (payload: any) => {
+  try {
+    return await axios.put(`${apiUrl}/userProfile`, payload, {
+      withCredentials: true,
+      headers: {
+        "Content-Type": "application/json", // Set content type to JSON
+      },
+    });
+  } catch (error) {
+    console.error("Error userProfile:", error);
+  }
 };
 
 // -----------------------------------------------------------
@@ -466,7 +484,7 @@ const updateSupervise = (payload: {
 //                       Evaluate Table
 // -----------------------------------------------------------
 type createEvaluateType = {
-  period_id:string;
+  period_id: string;
   assessor_id: string;
   evaluator_id: string;
   questions: { questionId: string; score: string }[];
@@ -522,4 +540,5 @@ export default {
   createPrefix,
   deletePrefix,
   createEvaluate,
+  updateUserProfileByAdmin,
 };

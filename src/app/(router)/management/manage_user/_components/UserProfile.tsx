@@ -41,8 +41,8 @@ const formSchema = z.object({
   email: z.string().email({
     message: "Please enter a valid email address.",
   }),
-  Department: z.string().min(10, {
-    message: "Department must be at least 10 characters",
+  Department: z.string().min(1, {
+    message: "Department is required",
   }),
   role: z.string().min(1, {
     message: "Role is required",
@@ -51,8 +51,9 @@ const formSchema = z.object({
 
 interface UserProfileProps {
   userDetail: User;
+  refreshData: () => void;
 }
-const UserProfile = ({ userDetail }: UserProfileProps) => {
+const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
   // for image changing
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -81,47 +82,59 @@ const UserProfile = ({ userDetail }: UserProfileProps) => {
       lastName: userDetail?.name?.split(" ")[1],
       image: undefined,
       email: userDetail?.email ? userDetail?.email : "",
-      Department: userDetail?.department?.department_name
-        ? userDetail.department.department_name
-        : "no department",
+      Department: userDetail?.department?.id || "", // Ensure a string is provided
       role: userDetail?.role?.id,
     },
   });
 
   // 2. Define a submit handler.
-
-  // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsLoading(false);
-    console.log(values);
+    try {
+      setIsLoading(false);
+      console.log(values);
+      // console.log("userDetail",userDetail);
 
-    const formData = new FormData();
-    if (values.image) {
-      formData.append("image", values.image);
-      try {
-        const response = await GlobalApi.updateUserImage(formData);
-        console.log(response);
-        const { id, name, image, email, role } = response.data;
-      } catch (error) {
-        console.error("Error updating user image:", error);
-      } finally {
-        setIsLoading(true);
-        toast({
-          description: `✅ Your are save success`,
-        });
+      const formData = new FormData();
+      if (values.image) {
+        formData.append("image", values.image);
+        try {
+          const response = await GlobalApi.updateUserImage(formData);
+          console.log(response);
+          const { id, name, image, email, role } = response.data;
+        } catch (error) {
+          console.error("Error updating user image:", error);
+        } finally {
+          setIsLoading(true);
+          toast({
+            description: `✅ Your are save success`,
+          });
+        }
       }
-    }
-    if (userDetail.role && userDetail.role.id === values.role) {
-      console.log("request role เดิม ", values.role, ":  ", userDetail.role.id);
-    }
 
-    setIsLoading(true);
+      const data = {
+        userId: userDetail.id,
+        name: values.firstName + " " + values.lastName,
+        department: values.Department,
+        email: values.email,
+        role: values.role,
+      };
+      const response = await GlobalApi.updateUserProfileByAdmin(data);
+      console.log(response);
+      refreshData();
+      setIsLoading(true);
+    } catch (error) {
+      console.log("error",{message:error});
+      
+    }
   }
 
   // function เอาไว้ใชักับ SetStatusSection เพื่อให้สามารถนำ valueจาก component ด้านนอกมาใช้ได้
   const { setValue } = form;
   const handleRoleChange: any = (newRole: any) => {
     setValue("role", newRole);
+  };
+  const handleDepertmentChange: any = (newData: any) => {
+    setValue("Department", newData);
   };
 
   return (
@@ -264,11 +277,15 @@ const UserProfile = ({ userDetail }: UserProfileProps) => {
                     <FormControl className="col-span-8">
                       <div className="relative">
                         <div className="flex items-center gap-3">
-                          <SetDepartmentUserOptions />
+                          <SetDepartmentUserOptions
+                            onDepartmentChange={handleDepertmentChange}
+                            defaultValue={userDetail.department}
+                          />
                         </div>
                       </div>
                     </FormControl>
                   </div>
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -284,7 +301,10 @@ const UserProfile = ({ userDetail }: UserProfileProps) => {
                     <FormControl className="col-span-8">
                       <div className="relative">
                         <div className="flex items-center gap-3">
-                          <SetRoleUserOptions />
+                          <SetRoleUserOptions
+                            onRoleChange={handleRoleChange}
+                            defaultValue={userDetail.role}
+                          />
                         </div>
                       </div>
                     </FormControl>
@@ -325,7 +345,9 @@ const UserProfile = ({ userDetail }: UserProfileProps) => {
             <FormItem>
               <div className="grid grid-cols-11 items-center gap-3">
                 <h2 className="col-span-3">Reset Password</h2>
-                <Button variant={"outline"} className="px-16 active:scale-95">Reset</Button>
+                <Button variant={"outline"} className="px-16 active:scale-95">
+                  Reset
+                </Button>
               </div>
               <FormDescription>
                 You can reset password for member
@@ -334,7 +356,7 @@ const UserProfile = ({ userDetail }: UserProfileProps) => {
             </FormItem>
             <div className="w-full text-right">
               {isLoading ? (
-                <Button className="w-32" type="submit" disabled>
+                <Button className="w-32" type="submit">
                   Save Change
                 </Button>
               ) : (
