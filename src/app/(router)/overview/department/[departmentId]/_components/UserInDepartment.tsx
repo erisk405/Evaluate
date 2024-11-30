@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -54,6 +53,7 @@ import { PageNumber, User } from "@/types/interface";
 import EvaluateSection from "./EvaluateSection";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import React, { useState } from "react";
 
 export const columns: ColumnDef<User>[] = [
   {
@@ -180,13 +180,13 @@ export const columns: ColumnDef<User>[] = [
 ];
 
 export function UserInDepartment({ member }: { member: User[] | undefined }) {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
     []
   );
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
-  const [globalFilter, setGlobalFilter] = React.useState("");
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = useState({});
+  const [globalFilter, setGlobalFilter] = useState("");
 
   const table = useReactTable({
     data: member ?? [],
@@ -257,6 +257,7 @@ export function UserInDepartment({ member }: { member: User[] | undefined }) {
     }
     return pageNumbers;
   };
+
   return (
     <div className="w-full ">
       <div className="flex items-center py-4">

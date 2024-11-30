@@ -71,81 +71,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Label } from "@/components/ui/label";
-
-export const columns: ColumnDef<PrefixType>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "index",
-    header: "ลำดับ",
-    cell: ({ row }) => <div className="capitalize ">{row.index + 1}</div>,
-  },
-  {
-    accessorKey: "prefix_name",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          คำนำหน้า
-          <ArrowUpDown size={18} />
-        </Button>
-      );
-    },
-    cell: ({ row }) => (
-      <div className="lowercase">{row.getValue("prefix_name")}</div>
-    ),
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const prefix = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(prefix.prefix_name)}
-            >
-              Copy prefix name
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  },
-];
+import EditPrefixName from "./EditPrefixName";
 
 const formSchema = z.object({
   prefix_name: z
@@ -179,14 +105,14 @@ const PrefixTable = () => {
   };
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      console.log("values", values);
+      // console.log("values", values);
 
       const response = await GlobalApi.createPrefix(values);
 
-      fetchPrefix()
+      fetchPrefix();
       setOpen(false);
       toast("Event has been created", {
-        description: `ชื่อคำนำหน้า : ${response?.data}`,
+        description: `ชื่อคำนำหน้า : ${response?.data.prefix_name}`,
       });
     } catch (error) {
       console.log(error);
@@ -199,14 +125,14 @@ const PrefixTable = () => {
         .rows.map((row) => row.original);
       console.log("payload", selectData);
 
-      const response = await GlobalApi.deletePrefix(selectData)
-      console.log("response", response);
+      const response = await GlobalApi.deletePrefix(selectData);
+      console.log("selectData", selectData);
       if (!response) {
         throw new Error("prefix delete fail");
       }
       fetchPrefix();
       toast("Event has been delete", {
-        description: `message : ${response?.data.message}`,
+        description: `ลบ ${selectData.map((item)=> item.prefix_name + ",")} เรียบร้อย`,
       });
     } catch (error: any) {
       console.error({ message: error });
@@ -221,7 +147,120 @@ const PrefixTable = () => {
       });
     }
   };
-
+  const columns: ColumnDef<PrefixType>[] = [
+    {
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      accessorKey: "index",
+      header: "ลำดับ",
+      cell: ({ row }) => <div className="capitalize ">{row.index + 1}</div>,
+    },
+    {
+      accessorKey: "prefix_name",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            คำนำหน้า
+            <ArrowUpDown size={18} />
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="lowercase">{row.getValue("prefix_name")}</div>
+      ),
+    },
+    {
+      id: "actions",
+      enableHiding: false,
+      cell: ({ row }) => {
+        const prefix = row.original;
+        const [open, setOpen] = useState(false);
+        const handleUpdate = async (values: any) => {
+          try {
+            const payload = {
+              prefix_id: prefix.prefix_id,
+              prefix_name: values.prefix_name,
+            };
+            const response = await GlobalApi.updatePrefix(payload);
+            if (!response) {
+              throw new Error("Question update fail");
+            }
+            fetchPrefix() // fetch ข้อมูลใหม่
+            console.log("response", response);
+            toast("Event has been updated", {
+              description: `แก้คำนำหน้าเป็น : "${response?.data.prefix_name}" เรียบร้อยแล้ว`,
+            });
+          } catch (error) {
+            console.error({ message: error });
+            toast("เกิดข้อผิดพลาด", {
+              description: (
+                <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-x-auto">
+                  <code className="text-white whitespace-pre-wrap break-words">
+                    {JSON.stringify({ message: error }, null, 2)}
+                  </code>
+                </pre>
+              ),
+            });
+          }
+        };
+        return (
+          <>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                  <span className="sr-only">Open menu</span>
+                  <MoreHorizontal />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                <DropdownMenuItem
+                  onClick={() =>
+                    navigator.clipboard.writeText(prefix.prefix_name)
+                  }
+                >
+                  Copy prefix name
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onSelect={() => setOpen(true)}>
+                  Edit
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <EditPrefixName
+              open={open} // สถานะการเปิด/ปิด Dialog (boolean)
+              setOpen={setOpen} // function สำหรับเปลี่ยนสถานะ Dialog
+              prefix={prefix} // ข้อมูล prefix ที่ต้องการแก้ไข
+              onUpdate={handleUpdate}
+            />
+          </>
+        );
+      },
+    },
+  ];
   const table = useReactTable({
     data: prefixes,
     columns,

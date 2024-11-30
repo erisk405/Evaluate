@@ -40,7 +40,7 @@ const Header = () => {
     try {
       const response = await GlobalApi.fetchUserProfile(); // Await the promise
       const { id, name, image, email, role,roleRequests,department } = response.data;
-      console.log("fetchUserProfile",response);
+      // console.log("fetchUserProfile",response);
       
       updateProfileDetail({
         id,
@@ -67,7 +67,7 @@ const Header = () => {
     };
   }, []);
   return (
-    <div className="flex relative justify-between items-center py-2">
+    <div className="z-50 flex relative justify-between items-center py-2">
       <div className="flex-1 flex items-center min-w-[200px] max-w-[1000px] gap-12">
 
         {/* logo */}

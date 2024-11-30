@@ -70,7 +70,7 @@ import {
 import GlobalApi from "@/app/_util/GlobalApi";
 import EditQuestionDialog from "./EditQuestionDialog";
 
-import { toast } from "sonner"
+import { toast } from "sonner";
 export type questionProp = {
   id: string;
   content: string;
@@ -83,99 +83,6 @@ const formSchema = z.object({
     .max(100, { message: "massage must not exceed 100 characters." }),
 });
 
-export const columns: ColumnDef<questionProp>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "index",
-    header: "ลำดับ",
-    cell: ({ row }) => (
-      <div className="capitalize text-center">{row.index + 1}</div>
-    ),
-  },
-  {
-    accessorKey: "content",
-    header: "ข้อคำถาม",
-    cell: ({ row }) => (
-      <div className="capitalize ">{row.getValue("content")}</div>
-    ),
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const question = row.original;
-      const [open, setOpen] = useState(false);
-      const handleUpdate = async (values: any) => {
-        try {
-          const payload = {
-            questionId: question.id, 
-            content: values.content,
-          }
-          // console.log("value",payload);
-          const response = await GlobalApi.updateQuestion(payload);
-          if (!response) {
-            throw new Error("Question update fail");
-          }
-        } catch (error) {
-          console.error({ message: error });
-        }
-      };
-      return (
-        <>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() => navigator.clipboard.writeText(question.content)}
-              >
-                Copy question
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              {/* Edit section  */}
-              <DropdownMenuItem onSelect={() => setOpen(true)}>
-                Edit
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          {/* 1. การส่ง Props ไปยัง EditQuestionDialog */}
-          <EditQuestionDialog
-            open={open} // สถานะการเปิด/ปิด Dialog (boolean)
-            setOpen={setOpen} // function สำหรับเปลี่ยนสถานะ Dialog
-            question={question} // ข้อมูล question ที่ต้องการแก้ไข
-            onUpdate={handleUpdate} // function callback สำหรับการ update
-          />
-        </>
-      );
-    },
-  },
-];
 type QuestionListProp = {
   formId: string;
 };
@@ -205,9 +112,17 @@ export function QuestionList({ formId }: QuestionListProp) {
       setOpen(false);
       toast("Event has been created", {
         description: `ชื่อคำถาม : ${response?.data.content}`,
-      })
-    } catch (error) {
-      console.log(error);
+      });
+    } catch (error: any) {
+      toast("เกิดข้อผิดพลาด", {
+        description: (
+          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-x-auto">
+            <code className="text-white whitespace-pre-wrap break-words">
+              {JSON.stringify(error?.response?.data?.message, null, 2)}
+            </code>
+          </pre>
+        ),
+      });
     }
   };
   const deleteQuestion = async () => {
@@ -224,9 +139,9 @@ export function QuestionList({ formId }: QuestionListProp) {
       }
       toast("Event has been delete", {
         description: `message : ${response?.data.message}`,
-      })
+      });
       fetchQuestion();
-    } catch (error:any) {
+    } catch (error: any) {
       console.error({ message: error });
       toast("เกิดข้อผิดพลาด", {
         description: (
@@ -253,6 +168,119 @@ export function QuestionList({ formId }: QuestionListProp) {
       .rows.map((row) => row.original);
     console.log("rowSelection", selectData);
   }, [rowSelection]);
+  // -----------------------------------
+  //      ส่วนของ columns และข้อมูล
+  // -----------------------------------
+  const columns: ColumnDef<questionProp>[] = [
+    {
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      accessorKey: "index",
+      header: "ลำดับ",
+      cell: ({ row }) => (
+        <div className="capitalize text-center">{row.index + 1}</div>
+      ),
+    },
+    {
+      accessorKey: "content",
+      header: "ข้อคำถาม",
+      cell: ({ row }) => (
+        <div className="capitalize ">{row.getValue("content")}</div>
+      ),
+    },
+    {
+      id: "actions",
+      enableHiding: false,
+      cell: ({ row }) => {
+        const question = row.original;
+        const [open, setOpen] = useState(false);
+        const handleUpdate = async (values: any) => {
+          try {
+            const payload = {
+              questionId: question.id,
+              content: values.content,
+            };
+            // console.log("value",payload);
+            const response = await GlobalApi.updateQuestion(payload);
+            if (!response) {
+              throw new Error("Question update fail");
+            }
+            console.log("response",response?.data);
+            
+            fetchQuestion();
+            toast("Event has been updated", {
+              description: `แก้ชื่อคำถามเป็น : "${response?.data.datail.content}" เรียบร้อยแล้ว`,
+            });
+          } catch (error) {
+            console.error({ message: error });
+            toast("เกิดข้อผิดพลาด", {
+              description: (
+                <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-x-auto">
+                  <code className="text-white whitespace-pre-wrap break-words">
+                    {JSON.stringify({ message: error }, null, 2)}
+                  </code>
+                </pre>
+              ),
+            });
+          }
+        };
+        return (
+          <>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                  <span className="sr-only">Open menu</span>
+                  <MoreHorizontal />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                <DropdownMenuItem
+                  onClick={() =>
+                    navigator.clipboard.writeText(question.content)
+                  }
+                >
+                  Copy question
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                {/* Edit section  */}
+                <DropdownMenuItem onSelect={() => setOpen(true)}>
+                  Edit
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            {/* 1. การส่ง Props ไปยัง EditQuestionDialog */}
+            <EditQuestionDialog
+              open={open} // สถานะการเปิด/ปิด Dialog (boolean)
+              setOpen={setOpen} // function สำหรับเปลี่ยนสถานะ Dialog
+              question={question} // ข้อมูล question ที่ต้องการแก้ไข
+              onUpdate={handleUpdate} // function callback สำหรับการ update
+            />
+          </>
+        );
+      },
+    },
+  ];
   const table = useReactTable({
     data: question,
     columns,

@@ -22,7 +22,7 @@ import GlobalApi from "@/app/_util/GlobalApi";
 import { User } from "@/types/interface";
 import Image from "next/image";
 
-export default function SetHeadOfDepartmentSection({
+export default function SetSuperviseOfDepartmentSection({
   onSuperviserChange,
   defaultValue,
 }: any) {
@@ -98,7 +98,7 @@ export default function SetHeadOfDepartmentSection({
                     />
                     <div className="flex items-center gap-2 w-[240px]">
                       <Image
-                        src={User.image.url}
+                        src={User.image ? User.image.url : "/profiletest.jpg"}
                         width={30}
                         height={30}
                         alt="userEliteProfile"

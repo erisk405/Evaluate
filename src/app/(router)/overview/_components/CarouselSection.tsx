@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Autoplay from "embla-carousel-autoplay";
 
 import { Card, CardContent } from "@/components/ui/card";
@@ -11,62 +11,92 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import Image from "next/image";
-import { ShieldCheck } from "lucide-react";
-const CarouselSection = () => {
-  const plugin = useRef(Autoplay({ delay: 7000, stopOnInteraction: true }));
-  const AdminRol = [
-    {
-      id: "AR01",
-      name: "GasGas",
-      img: "/gas.jpg",
-      massage: "ดั่งมี....!!!!! ใบมีดทิ่มแทงงงง~~ ช้าาๆ มันแทงงลงไปป",
-    },
-    {
-      id: "AR02",
-      name: "Kla dog",
-      img: "/kla.jpg",
-      massage: "ไม่มี...!!! ไม่มีเรี่ยวแรงงงง~~ ไม่อาจแกล้งง ว่าไม่~ เป็นไรรรร",
-    },
-    {
-      id: "AR03",
-      name: "Krittaphat Samrit",
-      img: "/profiletest.jpg",
-      massage: "อยู่อยู่ ก็มีแต่น้ำ...~~ ตาาาาาา~ จิตใจก็เริ่มอ่อนล่า มลายหายไปป~~",
-    },
-    {
-      id: "AR04",
-      name: "Amphon",
-      img: "/amphon.jpg",
-      massage: "ช่วยบอกกันทีได้มั้ย ฉันทำวิ่งใดด ถึงต้องมาเจ็บช้ำ...~~",
-    },
-  ];
+import {
+  ArrowRight,
+  CalendarClock,
+  Clock9,
+  Dot,
+  ShieldCheck,
+} from "lucide-react";
+import GlobalApi from "@/app/_util/GlobalApi";
+import { PeriodType } from "@/types/interface";
+
+type CarouselSectionProp = {
+  period: PeriodType[];
+  formatThaiDateTime: (isoString: string) => { date: string; time: string };
+};
+const CarouselSection = ({
+  period,
+  formatThaiDateTime,
+}: CarouselSectionProp) => {
   return (
     <Carousel
-      plugins={[plugin.current]}
-      className="w-auto mx-10"
-      onMouseEnter={plugin.current.stop}
-      onMouseLeave={plugin.current.reset}
+      opts={{
+        align: "start",
+      }}
+      orientation="vertical"
+      className="w-full"
     >
-      <CarouselContent>
-        {AdminRol.map((item) => (
-          <CarouselItem key={item.id}>
-            <div className="flex items-end gap-2">
-              <div className="min-w-[40px]">
-                <Image
-                  src={item?.img}
-                  width={50}
-                  height={50}
-                  alt="adminProfile"
-                  className="w-[40px] h-[40px] rounded-full object-cover"
-                />
-              </div>
-              <div className="bg-violet-100 p-3 rounded-lg ">
-                <h2 className="text-violet-700 flex items-center gap-1">
-                  <ShieldCheck />
-                  {item?.name}
-                </h2>
-                <p>{item?.massage}</p>
-              </div>
+      <CarouselContent className="-mt-1 h-[230px]">
+        {period.map((item, index) => (
+          <CarouselItem key={index} className="pt-1 md:basis-1/2">
+            <div className="p-1">
+              <Card>
+                <CardContent className="flex items-center justify-center p-3">
+                  <div
+                    key={item.period_id}
+                    className="grid transition-all  w-full"
+                  >
+                    <div className="flex items-center">
+                      <div className="relative">
+                        {/*-------------------------------------------- ------*/}
+                        {/*               card ของ ช่วงเวลา                    */}
+                        {/*-------------------------------------------- ------*/}
+                        <div className="flex items-center ">
+                          {/* Dot สถานะ */}
+                          <div className="relative">
+                            <Dot
+                              strokeWidth={6}
+                              className={`absolute ${
+                                new Date() > new Date(item.end)
+                                  ? "text-blue-500 "
+                                  : "text-emerald-500"
+                              } animate-ping`}
+                            />
+                            <Dot
+                              strokeWidth={6}
+                              className={`${
+                                new Date() > new Date(item.end)
+                                  ? "text-blue-500 "
+                                  : "text-green-500"
+                              }`}
+                            />
+                          </div>
+                          {/* ชื่อรอบของช่วงเวลา */}
+                          <div className="">
+                            <h2>{item.title}</h2>
+                          </div>
+                        </div>
+                        {/* การแสดงผลช่วงเวลา */}
+                        <div className="pl-6 ">
+                          <div className="flex items-center gap-1">
+                            <CalendarClock size={18} />
+                            <h2>{formatThaiDateTime(item.start).date}</h2>
+                            <ArrowRight size={18} />
+                            <h2>{formatThaiDateTime(item.end).date}</h2>
+                          </div>
+                          <div className="flex items-center  gap-1">
+                            <Clock9 size={18} />
+                            <h2>{formatThaiDateTime(item.start).time} น.</h2>
+                            <ArrowRight size={18} />
+                            <h2>{formatThaiDateTime(item.end).time} น.</h2>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </CarouselItem>
         ))}

@@ -36,7 +36,7 @@ const SideBar = () => {
   }, []);
 
   return (
-    <div className="sticky top-32 z-50">
+    <div className="sticky top-32 z-30">
       {/* option */}
       <div className="my-9 mx-2 flex flex-col gap-3 w-auto">
         {OptionSideBar.map((item) =>
@@ -57,7 +57,7 @@ const SideBar = () => {
                 <h2 className="text-lg hidden md:block">{item.name}</h2>
               </div>
               <div className="block md:hidden">
-                <div className="absolute md:block z-50 ease-in-out bg-stone-800 text-white transition-all translate-x-full right-1/4 group-hover:-right-1 group-hover:visible invisible top-1/2 px-2 py-1 rounded-sm -translate-y-1/2">
+                <div className="absolute md:block z-30 ease-in-out bg-stone-800 text-white transition-all translate-x-full right-1/4 group-hover:-right-1 group-hover:visible invisible top-1/2 px-2 py-1 rounded-sm -translate-y-1/2">
                   <h2 className="text-sm">{item.name}</h2>
                 </div>
               </div>

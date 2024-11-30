@@ -22,7 +22,13 @@ const getPrefix = () => {
     console.error("Error prefix:", error);
   }
 };
-
+const updatePrefix = (data: { prefix_id: string; prefix_name: string }) => {
+  try {
+    return axios.put(`${apiUrl}/prefix`, data, { withCredentials: true });
+  } catch (error) {
+    console.error("API updatePrefix", { message: error });
+  }
+};
 const createPrefix = (data: { prefix_name: string }) => {
   try {
     return axios.post(`${apiUrl}/prefix`, data, { withCredentials: true });
@@ -457,6 +463,7 @@ const updatePeriod = (payload: PeriodType) => {
 // -----------------------------------------------------------
 //                       supervises Table
 // -----------------------------------------------------------
+
 const createSupervise = (payload: { userId: string; departmentId: string }) => {
   try {
     return axios.post(`${apiUrl}/supervise`, payload, {
@@ -487,6 +494,7 @@ type createEvaluateType = {
   period_id: string;
   assessor_id: string;
   evaluator_id: string;
+  eval_depart_id: string;
   questions: { questionId: string; score: string }[];
 };
 const createEvaluate = (payload: createEvaluateType) => {
@@ -541,4 +549,5 @@ export default {
   deletePrefix,
   createEvaluate,
   updateUserProfileByAdmin,
+  updatePrefix
 };

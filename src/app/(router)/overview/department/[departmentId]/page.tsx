@@ -175,7 +175,7 @@ const page = () => {
   const fetchDepartment = async () => {
     const response = await GlobalApi.getDepartmentById(params.departmentId);
     const data = response?.data.department_data;
-    // console.log(data);
+    console.log(data);
     setDepartment(data);
   };
   useEffect(() => {

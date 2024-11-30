@@ -17,6 +17,7 @@ import {
 import {
   AlarmClockPlus,
   ArrowRight,
+  Building2,
   CalendarClock,
   ChevronDown,
   ChevronUp,
@@ -282,7 +283,7 @@ const RightSection = ({ permission }: RightSectionProps) => {
             ease: [0, 0.71, 0.2, 1.01],
             delay: 0.1,
           }}
-          className="bg-white px-5 border h-full shadow-md rounded-2xl"
+          className="bg-white px-5 h-full shadow rounded-2xl"
         >
           <div
             className={`bg-white w-full 
@@ -519,42 +520,44 @@ const RightSection = ({ permission }: RightSectionProps) => {
         </motion.div>
       ) : (
         // ส่วนของ user เท่าไป
-        <motion.div
-          className="bg-white p-5 border h-full shadow-md rounded-2xl"
-          initial={{ opacity: 0, x: 100 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{
-            duration: 1.2,
-            ease: [0, 0.71, 0.2, 1.01],
-            delay: 0.1,
-          }}
-        >
-          <h2 className="font-bold text-xl">
-            <TextEffect preset="slide">Department</TextEffect>
-          </h2>
-          <div className="mt-5">
-            <DepartmentSection />
-          </div>
+        <>
           <motion.div
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{
-              duration: 0.6,
+              duration: 0.3,
               ease: [0, 0.71, 0.2, 1.01],
-              delay: 0.6,
               scale: {
                 type: "spring",
                 damping: 10,
                 stiffness: 100,
                 restDelta: 0.001,
-                delay: 0.6,
+                delay: 0.3,
               },
             }}
-            className="mt-5"
+            className="py-8 px-2 rounded-lg shadow bg-white"
           >
-            <CarouselSection />
+            <CarouselSection period={period} formatThaiDateTime={formatThaiDateTime} />
           </motion.div>
-        </motion.div>
+          <motion.div
+            className="bg-white p-5 h-full shadow rounded-2xl"
+            initial={{ opacity: 0, x: 100 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{
+              duration: 1.2,
+              ease: [0, 0.71, 0.2, 1.01],
+              delay: 0.1,
+            }}
+          >
+            <h2 className="font-bold text-xl flex gap-3">
+              <Building2 className="text-stone-800" />
+              <TextEffect preset="slide">Department</TextEffect>
+            </h2>
+            <div className="mt-5 border rounded-xl bg-gray-50 shadow-inner">
+              <DepartmentSection />
+            </div>
+          </motion.div>
+        </>
       )}
     </div>
   );

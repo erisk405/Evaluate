@@ -27,7 +27,7 @@ import { ListEmployeeOfDepartment } from "./ListEmployeeOfDepartment";
 import { useEffect, useRef, useState } from "react";
 import useStore from "@/app/store/store";
 import { toast } from "@/components/ui/use-toast";
-import SetHeadOfDepartmentSection from "./SetHeadOfDepartmentSection";
+import SetSuperviseOfDepartmentSection from "./SetSuperviseOfDepartmentSection";
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
@@ -139,6 +139,8 @@ export default function SettingSection({
   };
 
   useEffect(() => {
+    console.log("department", department);
+
     fetchDepart();
   }, []);
   return (
@@ -249,7 +251,7 @@ export default function SettingSection({
                                 รองผู้อำนวยการ/กำกับดูแล
                               </Label>
                               <div className="col-span-4">
-                                <SetHeadOfDepartmentSection
+                                <SetSuperviseOfDepartmentSection
                                   onSuperviserChange={handleSuperviseChange}
                                   defaultValue={department?.supervise}
                                 />
@@ -278,21 +280,24 @@ export default function SettingSection({
                         รองผู้อำนวยการ/กำกับดูแล :{" "}
                       </div>
                       <div className="flex items-center gap-2">
-                        <Image
-                          src={
-                            typeof department?.supervise?.user?.image ===
-                            "string"
-                              ? department?.supervise?.user?.image
-                              : (
-                                  department?.supervise?.user
-                                    ?.image as ImageType
-                                )?.url || "/test.png"
-                          }
-                          width={30}
-                          height={30}
-                          alt="ProfileDepartment"
-                          className="w-[30px] h-[30px] object-cover object-center rounded-full"
-                        />
+                        {department?.supervise?.user && (
+                          <Image
+                            src={
+                              typeof department?.supervise?.user?.image ===
+                              "string"
+                                ? department?.supervise?.user?.image
+                                : (
+                                    department?.supervise?.user
+                                      ?.image as ImageType
+                                  )?.url || "/profiletest.jpg"
+                            }
+                            width={30}
+                            height={30}
+                            alt="ProfileDepartment"
+                            className="w-[30px] h-[30px] object-cover object-center rounded-full"
+                          />
+                        )}
+
                         <h2 className="text-right text-stone-700">
                           {department?.supervise?.user?.name}
                         </h2>

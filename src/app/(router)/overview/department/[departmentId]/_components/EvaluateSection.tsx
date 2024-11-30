@@ -159,6 +159,7 @@ const EvaluateSection = ({
         period_id: "c9ca7297-ad51-4d8f-8362-14f2d85d40a6",
         assessor_id: ProfileDetail.id!, // Ensuring non-null
         evaluator_id: evaluatorUserIdTarget,
+        eval_depart_id: params.departmentId,
         questions: allQuestions, // ตอนแรกเป็นarrays เลยส่งไปแบบ object ที่มีความสัมพันธ์แบบ key value
       };
       console.log("data", data);

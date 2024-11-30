@@ -23,14 +23,14 @@ const DepartmentSection = () => {
   return (
     <>
       <div className="max-h-[800px] overflow-y-scroll scrollbar-gemini">
-        <div className="grid gap-5 m-2 xl:grid-cols-1 lg:grid-cols-3">
+        <div className="grid gap-3 m-2 xl:grid-cols-1 lg:grid-cols-3">
           {departments.length > 0
             ? departments.map((item) => (
                 <Link
                   href={`/overview/department/${item.id}`}
                   key={item?.id}
                   className="overflow-hidden cursor-pointer col-span-1 rounded-2xl shadow
-                hover:bg-neutral-700 active:scale-95 group transition-all border"
+                hover:bg-neutral-700 active:scale-95 bg-white group transition-all border"
                 >
                   <div className="grid grid-cols-5">
                     <Image
@@ -45,7 +45,6 @@ const DepartmentSection = () => {
                       className="col-span-2 w-full h-[120px] object-cover"
                       loading="lazy"
                     />
-
                     <h2 className="group-hover:text-white col-span-3 text-start p-3">
                       {item?.department_name}
                     </h2>
