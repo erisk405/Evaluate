@@ -53,6 +53,7 @@ interface Role {
 interface PermissionItem {
   assessor_role_id: string;
   evaluator_role_id: string;
+  evaluatorRole?: Role; // Optional role information
   permissionForm: PermissionFormItem[]; // Replace 'any' with the specific type if known
   permission_id: string;
 }
@@ -136,11 +137,17 @@ interface PrefixType {
   prefix_name: string;
 }
 
+interface userHaveBeenEvaluatedType {
+  period: { period_id: string, title: string }
+  evaluator: { id: string, name: string }
+}
+
 export type {
   ImageType, Department, Role,
   User, RoleRequest, Notification,
   Permission, PermissionForm,
   FormQuestion, PeriodType, PageNumber,
   TimeRange, Supervise, PrefixType, PermissionFormItem,
-  PermissionItem, dataDepartmentByAdmin
+  PermissionItem, dataDepartmentByAdmin,
+  userHaveBeenEvaluatedType
 };

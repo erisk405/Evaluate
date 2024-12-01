@@ -506,6 +506,23 @@ const createEvaluate = (payload: createEvaluateType) => {
     console.error("API evaluate", { message: error });
   }
 };
+
+type findUserEvaluatedType = {
+  assessor_id: string;
+  eval_depart_id: string;
+  period_id: string;
+};
+const findUserEvaluated = (payload: findUserEvaluatedType) => {
+  try {
+    return axios.get(
+      `${apiUrl}/findUserEval/${payload.assessor_id}/${payload.eval_depart_id}/${payload.period_id}`,
+      { withCredentials: true }
+    );
+  } catch (error) {
+    console.error("API createPeriod", { message: error });
+  }
+};
+
 export default {
   fetchUserProfile,
   Logout,
@@ -549,5 +566,6 @@ export default {
   deletePrefix,
   createEvaluate,
   updateUserProfileByAdmin,
-  updatePrefix
+  updatePrefix,
+  findUserEvaluated,
 };

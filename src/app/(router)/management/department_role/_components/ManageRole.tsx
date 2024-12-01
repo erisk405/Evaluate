@@ -188,7 +188,7 @@ const ManageRole = () => {
           </pre>
         ),
       });
-      
+
       // -----------------------------------------------------
       // update ข้อมูลของ Role พวก permission การจัดการ form ต่างๆ
       // -----------------------------------------------------
@@ -489,7 +489,9 @@ const ManageRole = () => {
                               key={"Assessor" + index}
                             >
                               <div className="font-bold">
-                                {element.evaluatorRole.role_name}
+                                {element.evaluatorRole
+                                  ? element.evaluatorRole.role_name
+                                  : "Unknown Role"}
                               </div>
                               <div className="">
                                 <div className="mt-1 flex items-center">
@@ -502,7 +504,7 @@ const ManageRole = () => {
                                       .filter((p) => p.ingroup == true)
                                       .map((form, index) => (
                                         <div key={"FormId" + index}>
-                                          {form.form.name}
+                                          - {form.form.name}
                                         </div>
                                       ))
                                   ) : (
@@ -523,7 +525,7 @@ const ManageRole = () => {
                                       .filter((p) => p.ingroup == false)
                                       .map((form, index) => (
                                         <div key={"FormId" + index}>
-                                          {form.form.name}
+                                          - {form.form.name}
                                         </div>
                                       ))
                                   ) : (

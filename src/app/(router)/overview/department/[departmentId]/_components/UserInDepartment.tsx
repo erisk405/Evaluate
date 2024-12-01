@@ -21,7 +21,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { ChevronDown, Hexagon } from "lucide-react";
+import { Bolt, ChevronDown, Currency, Hexagon } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -49,145 +49,171 @@ import {
 } from "@/components/ui/table";
 import Image from "next/image";
 
-import { PageNumber, User } from "@/types/interface";
+import { PageNumber, User, userHaveBeenEvaluatedType } from "@/types/interface";
 import EvaluateSection from "./EvaluateSection";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import React, { useState } from "react";
 
-export const columns: ColumnDef<User>[] = [
-  {
-    accessorKey: "index",
-    header: "ลำดับ",
-    cell: ({ row }) => {
-      return (
-        <div className="capitalize flex justify-center items-center gap-3">
-          <span className="text-md">{row.index + 1}</span>
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "name",
-    header: "ชื่อ-นามสกุล",
-    cell: ({ row }) => {
-      const image = row.original.image;
-      // console.log("image :", image);
-      return (
-        <div className="capitalize flex items-center gap-3">
-          {image?.url ? (
-            <Image
-              src={image?.url}
-              width={40}
-              height={40}
-              alt="profiletable"
-              className="w-[40px] h-[40px] rounded-full object-cover"
-            />
-          ) : (
-            <Image
-              src="/profiletest.jpg"
-              width={40}
-              height={40}
-              alt="profiletable"
-              className="w-[40px] h-[40px] rounded-full object-cover"
-            />
-          )}
-          {row.getValue("name")}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "role",
-    header: "ตำแหน่ง",
-    cell: ({ row }) => {
-      const role_name = row.original.role.role_name;
-      return (
-        <div
-          className={`capitalize inline-flex items-center
-            ${role_name != "member" ? "text-black" : "text-gray-500"}
-          `}
-        >
-          {role_name}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "department",
-    header: "หน่วยงาน/กำกับดูแล",
-    cell: ({ row }) => {
-      const NameOfDepartment = row.original.department;
-
-      return (
-        <div
-          className="inline-flex items-center
-        justify-start gap-2 border-gray-200 py-1"
-        >
-          <h2
-            className={`${
-              NameOfDepartment ? "text-stone-800" : "text-gray-500"
-            }`}
-          >
-            {NameOfDepartment
-              ? NameOfDepartment.department_name
-              : "No Department"}
-          </h2>
-        </div>
-      );
-    },
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    header: "Action",
-    cell: ({ row }) => {
-      // console.log(row.original);
-      
-      return (
-        <div className="flex justify-center">
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button
-                variant="ghost"
-                className="flex border items-center gap-3 active:scale-95 transition-all"
-              >
-                <Hexagon /> ประเมิน
-              </Button>
-            </SheetTrigger>
-            <SheetContent
-              side="bottom"
-              className="h-[calc(100vh-10%)] xl:mx-52 rounded-tr-2xl rounded-tl-2xl overflow-scroll scrollbar-gemini"
-            >
-              <SheetHeader>
-                <SheetTitle className="text-3xl text-center text-stone-700">
-                  แบบฟอร์มการประเมิน
-                </SheetTitle>
-              </SheetHeader>
-              {/* ------------------------------------------------------- */}
-              {/*        Conponent   Question and score input             */}
-              {/* ------------------------------------------------------- */}
-              <EvaluateSection evaluatorUserIdTarget={row.original.id} evaluatorRoleTarget={row.original.role.id} />
-              <SheetDescription>
-                Make changes to your profile here. Click save when you're done.
-              </SheetDescription>
-            </SheetContent>
-          </Sheet>
-        </div>
-      );
-    },
-  },
-];
-
-export function UserInDepartment({ member }: { member: User[] | undefined }) {
+export function UserInDepartment({
+  member,
+  userHaveBeenEvaluated,
+  fetchUserHaveBeenEvaluated,
+}: {
+  member: User[] | undefined;
+  userHaveBeenEvaluated: userHaveBeenEvaluatedType[];
+  fetchUserHaveBeenEvaluated: () => void;
+}) {
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
-    []
-  );
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
   const [globalFilter, setGlobalFilter] = useState("");
+  const columns: ColumnDef<User>[] = [
+    {
+      accessorKey: "index",
+      header: "ลำดับ",
+      cell: ({ row }) => {
+        return (
+          <div className="capitalize flex justify-center items-center gap-3">
+            <span className="text-md">{row.index + 1}</span>
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "name",
+      header: "ชื่อ-นามสกุล",
+      cell: ({ row }) => {
+        const image = row.original.image;
+        // console.log("image :", image);
+        return (
+          <div className="capitalize flex items-center gap-3">
+            {image?.url ? (
+              <Image
+                src={image?.url}
+                width={40}
+                height={40}
+                alt="profiletable"
+                className="w-[40px] h-[40px] rounded-full object-cover"
+              />
+            ) : (
+              <Image
+                src="/profiletest.jpg"
+                width={40}
+                height={40}
+                alt="profiletable"
+                className="w-[40px] h-[40px] rounded-full object-cover"
+              />
+            )}
+            {row.getValue("name")}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "role",
+      header: "ตำแหน่ง",
+      cell: ({ row }) => {
+        const role_name = row.original.role.role_name;
+        return (
+          <div
+            className={`capitalize inline-flex items-center
+              ${role_name != "member" ? "text-black" : "text-gray-500"}
+            `}
+          >
+            {role_name}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "department",
+      header: "หน่วยงาน/กำกับดูแล",
+      cell: ({ row }) => {
+        const NameOfDepartment = row.original.department;
 
+        return (
+          <div
+            className="inline-flex items-center
+          justify-start gap-2 border-gray-200 py-1"
+          >
+            <h2
+              className={`${
+                NameOfDepartment ? "text-stone-800" : "text-gray-500"
+              }`}
+            >
+              {NameOfDepartment
+                ? NameOfDepartment.department_name
+                : "No Department"}
+            </h2>
+          </div>
+        );
+      },
+    },
+    {
+      id: "actions",
+      enableHiding: false,
+      header: "Action",
+      cell: ({ row }) => {
+        // console.log(row.original);
+        const checkEvaluated = userHaveBeenEvaluated?.some(
+          (u) => u.evaluator.id === row.original.id
+        );
+        const [open, setOpen] = useState(false);
+        console.log("checkEvaluated", checkEvaluated);
+
+        return (
+          <div className="flex justify-center">
+            <Sheet open={open} onOpenChange={setOpen}>
+              <SheetTrigger asChild>
+                {checkEvaluated ? (
+                  <div
+                    className="flex items-center gap-3 active:scale-95 transition-all text-green-500 select-none"
+                  >
+                    <Bolt /> เสร็จสิ้นแล้ว
+                  </div>
+                ) : (
+                  <Button
+                    variant="ghost"
+                    className="flex border items-center gap-3 active:scale-95 transition-all"
+                    onClick={()=>setOpen(true)}
+                  >
+                    <Hexagon /> ประเมิน
+                  </Button>
+                )}
+              </SheetTrigger>
+              {!checkEvaluated && (
+                <SheetContent
+                  side="bottom"
+                  className="h-[calc(100vh-10%)] xl:mx-52 rounded-tr-2xl rounded-tl-2xl overflow-scroll scrollbar-gemini"
+                >
+                  <SheetHeader>
+                    <SheetTitle className="text-3xl text-center text-stone-700">
+                      แบบฟอร์มการประเมิน
+                    </SheetTitle>
+                  </SheetHeader>
+                  {/* ------------------------------------------------------- */}
+                  {/*        Conponent   Question and score input             */}
+                  {/* ------------------------------------------------------- */}
+                  <EvaluateSection
+                    evaluatorUserIdTarget={row.original.id}
+                    evaluatorRoleTarget={row.original.role.id}
+                    fetchUserHaveBeenEvaluated={fetchUserHaveBeenEvaluated}
+                    setOpen={setOpen}
+                  />
+                  <SheetDescription>
+                    Make changes to your profile here. Click save when you're
+                    done.
+                  </SheetDescription>
+                </SheetContent>
+              )}
+            </Sheet>
+          </div>
+        );
+      },
+    },
+  ];
   const table = useReactTable({
     data: member ?? [],
     columns,

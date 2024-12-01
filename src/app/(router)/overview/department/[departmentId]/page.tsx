@@ -1,14 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
+  Bolt,
   Check,
   ChevronLeft,
   CirclePlus,
@@ -17,7 +10,6 @@ import {
   ListFilter,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -33,87 +25,24 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
-
 import { useParams } from "next/navigation";
-import axios from "axios";
 import { apiUrl } from "@/app/data/data-option";
 import useStore from "@/app/store/store";
 import GlobalApi from "@/app/_util/GlobalApi";
 import { motion } from "framer-motion";
 import { UserInDepartment } from "./_components/UserInDepartment";
-import { Department } from "@/types/interface";
-
-const data: employee[] = [
-  {
-    id: "m5gr84i9",
-    name: "amphon yyyy",
-    status: "success",
-    email: "ken99@yahoo.com",
-    role: "CEO",
-    phone: "095-454-4484",
-    department: "CompanyA",
-    img: "/profiletest.jpg",
-  },
-  {
-    id: "3u1reuv4",
-    name: "Krittaphat samrit",
-    status: "success",
-    email: "Abe45@gmail.com",
-    role: "เสาหลัก",
-    phone: "095-454-4484",
-    department: "CompanyB",
-    img: "/profiletest.jpg",
-  },
-  {
-    id: "derv1ws0",
-    name: "Panyakorn somawong",
-    status: "processing",
-    email: "Monserrat44@gmail.com",
-    role: "Head",
-    phone: "095-454-4484",
-    department: "CompanyB",
-    img: "/profiletest.jpg",
-  },
-  {
-    id: "5kma53ae",
-    name: "Wichaphon dogcat",
-    status: "success",
-    email: "Silas22@gmail.com",
-    role: "COO",
-    phone: "095-454-4484",
-    department: "CompanyB",
-    img: "/profiletest.jpg",
-  },
-  {
-    id: "bhqecj4p",
-    name: "Worakamon gogo",
-    status: "failed",
-    email: "carmella@hotmail.com",
-    role: "CPE",
-    phone: "095-454-4484",
-    department: "CompanyC",
-    img: "/profiletest.jpg",
-  },
-  {
-    id: "bhqecj4p1215",
-    name: "catcat gogo",
-    status: "failed",
-    email: "carmella2@hotmail.com",
-    role: "CPE",
-    phone: "095-454-4484",
-    department: "CompanyC",
-    img: "/profiletest.jpg",
-  },
-];
+import { Department, userHaveBeenEvaluatedType } from "@/types/interface";
+import EvaluateSection from "./_components/EvaluateSection";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import axios from "axios";
+import EvaluateSheet from "./_components/EvaluateSheet";
 
 export type employee = {
   id: string;
@@ -126,50 +55,38 @@ export type employee = {
   img: string;
 };
 
-const OptionEmployee = [
-  {
-    id: "OEP01",
-    title: "รองผู้อำนวยการ",
-    name: "นายกฤตภาส สัมฤทธิ์",
-    role: "รองผู้อำนวยการ",
-    quantity: 0,
-    img: "/team.svg",
-    color: "from-red-300 to-pink-300",
-  },
-  {
-    id: "OEP02",
-    title: "หัวหน้างานทะเบียน",
-    name: "cat cat",
-    role: "หัวหน้างานวิชาการ",
-    quantity: 0,
-    img: "/NewEmployee.svg",
-    color: "from-green-200 to-emerald-300",
-  },
-  {
-    id: "OEP03",
-    title: "สมาชิกใหม่",
-    name: "dog dog",
-    role: "Gogo",
-    quantity: 65,
-    img: "/male.svg",
-    color: "from-blue-300 to-cyan-300",
-  },
-];
 const page = () => {
   const params = useParams<{ departmentId: string }>();
   const { ProfileDetail, updateProfileDetail } = useStore();
   const [department, setDepartment] = useState<Department>();
-
+  const [userHaveBeenEvaluated, setUserHaveBeenEvaluated] = useState<
+    userHaveBeenEvaluatedType[]
+  >([]);
   const joinDepartment = async () => {
     const response = await axios.put(`${apiUrl}/usersDepartment`, params, {
       withCredentials: true,
     });
     const { department } = response.data;
     // console.log("department",department);
-    
+
     updateProfileDetail({
       department: department ? department : null,
     });
+  };
+
+  const fetchUserHaveBeenEvaluated = async () => {
+    try {
+      const payload = {
+        assessor_id: ProfileDetail.id!,
+        eval_depart_id: params.departmentId,
+        period_id: "c9ca7297-ad51-4d8f-8362-14f2d85d40a6",
+      };
+      const response = await GlobalApi.findUserEvaluated(payload);
+      console.log("fetchUserHaveBeenEvaluated", response?.data);
+      setUserHaveBeenEvaluated(response?.data);
+    } catch (error) {
+      console.error({ message: error });
+    }
   };
 
   const fetchDepartment = async () => {
@@ -179,13 +96,14 @@ const page = () => {
     setDepartment(data);
   };
   useEffect(() => {
-    console.log("ProfileDetail",ProfileDetail);
-    
+    console.log("ProfileDetail", ProfileDetail);
+
     fetchDepartment();
-  }, []);
+    fetchUserHaveBeenEvaluated();
+  }, [ProfileDetail]);
   // useEffect(() => {
   //   console.log("ProfileDetail",ProfileDetail);
-    
+
   // }, [ProfileDetail]);
 
   return (
@@ -205,7 +123,8 @@ const page = () => {
             <div>
               <AlertDialog>
                 {department.department_name ? (
-                  ProfileDetail.department?.department_name === department.department_name ? (
+                  ProfileDetail.department?.department_name ===
+                  department.department_name ? (
                     <h2 className="flex items-center gap-2 py-1 px-2 rounded-lg text-lg font-bold text-emerald-500 bg-emerald-100">
                       <Check />
                       คุณอยู่ในหน่วยงานนี้แล้ว
@@ -224,7 +143,9 @@ const page = () => {
                   <AlertDialogHeader>
                     <AlertDialogTitle className="text-xl">
                       คูณแน่ใจที่จะเข้า
-                      <span className="underline">{department.department_name}</span>{" "}
+                      <span className="underline">
+                        {department.department_name}
+                      </span>{" "}
                       ใช่หรือไม่ ?
                     </AlertDialogTitle>
                     <AlertDialogDescription className="text-red-500 text-lg">
@@ -243,13 +164,29 @@ const page = () => {
           </div>
           {department.department_name ? (
             <div>
-              <h2 className="font-bold text-4xl">{department.department_name}</h2>
+              <h2 className="font-bold text-4xl">
+                {department.department_name}
+              </h2>
 
               {/* ----------------------------------------------- */}
               {/*                 Body List                       */}
               {/* ----------------------------------------------- */}
               <div className="flex justify-around gap-3 flex-wrap p-5 rounded-3xl">
-                {OptionEmployee.map((item, index) => (
+                {/* ใช้ [...(department.user || []), ...(department.supervise?.user
+                ? [department.supervise.user] : [])] เพื่อรวม array */}
+                {/* กรอง department.user ตามเงื่อนไข LEVEL_2 หรือ LEVEL_4
+                เพิ่ม department.supervise?.user เข้าไปถ้ามี */}
+                {[
+                  ...(department.user?.filter((item) =>
+                    ["LEVEL_2", "LEVEL_4"].includes(item.role.role_level)
+                  ) || []),
+                  ...(department.supervise?.user && //หาก่อนว่าบุคคลนี้มีอยู่ใน department มั้ย ถ้ามีแสดงว่า เป็นหน่วยงานที่ตนเองสังกัด ถ้าไม่มี แสดงว่ามากำกับดูแล
+                  !department.user?.some(
+                    (u) => u.id === department.supervise?.user?.id
+                  )
+                    ? [department.supervise.user]
+                    : []),
+                ].map((item, index) => (
                   <motion.div
                     key={item?.id}
                     className="flex-1 min-w-[250px] max-w-full cursor-pointer "
@@ -263,9 +200,9 @@ const page = () => {
                   >
                     <div
                       className={`flex rounded-2xl gap-3 relative overflow-hidden
-                items-center px-8 py-4 shadow-xl 
-                bg-gradient-to-tl from-neutral-800 from-20% to-neutral-900 to-50%  group 
-                transition-all `}
+      items-center px-8 py-4 shadow-xl 
+      bg-gradient-to-tl from-neutral-800 from-20% to-neutral-900 to-50%  group 
+      transition-all `}
                     >
                       <div className="text-white w-full group-hover:text-white z-10">
                         <div className="flex gap-3">
@@ -278,25 +215,26 @@ const page = () => {
                           />
                           <div>
                             <h2 className="text-md text-gray-300">
-                              {item?.role}
+                              {item?.role.role_name}
                             </h2>
                             <h2 className="text-lg">{item?.name}</h2>
                             <div
                               className="inline-flex items-center gap-2 bg-neutral-800 
-                      px-4 py-1 rounded-full text-neutral-400"
+              px-4 py-1 rounded-full text-neutral-400"
                             >
                               <GraduationCap size={20} />
-                              <h2 className="text-sm">หน่วยงานวิชาการ</h2>
+                              <h2 className="text-sm">
+                                {item?.department?.department_name}
+                              </h2>
                             </div>
                           </div>
                         </div>
                         <div className="inline-flex w-full justify-end mt-3 ">
-                          <h2
-                            className="flex items-center gap-3 bg-neutral-800 hover:bg-neutral-700 
-                    text-neutral-200 px-2 py-1 rounded-xl transition-all active:scale-95"
-                          >
-                            <Hexagon /> ประเมิน
-                          </h2>
+                          <EvaluateSheet
+                            userHaveBeenEvaluated={userHaveBeenEvaluated}
+                            item={item}
+                            fetchUserHaveBeenEvaluated={fetchUserHaveBeenEvaluated}
+                          />
                         </div>
                       </div>
                     </div>
@@ -317,7 +255,13 @@ const page = () => {
                 }}
               >
                 {/* ตั้งเงื่อนไขเพื่อไม่ให้เห็นชื่อตัวเองภายในหน่วยงานในตอนที่จะทำการประเมิน */}
-                <UserInDepartment member={department.user?.filter((users)=> users.id !== ProfileDetail.id)} /> 
+                <UserInDepartment
+                  member={department.user?.filter(
+                    (users) => users.id !== ProfileDetail.id
+                  )}
+                  userHaveBeenEvaluated={userHaveBeenEvaluated}
+                  fetchUserHaveBeenEvaluated={fetchUserHaveBeenEvaluated}
+                />
               </motion.div>
             </div>
           ) : (

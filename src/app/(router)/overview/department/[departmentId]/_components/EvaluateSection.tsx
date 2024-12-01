@@ -24,16 +24,6 @@ import { useParams } from "next/navigation";
 import GlobalApi from "@/app/_util/GlobalApi";
 import { toast } from "@/components/ui/use-toast";
 import axios from "axios";
-type SubData = {
-  id: string;
-  content: string;
-};
-
-type Data = {
-  id: string;
-  HeadTitle: string;
-  subData: SubData[];
-};
 
 type PayloadQuestion = {
   questionId: string;
@@ -52,18 +42,22 @@ type Payload = Record<
 type evaluateSection = {
   evaluatorUserIdTarget: string;
   evaluatorRoleTarget: string;
+  fetchUserHaveBeenEvaluated: () => void;
+  setOpen: (open: boolean) => void;
 };
 
 const EvaluateSection = ({
   evaluatorUserIdTarget,
   evaluatorRoleTarget,
+  fetchUserHaveBeenEvaluated,
+  setOpen,
 }: evaluateSection) => {
   const [selectedValues, setSelectedValues] = useState<string[]>([]);
   const params = useParams<{ departmentId: string }>();
   const [formEvaluation, setFormEvaluation] = useState<
     PermissionFormItem[] | undefined
   >([]);
-  const { ProfileDetail, updateProfileDetail } = useStore();
+  const { ProfileDetail } = useStore();
 
   const [payload, setPayload] = useState<Payload>({});
 
@@ -176,6 +170,11 @@ const EvaluateSection = ({
           </pre>
         ),
       });
+      setOpen(false);
+      // รอให้แอนิเมชันของ Sheet ปิดสำเร็จก่อน
+      await new Promise((resolve) => setTimeout(resolve, 300)); // รอ 300ms (ระยะเวลาแอนิเมชัน)
+      // เรียก fetchUserHaveBeenEvaluated หลังจากแอนิเมชันเสร็จสมบูรณ์
+      fetchUserHaveBeenEvaluated();
     } catch (error: unknown) {
       // ตรวจสอบว่า error เป็น instance ของ AxiosError หรือไม่
       if (axios.isAxiosError(error)) {
