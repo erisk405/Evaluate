@@ -10,7 +10,7 @@ import {
 import { Bolt, Hexagon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import EvaluateSection from "./EvaluateSection";
-import { Department, User, userHaveBeenEvaluatedType } from "@/types/interface";
+import { User, userHaveBeenEvaluatedType } from "@/types/interface";
 
 type EvaluateSheetProp = {
   userHaveBeenEvaluated: userHaveBeenEvaluatedType[];
@@ -37,7 +37,7 @@ text-green-500 px-2 py-1 rounded-xl transition-all active:scale-95"
           <Button
             className="flex items-center gap-3 bg-neutral-800 hover:bg-neutral-700 
 text-neutral-200 px-2 py-1 rounded-xl transition-all active:scale-95"
-            onClick={()=>setOpen(true)}
+            onClick={() => setOpen(true)}
           >
             <Hexagon /> ประเมิน
           </Button>

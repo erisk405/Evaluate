@@ -233,7 +233,9 @@ const page = () => {
                           <EvaluateSheet
                             userHaveBeenEvaluated={userHaveBeenEvaluated}
                             item={item}
-                            fetchUserHaveBeenEvaluated={fetchUserHaveBeenEvaluated}
+                            fetchUserHaveBeenEvaluated={
+                              fetchUserHaveBeenEvaluated
+                            }
                           />
                         </div>
                       </div>

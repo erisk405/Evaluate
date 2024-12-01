@@ -55,22 +55,44 @@ const CarouselSection = ({
                         <div className="flex items-center ">
                           {/* Dot สถานะ */}
                           <div className="relative">
-                            <Dot
-                              strokeWidth={6}
-                              className={`absolute ${
-                                new Date() > new Date(item.end)
-                                  ? "text-blue-500 "
-                                  : "text-emerald-500"
-                              } animate-ping`}
-                            />
-                            <Dot
-                              strokeWidth={6}
-                              className={`${
-                                new Date() > new Date(item.end)
-                                  ? "text-blue-500 "
-                                  : "text-green-500"
-                              }`}
-                            />
+                            {new Date(item.start) <= new Date() &&
+                            new Date() <= new Date(item.end) ? (
+                              // Currently active period
+                              <>
+                                <Dot
+                                  strokeWidth={6}
+                                  className="absolute text-emerald-500 animate-ping"
+                                />
+                                <Dot
+                                  strokeWidth={6}
+                                  className="text-green-500"
+                                />
+                              </>
+                            ) : new Date() > new Date(item.end) ? (
+                              // past period
+                              <>
+                                <Dot
+                                  strokeWidth={6}
+                                  className="absolute text-gray-500 animate-ping"
+                                />
+                                <Dot
+                                  strokeWidth={6}
+                                  className="text-gray-500"
+                                />
+                              </>
+                            ) : (
+                              // Future period
+                              <>
+                                <Dot
+                                  strokeWidth={6}
+                                  className="absolute text-yellow-500 animate-ping"
+                                />
+                                <Dot
+                                  strokeWidth={6}
+                                  className="text-yellow-500"
+                                />
+                              </>
+                            )}
                           </div>
                           {/* ชื่อรอบของช่วงเวลา */}
                           <div className="">

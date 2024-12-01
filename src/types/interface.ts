@@ -93,6 +93,7 @@ interface PeriodType {
   start: string,
   end: string
   isAction: boolean
+  hasNotified?: boolean; // Add a flag to track notification
 }
 
 interface RoleRequest {

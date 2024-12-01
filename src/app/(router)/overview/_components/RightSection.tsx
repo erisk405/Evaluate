@@ -106,8 +106,41 @@ const RightSection = ({ permission }: RightSectionProps) => {
   const fetchPeriod = async () => {
     try {
       const response = await GlobalApi.getPeriod();
-      setPeriod(response?.data);
-      console.log(response?.data);
+      // เรียงลำดับช่วงเวลา โดยมีเงื่อนไขดังนี้:
+      // 1. ช่วงเวลาที่กำลังจะมาถึง (อยู่ในอนาคต) จะอยู่ด้านหน้าสุด
+      // 2. ช่วงเวลาที่ผ่านมาแล้ว (หมดอายุ) จะถูกย้ายไปอยู่ด้านท้าย
+      // 3. เรียงลำดับตามความใกล้เคียงกับวันปัจจุบัน
+      const sortedPeriods = response?.data.sort(
+        (a: PeriodType, b: PeriodType) => {
+          // สร้างวันที่ปัจจุบัน
+          const now = new Date();
+          // แปลงวันสิ้นสุดของแต่ละช่วงเวลา
+          const endA = new Date(a.end);
+          const endB = new Date(b.end);
+
+          // ตรวจสอบว่าช่วงเวลาใดบ้างที่ผ่านมาแล้ว
+          const isPastA = endA < now;
+          const isPastB = endB < now;
+
+          // กรณีที่ช่วงเวลาทั้งสองอยู่ในสถานะเดียวกัน (ทั้งอนาคตหรือทั้งอดีต)
+          if (isPastA === isPastB) {
+            // เรียงลำดับตามความใกล้เคียงกับวันปัจจุบัน
+            const startA = new Date(a.start);
+            const startB = new Date(b.start);
+            return (
+              Math.abs(startA.getTime() - now.getTime()) -
+              Math.abs(startB.getTime() - now.getTime())
+            );
+          }
+
+          // ย้ายช่วงเวลาที่ผ่านมาแล้วไปอยู่ด้านท้าย
+          return isPastA ? 1 : -1;
+        }
+      );
+
+      // อัปเดตสถานะด้วยช่วงเวลาที่เรียงลำดับแล้ว
+      setPeriod(sortedPeriods);
+      console.log(sortedPeriods);
     } catch (error) {
       console.error({ message: error });
     }
@@ -175,40 +208,12 @@ const RightSection = ({ permission }: RightSectionProps) => {
     }
   };
 
-  const fetchClosestPeriod = () => {
-    const today = new Date();
-
-    // กรอง periods ที่ยังไม่สิ้นสุด
-    const validPeriods = period.filter((p) => new Date(p.end) >= today);
-
-    // ถ้าไม่เจอ period ให้คืนค่าเป็น null
-    if (validPeriods.length === 0) return null;
-    // เรียง periods ตามความใกล้ของ `start` กับวันปัจจุบัน
-    const closestPeriod = validPeriods.sort((a, b) => {
-      const startA = new Date(a.start).getTime();
-      const startB = new Date(b.start).getTime();
-      return (
-        Math.abs(startA - today.getTime()) - Math.abs(startB - today.getTime())
-      );
-    })[0]; // เอา period ที่ใกล้ที่สุดตัวแรก
-
-    // console.log("Closest Period:", closestPeriod);
-    return closestPeriod;
-  };
 
   useEffect(() => {
     fetchPeriod();
   }, []);
   // แก้ไขฟังก์ชัน handleTimeChange สำหรับปุ่ม Save
-  useEffect(() => {
-    if (timeRange?.from && timeRange?.to) {
-      console.log("TimeRange updated:", {
-        from: timeRange.from.toLocaleString(),
-        to: timeRange.to.toLocaleString(),
-      });
-    }
-    // console.log("timeRange:", timeRange);
-  }, [timeRange]); // เพิ่ม timeRange เป็น dependency
+
   return (
     <div className="flex gap-3 flex-col h-full">
       <motion.div
@@ -238,12 +243,8 @@ const RightSection = ({ permission }: RightSectionProps) => {
             defaultMonth={defaultDate}
             // selected prop ควรเป็น Date หรือ { from: Date, to: Date } สำหรับ mode="range"
             selected={{
-              from: fetchClosestPeriod()?.start
-                ? new Date(fetchClosestPeriod()!.start)
-                : undefined,
-              to: fetchClosestPeriod()?.end
-                ? new Date(fetchClosestPeriod()!.end)
-                : undefined,
+              from: period[0]?.start ? new Date(period[0]!.start) : undefined,
+              to: period[0]?.end ? new Date(period[0]!.end) : undefined,
             }}
             numberOfMonths={1}
           />
@@ -312,22 +313,44 @@ const RightSection = ({ permission }: RightSectionProps) => {
                         <div className="flex items-center ">
                           {/* Dot สถานะ */}
                           <div className="relative">
-                            <Dot
-                              strokeWidth={6}
-                              className={`absolute ${
-                                new Date() > new Date(item.end)
-                                  ? "text-blue-500 "
-                                  : "text-emerald-500"
-                              } animate-ping`}
-                            />
-                            <Dot
-                              strokeWidth={6}
-                              className={`${
-                                new Date() > new Date(item.end)
-                                  ? "text-blue-500 "
-                                  : "text-green-500"
-                              }`}
-                            />
+                            {new Date(item.start) <= new Date() &&
+                            new Date() <= new Date(item.end) ? (
+                              // Currently active period
+                              <>
+                                <Dot
+                                  strokeWidth={6}
+                                  className="absolute text-emerald-500 animate-ping"
+                                />
+                                <Dot
+                                  strokeWidth={6}
+                                  className="text-green-500"
+                                />
+                              </>
+                            ) : new Date() > new Date(item.end) ? (
+                              // past period
+                              <>
+                                <Dot
+                                  strokeWidth={6}
+                                  className="absolute text-gray-500 animate-ping"
+                                />
+                                <Dot
+                                  strokeWidth={6}
+                                  className="text-gray-500"
+                                />
+                              </>
+                            ) : (
+                              // Future period
+                              <>
+                                <Dot
+                                  strokeWidth={6}
+                                  className="absolute text-yellow-500 animate-ping"
+                                />
+                                <Dot
+                                  strokeWidth={6}
+                                  className="text-yellow-500"
+                                />
+                              </>
+                            )}
                           </div>
                           {/* ชื่อรอบของช่วงเวลา */}
                           <div className="">
@@ -529,15 +552,15 @@ const RightSection = ({ permission }: RightSectionProps) => {
               ease: [0, 0.71, 0.2, 1.01],
               scale: {
                 type: "spring",
-                damping: 10,
-                stiffness: 100,
-                restDelta: 0.001,
-                delay: 0.3,
+                damping: 12,
               },
             }}
             className="py-8 px-2 rounded-lg shadow bg-white"
           >
-            <CarouselSection period={period} formatThaiDateTime={formatThaiDateTime} />
+            <CarouselSection
+              period={period}
+              formatThaiDateTime={formatThaiDateTime}
+            />
           </motion.div>
           <motion.div
             className="bg-white p-5 h-full shadow rounded-2xl"
