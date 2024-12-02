@@ -31,16 +31,11 @@ import useStore from "@/app/store/store";
 import GlobalApi from "@/app/_util/GlobalApi";
 import { motion } from "framer-motion";
 import { UserInDepartment } from "./_components/UserInDepartment";
-import { Department, userHaveBeenEvaluatedType } from "@/types/interface";
-import EvaluateSection from "./_components/EvaluateSection";
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+  Department,
+  PeriodType,
+  userHaveBeenEvaluatedType,
+} from "@/types/interface";
 import axios from "axios";
 import EvaluateSheet from "./_components/EvaluateSheet";
 
@@ -57,11 +52,17 @@ export type employee = {
 
 const page = () => {
   const params = useParams<{ departmentId: string }>();
-  const { ProfileDetail, updateProfileDetail } = useStore();
+  const {
+    ProfileDetail,
+    updateProfileDetail,
+    currentlyEvaluationPeriod,
+    setCurrentlyEvaluationPeriod,
+  } = useStore();
   const [department, setDepartment] = useState<Department>();
   const [userHaveBeenEvaluated, setUserHaveBeenEvaluated] = useState<
     userHaveBeenEvaluatedType[]
   >([]);
+
   const joinDepartment = async () => {
     const response = await axios.put(`${apiUrl}/usersDepartment`, params, {
       withCredentials: true,
@@ -76,36 +77,61 @@ const page = () => {
 
   const fetchUserHaveBeenEvaluated = async () => {
     try {
-      const payload = {
-        assessor_id: ProfileDetail.id!,
-        eval_depart_id: params.departmentId,
-        period_id: "c9ca7297-ad51-4d8f-8362-14f2d85d40a6",
-      };
-      const response = await GlobalApi.findUserEvaluated(payload);
-      console.log("fetchUserHaveBeenEvaluated", response?.data);
-      setUserHaveBeenEvaluated(response?.data);
+      if (currentlyEvaluationPeriod) {
+        const payload = {
+          assessor_id: ProfileDetail.id!,
+          eval_depart_id: params.departmentId,
+          period_id: currentlyEvaluationPeriod.period_id,
+        };
+        console.log("payload",payload);
+        
+        const response = await GlobalApi.findUserEvaluated(payload);
+        setUserHaveBeenEvaluated(response?.data);
+      }
     } catch (error) {
       console.error({ message: error });
     }
   };
 
   const fetchDepartment = async () => {
+    console.log("currentlyEvaluationPeriod", currentlyEvaluationPeriod);
+
     const response = await GlobalApi.getDepartmentById(params.departmentId);
     const data = response?.data.department_data;
     console.log(data);
     setDepartment(data);
   };
-  useEffect(() => {
-    console.log("ProfileDetail", ProfileDetail);
+  const fetchCurrentlyEvaluationPeriod = async () => {
+    try {
+      const response = await GlobalApi.getPeriod();
+      // Find the currently active evaluation period
+      const currentPeriod = response?.data.find((p: PeriodType) => {
+        const now = new Date();
+        const start = new Date(p.start);
+        const end = new Date(p.end);
+        return start <= now && now <= end;
+      });
+      // If a current period is found, set it in the store
+      if (currentPeriod) {
+        setCurrentlyEvaluationPeriod(currentPeriod);
+      }
+      // อัปเดตสถานะด้วยช่วงเวลาที่เรียงลำดับแล้ว
+    } catch (error) {
+      console.error({ message: error });
+    }
+  };
 
+  useEffect(() => {
     fetchDepartment();
     fetchUserHaveBeenEvaluated();
-  }, [ProfileDetail]);
-  // useEffect(() => {
-  //   console.log("ProfileDetail",ProfileDetail);
+  }, [currentlyEvaluationPeriod, ProfileDetail]);
 
-  // }, [ProfileDetail]);
-
+  useEffect(() => {
+    // currentlyEvaluationPeriod เป็น null ก็ให้ fetch check อีกที
+    if (!currentlyEvaluationPeriod) {
+      fetchCurrentlyEvaluationPeriod();
+    }
+  }, []);
   return (
     <div className="m-5 w-full flex flex-col gap-3">
       {/* ----------------------------------------------- */}

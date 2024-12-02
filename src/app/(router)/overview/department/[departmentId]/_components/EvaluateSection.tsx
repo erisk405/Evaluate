@@ -16,6 +16,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
 import {
   FormQuestion,
+  PeriodType,
   PermissionFormItem,
   PermissionItem,
 } from "@/types/interface";
@@ -57,10 +58,9 @@ const EvaluateSection = ({
   const [formEvaluation, setFormEvaluation] = useState<
     PermissionFormItem[] | undefined
   >([]);
-  const { ProfileDetail } = useStore();
+  const { ProfileDetail,currentlyEvaluationPeriod } = useStore();
 
   const [payload, setPayload] = useState<Payload>({});
-
   // เพิ่ม useEffect เพื่อ initialize payload เมื่อ formEvaluation เปลี่ยน
   useEffect(() => {
     if (formEvaluation && formEvaluation.length > 0) {
@@ -143,38 +143,41 @@ const EvaluateSection = ({
 
   const handleSubmit = async () => {
     try {
-      const allQuestions = Object.values(payload).flatMap((item) =>
-        item.question.map((q) => ({
-          questionId: q.questionId,
-          score: q.score,
-        }))
-      );
-      const data = {
-        period_id: "c9ca7297-ad51-4d8f-8362-14f2d85d40a6",
-        assessor_id: ProfileDetail.id!, // Ensuring non-null
-        evaluator_id: evaluatorUserIdTarget,
-        eval_depart_id: params.departmentId,
-        questions: allQuestions, // ตอนแรกเป็นarrays เลยส่งไปแบบ object ที่มีความสัมพันธ์แบบ key value
-      };
-      console.log("data", data);
+      if (currentlyEvaluationPeriod) {
+        const allQuestions = Object.values(payload).flatMap((item) =>
+          item.question.map((q) => ({
+            questionId: q.questionId,
+            score: q.score,
+          }))
+        );
 
-      const response = await GlobalApi.createEvaluate(data);
-      console.log("response", response);
-      toast({
-        title: "บันทึกข้อมูลเรียบร้อยแล้ว",
-        description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-x-auto">
-            <code className="text-white whitespace-pre-wrap break-words">
-              {JSON.stringify(response?.data, null, 2)}
-            </code>
-          </pre>
-        ),
-      });
-      setOpen(false);
-      // รอให้แอนิเมชันของ Sheet ปิดสำเร็จก่อน
-      await new Promise((resolve) => setTimeout(resolve, 300)); // รอ 300ms (ระยะเวลาแอนิเมชัน)
-      // เรียก fetchUserHaveBeenEvaluated หลังจากแอนิเมชันเสร็จสมบูรณ์
-      fetchUserHaveBeenEvaluated();
+        const data = {
+          period_id: currentlyEvaluationPeriod.period_id,
+          assessor_id: ProfileDetail.id!, // Ensuring non-null
+          evaluator_id: evaluatorUserIdTarget,
+          eval_depart_id: params.departmentId,
+          questions: allQuestions, // ตอนแรกเป็นarrays เลยส่งไปแบบ object ที่มีความสัมพันธ์แบบ key value
+        };
+        console.log("data", data);
+
+        const response = await GlobalApi.createEvaluate(data);
+        console.log("response", response);
+        toast({
+          title: "บันทึกข้อมูลเรียบร้อยแล้ว",
+          description: (
+            <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-x-auto">
+              <code className="text-white whitespace-pre-wrap break-words">
+                {JSON.stringify(response?.data, null, 2)}
+              </code>
+            </pre>
+          ),
+        });
+        setOpen(false);
+        // รอให้แอนิเมชันของ Sheet ปิดสำเร็จก่อน
+        await new Promise((resolve) => setTimeout(resolve, 300)); // รอ 300ms (ระยะเวลาแอนิเมชัน)
+        // เรียก fetchUserHaveBeenEvaluated หลังจากแอนิเมชันเสร็จสมบูรณ์
+        fetchUserHaveBeenEvaluated();
+      }
     } catch (error: unknown) {
       // ตรวจสอบว่า error เป็น instance ของ AxiosError หรือไม่
       if (axios.isAxiosError(error)) {

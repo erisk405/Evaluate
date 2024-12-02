@@ -22,7 +22,7 @@ import GlobalApi from "@/app/_util/GlobalApi";
 import { PeriodType } from "@/types/interface";
 
 type CarouselSectionProp = {
-  period: PeriodType[];
+  period: PeriodType[] | undefined;
   formatThaiDateTime: (isoString: string) => { date: string; time: string };
 };
 const CarouselSection = ({
@@ -38,7 +38,7 @@ const CarouselSection = ({
       className="w-full"
     >
       <CarouselContent className="-mt-1 h-[230px]">
-        {period.map((item, index) => (
+        {period?.map((item, index) => (
           <CarouselItem key={index} className="pt-1 md:basis-1/2">
             <div className="p-1">
               <Card>

@@ -46,9 +46,12 @@ import DeletePariod from "./DeletePariod";
 import { toast } from "@/components/ui/use-toast";
 import EditPariod from "./EditPariod";
 import axios from "axios";
+import useStore from "@/app/store/store";
 
 type RightSectionProps = {
   permission?: string; // ใส่ ? เพื่อบอกว่าอาจเป็น undefined ได้
+  period?: PeriodType[];
+  setPeriod: (data: PeriodType[]) => void;
 };
 
 const formSchema = z.object({
@@ -82,15 +85,14 @@ export const formatThaiDateTime = (isoString: string) => {
     time: `${thaiTime}`,
   };
 };
-const RightSection = ({ permission }: RightSectionProps) => {
+const RightSection = ({ permission, period, setPeriod }: RightSectionProps) => {
   const defaultDate = new Date(new Date().getFullYear(), new Date().getMonth()); // ปีและเดือนปัจจุบัน
   const [show, setShow] = useState(false);
   const [expandedPeriodId, setExpandedPeriodId] = useState<string | null>(null); // เปิดถาดสำหรับการแก้ไขช่วงเวลา
-  const [period, setPeriod] = useState<PeriodType[]>([]);
   const [deletePeriod, setDeletePeroid] = useState("");
   // State สำหรับเก็บค่าเวลา
   const [openAlert, setOpenAlert] = useState(false);
-
+  const { fetchCurrentPeriod } = useStore();
   const [timeRange, setTimeRange] = useState<TimeRange>({
     from: new Date(),
     to: new Date(),
@@ -103,49 +105,6 @@ const RightSection = ({ permission }: RightSectionProps) => {
     },
   });
 
-  const fetchPeriod = async () => {
-    try {
-      const response = await GlobalApi.getPeriod();
-      // เรียงลำดับช่วงเวลา โดยมีเงื่อนไขดังนี้:
-      // 1. ช่วงเวลาที่กำลังจะมาถึง (อยู่ในอนาคต) จะอยู่ด้านหน้าสุด
-      // 2. ช่วงเวลาที่ผ่านมาแล้ว (หมดอายุ) จะถูกย้ายไปอยู่ด้านท้าย
-      // 3. เรียงลำดับตามความใกล้เคียงกับวันปัจจุบัน
-      const sortedPeriods = response?.data.sort(
-        (a: PeriodType, b: PeriodType) => {
-          // สร้างวันที่ปัจจุบัน
-          const now = new Date();
-          // แปลงวันสิ้นสุดของแต่ละช่วงเวลา
-          const endA = new Date(a.end);
-          const endB = new Date(b.end);
-
-          // ตรวจสอบว่าช่วงเวลาใดบ้างที่ผ่านมาแล้ว
-          const isPastA = endA < now;
-          const isPastB = endB < now;
-
-          // กรณีที่ช่วงเวลาทั้งสองอยู่ในสถานะเดียวกัน (ทั้งอนาคตหรือทั้งอดีต)
-          if (isPastA === isPastB) {
-            // เรียงลำดับตามความใกล้เคียงกับวันปัจจุบัน
-            const startA = new Date(a.start);
-            const startB = new Date(b.start);
-            return (
-              Math.abs(startA.getTime() - now.getTime()) -
-              Math.abs(startB.getTime() - now.getTime())
-            );
-          }
-
-          // ย้ายช่วงเวลาที่ผ่านมาแล้วไปอยู่ด้านท้าย
-          return isPastA ? 1 : -1;
-        }
-      );
-
-      // อัปเดตสถานะด้วยช่วงเวลาที่เรียงลำดับแล้ว
-      setPeriod(sortedPeriods);
-      console.log(sortedPeriods);
-    } catch (error) {
-      console.error({ message: error });
-    }
-  };
-
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       const data = {
@@ -154,7 +113,9 @@ const RightSection = ({ permission }: RightSectionProps) => {
         end: timeRange.to!.toISOString(),
       };
       const response = await GlobalApi.createPeriod(data);
-      fetchPeriod();
+      // fetch period ใหม่
+      const fetchedPeriods = await fetchCurrentPeriod();
+      setPeriod(fetchedPeriods);
       setShow(false);
       toast({
         title: "กำหนดช่วงเวลาเรียบร้อยแล้ว",
@@ -208,12 +169,6 @@ const RightSection = ({ permission }: RightSectionProps) => {
     }
   };
 
-
-  useEffect(() => {
-    fetchPeriod();
-  }, []);
-  // แก้ไขฟังก์ชัน handleTimeChange สำหรับปุ่ม Save
-
   return (
     <div className="flex gap-3 flex-col h-full">
       <motion.div
@@ -242,10 +197,16 @@ const RightSection = ({ permission }: RightSectionProps) => {
             mode="range"
             defaultMonth={defaultDate}
             // selected prop ควรเป็น Date หรือ { from: Date, to: Date } สำหรับ mode="range"
-            selected={{
-              from: period[0]?.start ? new Date(period[0]!.start) : undefined,
-              to: period[0]?.end ? new Date(period[0]!.end) : undefined,
-            }}
+            selected={
+              period && period.length > 0
+                ? {
+                    from: period[0].start
+                      ? new Date(period[0].start)
+                      : undefined,
+                    to: period[0].end ? new Date(period[0].end) : undefined,
+                  }
+                : undefined
+            }
             numberOfMonths={1}
           />
           <div className="py-4 px-1">
@@ -431,7 +392,7 @@ const RightSection = ({ permission }: RightSectionProps) => {
                               defaultPeriod={item}
                               setTimeRange={setTimeRange}
                               timeRange={timeRange}
-                              fetchPeriod={fetchPeriod}
+                              setPeriod={setPeriod}
                               setExpandedPeriodId={setExpandedPeriodId}
                             />
                           </div>
@@ -448,7 +409,7 @@ const RightSection = ({ permission }: RightSectionProps) => {
                 openAlert={openAlert}
                 setOpenAlert={setOpenAlert}
                 periodId={deletePeriod}
-                refresh={fetchPeriod}
+                setPeriod={setPeriod}
               />
             </div>
             <div className="w-full relative ">

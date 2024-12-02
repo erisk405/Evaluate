@@ -10,7 +10,7 @@ import {
 import { Bolt, Hexagon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import EvaluateSection from "./EvaluateSection";
-import { User, userHaveBeenEvaluatedType } from "@/types/interface";
+import { PeriodType, User, userHaveBeenEvaluatedType } from "@/types/interface";
 
 type EvaluateSheetProp = {
   userHaveBeenEvaluated: userHaveBeenEvaluatedType[];

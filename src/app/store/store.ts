@@ -1,6 +1,7 @@
 // store.ts
-import { Department, PrefixType, Role, RoleRequest } from '@/types/interface';
+import { Department, PeriodType, PrefixType, Role, RoleRequest } from '@/types/interface';
 import { create } from 'zustand';
+import GlobalApi from '../_util/GlobalApi';
 
 interface StoreState {
   openForm: {
@@ -41,6 +42,12 @@ interface StoreState {
 
   prefixes: PrefixType[];
   setPrefix: (prefixes: PrefixType[]) => void;
+
+
+  currentlyEvaluationPeriod: PeriodType | null;
+  setCurrentlyEvaluationPeriod: (CurrentlyEvaluationPeriod: PeriodType) => void;
+  fetchCurrentPeriod: () => Promise<PeriodType[]>; // Add this method to the store
+
 }
 
 
@@ -98,6 +105,61 @@ const useStore = create<StoreState>((set) => ({
 
   prefixes: [],
   setPrefix: (prefixes) => set(() => ({ prefixes })),
+
+
+  currentlyEvaluationPeriod: null,
+  setCurrentlyEvaluationPeriod: (currentlyEvaluationPeriod) => set(() => ({
+    currentlyEvaluationPeriod
+  })),
+
+
+  // function  fetchperiod เอามาไว้ store เพราะเหมือนต้องใช้บ่อย 
+  // Add a method to fetch the current period directly in the store
+  fetchCurrentPeriod: async () => {
+    try {
+      const response = await GlobalApi.getPeriod();
+
+      const sortedPeriods = response?.data.sort(
+        (a: PeriodType, b: PeriodType) => {
+          const now = new Date();
+          const endA = new Date(a.end);
+          const endB = new Date(b.end);
+
+          const isPastA = endA < now;
+          const isPastB = endB < now;
+
+          if (isPastA === isPastB) {
+            const startA = new Date(a.start);
+            const startB = new Date(b.start);
+            return (
+              Math.abs(startA.getTime() - now.getTime()) -
+              Math.abs(startB.getTime() - now.getTime())
+            );
+          }
+
+          return isPastA ? 1 : -1;
+        }
+      );
+
+      const currentPeriod = sortedPeriods.find((p: PeriodType) => {
+        const now = new Date();
+        const start = new Date(p.start);
+        const end = new Date(p.end);
+        return start <= now && now <= end;
+      });
+
+      if (currentPeriod) {
+        set({
+          currentlyEvaluationPeriod: currentPeriod
+        });
+      }
+
+      return sortedPeriods; // Return sorted periods
+    } catch (error) {
+      console.error({ message: error });
+      throw error;
+    }
+  }
 }));
 
 export default useStore;

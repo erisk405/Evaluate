@@ -1,6 +1,6 @@
 "use client";
 import useStore from "@/app/store/store";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Bar, BarChart, XAxis } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -11,11 +11,28 @@ import {
 } from "@/components/ui/chart";
 import Link from "next/link";
 import RadarChartGridFilled from "./RadarChartGridFilled";
+import GlobalApi from "@/app/_util/GlobalApi";
+import { PeriodType } from "@/types/interface";
+
 
 export const description = "A radial chart with a custom shape";
 const ChartEvaluatePersonnel = () => {
   const { departments } = useStore();
 
+  const [result, setResult] = useState();
+  const { ProfileDetail } = useStore();
+  const fetchResultEval = async () => {
+    try {
+      const payload = {
+        evaluator_id: ProfileDetail.id!,
+        // period_id: period[0].period_id!,
+      };
+      // const response = await GlobalApi.getResultEvaluate(payload)
+      // console.log("response", response);
+    } catch (error) {
+      console.error({ message: error });
+    }
+  };
   const chartData = [
     { depart: "งานพัฒนาวิชาการ", finished: 450, unfinished: 300 },
     { depart: "งานทะเบียนและประมวลผล", finished: 380, unfinished: 420 },
@@ -55,6 +72,10 @@ const ChartEvaluatePersonnel = () => {
       return `${departName.slice(0, 5)}...`;
     }
   };
+
+  useEffect(() => {
+    fetchResultEval();
+  }, []);
   return (
     <div className="w-full">
       {myQuest &&

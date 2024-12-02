@@ -49,7 +49,12 @@ import {
 } from "@/components/ui/table";
 import Image from "next/image";
 
-import { PageNumber, User, userHaveBeenEvaluatedType } from "@/types/interface";
+import {
+  PageNumber,
+  PeriodType,
+  User,
+  userHaveBeenEvaluatedType,
+} from "@/types/interface";
 import EvaluateSection from "./EvaluateSection";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -168,16 +173,14 @@ export function UserInDepartment({
             <Sheet open={open} onOpenChange={setOpen}>
               <SheetTrigger asChild>
                 {checkEvaluated ? (
-                  <div
-                    className="flex items-center gap-3 active:scale-95 transition-all text-green-500 select-none"
-                  >
+                  <div className="flex items-center gap-3 active:scale-95 transition-all text-green-500 select-none">
                     <Bolt /> เสร็จสิ้นแล้ว
                   </div>
                 ) : (
                   <Button
                     variant="ghost"
                     className="flex border items-center gap-3 active:scale-95 transition-all"
-                    onClick={()=>setOpen(true)}
+                    onClick={() => setOpen(true)}
                   >
                     <Hexagon /> ประเมิน
                   </Button>

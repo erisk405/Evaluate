@@ -5,8 +5,12 @@ import RightSection from "./_components/RightSection";
 import GlobalApi from "@/app/_util/GlobalApi";
 import ReportOverview from "./_components/ReportOverview";
 import Loading from "@/app/_components/Loading";
+import { PeriodType } from "@/types/interface";
+import useStore from "@/app/store/store";
 const page = () => {
   const [checkPermission, setCheckPermission] = useState(null); // ใช้ในการcheckว่า คนนี้เป็น admin หรือ user เพื่อใช้ในการแสดงInterface ต่างๆ
+  const { currentlyEvaluationPeriod, fetchCurrentPeriod } = useStore();
+  const [period, setPeriod] = useState<PeriodType[]>([]);
 
   useEffect(() => {
     const fetchProtected = async () => {
@@ -20,6 +24,15 @@ const page = () => {
       }
     };
     fetchProtected();
+    const initializePeriod = async () => {
+      try {
+        const fetchedPeriods = await fetchCurrentPeriod();
+        setPeriod(fetchedPeriods);
+      } catch (error) {
+        // Handle error (e.g., show error message)
+      }
+    };
+    initializePeriod();
   }, []);
 
   if (checkPermission === null) {
@@ -40,7 +53,11 @@ const page = () => {
         )}
       </div>
       <div className="xl:col-span-2 col-span-6 w-full">
-        <RightSection permission={checkPermission} />
+        <RightSection
+          permission={checkPermission}
+          period={period}
+          setPeriod={setPeriod}
+        />
       </div>
     </div>
   );

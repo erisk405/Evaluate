@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import ChartEvaluatedYou from "./ChartEvaluatedYou";
 import ChartEvaluatePersonnel from "./ChartEvaluatePersonnel";
+import { PeriodType } from "@/types/interface";
+
 
 const MyEvaluated = () => {
   return (

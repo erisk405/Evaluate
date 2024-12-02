@@ -17,13 +17,14 @@ import GlobalApi from "@/app/_util/GlobalApi";
 import { toast } from "@/components/ui/use-toast";
 import { PeriodType, TimeRange } from "@/types/interface";
 import { Switch } from "@/components/ui/switch";
+import useStore from "@/app/store/store";
 
 interface EditPeriodProps {
   defaultPeriod: PeriodType;
   setTimeRange: React.Dispatch<React.SetStateAction<TimeRange>>;
   timeRange: TimeRange;
-  fetchPeriod: () => Promise<void>;
-  setExpandedPeriodId:React.Dispatch<React.SetStateAction<string | null>>;
+  setPeriod: (data: PeriodType[]) => void;
+  setExpandedPeriodId: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 const formSchema = z.object({
@@ -38,8 +39,8 @@ const EditPariod = ({
   defaultPeriod,
   setTimeRange,
   timeRange,
-  fetchPeriod,
-  setExpandedPeriodId
+  setPeriod,
+  setExpandedPeriodId,
 }: EditPeriodProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -48,6 +49,7 @@ const EditPariod = ({
       isActive: defaultPeriod.isAction, // Add default value
     },
   });
+  const {fetchCurrentPeriod} = useStore()
   const onUpdate = async (values: z.infer<typeof formSchema>) => {
     try {
       const data = {
@@ -58,8 +60,9 @@ const EditPariod = ({
         isAction: values.isActive ?? false,
       };
       const response = await GlobalApi.updatePeriod(data);
-      fetchPeriod();
-      setExpandedPeriodId(null) // พออัพเดทเสร็จก็ให้ ปิดถาดลง
+      const fetchedPeriods = await fetchCurrentPeriod();
+      setPeriod(fetchedPeriods);
+      setExpandedPeriodId(null); // พออัพเดทเสร็จก็ให้ ปิดถาดลง
       toast({
         title: "อัพเดทช่วงเวลาเรียบร้อยแล้ว",
         description: (
@@ -152,9 +155,7 @@ const EditPariod = ({
             <FormItem className="w-full">
               <FormControl>
                 <div className="grid grid-cols-4 items-center w-full">
-                  <Label htmlFor="period-active">
-                    Active
-                  </Label>
+                  <Label htmlFor="period-active">Active</Label>
                   <Switch
                     id="period-active"
                     checked={field.value}

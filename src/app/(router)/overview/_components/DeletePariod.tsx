@@ -14,20 +14,24 @@ import GlobalApi from "@/app/_util/GlobalApi";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
+import useStore from "@/app/store/store";
+import { PeriodType } from "@/types/interface";
 interface DeletePeriodAlertProps {
   openAlert: boolean;
   setOpenAlert: (openAlert: boolean) => void;
   periodId: string;
-  refresh: () => void;
+  setPeriod: (data: PeriodType[]) => void;
 }
 
 const DeletePariod = ({
   openAlert,
   setOpenAlert,
   periodId,
-  refresh,
+  setPeriod,
 }: DeletePeriodAlertProps) => {
   const [check, setCheck] = useState(""); // check ให้แน่ใจว่าจะ Deleteจริงๆนะ
+
+  const { fetchCurrentPeriod } = useStore();
   const handleDelete = async () => {
     try {
       const response = await GlobalApi.deletePeriod(periodId);
@@ -42,7 +46,9 @@ const DeletePariod = ({
           </pre>
         ),
       });
-      refresh();
+      const fetchedPeriods = await fetchCurrentPeriod();
+
+      setPeriod(fetchedPeriods);
     } catch (error: any) {
       toast({
         title: "เกิดข้อผิดพลาด",

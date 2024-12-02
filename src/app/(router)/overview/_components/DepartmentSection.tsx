@@ -1,7 +1,7 @@
 "use client";
 import GlobalApi from "@/app/_util/GlobalApi";
 import useStore from "@/app/store/store";
-import { ImageType } from "@/types/interface";
+import { ImageType, PeriodType } from "@/types/interface";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
