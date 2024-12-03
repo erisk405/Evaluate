@@ -92,7 +92,7 @@ const RightSection = ({ permission, period, setPeriod }: RightSectionProps) => {
   const [deletePeriod, setDeletePeroid] = useState("");
   // State สำหรับเก็บค่าเวลา
   const [openAlert, setOpenAlert] = useState(false);
-  const { fetchCurrentPeriod } = useStore();
+  const { currentlyEvaluationPeriod,fetchCurrentPeriod } = useStore();
   const [timeRange, setTimeRange] = useState<TimeRange>({
     from: new Date(),
     to: new Date(),
@@ -115,6 +115,7 @@ const RightSection = ({ permission, period, setPeriod }: RightSectionProps) => {
       const response = await GlobalApi.createPeriod(data);
       // fetch period ใหม่
       const fetchedPeriods = await fetchCurrentPeriod();
+
       setPeriod(fetchedPeriods);
       setShow(false);
       toast({
@@ -168,7 +169,14 @@ const RightSection = ({ permission, period, setPeriod }: RightSectionProps) => {
       }
     }
   };
-
+  useEffect(() => {
+    const initializeFunction = async () => {
+      await fetchCurrentPeriod();
+    };
+    if (!currentlyEvaluationPeriod) {
+      initializeFunction();
+    }
+  }, []);
   return (
     <div className="flex gap-3 flex-col h-full">
       <motion.div

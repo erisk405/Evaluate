@@ -12,27 +12,13 @@ import {
 import Link from "next/link";
 import RadarChartGridFilled from "./RadarChartGridFilled";
 import GlobalApi from "@/app/_util/GlobalApi";
-import { PeriodType } from "@/types/interface";
-
 
 export const description = "A radial chart with a custom shape";
 const ChartEvaluatePersonnel = () => {
   const { departments } = useStore();
+  const { ProfileDetail, currentlyEvaluationPeriod } = useStore();
 
-  const [result, setResult] = useState();
-  const { ProfileDetail } = useStore();
-  const fetchResultEval = async () => {
-    try {
-      const payload = {
-        evaluator_id: ProfileDetail.id!,
-        // period_id: period[0].period_id!,
-      };
-      // const response = await GlobalApi.getResultEvaluate(payload)
-      // console.log("response", response);
-    } catch (error) {
-      console.error({ message: error });
-    }
-  };
+
   const chartData = [
     { depart: "งานพัฒนาวิชาการ", finished: 450, unfinished: 300 },
     { depart: "งานทะเบียนและประมวลผล", finished: 380, unfinished: 420 },
@@ -72,10 +58,28 @@ const ChartEvaluatePersonnel = () => {
       return `${departName.slice(0, 5)}...`;
     }
   };
-
-  useEffect(() => {
-    fetchResultEval();
-  }, []);
+  
+  const getCountUserAsEvaluated = async () => {
+    try {
+      // Add additional checks before making the API call
+      if (!ProfileDetail?.id || !currentlyEvaluationPeriod?.period_id) {
+        console.log("Missing required data for fetching result evaluation");
+        return;
+      }
+      const payload = {
+        assessor_id: ProfileDetail.id,
+        period_id: currentlyEvaluationPeriod.period_id,
+      };
+      const response = await GlobalApi.getCountUserAsEvaluated(payload);
+      console.log("getCountUserAsEvaluated",response?.data);
+      
+    } catch (error) {
+      console.error({ message: error });
+    }
+  };
+  useEffect(()=>{
+    getCountUserAsEvaluated();
+  },[currentlyEvaluationPeriod])
   return (
     <div className="w-full">
       {myQuest &&

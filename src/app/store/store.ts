@@ -1,5 +1,5 @@
 // store.ts
-import { Department, PeriodType, PrefixType, Role, RoleRequest } from '@/types/interface';
+import { Department, getResultEvaluateType, PeriodType, PrefixType, Role, RoleRequest } from '@/types/interface';
 import { create } from 'zustand';
 import GlobalApi from '../_util/GlobalApi';
 
@@ -45,7 +45,10 @@ interface StoreState {
 
 
   currentlyEvaluationPeriod: PeriodType | null;
-  setCurrentlyEvaluationPeriod: (CurrentlyEvaluationPeriod: PeriodType) => void;
+
+  resultEvaluate: getResultEvaluateType | null;
+  setResultEvaluate: (resultEvaluates: getResultEvaluateType) => void
+
   fetchCurrentPeriod: () => Promise<PeriodType[]>; // Add this method to the store
 
 }
@@ -108,8 +111,10 @@ const useStore = create<StoreState>((set) => ({
 
 
   currentlyEvaluationPeriod: null,
-  setCurrentlyEvaluationPeriod: (currentlyEvaluationPeriod) => set(() => ({
-    currentlyEvaluationPeriod
+  
+  resultEvaluate: null,
+  setResultEvaluate: (resultEvaluate) => set(() => ({
+    resultEvaluate
   })),
 
 
@@ -118,7 +123,6 @@ const useStore = create<StoreState>((set) => ({
   fetchCurrentPeriod: async () => {
     try {
       const response = await GlobalApi.getPeriod();
-
       const sortedPeriods = response?.data.sort(
         (a: PeriodType, b: PeriodType) => {
           const now = new Date();
@@ -147,7 +151,6 @@ const useStore = create<StoreState>((set) => ({
         const end = new Date(p.end);
         return start <= now && now <= end;
       });
-
       if (currentPeriod) {
         set({
           currentlyEvaluationPeriod: currentPeriod

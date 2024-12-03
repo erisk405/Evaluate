@@ -56,7 +56,7 @@ const page = () => {
     ProfileDetail,
     updateProfileDetail,
     currentlyEvaluationPeriod,
-    setCurrentlyEvaluationPeriod,
+    fetchCurrentPeriod,
   } = useStore();
   const [department, setDepartment] = useState<Department>();
   const [userHaveBeenEvaluated, setUserHaveBeenEvaluated] = useState<
@@ -83,8 +83,6 @@ const page = () => {
           eval_depart_id: params.departmentId,
           period_id: currentlyEvaluationPeriod.period_id,
         };
-        console.log("payload",payload);
-        
         const response = await GlobalApi.findUserEvaluated(payload);
         setUserHaveBeenEvaluated(response?.data);
       }
@@ -94,30 +92,12 @@ const page = () => {
   };
 
   const fetchDepartment = async () => {
-    console.log("currentlyEvaluationPeriod", currentlyEvaluationPeriod);
-
-    const response = await GlobalApi.getDepartmentById(params.departmentId);
-    const data = response?.data.department_data;
-    console.log(data);
-    setDepartment(data);
-  };
-  const fetchCurrentlyEvaluationPeriod = async () => {
     try {
-      const response = await GlobalApi.getPeriod();
-      // Find the currently active evaluation period
-      const currentPeriod = response?.data.find((p: PeriodType) => {
-        const now = new Date();
-        const start = new Date(p.start);
-        const end = new Date(p.end);
-        return start <= now && now <= end;
-      });
-      // If a current period is found, set it in the store
-      if (currentPeriod) {
-        setCurrentlyEvaluationPeriod(currentPeriod);
-      }
-      // อัปเดตสถานะด้วยช่วงเวลาที่เรียงลำดับแล้ว
+      const response = await GlobalApi.getDepartmentById(params.departmentId);
+      const data = response?.data.department_data;
+      setDepartment(data);
     } catch (error) {
-      console.error({ message: error });
+      console.log({ message: error });
     }
   };
 
@@ -127,9 +107,11 @@ const page = () => {
   }, [currentlyEvaluationPeriod, ProfileDetail]);
 
   useEffect(() => {
-    // currentlyEvaluationPeriod เป็น null ก็ให้ fetch check อีกที
+    const initializeFunction = async () => {
+      await fetchCurrentPeriod();
+    };
     if (!currentlyEvaluationPeriod) {
-      fetchCurrentlyEvaluationPeriod();
+      initializeFunction();
     }
   }, []);
   return (

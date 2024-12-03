@@ -5,7 +5,6 @@ import {
   TableBody,
   TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -14,12 +13,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
-import {
-  FormQuestion,
-  PeriodType,
-  PermissionFormItem,
-  PermissionItem,
-} from "@/types/interface";
+import { PermissionFormItem } from "@/types/interface";
 import useStore from "@/app/store/store";
 import { useParams } from "next/navigation";
 import GlobalApi from "@/app/_util/GlobalApi";
@@ -58,7 +52,7 @@ const EvaluateSection = ({
   const [formEvaluation, setFormEvaluation] = useState<
     PermissionFormItem[] | undefined
   >([]);
-  const { ProfileDetail,currentlyEvaluationPeriod } = useStore();
+  const { ProfileDetail, currentlyEvaluationPeriod } = useStore();
 
   const [payload, setPayload] = useState<Payload>({});
   // เพิ่ม useEffect เพื่อ initialize payload เมื่อ formEvaluation เปลี่ยน
@@ -150,7 +144,6 @@ const EvaluateSection = ({
             score: q.score,
           }))
         );
-
         const data = {
           period_id: currentlyEvaluationPeriod.period_id,
           assessor_id: ProfileDetail.id!, // Ensuring non-null
@@ -162,6 +155,10 @@ const EvaluateSection = ({
 
         const response = await GlobalApi.createEvaluate(data);
         console.log("response", response);
+        // const { evaluator_id } = response?.data;
+        // socket.emit("roleRequestHandled", {
+        //   evaluator_id,
+        // });
         toast({
           title: "บันทึกข้อมูลเรียบร้อยแล้ว",
           description: (
@@ -172,6 +169,7 @@ const EvaluateSection = ({
             </pre>
           ),
         });
+
         setOpen(false);
         // รอให้แอนิเมชันของ Sheet ปิดสำเร็จก่อน
         await new Promise((resolve) => setTimeout(resolve, 300)); // รอ 300ms (ระยะเวลาแอนิเมชัน)

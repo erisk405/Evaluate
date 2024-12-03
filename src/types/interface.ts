@@ -142,6 +142,22 @@ interface userHaveBeenEvaluatedType {
   evaluator: { id: string, name: string }
 }
 
+interface getResultEvaluateType{
+  formResults:formResultsType[];
+  headData:headDataType[];
+}
+interface formResultsType {
+  SD:number;
+  average:number;
+  formId:string
+  formName:string;
+}
+
+interface headDataType{
+  evaluatorName:string;
+  periodName:string
+}
+
 export type {
   ImageType, Department, Role,
   User, RoleRequest, Notification,
@@ -149,5 +165,8 @@ export type {
   FormQuestion, PeriodType, PageNumber,
   TimeRange, Supervise, PrefixType, PermissionFormItem,
   PermissionItem, dataDepartmentByAdmin,
-  userHaveBeenEvaluatedType
+  userHaveBeenEvaluatedType,
+  getResultEvaluateType,
+  formResultsType,
+  headDataType
 };

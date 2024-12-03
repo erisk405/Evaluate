@@ -522,11 +522,14 @@ const findUserEvaluated = (payload: findUserEvaluatedType) => {
     console.error("API createPeriod", { message: error });
   }
 };
-type getResultEvaluate = {
+type getResultEvaluateProp = {
   evaluator_id: string;
   period_id: string;
 };
-const getResultEvaluate = (payload: getResultEvaluate) => {
+const getResultEvaluate = (payload: getResultEvaluateProp) => {
+  if (!payload.evaluator_id || !payload.period_id) {
+    throw new Error("Missing evaluator_id or period_id");
+  }
   try {
     return axios.get(
       `${apiUrl}/resultEvaluate/${payload.evaluator_id}/${payload.period_id}`,
@@ -534,6 +537,20 @@ const getResultEvaluate = (payload: getResultEvaluate) => {
     );
   } catch (error) {
     console.error("API resultEvaluate", { message: error });
+  }
+};
+type getCountUserAsEvaluatedProp = {
+  assessor_id: string;
+  period_id: string;
+};
+const getCountUserAsEvaluated = (payload: getCountUserAsEvaluatedProp) => {
+  try {
+    return axios.get(
+      `${apiUrl}/countUserEvaluated/${payload.assessor_id}/${payload.period_id}`,
+      { withCredentials: true }
+    );
+  } catch (error) {
+    console.error("API getCountUserAsEvaluated", { message: error });
   }
 };
 
@@ -583,4 +600,5 @@ export default {
   updatePrefix,
   findUserEvaluated,
   getResultEvaluate,
+  getCountUserAsEvaluated
 };

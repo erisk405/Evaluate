@@ -25,6 +25,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import useStore from "@/app/store/store";
+import { useEffect, useState } from "react";
+import GlobalApi from "@/app/_util/GlobalApi";
+import { getResultEvaluateType } from "@/types/interface";
 const chartData = [
   { form: "ความรู้เชิงวิชาการ", F01: 186 },
   { form: "ทักษะการปฏิบัติงาน", F01: 285 },
@@ -36,27 +40,31 @@ const chartConfig = {
     color: "hsl(var(--chart-1))",
   },
 } satisfies ChartConfig;
-const formDatail = [
-  {
-    id: "INV001",
-    name: "ความรู้เชิงวิชาการ",
-    avg: "4.44",
-    SD: "5.54",
-  },
-  {
-    id: "INV002",
-    name: "ทักษะการปฏิบัติงาน",
-    avg: "11.54",
-    SD: "9.84",
-  },
-  {
-    id: "INV003",
-    name: "จิตพิสัย",
-    avg: "8.34",
-    SD: "7.24",
-  },
-];
 const RadarChartGridFilled = () => {
+  const {
+    setResultEvaluate,
+    resultEvaluate,
+    ProfileDetail,
+    currentlyEvaluationPeriod,
+  } = useStore();
+
+  const fetchResultEval = async () => {
+    try {
+      // Add additional checks before making the API call
+      if (!ProfileDetail?.id || !currentlyEvaluationPeriod?.period_id) {
+        console.log("Missing required data for fetching result evaluation");
+        return;
+      }
+      const payload = {
+        evaluator_id: ProfileDetail.id,
+        period_id: currentlyEvaluationPeriod.period_id,
+      };
+      const response = await GlobalApi.getResultEvaluate(payload);
+      setResultEvaluate(response?.data);
+    } catch (error) {
+      console.error({ message: error });
+    }
+  };
   const abbreviateForm = (formname: string): string => {
     if (formname.length <= 10) {
       return formname;
@@ -64,6 +72,13 @@ const RadarChartGridFilled = () => {
       return `${formname.slice(0, 10)}...`;
     }
   };
+
+  useEffect(() => {
+    console.log("resultEvaluate", resultEvaluate);
+  }, [resultEvaluate]);
+  useEffect(() => {
+    fetchResultEval();
+  }, [currentlyEvaluationPeriod]);
   return (
     <Card>
       <CardHeader className="items-center pb-4">
@@ -101,7 +116,7 @@ const RadarChartGridFilled = () => {
         <Table>
           <TableCaption>A list of your recent invoices.</TableCaption>
           <TableHeader>
-            <TableRow >
+            <TableRow>
               <TableHead className="w-auto truncate">
                 ด้านในการประเมิน
               </TableHead>
@@ -110,15 +125,18 @@ const RadarChartGridFilled = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {formDatail.map((item) => (
-              <TableRow key={item.id}>
-                <TableCell className="font-medium truncate">
-                  <span>{item.name}</span>
-                </TableCell>
-                <TableCell className="text-end truncate">{item.avg}</TableCell>
-                <TableCell className="text-end truncate">{item.SD}</TableCell>
-              </TableRow>
-            ))}
+            {resultEvaluate?.formResults &&
+              resultEvaluate?.formResults.map((item) => (
+                <TableRow key={item.formId}>
+                  <TableCell className="font-medium truncate">
+                    <span>{item.formName}</span>
+                  </TableCell>
+                  <TableCell className="text-end truncate">
+                    {item.average}
+                  </TableCell>
+                  <TableCell className="text-end truncate">{item.SD}</TableCell>
+                </TableRow>
+              ))}
           </TableBody>
           <TableFooter>
             <TableRow>
