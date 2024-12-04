@@ -134,9 +134,6 @@ export function DateTimePicker24h({ onTimeChange, defaultValue  ,type,
               selected={selectedDate}
               onSelect={handleDateSelect}
               initialFocus
-              disabled={(date) =>
-                date < new Date() || date < new Date("1900-01-01")
-              }
             />
             <div className="flex flex-col sm:flex-row sm:h-[300px] divide-y sm:divide-y-0 sm:divide-x">
               <ScrollArea className="w-64 sm:w-auto">

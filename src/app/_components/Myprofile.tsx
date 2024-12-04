@@ -54,7 +54,7 @@ const formSchema = z.object({
 
 export default function Myprofile() {
   // for image changing
-  const { ProfileDetail, updateProfileDetail } = useStore();
+  const { ProfileDetail, updateProfileDetail,setShowProfile } = useStore();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);

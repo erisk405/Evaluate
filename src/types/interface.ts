@@ -142,20 +142,39 @@ interface userHaveBeenEvaluatedType {
   evaluator: { id: string, name: string }
 }
 
-interface getResultEvaluateType{
-  formResults:formResultsType[];
-  headData:headDataType[];
+interface getResultEvaluateType {
+  resultData: formResultsType;
+  headData: headDataType;
 }
 interface formResultsType {
-  SD:number;
-  average:number;
-  formId:string
+  assessorsHasPermiss: assessorsHasPermissType[];
+  evaluateScore: evaluateScoreType[];
+}
+interface assessorsHasPermissType {
+  formId:string;
+  formName:string;
+  totalAssesPerForm:number;
+  totalAssessors:number;
+}
+interface evaluateScoreType {
+  SD:string;
+  amountAssessor:number;
+  average:string;
+  formId:string;
   formName:string;
 }
 
-interface headDataType{
-  evaluatorName:string;
-  periodName:string
+interface headDataType {
+  evaluatorName: string;
+  periodName: string
+}
+
+
+interface getCountUserAsEvaluatedType {
+  department_id:string;
+  department_name:string;
+  evaluated:number; // มีที่คนที่เราประเมินสมาชิกในหน่วยงานนั้น
+  evaluator:number // มีสมาชิกที่อยู่ในแผนกนั้นกี่คน
 }
 
 export type {
@@ -168,5 +187,6 @@ export type {
   userHaveBeenEvaluatedType,
   getResultEvaluateType,
   formResultsType,
-  headDataType
+  headDataType,
+  getCountUserAsEvaluatedType
 };

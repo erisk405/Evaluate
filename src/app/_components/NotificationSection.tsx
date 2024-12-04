@@ -13,10 +13,15 @@ import GlobalApi from "../_util/GlobalApi";
 
 const TIMEZONE = "Asia/Bangkok";
 const PAGE_LIMIT = 4;
-
-const NotificationSection: React.FC = () => {
+type notificationSectionProp = {
+  showNotifications: boolean;
+  setShowNotifications: (data: boolean) => void;
+};
+const NotificationSection = ({
+  showNotifications,
+  setShowNotifications,
+}: notificationSectionProp) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [showNotifications, setShowNotifications] = useState(true);
   const [slideOut, setSlideOut] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(0);
   const { ProfileDetail, updateProfileDetail } = useStore();
@@ -29,7 +34,7 @@ const NotificationSection: React.FC = () => {
     userId: string
   ) => {
     try {
-      const response = await GlobalApi.resolveRole(requestId,status,userId)
+      const response = await GlobalApi.resolveRole(requestId, status, userId);
       const SendRes = response?.data;
       console.log(ProfileDetail);
       const { name, image } = ProfileDetail;
@@ -148,7 +153,13 @@ const NotificationSection: React.FC = () => {
           const SenderName = receive.AdminName;
           const SenderStatus = receive.SendRes.status;
           const updateAt = receive.updatedAt;
-          const { id, role_name, description,role_level,permissionsAsAssessor } = receive.SendRes.role;
+          const {
+            id,
+            role_name,
+            description,
+            role_level,
+            permissionsAsAssessor,
+          } = receive.SendRes.role;
 
           const dataSender = {
             id: receive.SendRes.id,
@@ -170,7 +181,7 @@ const NotificationSection: React.FC = () => {
                   role_name,
                   description,
                   role_level,
-                  permissionsAsAssessor
+                  permissionsAsAssessor,
                 }, // ส่ง role เข้าไปอัพเดทUser คนนั้น
                 roleRequests: [],
               })
@@ -248,127 +259,109 @@ const NotificationSection: React.FC = () => {
   }, [loaderRef, loadMore]);
 
   return (
-    <div className="relative" data-aria-hidden="true">
-      <div
-        className={`relative hover:bg-neutral-200 ${
-          showNotifications ? "bg-neutral-100" : "bg-blue-100"
-        } p-2 rounded-full`}
-      >
-        <Bell
-          onClick={() => setShowNotifications(!showNotifications)}
-          className={showNotifications ? "" : "text-blue-500"}
-        />
-        {quantity > 0 && (
-          <div
-            className="absolute min-w-[20px] max-w-[40px] h-[20px] bg-blue-500 top-0 right-0
-              flex justify-center items-center rounded-full text-white text-sm translate-x-1/3 -translate-y-1/3"
-          >
-            <span>{quantity}</span>
-          </div>
-        )}
-      </div>
-      <div
-        className={`fixed lg:absolute h-auto  
-        ${showNotifications ? "opacity-0 scale-95 pointer-events-none" : "opacity-100 scale-100 pointer-events-auto"} 
-        lg:w-[400px] lg:-inset-x-80 lg:translate-y-0 lg:top-full 
-        w-full left-0 top-1/2 -translate-y-1/2 z-50 
-        rounded-2xl p-1 transition-all `}
-      >
-        <div className="px-5 py-4 shadow-lg bg-white rounded-2xl lg:w-full lg:mx-0 sm:mx-28 transition-all">
-          <h1 className="text-2xl font-bold mb-3">Notifications</h1>
-          <hr />
-          <div className="scrollbar-gemini overflow-y-scroll overflow-x-hidden max-h-[500px]">
-            {notifications.length > 0 ? (
-              notifications.map((item) => (
-                <div
-                  className={`mt-3 transition-all duration-300 ${
-                    slideOut === item.id ? "translate-x-full opacity-0" : ""
-                  }`}
-                  key={item.id}
-                >
-                  <div className="flex flex-col gap-3">
-                    <div className="flex items-start gap-3">
-                      <Image
-                        src={
-                          item.user.image
-                            ? item.user.image.url
-                            : "/profiletest.jpg"
-                        }
-                        width={100}
-                        height={100}
-                        alt="Notification"
-                        className="w-[50px] h-[50px] object-cover rounded-full"
-                      />
-                      {/* notification-box user & admin */}
-                      <div>
-                        <h1 className="text-sm">{item.user.email}</h1>
-                        <h1 className="text-md font-bold">
-                          {ProfileDetail.role?.role_name === "admin"  ?
-                          (
-                            <>
-                              {item.user.name} Request Role {item.role.role_name}
-                            </>
-                          )
-                          :
-                          (
-                            <>
-                              <span className="bg-clip-text bg-gradient-to-r from-red-500 via-rose-500 to-fuchsia-800 inline-block text-transparent">Admin</span> 
-                              {" "}{item.user.name} <span className="font-medium"> active Role {item.role.role_name} </span>
-                              <span className={`${item.role.requestRole === 'APPROVED' ? 'text-blue-500': 'text-red-500'}`}> to {item.role.requestRole}</span>
-                            </>
-                          )
-                          
+    <div className="relative p-5">
+      <h1 className="text-xl font-bold text-stone-700 mb-3">Notifications</h1>
+      <hr />
+      <div className="scrollbar-gemini overflow-y-scroll overflow-x-hidden max-h-[500px]">
+        {notifications.length > 0 ? (
+          notifications.map((item) => (
+            <div
+              className={`mt-3 transition-all duration-300 ${
+                slideOut === item.id ? "translate-x-full opacity-0" : ""
+              }`}
+              key={item.id}
+            >
+              <div className="flex flex-col gap-3">
+                <div className="flex items-start gap-3">
+                  <Image
+                    src={
+                      item.user.image ? item.user.image.url : "/profiletest.jpg"
+                    }
+                    width={100}
+                    height={100}
+                    alt="Notification"
+                    className="w-[50px] h-[50px] object-cover rounded-full"
+                  />
+                  {/* notification-box user & admin */}
+                  <div>
+                    <h1 className="text-sm">{item.user.email}</h1>
+                    <h1 className="text-md font-bold">
+                      {ProfileDetail.role?.role_name === "admin" ? (
+                        <>
+                          {item.user.name} Request Role {item.role.role_name}
+                        </>
+                      ) : (
+                        <>
+                          <span className="bg-clip-text bg-gradient-to-r from-red-500 via-rose-500 to-fuchsia-800 inline-block text-transparent">
+                            Admin
+                          </span>{" "}
+                          {item.user.name}{" "}
+                          <span className="font-medium">
+                            {" "}
+                            active Role {item.role.role_name}{" "}
+                          </span>
+                          <span
+                            className={`${
+                              item.role.requestRole === "APPROVED"
+                                ? "text-blue-500"
+                                : "text-red-500"
+                            }`}
+                          >
+                            {" "}
+                            to {item.role.requestRole}
+                          </span>
+                        </>
+                      )}
+                    </h1>
+                    <h1 className="text-sm text-gray-600">
+                      {moment
+                        .utc(item.createdAt)
+                        .tz(TIMEZONE)
+                        .format("YYYY-MM-DD HH:mm:ss")}
+                    </h1>
+                    {/* เงื่อนไขเพื่อบอกว่าถ้าหากไม่ใช้ admin จะไม่เห็น ปุ่มในการ approve */}
+                    {ProfileDetail.role?.role_name === "admin" ? (
+                      <div className="flex gap-2 mt-2">
+                        <Button
+                          onClick={() =>
+                            handleRequest(
+                              item.id,
+                              "APPROVED",
+                              item.user.id ? item.user.id : ""
+                            )
                           }
-                        </h1>
-                        <h1 className="text-sm text-gray-600">
-                          {moment
-                            .utc(item.createdAt)
-                            .tz(TIMEZONE)
-                            .format("YYYY-MM-DD HH:mm:ss")}
-                        </h1>
-                        {/* เงื่อนไขเพื่อบอกว่าถ้าหากไม่ใช้ admin จะไม่เห็น ปุ่มในการ approve */}
-                        {ProfileDetail.role?.role_name === "admin" ? (
-                          <div className="flex gap-2 mt-2">
-                            <Button
-                              onClick={() =>
-                                handleRequest(item.id, "APPROVED",item.user.id ? item.user.id : '')
-                              }
-                            >
-                              Approve
-                            </Button>
-                            <Button
-                              onClick={() =>
-                                handleRequest(item.id, "REJECTED", item.user.id ? item.user.id : '')
-                              }
-                            >
-                              Reject
-                            </Button>
-                          </div>
-                        ) : (
-                          ""
-                        )}
+                        >
+                          Approve
+                        </Button>
+                        <Button
+                          onClick={() =>
+                            handleRequest(
+                              item.id,
+                              "REJECTED",
+                              item.user.id ? item.user.id : ""
+                            )
+                          }
+                        >
+                          Reject
+                        </Button>
                       </div>
-                    </div>
+                    ) : (
+                      ""
+                    )}
                   </div>
                 </div>
-              ))
-            ) : (
-              <div className="mt-3">
-                <h1 className="text-xl text-center text-gray-500">
-                  No notifications
-                </h1>
               </div>
-            )}
-            <div ref={loaderRef} className="h-2 w-full bg-transparent"></div>
+            </div>
+          ))
+        ) : (
+          <div className="mt-3">
+            <h1 className="text-sm text-center text-gray-500 my-20">
+              No notifications
+            </h1>
           </div>
-        </div>
+        )}
+        <div ref={loaderRef} className="h-2 w-full bg-transparent"></div>
       </div>
-      <div
-        onClick={() => setShowNotifications(!showNotifications)}
-        className={`${
-          showNotifications ? "hidden" : "fixed"
-        } bg-black lg:bg-transparent opacity-70 inset-0`}
-      ></div>
     </div>
   );
 };

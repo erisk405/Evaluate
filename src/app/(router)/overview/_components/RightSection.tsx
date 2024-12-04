@@ -267,7 +267,7 @@ const RightSection = ({ permission, period, setPeriod }: RightSectionProps) => {
               <TextEffect preset="slide">กำหนด วัน-เวลา การประเมิน</TextEffect>
               <AlarmClockPlus className="text-blue-500" />
             </div>
-            <div className="bg-neutral-50 rounded-lg shadow-inner relative z-30 border-t border-b">
+            <div className="bg-neutral-100 rounded-lg shadow-inner relative z-30 border-t border-b">
               <ScrollArea className="max-h-[800px] w-full px-3">
                 {period?.map((item, index) => (
                   <div
@@ -379,7 +379,7 @@ const RightSection = ({ permission, period, setPeriod }: RightSectionProps) => {
                     {/* AnimatePresence จะ "สังเกต" การเปลี่ยนแปลงใน children และ:
                         ช่วยให้ animation ของ exit ทำงานเมื่อองค์ประกอบถูกลบ
                         ช่วยให้ animation ของ initial และ animate ทำงานเมื่อองค์ประกอบถูกเพิ่ม */}
-                    <AnimatePresence mode="wait">
+                    <AnimatePresence >
                       {expandedPeriodId === item.period_id && (
                         <motion.div
                           initial={{ height: 0, opacity: 0 }}
@@ -398,8 +398,6 @@ const RightSection = ({ permission, period, setPeriod }: RightSectionProps) => {
                             </div>
                             <EditPariod
                               defaultPeriod={item}
-                              setTimeRange={setTimeRange}
-                              timeRange={timeRange}
                               setPeriod={setPeriod}
                               setExpandedPeriodId={setExpandedPeriodId}
                             />

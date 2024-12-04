@@ -1,11 +1,8 @@
 "use client";
-import { Cog, FolderKanban, UserRoundSearch } from "lucide-react";
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import ChartEvaluatedYou from "./ChartEvaluatedYou";
 import ChartEvaluatePersonnel from "./ChartEvaluatePersonnel";
-import { PeriodType } from "@/types/interface";
-
 
 const MyEvaluated = () => {
   return (
@@ -20,7 +17,7 @@ const MyEvaluated = () => {
               delay: 0.2,
               ease: [0, 0.71, 0.2, 1.01],
             }}
-            className="bg-white  rounded-2xl  shadow-md"
+            className="bg-white  rounded-2xl  shadow"
           >
             <ChartEvaluatedYou />
           </motion.div>
@@ -32,7 +29,7 @@ const MyEvaluated = () => {
               delay: 0.1,
               ease: [0, 0.71, 0.2, 1.01],
             }}
-            className="bg-white  rounded-2xl  shadow-md"
+            className="bg-white  rounded-2xl  shadow"
           >
             <ChartEvaluatePersonnel />
           </motion.div>

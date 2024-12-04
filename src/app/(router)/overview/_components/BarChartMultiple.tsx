@@ -38,13 +38,13 @@ const chartConfig = {
 
 const BarChartMultiple = () => {
   return (
-    <Card>
+    <Card className="rounded-2xl">
       <CardHeader>
         <CardTitle className="text-stone-700">จำนวนผู้ประเมินในแต่ละวัน</CardTitle>
         <CardDescription>January - June 2024</CardDescription>
       </CardHeader>
       <CardContent >
-        <ChartContainer config={chartConfig} className="max-h-[300px] mx-auto">
+        <ChartContainer config={chartConfig} className="max-h-[400px] mx-auto">
           <BarChart accessibilityLayer data={chartData}>
             <CartesianGrid vertical={false} />
             <XAxis
@@ -58,8 +58,8 @@ const BarChartMultiple = () => {
               cursor={false}
               content={<ChartTooltipContent indicator="dashed" />}
             />
-            <Bar dataKey="evaluated" fill="var(--color-evaluated)" radius={4} />
-            <Bar dataKey="evaluate" fill="var(--color-evaluate)" radius={4} />
+            <Bar dataKey="evaluated" fill="var(--color-evaluated)" radius={20} />
+            <Bar dataKey="evaluate" fill="var(--color-evaluate)" radius={20} />
           </BarChart>
         </ChartContainer>
       </CardContent>

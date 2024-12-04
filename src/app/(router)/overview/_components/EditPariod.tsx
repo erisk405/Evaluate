@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Form,
   FormControl,
@@ -21,8 +21,6 @@ import useStore from "@/app/store/store";
 
 interface EditPeriodProps {
   defaultPeriod: PeriodType;
-  setTimeRange: React.Dispatch<React.SetStateAction<TimeRange>>;
-  timeRange: TimeRange;
   setPeriod: (data: PeriodType[]) => void;
   setExpandedPeriodId: React.Dispatch<React.SetStateAction<string | null>>;
 }
@@ -37,10 +35,8 @@ const formSchema = z.object({
 
 const EditPariod = ({
   defaultPeriod,
-  setTimeRange,
-  timeRange,
-  setPeriod,
   setExpandedPeriodId,
+  setPeriod,
 }: EditPeriodProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -49,7 +45,11 @@ const EditPariod = ({
       isActive: defaultPeriod.isAction, // Add default value
     },
   });
-  const {fetchCurrentPeriod} = useStore()
+  const [timeRange, setTimeRange] = useState<TimeRange>({
+    from: new Date(),
+    to: new Date(),
+  });
+  const { fetchCurrentPeriod } = useStore();
   const onUpdate = async (values: z.infer<typeof formSchema>) => {
     try {
       const data = {
@@ -87,6 +87,9 @@ const EditPariod = ({
       });
     }
   };
+  useEffect(() => {
+    console.log("timeRange", timeRange);
+  }, [timeRange]);
   return (
     <Form {...form}>
       <form
@@ -118,7 +121,7 @@ const EditPariod = ({
           <div className="col-span-3">
             <DateTimePicker24h
               type="from"
-              otherDate={new Date(defaultPeriod.end)} // Pass the 'to' date for comparison
+              otherDate={timeRange.to} // Pass the 'to' date for comparison
               onTimeChange={
                 (
                   date // date คือค่าที่ได้จาก newDate จาก DateTimePicker24h
@@ -128,7 +131,7 @@ const EditPariod = ({
                     from: date,
                   })) // อัพเดท state โดยเก็บค่าเดิมและอัพเดทเฉพาะ from
               }
-              defaultValue={new Date(defaultPeriod.start)}
+              defaultValue={timeRange.from}
             />
           </div>
         </div>
@@ -137,14 +140,14 @@ const EditPariod = ({
           <div className="col-span-3">
             <DateTimePicker24h
               type="to"
-              otherDate={new Date(defaultPeriod.start)} // Pass the 'from' date for comparison
+              otherDate={timeRange.from} // Pass the 'from' date for comparison
               onTimeChange={(date) =>
                 setTimeRange((prev) => ({
                   ...prev,
                   to: date,
                 }))
               }
-              defaultValue={new Date(defaultPeriod.end)}
+              defaultValue={timeRange.to}
             />
           </div>
         </div>

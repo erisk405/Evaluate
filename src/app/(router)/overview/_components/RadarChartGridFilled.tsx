@@ -26,20 +26,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import useStore from "@/app/store/store";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import GlobalApi from "@/app/_util/GlobalApi";
-import { getResultEvaluateType } from "@/types/interface";
-const chartData = [
-  { form: "ความรู้เชิงวิชาการ", F01: 186 },
-  { form: "ทักษะการปฏิบัติงาน", F01: 285 },
-  { form: "จิตพิสัย", F01: 237 },
-];
-const chartConfig = {
-  F01: {
-    label: "จากผู้ใช้งานอื่น",
-    color: "hsl(var(--chart-1))",
-  },
-} satisfies ChartConfig;
 const RadarChartGridFilled = () => {
   const {
     setResultEvaluate,
@@ -48,6 +36,16 @@ const RadarChartGridFilled = () => {
     currentlyEvaluationPeriod,
   } = useStore();
 
+  const chartData = resultEvaluate?.resultData?.evaluateScore.map((item) => ({
+    form: item.formName,
+    F01: item.average,
+  }));
+  const chartConfig = {
+    F01: {
+      label: "ค่าเฉลี่ย",
+      color: "hsl(var(--chart-1))",
+    },
+  } satisfies ChartConfig;
   const fetchResultEval = async () => {
     try {
       // Add additional checks before making the API call
@@ -72,6 +70,25 @@ const RadarChartGridFilled = () => {
       return `${formname.slice(0, 10)}...`;
     }
   };
+  // ฟังก์ชันสำหรับคำนวณค่าเฉลี่ย
+  const calculateAverage = (data: number[]) =>
+    data.reduce((sum, val) => sum + val, 0) / data.length || 0;
+  // คำนวณค่าเฉลี่ย`item.average` และ `item.SD`
+  // บันทึกค่า" ที่คำนวณไว้แล้ว (memoize) และจะคำนวณค่าใหม่เฉพาะเมื่อค่าที่ใช้ใน dependency array เปลี่ยนแปลงเท่านั้น
+  const totalAverage = useMemo(() => {
+    const averages =
+      resultEvaluate?.resultData?.evaluateScore?.map((item) =>
+        Number(item.average)
+      ) || [];
+    return calculateAverage(averages);
+  }, [resultEvaluate]);
+  const totalAverageSD = useMemo(() => {
+    const averages =
+      resultEvaluate?.resultData?.evaluateScore?.map((item) =>
+        Number(item.SD)
+      ) || [];
+    return calculateAverage(averages);
+  }, [resultEvaluate]);
 
   useEffect(() => {
     console.log("resultEvaluate", resultEvaluate);
@@ -90,7 +107,7 @@ const RadarChartGridFilled = () => {
       <CardContent className="pb-0">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-h-[250px]"
+          className="mx-auto aspect-square max-h-[300px]"
         >
           <RadarChart data={chartData}>
             <ChartTooltip
@@ -125,23 +142,28 @@ const RadarChartGridFilled = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {resultEvaluate?.formResults &&
-              resultEvaluate?.formResults.map((item) => (
+            {resultEvaluate?.resultData?.evaluateScore &&
+              resultEvaluate?.resultData?.evaluateScore.map((item) => (
                 <TableRow key={item.formId}>
                   <TableCell className="font-medium truncate">
                     <span>{item.formName}</span>
                   </TableCell>
+                  <TableCell className="text-end truncate">{item.SD}</TableCell>
                   <TableCell className="text-end truncate">
                     {item.average}
                   </TableCell>
-                  <TableCell className="text-end truncate">{item.SD}</TableCell>
                 </TableRow>
               ))}
           </TableBody>
           <TableFooter>
             <TableRow>
-              <TableCell colSpan={2}>Total</TableCell>
-              <TableCell className="text-right">2.27</TableCell>
+              <TableCell>Total</TableCell>
+              <TableCell className="text-right font-bold text-blue-500 text-lg">
+                {totalAverageSD.toFixed(3)}
+              </TableCell>
+              <TableCell className="text-right font-bold text-green-500 text-lg">
+                {totalAverage.toFixed(3)}
+              </TableCell>
             </TableRow>
           </TableFooter>
         </Table>

@@ -36,7 +36,7 @@ const chartConfig = {
 
 const RadarChartSection = () => {
   return (
-    <Card>
+    <Card className="rounded-2xl">
       <CardHeader className="items-center pb-4">
         <CardTitle className="text-stone-700">Radar Chart</CardTitle>
         <CardDescription>

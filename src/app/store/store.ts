@@ -1,5 +1,5 @@
 // store.ts
-import { Department, getResultEvaluateType, PeriodType, PrefixType, Role, RoleRequest } from '@/types/interface';
+import { Department, getCountUserAsEvaluatedType, getResultEvaluateType, PeriodType, PrefixType, Role, RoleRequest } from '@/types/interface';
 import { create } from 'zustand';
 import GlobalApi from '../_util/GlobalApi';
 
@@ -9,6 +9,12 @@ interface StoreState {
     id: string | null
   };
   setOpenForm: (id: string) => void;
+
+  showProfile: boolean
+  setShowProfile: (showProfile: boolean) => void;
+
+  showNotifications: boolean
+  setShowNotifications: (showProfile: boolean) => void;
 
   profilePopup: {
     open: boolean;
@@ -49,6 +55,9 @@ interface StoreState {
   resultEvaluate: getResultEvaluateType | null;
   setResultEvaluate: (resultEvaluates: getResultEvaluateType) => void
 
+  resultCountUserAsEvaluated: getCountUserAsEvaluatedType[] | null;
+  setResultCountUserAsEvaluated: (resultEvaluates: getCountUserAsEvaluatedType[]) => void
+
   fetchCurrentPeriod: () => Promise<PeriodType[]>; // Add this method to the store
 
 }
@@ -75,6 +84,21 @@ const useStore = create<StoreState>((set) => ({
       id
     }
   })),
+
+  showProfile: false,
+  setShowProfile: (show: boolean) => {
+    set((state) => ({
+      ...state,
+      showProfile: show
+    }));
+  },
+  showNotifications: false,
+  setShowNotifications: (show: boolean) => {
+    set((state) => ({
+      ...state,
+      showNotifications: show
+    }));
+  },
 
   profilePopup: {
     open: false,
@@ -111,10 +135,15 @@ const useStore = create<StoreState>((set) => ({
 
 
   currentlyEvaluationPeriod: null,
-  
+
   resultEvaluate: null,
   setResultEvaluate: (resultEvaluate) => set(() => ({
     resultEvaluate
+  })),
+
+  resultCountUserAsEvaluated: null,
+  setResultCountUserAsEvaluated: (resultCountUserAsEvaluated) => set(() => ({
+    resultCountUserAsEvaluated
   })),
 
 

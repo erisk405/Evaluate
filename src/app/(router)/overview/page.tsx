@@ -43,16 +43,15 @@ const page = () => {
     return <div>Error fetching permission data.</div>;
   }
   return (
-    <div className="m-5 grid grid-cols-6 gap-5 w-full">
-      <div className="xl:col-span-4 col-span-6 w-full">
-        <h2 className="text-3xl font-bold text-stone-700">Overview</h2>
+    <div className="m-5 grid grid-cols-11 gap-3 w-full">
+      <div className="xl:col-span-8 col-span-11 w-full">
         {checkPermission && checkPermission !== "admin" ? (
           <MyEvaluated />
         ) : (
           <ReportOverview />
         )}
       </div>
-      <div className="xl:col-span-2 col-span-6 w-full">
+      <div className="xl:col-span-3 col-span-11 w-full">
         <RightSection
           permission={checkPermission}
           period={period}
