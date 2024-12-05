@@ -165,8 +165,13 @@ interface evaluateScoreType {
 }
 
 interface headDataType {
+  allAssessorEvaluated:number;
   evaluatorName: string;
-  periodName: string
+  periodName: string;
+  success:{
+    message:string;
+    success:boolean
+  }
 }
 
 

@@ -1,5 +1,11 @@
-import { Cog, FolderKanban, TrendingUp, UserRoundSearch } from "lucide-react";
-import { motion } from "framer-motion";
+import {
+  Boxes,
+  Cog,
+  FolderKanban,
+  TrendingUp,
+  UserRoundSearch,
+} from "lucide-react";
+import { color, motion } from "framer-motion";
 import { buildStyles, CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import { Label, Pie, PieChart } from "recharts";
@@ -17,80 +23,75 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import useStore from "@/app/store/store";
 
-interface Score {
-  id: string;
-  name: string;
-  now: number;
-  total: number;
-  icon: React.ReactNode;
+interface result {
+  formId: string;
+  formName: string;
+  totalAssesPerForm: number;
+  amountAssessor: number;
   color: string;
-  state: any;
+  percentage: number;
+  totalAssessors: number;
+  icon: React.ReactNode;
 }
 
 const ChartEvaluatedYou = () => {
-  const [Academicknowledge, setAcademicknowledge] = useState(61);
-  const [OperationalSkills, setOperationalSkills] = useState(34);
-  const [AffectiveDomain, setAffectiveDomain] = useState(50);
+  const [combinedData, setCombinedData] = useState<result[] | undefined>([]);
   const { resultEvaluate } = useStore();
 
- 
-  
-  const chartData =
-    resultEvaluate?.resultData?.assessorsHasPermiss?.map((item) => ({
-      form: item.formName,
-      result: item.totalAssesPerForm,
-      fill: "var(--color-" + item.formId + ")",
-    })) || [];
+  const evaluateScores = resultEvaluate?.resultData?.evaluateScore;
+  const assessorsHasPermiss = resultEvaluate?.resultData?.assessorsHasPermiss;
 
-  // Fixed chartConfig2 with correct type
-  const chartConfig: ChartConfig = resultEvaluate?.resultData?.assessorsHasPermiss
+  const chartData = combinedData?.map((item) => ({
+    form: item.formName,
+    result: item.amountAssessor ,
+    fill: `var(--color-${item.formId})`,
+  }));
+
+  const chartConfig: ChartConfig = combinedData?.length
     ? Object.fromEntries(
-        resultEvaluate.resultData.assessorsHasPermiss.map((item) => [
+        combinedData.map((item, index) => [
           item.formId,
           {
             label: item.formName,
-            color: `hsl(var(--chart-${item.formId+1}))`,
+            color: `hsl(var(--chart-${index + 1}))`,
           },
         ])
       )
-    : {} satisfies ChartConfig;
+    : {
+        "default-form": {
+          label: "No Data",
+          color: "hsl(var(--chart-1))",
+        },
+      };
 
-  const totalVisitors = useMemo(() => {
-    return chartData.reduce((acc, curr) => acc + curr.result, 0);
-  }, []);
+  useEffect(() => {
+    // ใช้ในการรวม 2 object เพราะข้อมูล
+    const result = assessorsHasPermiss?.map((assessor, index) => {
+      // นำข้อมูล formId ของแต่ละ object มาอ้างอิงข้อมูล
+      const evaluateScore = evaluateScores?.find(
+        (score) => score.formId === assessor.formId
+      );
+      // ข้อมูลที่ต้องการ
+      return {
+        formId: assessor.formId,
+        formName: assessor.formName,
+        totalAssesPerForm: assessor.totalAssesPerForm,
+        amountAssessor: evaluateScore ? evaluateScore.amountAssessor : 0,
+        color: `hsl(var(--chart-${index + 1}))`,
+        icon: <Boxes />,
+        totalAssessors: assessor.totalAssessors,
+        percentage: evaluateScore
+          ? (evaluateScore.amountAssessor / assessor.totalAssesPerForm) * 100
+          : 0,
+      };
+    });
+    console.log("result", result);
 
-  let myscore: Score[] = [
-    {
-      id: "AT01",
-      name: "ทักษะการปฎิบัติงาน",
-      now: 10,
-      total: 39,
-      icon: <UserRoundSearch />,
-      color: "hsl(var(--chart-1))",
-      state: Academicknowledge,
-    },
-    {
-      id: "AT02",
-      name: "ความรู้เชิงวิขาการ",
-      now: 14,
-      total: 54,
-      icon: <FolderKanban />,
-      color: "hsl(var(--chart-2))",
-      state: OperationalSkills,
-    },
-    {
-      id: "AT03",
-      name: "จิตพิสัย",
-      now: 64,
-      total: 72,
-      icon: <Cog />,
-      color: "hsl(var(--chart-3))",
-      state: AffectiveDomain,
-    },
-  ];
+    setCombinedData(result);
+  }, [resultEvaluate]);
 
   return (
     <div className="">
@@ -131,7 +132,8 @@ const ChartEvaluatedYou = () => {
                             y={viewBox.cy}
                             className="fill-foreground text-3xl font-bold"
                           >
-                            {totalVisitors.toLocaleString()} / 50
+                            {resultEvaluate?.headData?.allAssessorEvaluated} /{" "}
+                            {combinedData ? combinedData[0].totalAssessors : 0}
                           </tspan>
                           <tspan
                             x={viewBox.cx}
@@ -158,11 +160,11 @@ const ChartEvaluatedYou = () => {
           </div>
         </CardFooter>
       </Card>
-      <div className="flex flex-wrap gap-3">
-        {myscore.map((item, index) => (
+      <div className="flex flex-wrap ">
+        {combinedData?.map((item, index) => (
           <motion.div
-            key={item.id}
-            className="flex-1 py-3 px-7"
+            key={item.formId}
+            className="flex-1 py-3 px-7 border-r border-t"
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{
@@ -172,19 +174,22 @@ const ChartEvaluatedYou = () => {
             }}
           >
             <div className="flex items-center gap-3">
+              {/* icon ของ form */}
               <div
                 className={`p-2 rounded-2xl text-white`}
                 style={{ backgroundColor: item.color }}
               >
                 {item.icon}
               </div>
-              <h2 className="text-lg font-semibold">{item.name}</h2>
+              <h2 className="text-lg font-semibold">{item.formName}</h2>
             </div>
             <div className="flex items-center justify-between gap-3 mt-2">
               <div className="flex items-end gap-3">
                 <h2 className="font-light">
-                  <span className="text-xl font-medium">{item.now}/</span>
-                  {item.total}
+                  <span className="text-xl font-medium">
+                    {item.amountAssessor}/
+                  </span>
+                  {item.totalAssesPerForm}
                 </h2>
                 <h2 className="text-[12px] font-bold text-emerald-500">
                   Today
@@ -192,8 +197,8 @@ const ChartEvaluatedYou = () => {
               </div>
               <div className="w-[40px] font-bold">
                 <CircularProgressbar
-                  value={item.state}
-                  text={`${item.state}%`}
+                  value={item.percentage}
+                  text={`${item.percentage.toFixed(0)}%`}
                   strokeWidth={15}
                   styles={buildStyles({
                     strokeLinecap: "butt",

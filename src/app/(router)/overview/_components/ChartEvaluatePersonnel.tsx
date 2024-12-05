@@ -68,8 +68,8 @@ const ChartEvaluatePersonnel = () => {
   }, [currentlyEvaluationPeriod,ProfileDetail]);
   return (
     <div className="w-full">
-      <div className="grid grid-cols-7 p-4 gap-3">
-        <Card className="col-span-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 p-4 gap-3">
+        <Card className="col-span-1">
           <CardHeader>
             <CardTitle>รูปแบบของ Bar Chart </CardTitle>
             <div className="grid grid-cols-3">
@@ -179,7 +179,7 @@ const ChartEvaluatePersonnel = () => {
             </div>
           </CardContent>
         </Card>
-        <div className="col-span-3">
+        <div className="col-span-1">
           <RadarChartGridFilled />
         </div>
       </div>

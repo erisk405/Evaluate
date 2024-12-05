@@ -152,7 +152,6 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const [position, setPosition] = React.useState("");
   const [isAdmin, setIsAdmin] = React.useState(false); // สถานะของ admin
   const pathUrl = usePathname();
   const Protected = async () => {

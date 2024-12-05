@@ -19,7 +19,11 @@ interface StoreState {
   profilePopup: {
     open: boolean;
   };
+
+  
+
   toggleProfile: () => void;
+
   ProfileDetail: {
     id: string | null;
     name: string | null;
@@ -29,6 +33,7 @@ interface StoreState {
     department: Department | null;
     roleRequests: RoleRequest[] | null;
   };
+
   updateProfileDetail: (updatedFields: {
     id?: string;
     name?: string;
@@ -48,7 +53,6 @@ interface StoreState {
 
   prefixes: PrefixType[];
   setPrefix: (prefixes: PrefixType[]) => void;
-
 
   currentlyEvaluationPeriod: PeriodType | null;
 
