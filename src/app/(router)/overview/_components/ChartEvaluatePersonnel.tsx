@@ -65,7 +65,7 @@ const ChartEvaluatePersonnel = () => {
   };
   useEffect(() => {
     getCountUserAsEvaluated();
-  }, [currentlyEvaluationPeriod]);
+  }, [currentlyEvaluationPeriod,ProfileDetail]);
   return (
     <div className="w-full">
       <div className="grid grid-cols-7 p-4 gap-3">

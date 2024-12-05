@@ -36,10 +36,23 @@ const RadarChartGridFilled = () => {
     currentlyEvaluationPeriod,
   } = useStore();
 
-  const chartData = resultEvaluate?.resultData?.evaluateScore.map((item) => ({
+  const chartData = resultEvaluate?.resultData?.evaluateScore?.map((item) => ({
     form: item.formName,
     F01: item.average,
-  }));
+  })) || [
+    {
+      form: "form",
+      F01: 0,
+    },
+    {
+      form: "form2",
+      F01: 0,
+    },
+    {
+      form: "form3",
+      F01: 0,
+    },
+  ];
   const chartConfig = {
     F01: {
       label: "ค่าเฉลี่ย",
@@ -95,7 +108,7 @@ const RadarChartGridFilled = () => {
   }, [resultEvaluate]);
   useEffect(() => {
     fetchResultEval();
-  }, [currentlyEvaluationPeriod]);
+  }, [currentlyEvaluationPeriod, ProfileDetail.id]);
   return (
     <Card>
       <CardHeader className="items-center pb-4">

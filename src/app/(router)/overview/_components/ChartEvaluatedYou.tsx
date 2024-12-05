@@ -1,4 +1,3 @@
-"use client";
 import { Cog, FolderKanban, TrendingUp, UserRoundSearch } from "lucide-react";
 import { motion } from "framer-motion";
 import { buildStyles, CircularProgressbar } from "react-circular-progressbar";
@@ -19,30 +18,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { useMemo, useState } from "react";
-export const description = "A donut chart with text";
-const chartData = [
-  { browser: "workSkills", visitors: 5, fill: "var(--color-workSkills)" },
-  { browser: "academicKnowledge", visitors: 10, fill: "var(--color-academicKnowledge)" },
-  { browser: "affective", visitors: 19, fill: "var(--color-affective)" },
-];
-
-const chartConfig = {
-  visitors: {
-    label: "Visitors",
-  },
-  workSkills: {
-    label: "ทักษาปฏิบัติงาน",
-    color: "hsl(var(--chart-1))",
-  },
-  academicKnowledge: {
-    label: "ความรู้เชิงวิชาการ",
-    color: "hsl(var(--chart-2))",
-  },
-  affective: {
-    label: "จิตพิสัย",
-    color: "hsl(var(--chart-3))",
-  },
-} satisfies ChartConfig;
+import useStore from "@/app/store/store";
 
 interface Score {
   id: string;
@@ -58,8 +34,32 @@ const ChartEvaluatedYou = () => {
   const [Academicknowledge, setAcademicknowledge] = useState(61);
   const [OperationalSkills, setOperationalSkills] = useState(34);
   const [AffectiveDomain, setAffectiveDomain] = useState(50);
+  const { resultEvaluate } = useStore();
+
+ 
+  
+  const chartData =
+    resultEvaluate?.resultData?.assessorsHasPermiss?.map((item) => ({
+      form: item.formName,
+      result: item.totalAssesPerForm,
+      fill: "var(--color-" + item.formId + ")",
+    })) || [];
+
+  // Fixed chartConfig2 with correct type
+  const chartConfig: ChartConfig = resultEvaluate?.resultData?.assessorsHasPermiss
+    ? Object.fromEntries(
+        resultEvaluate.resultData.assessorsHasPermiss.map((item) => [
+          item.formId,
+          {
+            label: item.formName,
+            color: `hsl(var(--chart-${item.formId+1}))`,
+          },
+        ])
+      )
+    : {} satisfies ChartConfig;
+
   const totalVisitors = useMemo(() => {
-    return chartData.reduce((acc, curr) => acc + curr.visitors, 0);
+    return chartData.reduce((acc, curr) => acc + curr.result, 0);
   }, []);
 
   let myscore: Score[] = [
@@ -111,8 +111,8 @@ const ChartEvaluatedYou = () => {
               />
               <Pie
                 data={chartData}
-                dataKey="visitors"
-                nameKey="browser"
+                dataKey="result"
+                nameKey="form"
                 innerRadius={60}
                 strokeWidth={5}
               >
@@ -138,7 +138,7 @@ const ChartEvaluatedYou = () => {
                             y={(viewBox.cy || 0) + 24}
                             className="fill-muted-foreground"
                           >
-                            Visitors
+                            result
                           </tspan>
                         </text>
                       );
@@ -154,7 +154,7 @@ const ChartEvaluatedYou = () => {
             Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
           </div>
           <div className="leading-none text-muted-foreground">
-            Showing total visitors for the last 6 months
+            Showing total result for the last 6 months
           </div>
         </CardFooter>
       </Card>
@@ -196,17 +196,10 @@ const ChartEvaluatedYou = () => {
                   text={`${item.state}%`}
                   strokeWidth={15}
                   styles={buildStyles({
-                    // Whether to use rounded or flat corners on the ends - can use 'butt' or 'round'
                     strokeLinecap: "butt",
                     pathColor: `${item.color}`,
-                    // Text size
                     textSize: "30px",
-                    // How long animation takes to go from one percentage to another, in seconds
                     pathTransitionDuration: 0.5,
-
-                    // Can specify path transition in more detail, or remove it entirely
-                    // pathTransition: 'none',
-                    // Colors
                     textColor: "#000000",
                     trailColor: "rgb(243 244 246)",
                     backgroundColor: "#3e98c7",
