@@ -21,7 +21,14 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { Bolt, ChevronDown, Currency, Hexagon } from "lucide-react";
+import {
+  Bolt,
+  ChevronDown,
+  Currency,
+  EarthLock,
+  Hexagon,
+  Lock,
+} from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -59,6 +66,7 @@ import EvaluateSection from "./EvaluateSection";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import React, { useState } from "react";
+import useStore from "@/app/store/store";
 
 export function UserInDepartment({
   member,
@@ -167,7 +175,7 @@ export function UserInDepartment({
         );
         const [open, setOpen] = useState(false);
         // console.log("checkEvaluated", checkEvaluated);
-
+        const { currentlyEvaluationPeriod } = useStore();
         return (
           <div className="flex justify-center">
             <Sheet open={open} onOpenChange={setOpen}>
@@ -176,7 +184,7 @@ export function UserInDepartment({
                   <div className="flex items-center gap-3 active:scale-95 transition-all text-green-500 select-none">
                     <Bolt /> เสร็จสิ้นแล้ว
                   </div>
-                ) : (
+                ) : currentlyEvaluationPeriod?.isAction ? (
                   <Button
                     variant="ghost"
                     className="flex border items-center gap-3 active:scale-95 transition-all"
@@ -184,33 +192,41 @@ export function UserInDepartment({
                   >
                     <Hexagon /> ประเมิน
                   </Button>
+                ) : (
+                  <div
+                    className="flex items-center gap-3 active:scale-95 transition-all text-yellow-500 select-none"
+                    onClick={() => setOpen(true)}
+                  >
+                    <Lock size={18} />
+                    ยังไม่ได้อยู่ในช่วงเวลา
+                  </div>
                 )}
               </SheetTrigger>
-              {!checkEvaluated && (
-                <SheetContent
-                  side="bottom"
-                  className="h-[calc(100vh-10%)] xl:mx-52 rounded-tr-2xl rounded-tl-2xl overflow-scroll scrollbar-gemini"
-                >
-                  <SheetHeader>
-                    <SheetTitle className="text-3xl text-center text-stone-700">
-                      แบบฟอร์มการประเมิน
-                    </SheetTitle>
-                  </SheetHeader>
-                  {/* ------------------------------------------------------- */}
-                  {/*        Conponent   Question and score input             */}
-                  {/* ------------------------------------------------------- */}
-                  <EvaluateSection
-                    evaluatorUserIdTarget={row.original.id}
-                    evaluatorRoleTarget={row.original.role.id}
-                    fetchUserHaveBeenEvaluated={fetchUserHaveBeenEvaluated}
-                    setOpen={setOpen}
-                  />
-                  <SheetDescription>
-                    Make changes to your profile here. Click save when you're
-                    done.
-                  </SheetDescription>
-                </SheetContent>
-              )}
+              {!checkEvaluated &&
+                currentlyEvaluationPeriod?.isAction === true && (
+                  <SheetContent
+                    side="bottom"
+                    className="h-[calc(100vh-10%)] xl:mx-52 rounded-tr-2xl rounded-tl-2xl overflow-scroll scrollbar-gemini"
+                  >
+                    <SheetHeader>
+                      <SheetTitle className="text-3xl text-center text-stone-700">
+                        แบบฟอร์มการประเมิน
+                      </SheetTitle>
+                    </SheetHeader>
+                    {/* ------------------------------------------------------- */}
+                    {/*        Conponent   Question and score input             */}
+                    {/* ------------------------------------------------------- */}
+                    <EvaluateSection
+                      evaluatorUserTarget={row.original}
+                      fetchUserHaveBeenEvaluated={fetchUserHaveBeenEvaluated}
+                      setOpen={setOpen}
+                    />
+                    <SheetDescription>
+                      Make changes to your profile here. Click save when you're
+                      done.
+                    </SheetDescription>
+                  </SheetContent>
+                )}
             </Sheet>
           </div>
         );

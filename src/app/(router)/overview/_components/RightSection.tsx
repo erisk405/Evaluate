@@ -92,7 +92,7 @@ const RightSection = ({ permission, period, setPeriod }: RightSectionProps) => {
   const [deletePeriod, setDeletePeroid] = useState("");
   // State สำหรับเก็บค่าเวลา
   const [openAlert, setOpenAlert] = useState(false);
-  const { currentlyEvaluationPeriod,fetchCurrentPeriod } = useStore();
+  const { currentlyEvaluationPeriod, fetchCurrentPeriod } = useStore();
   const [timeRange, setTimeRange] = useState<TimeRange>({
     from: new Date(),
     to: new Date(),
@@ -115,6 +115,7 @@ const RightSection = ({ permission, period, setPeriod }: RightSectionProps) => {
       const response = await GlobalApi.createPeriod(data);
       // fetch period ใหม่
       const fetchedPeriods = await fetchCurrentPeriod();
+      console.log("fetchedPeriods", fetchedPeriods);
 
       setPeriod(fetchedPeriods);
       setShow(false);
@@ -275,7 +276,7 @@ const RightSection = ({ permission, period, setPeriod }: RightSectionProps) => {
                     className="grid transition-all my-3 shadow bg-white w-auto rounded-xl p-2"
                   >
                     <div className="flex items-center">
-                      <div className="relative">
+                      <div className="relative w-full">
                         {/*-------------------------------------------- ------*/}
                         {/*               card ของ ช่วงเวลา                    */}
                         {/*-------------------------------------------- ------*/}
@@ -327,18 +328,34 @@ const RightSection = ({ permission, period, setPeriod }: RightSectionProps) => {
                           </div>
                         </div>
                         {/* การแสดงผลช่วงเวลา */}
-                        <div className="pl-6 ">
-                          <div className="flex items-center gap-1">
-                            <CalendarClock size={18} />
-                            <h2>{formatThaiDateTime(item.start).date}</h2>
-                            <ArrowRight size={18} />
-                            <h2>{formatThaiDateTime(item.end).date}</h2>
+                        <div className="pl-6  w-full">
+                          <div className="grid grid-cols-2 gap-1">
+                            <div className="flex items-center">
+                              <CalendarClock size={18} />
+                              <h2 className="truncate mx-auto">
+                                {formatThaiDateTime(item.start).date}
+                              </h2>
+                            </div>
+                            <div className="flex items-center">
+                              <ArrowRight size={18} />
+                              <h2 className="truncate  mx-auto">
+                                {formatThaiDateTime(item.end).date}
+                              </h2>
+                            </div>
                           </div>
-                          <div className="flex items-center  gap-1">
-                            <Clock9 size={18} />
-                            <h2>{formatThaiDateTime(item.start).time} น.</h2>
-                            <ArrowRight size={18} />
-                            <h2>{formatThaiDateTime(item.end).time} น.</h2>
+                          <div className="grid grid-cols-2 gap-1">
+                            <div className="flex items-center">
+                              <Clock9 size={18} />
+                              <h2 className="truncate  mx-auto">
+                                {formatThaiDateTime(item.start).time} น.
+                              </h2>
+                            </div>
+                            <div className="flex items-center">
+                              <ArrowRight size={18} />
+                              <h2 className="truncate  mx-auto">
+                                {formatThaiDateTime(item.end).time} น.
+                              </h2>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -379,7 +396,7 @@ const RightSection = ({ permission, period, setPeriod }: RightSectionProps) => {
                     {/* AnimatePresence จะ "สังเกต" การเปลี่ยนแปลงใน children และ:
                         ช่วยให้ animation ของ exit ทำงานเมื่อองค์ประกอบถูกลบ
                         ช่วยให้ animation ของ initial และ animate ทำงานเมื่อองค์ประกอบถูกเพิ่ม */}
-                    <AnimatePresence >
+                    <AnimatePresence>
                       {expandedPeriodId === item.period_id && (
                         <motion.div
                           initial={{ height: 0, opacity: 0 }}

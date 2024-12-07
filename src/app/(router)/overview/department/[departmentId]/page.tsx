@@ -33,22 +33,10 @@ import { motion } from "framer-motion";
 import { UserInDepartment } from "./_components/UserInDepartment";
 import {
   Department,
-  PeriodType,
   userHaveBeenEvaluatedType,
 } from "@/types/interface";
 import axios from "axios";
 import EvaluateSheet from "./_components/EvaluateSheet";
-
-export type employee = {
-  id: string;
-  name: string;
-  status: "pending" | "processing" | "success" | "failed";
-  email: string;
-  role: string;
-  phone: string;
-  department: string;
-  img: string;
-};
 
 const page = () => {
   const params = useParams<{ departmentId: string }>();

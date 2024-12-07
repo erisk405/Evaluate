@@ -36,9 +36,9 @@ const RadarChartGridFilled = () => {
     currentlyEvaluationPeriod,
   } = useStore();
 
-  const chartData = resultEvaluate?.resultData?.evaluateScore?.map((item) => ({
+  const chartData = resultEvaluate?.formResults?.map((item) => ({
     form: item.formName,
-    F01: item.average,
+    F01: item.totalAVGPerForm,
   })) || [
     {
       form: "form",
@@ -90,15 +90,15 @@ const RadarChartGridFilled = () => {
   // บันทึกค่า" ที่คำนวณไว้แล้ว (memoize) และจะคำนวณค่าใหม่เฉพาะเมื่อค่าที่ใช้ใน dependency array เปลี่ยนแปลงเท่านั้น
   const totalAverage = useMemo(() => {
     const averages =
-      resultEvaluate?.resultData?.evaluateScore?.map((item) =>
-        Number(item.average)
+      resultEvaluate?.formResults?.map((item) =>
+        Number(item.totalAVGPerForm)
       ) || [];
     return calculateAverage(averages);
   }, [resultEvaluate]);
   const totalAverageSD = useMemo(() => {
     const averages =
-      resultEvaluate?.resultData?.evaluateScore?.map((item) =>
-        Number(item.SD)
+      resultEvaluate?.formResults?.map((item) =>
+        Number(item.totalSDPerForm)
       ) || [];
     return calculateAverage(averages);
   }, [resultEvaluate]);
@@ -155,15 +155,15 @@ const RadarChartGridFilled = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {resultEvaluate?.resultData?.evaluateScore &&
-              resultEvaluate?.resultData?.evaluateScore.map((item) => (
+            {resultEvaluate?.formResults &&
+              resultEvaluate?.formResults.map((item) => (
                 <TableRow key={item.formId}>
                   <TableCell className="font-medium truncate">
                     <span>{item.formName}</span>
                   </TableCell>
-                  <TableCell className="text-end truncate">{item.SD}</TableCell>
+                  <TableCell className="text-end truncate">{item.totalSDPerForm}</TableCell>
                   <TableCell className="text-end truncate">
-                    {item.average}
+                    {item.totalAVGPerForm}
                   </TableCell>
                 </TableRow>
               ))}

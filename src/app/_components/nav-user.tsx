@@ -8,12 +8,6 @@ import {
   LogOut,
   Sparkles,
 } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-} from "@/components/ui/dialog";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -44,8 +38,6 @@ export function NavUser() {
     ProfileDetail,
     updateProfileDetail,
     setShowProfile,
-    setShowNotifications,
-    showNotifications,
   } = useStore();
 
   const [notifications, setNotifications] = useState<any[]>([]);
@@ -184,13 +176,6 @@ export function NavUser() {
                 <DropdownMenuItem className="flex gap-2 items-center">
                   <CreditCard size={18} />
                   Billing
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="flex gap-2 items-center"
-                  onClick={() => setShowNotifications(!showNotifications)}
-                >
-                  <Bell size={18} />
-                  Notifications
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />

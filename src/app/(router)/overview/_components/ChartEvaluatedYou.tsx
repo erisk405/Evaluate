@@ -33,7 +33,6 @@ interface result {
   amountAssessor: number;
   color: string;
   percentage: number;
-  totalAssessors: number;
   icon: React.ReactNode;
 }
 
@@ -41,12 +40,9 @@ const ChartEvaluatedYou = () => {
   const [combinedData, setCombinedData] = useState<result[] | undefined>([]);
   const { resultEvaluate } = useStore();
 
-  const evaluateScores = resultEvaluate?.resultData?.evaluateScore;
-  const assessorsHasPermiss = resultEvaluate?.resultData?.assessorsHasPermiss;
-
   const chartData = combinedData?.map((item) => ({
     form: item.formName,
-    result: item.amountAssessor ,
+    result: item.amountAssessor,
     fill: `var(--color-${item.formId})`,
   }));
 
@@ -69,22 +65,18 @@ const ChartEvaluatedYou = () => {
 
   useEffect(() => {
     // ใช้ในการรวม 2 object เพราะข้อมูล
-    const result = assessorsHasPermiss?.map((assessor, index) => {
+    const result = resultEvaluate?.formResults?.map((item, index) => {
       // นำข้อมูล formId ของแต่ละ object มาอ้างอิงข้อมูล
-      const evaluateScore = evaluateScores?.find(
-        (score) => score.formId === assessor.formId
-      );
       // ข้อมูลที่ต้องการ
       return {
-        formId: assessor.formId,
-        formName: assessor.formName,
-        totalAssesPerForm: assessor.totalAssesPerForm,
-        amountAssessor: evaluateScore ? evaluateScore.amountAssessor : 0,
+        formId: item.formId,
+        formName: item.formName,
+        totalAssesPerForm: item.totalAsserPerForm,
+        amountAssessor: item ? item.evaluatedPerForm : 0,
         color: `hsl(var(--chart-${index + 1}))`,
         icon: <Boxes />,
-        totalAssessors: assessor.totalAssessors,
-        percentage: evaluateScore
-          ? (evaluateScore.amountAssessor / assessor.totalAssesPerForm) * 100
+        percentage: item
+          ? (item.evaluatedPerForm / item.totalAsserPerForm) * 100
           : 0,
       };
     });
@@ -95,71 +87,127 @@ const ChartEvaluatedYou = () => {
 
   return (
     <div className="">
-      <Card className="flex flex-col border-none shadow-none">
-        <CardHeader className="items-center pb-0">
-          <CardTitle>คุณถูกประเมินไปแล้วทั้งหมด</CardTitle>
-          <CardDescription>January - June 2024</CardDescription>
-        </CardHeader>
-        <CardContent className="flex-1 pb-0">
-          <ChartContainer
-            config={chartConfig}
-            className="mx-auto aspect-square max-h-[250px]"
-          >
-            <PieChart>
-              <ChartTooltip
-                cursor={false}
-                content={<ChartTooltipContent hideLabel />}
-              />
-              <Pie
-                data={chartData}
-                dataKey="result"
-                nameKey="form"
-                innerRadius={60}
-                strokeWidth={5}
+      <div className="@container flex w-full justify-center items-center">
+        <motion.div
+          initial={{ opacity: 0, x: -100 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{
+            duration: 1.5,
+            delay: 0.2,
+            ease: [0, 0.71, 0.2, 1.01],
+          }}
+          className="cursor-pointer "
+        >
+          <div className="hidden @[700px]:flex text-xl items-center gap-3">
+            <h2>สำเร็จแล้ว</h2>
+            <div className="text-3xl">
+              {resultEvaluate?.headData
+                ? resultEvaluate?.headData?.allAssessorEvaluated
+                : 0}
+            </div>
+            <h2>คน</h2>
+          </div>
+        </motion.div>
+        <Card className="flex flex-col border-none shadow-none">
+          <CardHeader className="items-center pb-0">
+            <CardTitle>คุณถูกประเมินไปแล้วทั้งหมด</CardTitle>
+            <CardDescription>January - June 2024</CardDescription>
+          </CardHeader>
+          <CardContent className="flex-1 relative pb-0">
+            {combinedData?.length ? (
+              <ChartContainer
+                config={chartConfig}
+                className="mx-auto aspect-square max-h-[250px]"
               >
-                <Label
-                  content={({ viewBox }) => {
-                    if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                      return (
-                        <text
-                          x={viewBox.cx}
-                          y={viewBox.cy}
-                          textAnchor="middle"
-                          dominantBaseline="middle"
-                        >
-                          <tspan
-                            x={viewBox.cx}
-                            y={viewBox.cy}
-                            className="fill-foreground text-3xl font-bold"
-                          >
-                            {resultEvaluate?.headData?.allAssessorEvaluated} /{" "}
-                            {combinedData ? combinedData[0].totalAssessors : 0}
-                          </tspan>
-                          <tspan
-                            x={viewBox.cx}
-                            y={(viewBox.cy || 0) + 24}
-                            className="fill-muted-foreground"
-                          >
-                            result
-                          </tspan>
-                        </text>
-                      );
-                    }
-                  }}
-                />
-              </Pie>
-            </PieChart>
-          </ChartContainer>
-        </CardContent>
-        <CardFooter className="flex-col gap-2 text-sm">
-          <div className="flex items-center gap-2 font-medium leading-none">
-            Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
+                <PieChart>
+                  <ChartTooltip
+                    cursor={false}
+                    content={<ChartTooltipContent hideLabel />}
+                  />
+                  <Pie
+                    data={chartData}
+                    dataKey="result"
+                    nameKey="form"
+                    innerRadius={60}
+                    strokeWidth={5}
+                  >
+                    <Label
+                      content={({ viewBox }) => {
+                        if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                          return (
+                            <text
+                              x={viewBox.cx}
+                              y={viewBox.cy}
+                              textAnchor="middle"
+                              dominantBaseline="middle"
+                            >
+                              <tspan
+                                x={viewBox.cx}
+                                y={viewBox.cy}
+                                className="fill-foreground text-3xl font-bold"
+                              >
+                                {resultEvaluate?.headData
+                                  ? resultEvaluate?.headData
+                                      ?.allAssessorEvaluated
+                                  : 0}{" "}
+                                /{" "}
+                                {resultEvaluate?.headData
+                                  ? resultEvaluate?.headData?.totalAssessors
+                                  : 0}
+                              </tspan>
+                              <tspan
+                                x={viewBox.cx}
+                                y={(viewBox.cy || 0) + 24}
+                                className="fill-muted-foreground"
+                              >
+                                result
+                              </tspan>
+                            </text>
+                          );
+                        }
+                      }}
+                    />
+                  </Pie>
+                </PieChart>
+              </ChartContainer>
+            ) : (
+              <div className="w-full h-[300px] flex items-center justify-center">
+                <h2 className="text-9xl text-blue-500 font-bold animate-bounce">
+                  0
+                </h2>
+              </div>
+            )}
+          </CardContent>
+          <CardFooter className="flex-col gap-2 text-sm">
+            <div className="flex items-center gap-2 font-medium leading-none">
+              Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
+            </div>
+            <div className="leading-none text-muted-foreground">
+              Showing total result for the last 6 months
+            </div>
+          </CardFooter>
+        </Card>
+        <motion.div
+          initial={{ opacity: 0, x: 100 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{
+            duration: 1.5,
+            delay: 0.2,
+            ease: [0, 0.71, 0.2, 1.01],
+          }}
+          className="cursor-pointer"
+        >
+          <div className="hidden @[700px]:flex text-xl items-center gap-3">
+            <h2>จากทั้งหมด</h2>
+            <span className="text-3xl">
+              {resultEvaluate?.headData
+                ? resultEvaluate?.headData?.totalAssessors
+                : 0}
+            </span>
+            <h2>คน</h2>
           </div>
-          <div className="leading-none text-muted-foreground">
-            Showing total result for the last 6 months
-          </div>
-        </CardFooter>
-      </Card>
+        </motion.div>
+      </div>
       <div className="flex flex-wrap ">
         {combinedData?.map((item, index) => (
           <motion.div
@@ -187,7 +235,7 @@ const ChartEvaluatedYou = () => {
               <div className="flex items-end gap-3">
                 <h2 className="font-light">
                   <span className="text-xl font-medium">
-                    {item.amountAssessor}/
+                    {item.amountAssessor} {" "}/{" "}
                   </span>
                   {item.totalAssesPerForm}
                 </h2>

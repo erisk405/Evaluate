@@ -13,12 +13,13 @@ import {
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
-import { PermissionFormItem } from "@/types/interface";
+import { PermissionFormItem, User } from "@/types/interface";
 import useStore from "@/app/store/store";
 import { useParams } from "next/navigation";
 import GlobalApi from "@/app/_util/GlobalApi";
 import { toast } from "@/components/ui/use-toast";
 import axios from "axios";
+import { formatThaiDateTime } from "../../../_components/RightSection";
 
 type PayloadQuestion = {
   questionId: string;
@@ -35,15 +36,13 @@ type Payload = Record<
 >;
 
 type evaluateSection = {
-  evaluatorUserIdTarget: string;
-  evaluatorRoleTarget: string;
+  evaluatorUserTarget: User;
   fetchUserHaveBeenEvaluated: () => void;
   setOpen: (open: boolean) => void;
 };
 
 const EvaluateSection = ({
-  evaluatorUserIdTarget,
-  evaluatorRoleTarget,
+  evaluatorUserTarget,
   fetchUserHaveBeenEvaluated,
   setOpen,
 }: evaluateSection) => {
@@ -147,7 +146,7 @@ const EvaluateSection = ({
         const data = {
           period_id: currentlyEvaluationPeriod.period_id,
           assessor_id: ProfileDetail.id!, // Ensuring non-null
-          evaluator_id: evaluatorUserIdTarget,
+          evaluator_id: evaluatorUserTarget.id,
           eval_depart_id: params.departmentId,
           questions: allQuestions, // ตอนแรกเป็นarrays เลยส่งไปแบบ object ที่มีความสัมพันธ์แบบ key value
         };
@@ -222,7 +221,7 @@ const EvaluateSection = ({
     // console.log("ingroup", ProfileDetail);
     // Find the appropriate permission for the evaluator
     const matchedPermission = ProfileDetail?.role?.permissionsAsAssessor.find(
-      (item) => item.evaluator_role_id === evaluatorRoleTarget
+      (item) => item.evaluator_role_id === evaluatorUserTarget.role.id
     );
     // console.log("filteredPermissions", matchedPermission);
     // Filter the forms based on the `ingroup` value
@@ -236,16 +235,22 @@ const EvaluateSection = ({
     } else {
       setFormEvaluation([]);
     }
-  }, [params.departmentId, evaluatorRoleTarget]);
+  }, [params.departmentId, evaluatorUserTarget.role.id]);
+
+  useEffect(() => {
+    console.log("evaluatorUserTarget", evaluatorUserTarget);
+  }, [evaluatorUserTarget]);
   return (
     <div className="mt-3">
       <div className="flex items-center w-full flex-col">
         <h2 className="text-xl text-stone-700 font-bold">
-          สรุปผลการประเมินสมรรถนะ 360 องศา นายกฤตภาส สัมฤทธิ์
+          {evaluatorUserTarget.name} ({evaluatorUserTarget.role.role_name})
         </h2>
         <h2 className="text-sm text-gray-500">
-          รอบที่ 1 ประจำปีงบประมาณ พ.ศ. 2567 (1 กันยายน 2566 - 28 กุมภาพันธ์
-          2567)
+          {currentlyEvaluationPeriod?.title} ตั้งแต่วันที่{" "}
+          {formatThaiDateTime(currentlyEvaluationPeriod!.start).date +
+            " จนถึงวันที่ " +
+            formatThaiDateTime(currentlyEvaluationPeriod!.end).date}
         </h2>
       </div>
       <div className=" bg-white my-4">

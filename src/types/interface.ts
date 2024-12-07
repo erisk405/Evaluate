@@ -35,6 +35,7 @@ interface UserImage {
 interface User {
   id: string,
   name: string,
+  prefix?:string,
   email: string,
   image: UserImage,
   role: Role
@@ -143,25 +144,16 @@ interface userHaveBeenEvaluatedType {
 }
 
 interface getResultEvaluateType {
-  resultData: formResultsType;
+  formResults: formResultsType[];
   headData: headDataType;
 }
 interface formResultsType {
-  assessorsHasPermiss: assessorsHasPermissType[];
-  evaluateScore: evaluateScoreType[];
-}
-interface assessorsHasPermissType {
+  evaluatedPerForm:number;
   formId:string;
   formName:string;
-  totalAssesPerForm:number;
-  totalAssessors:number;
-}
-interface evaluateScoreType {
-  SD:string;
-  amountAssessor:number;
-  average:string;
-  formId:string;
-  formName:string;
+  totalAsserPerForm:number;
+  totalAVGPerForm:number;
+  totalSDPerForm:number;
 }
 
 interface headDataType {
@@ -172,6 +164,9 @@ interface headDataType {
     message:string;
     success:boolean
   }
+  totalAssessors:number;
+  totalAvg:string;
+  totalSD:string;
 }
 
 
