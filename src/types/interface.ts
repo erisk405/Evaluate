@@ -157,16 +157,13 @@ interface formResultsType {
 }
 
 interface headDataType {
-  allAssessorEvaluated:number;
   evaluatorName: string;
   periodName: string;
-  success:{
-    message:string;
-    success:boolean
-  }
-  totalAssessors:number;
-  totalAvg:string;
-  totalSD:string;
+  success:boolean;
+  totalAVG:number;
+  totalAssessorsHasPermiss:number;
+  totalEvaluated:number;
+  totalSD:number;
 }
 
 
@@ -175,6 +172,15 @@ interface getCountUserAsEvaluatedType {
   department_name:string;
   evaluated:number; // มีที่คนที่เราประเมินสมาชิกในหน่วยงานนั้น
   evaluator:number // มีสมาชิกที่อยู่ในแผนกนั้นกี่คน
+}
+
+interface getResultEvalEachDepartmentType{
+  department:string;
+  id:string;
+  image:ImageType;
+  totalFinished:number;
+  totalUnfinished:number;
+  totalUsers:number
 }
 
 export type {
@@ -188,5 +194,6 @@ export type {
   getResultEvaluateType,
   formResultsType,
   headDataType,
-  getCountUserAsEvaluatedType
+  getCountUserAsEvaluatedType,
+  getResultEvalEachDepartmentType
 };

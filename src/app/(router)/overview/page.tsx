@@ -16,7 +16,7 @@ const page = () => {
     const fetchProtected = async () => {
       try {
         const response = await GlobalApi.fetchProtected();
-        console.log(response?.data?.role);
+        // console.log(response?.data?.role);
 
         setCheckPermission(response?.data?.role);
       } catch (error) {

@@ -1,5 +1,5 @@
 // store.ts
-import { Department, getCountUserAsEvaluatedType, getResultEvaluateType, PeriodType, PrefixType, Role, RoleRequest } from '@/types/interface';
+import { Department, getCountUserAsEvaluatedType, getResultEvalEachDepartmentType, getResultEvaluateType, PeriodType, PrefixType, Role, RoleRequest } from '@/types/interface';
 import { create } from 'zustand';
 import GlobalApi from '../_util/GlobalApi';
 
@@ -20,7 +20,7 @@ interface StoreState {
     open: boolean;
   };
 
-  
+
 
   toggleProfile: () => void;
 
@@ -61,6 +61,12 @@ interface StoreState {
 
   resultCountUserAsEvaluated: getCountUserAsEvaluatedType[] | null;
   setResultCountUserAsEvaluated: (resultEvaluates: getCountUserAsEvaluatedType[]) => void
+
+
+
+  resultEvalEachDepartment: getResultEvalEachDepartmentType[] | null;
+  setResultEvalEachDepartment: (resultEvalEachDepartment: getResultEvalEachDepartmentType[]) => void
+
 
   fetchCurrentPeriod: () => Promise<PeriodType[]>; // Add this method to the store
 
@@ -148,6 +154,11 @@ const useStore = create<StoreState>((set) => ({
   resultCountUserAsEvaluated: null,
   setResultCountUserAsEvaluated: (resultCountUserAsEvaluated) => set(() => ({
     resultCountUserAsEvaluated
+  })),
+
+  resultEvalEachDepartment: null,
+  setResultEvalEachDepartment: (resultEvalEachDepartment) => set(() => ({
+    resultEvalEachDepartment
   })),
 
 

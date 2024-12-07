@@ -13,28 +13,36 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import useStore from "@/app/store/store";
 export const description = "A radar chart with a custom label";
-const chartData = [
-  { week: "Sunday", evaluated: 186, evaluate: 80 },
-  { week: "Monday", evaluated: 305, evaluate: 200 },
-  { week: "Tuesday", evaluated: 237, evaluate: 120 },
-  { week: "Wednesday", evaluated: 73, evaluate: 190 },
-  { week: "Thursday", evaluated: 209, evaluate: 130 },
-  { week: "Friday", evaluated: 214, evaluate: 140 },
-  { week: "Saturday", evaluated: 214, evaluate: 140 },
-];
+
 const chartConfig = {
   evaluated: {
-    label: "evaluated",
+    label: "เสร็จสิ้นแล้ว",
     color: "hsl(var(--chart-1))",
   },
-  evaluate: {
-    label: "evaluate",
+  total: {
+    label: "จากทั้งหมด",
     color: "#BFECFF",
   },
 } satisfies ChartConfig;
 
 const RadarChartSection = () => {
+  const { resultEvalEachDepartment } = useStore();
+
+  const chartData = resultEvalEachDepartment?.map((result) => ({
+    depart: result.department,
+    evaluated: result.totalFinished,
+    total: result.totalUsers,
+  }));
+
+  const abbreviateDepartment = (departName: string): string => {
+    if (departName.length <= 10) {
+      return departName;
+    } else {
+      return `${departName.slice(0, 10)}...`;
+    }
+  };
   return (
     <Card className="rounded-2xl">
       <CardHeader className="items-center pb-4">
@@ -44,10 +52,7 @@ const RadarChartSection = () => {
         </CardDescription>
       </CardHeader>
       <CardContent className="pb-0">
-        <ChartContainer
-          config={chartConfig}
-          className="w-full min-h-[260px]"
-        >
+        <ChartContainer config={chartConfig} className="w-full min-h-[260px]">
           <RadarChart
             data={chartData}
             margin={{
@@ -62,9 +67,9 @@ const RadarChartSection = () => {
               content={<ChartTooltipContent indicator="line" />}
             />
             <PolarAngleAxis
-              dataKey="week"
+              dataKey="depart"
               tick={({ x, y, textAnchor, value, index, ...props }) => {
-                const data = chartData[index];
+                const data = chartData ? chartData[index] : undefined;
                 return (
                   <text
                     x={x}
@@ -74,16 +79,16 @@ const RadarChartSection = () => {
                     fontWeight={500}
                     {...props}
                   >
-                    <tspan>{data.evaluated}</tspan>
+                    <tspan>{data?.evaluated}</tspan>
                     <tspan className="fill-muted-foreground">/</tspan>
-                    <tspan>{data.evaluate}</tspan>
+                    <tspan>{data?.total}</tspan>
                     <tspan
                       x={x}
                       dy={"1rem"}
                       fontSize={12}
                       className="fill-muted-foreground"
                     >
-                      {data.week}
+                      {data?.depart}
                     </tspan>
                   </text>
                 );
@@ -91,11 +96,11 @@ const RadarChartSection = () => {
             />
             <PolarGrid />
             <Radar
-              dataKey="evaluated"
-              fill="var(--color-evaluated)"
+              dataKey="total"
+              fill="var(--color-total)"
               fillOpacity={0.6}
             />
-            <Radar dataKey="evaluate" fill="var(--color-evaluate)" />
+            <Radar dataKey="evaluated" fill="var(--color-evaluated)" />
           </RadarChart>
         </ChartContainer>
       </CardContent>

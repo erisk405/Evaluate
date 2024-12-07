@@ -180,70 +180,72 @@ const RightSection = ({ permission, period, setPeriod }: RightSectionProps) => {
   }, []);
   return (
     <div className="flex gap-3 flex-col h-full">
-      <motion.div
-        className="@container"
-        initial={{ opacity: 0, x: 100 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{
-          duration: 1,
-          ease: [0, 0.71, 0.2, 1.01],
-        }}
-      >
-        <div className="rounded-2xl flex @[23rem]:flex-row @[23rem]:items-start flex-col justify-center items-center shadow-sm border w-auto bg-white ">
-          <Calendar
-            className="border-b @[23rem]:border-r"
-            classNames={{
-              day_selected:
-                "w-full bg-green-500 rounded-md text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
-              day_today: "bg-blue-500 rounded-md text-white",
-              day_outside: "text-gray-500 opacity-50",
-              day_disabled: "text-gray-500 opacity-50",
-              day_range_middle:
-                "aria-selected:bg-accent aria-selected:text-accent-foreground",
-              day_hidden: "invisible",
+      <div className="@container">
+        {period && (
+          <motion.div
+            initial={{ opacity: 0, x: 100 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{
+              duration: 1,
+              ease: [0, 0.71, 0.2, 1.01],
             }}
-            initialFocus
-            mode="range"
-            defaultMonth={defaultDate}
-            // selected prop ควรเป็น Date หรือ { from: Date, to: Date } สำหรับ mode="range"
-            selected={
-              period && period.length > 0
-                ? {
-                    from: period[0].start
-                      ? new Date(period[0].start)
-                      : undefined,
-                    to: period[0].end ? new Date(period[0].end) : undefined,
-                  }
-                : undefined
-            }
-            numberOfMonths={1}
-          />
-          <div className="py-4 px-1">
-            <div className="grid gap-3 items-center">
-              <div className="flex items-center">
-                <div className="relative">
-                  <Dot strokeWidth={8} className="text-blue-500" />
-                  <Dot
-                    strokeWidth={8}
-                    className="absolute top-0 text-blue-500 animate-ping"
-                  />
+            className="rounded-2xl flex @[23rem]:flex-row @[23rem]:items-start flex-col justify-center items-center shadow-sm border w-auto bg-white "
+          >
+            <Calendar
+              className="border-b @[23rem]:border-r"
+              classNames={{
+                day_selected:
+                  "w-full bg-green-500 rounded-md text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+                day_today: "bg-blue-500 rounded-md text-white",
+                day_outside: "text-gray-500 opacity-50",
+                day_disabled: "text-gray-500 opacity-50",
+                day_range_middle:
+                  "aria-selected:bg-accent aria-selected:text-accent-foreground",
+                day_hidden: "invisible",
+              }}
+              initialFocus
+              mode="range"
+              defaultMonth={defaultDate}
+              // selected prop ควรเป็น Date หรือ { from: Date, to: Date } สำหรับ mode="range"
+              selected={
+                period.length > 0
+                  ? {
+                      from: period[0].start
+                        ? new Date(period[0].start)
+                        : undefined,
+                      to: period[0].end ? new Date(period[0].end) : undefined,
+                    }
+                  : undefined
+              }
+              numberOfMonths={1}
+            />
+            <div className="py-4 px-1">
+              <div className="grid gap-3 items-center">
+                <div className="flex items-center">
+                  <div className="relative">
+                    <Dot strokeWidth={8} className="text-blue-500" />
+                    <Dot
+                      strokeWidth={8}
+                      className="absolute top-0 text-blue-500 animate-ping"
+                    />
+                  </div>
+                  <h2>วันปัจจุบัน</h2>
                 </div>
-                <h2>วันปัจจุบัน</h2>
-              </div>
-              <div className="flex items-center">
-                <div className="relative">
-                  <Dot strokeWidth={8} className="text-green-500" />
-                  <Dot
-                    strokeWidth={8}
-                    className="absolute top-0 text-green-500 animate-ping"
-                  />
+                <div className="flex items-center">
+                  <div className="relative">
+                    <Dot strokeWidth={8} className="text-green-500" />
+                    <Dot
+                      strokeWidth={8}
+                      className="absolute top-0 text-green-500 animate-ping"
+                    />
+                  </div>
+                  <h2>วันเริ่ม-สิ้นสุด</h2>
                 </div>
-                <h2>วันเริ่ม-สิ้นสุด</h2>
               </div>
             </div>
-          </div>
-        </div>
-      </motion.div>
+          </motion.div>
+        )}
+      </div>
       {/* ส่่วนของ admin */}
       {permission === "admin" ? (
         <motion.div
@@ -527,25 +529,27 @@ const RightSection = ({ permission, period, setPeriod }: RightSectionProps) => {
         </motion.div>
       ) : (
         // ส่วนของ user เท่าไป
-        <>
-          <motion.div
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{
-              duration: 0.3,
-              ease: [0, 0.71, 0.2, 1.01],
-              scale: {
-                type: "spring",
-                damping: 12,
-              },
-            }}
-            className="py-8 px-2 rounded-lg shadow bg-white"
-          >
-            <CarouselSection
-              period={period}
-              formatThaiDateTime={formatThaiDateTime}
-            />
-          </motion.div>
+        <div>
+          {period && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{
+                duration: 0.3,
+                ease: [0, 0.71, 0.2, 1.01],
+                scale: {
+                  type: "spring",
+                  damping: 12,
+                },
+              }}
+              className="py-8 px-2 rounded-lg shadow bg-white"
+            >
+              <CarouselSection
+                period={period}
+                formatThaiDateTime={formatThaiDateTime}
+              />
+            </motion.div>
+          )}
           <motion.div
             className="bg-white p-5 h-full shadow rounded-2xl"
             initial={{ opacity: 0, x: 100 }}
@@ -564,7 +568,7 @@ const RightSection = ({ permission, period, setPeriod }: RightSectionProps) => {
               <DepartmentSection />
             </div>
           </motion.div>
-        </>
+        </div>
       )}
     </div>
   );

@@ -15,51 +15,63 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import useStore from "@/app/store/store";
 export const description = "A multiple bar chart";
-const chartData = [
-  { week: "Sunday", evaluated: 186, evaluate: 80 },
-  { week: "Monday", evaluated: 305, evaluate: 200 },
-  { week: "Tuesday", evaluated: 237, evaluate: 120 },
-  { week: "Wednesday", evaluated: 73, evaluate: 190 },
-  { week: "Thursday", evaluated: 209, evaluate: 130 },
-  { week: "Friday", evaluated: 214, evaluate: 140 },
-  { week: "Saturday", evaluated: 214, evaluate: 140 },
-];
+
 const chartConfig = {
   evaluated: {
-    label: "evaluated",
+    label: "เสร็จสิ้นแล้ว",
     color: "hsl(var(--chart-2))",
   },
-  evaluate: {
-    label: "evaluate",
+  total: {
+    label: "จากทั้งหมด",
     color: "#BFECFF",
   },
 } satisfies ChartConfig;
 
 const BarChartMultiple = () => {
+  const { resultEvalEachDepartment } = useStore();
+  const chartData = resultEvalEachDepartment?.map((result) => ({
+    depart: result.department,
+    evaluated: result.totalFinished,
+    total: result.totalUsers,
+  }));
+  const abbreviateDepartment = (departName: string): string => {
+    if (departName.length <= 10) {
+      return departName;
+    } else {
+      return `${departName.slice(0, 10)}...`;
+    }
+  };
   return (
     <Card className="rounded-2xl">
       <CardHeader>
-        <CardTitle className="text-stone-700">จำนวนผู้ประเมินในแต่ละวัน</CardTitle>
+        <CardTitle className="text-stone-700">
+          จำนวนผู้ประเมินในแต่ละวัน
+        </CardTitle>
         <CardDescription>January - June 2024</CardDescription>
       </CardHeader>
-      <CardContent >
+      <CardContent>
         <ChartContainer config={chartConfig} className="max-h-[400px] mx-auto">
           <BarChart accessibilityLayer data={chartData}>
             <CartesianGrid vertical={false} />
             <XAxis
-              dataKey="week"
+              dataKey="depart"
               tickLine={false}
               tickMargin={10}
               axisLine={false}
-              tickFormatter={(value) => value.slice(0, 3)}
+              tickFormatter={abbreviateDepartment}
             />
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent indicator="dashed" />}
             />
-            <Bar dataKey="evaluated" fill="var(--color-evaluated)" radius={20} />
-            <Bar dataKey="evaluate" fill="var(--color-evaluate)" radius={20} />
+            <Bar
+              dataKey="evaluated"
+              fill="var(--color-evaluated)"
+              radius={20}
+            />
+            <Bar dataKey="total" fill="var(--color-total)" radius={20} />
           </BarChart>
         </ChartContainer>
       </CardContent>

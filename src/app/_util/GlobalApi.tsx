@@ -554,6 +554,16 @@ const getCountUserAsEvaluated = (payload: getCountUserAsEvaluatedProp) => {
   }
 };
 
+const getResultEvaluatePerDepart = (period_id: string) => {
+  try {
+    return axios.get(`${apiUrl}/resultEvaluatePerDepart/${period_id}`, {
+      withCredentials: true,
+    });
+  } catch (error) {
+    console.error("API getResultEvaluatePerDepart", { message: error });
+  }
+};
+
 export default {
   fetchUserProfile,
   Logout,
@@ -600,5 +610,6 @@ export default {
   updatePrefix,
   findUserEvaluated,
   getResultEvaluate,
-  getCountUserAsEvaluated
+  getCountUserAsEvaluated,
+  getResultEvaluatePerDepart
 };

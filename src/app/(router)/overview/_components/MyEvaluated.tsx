@@ -1,10 +1,39 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import ChartEvaluatedYou from "./ChartEvaluatedYou";
 import ChartEvaluatePersonnel from "./ChartEvaluatePersonnel";
+import useStore from "@/app/store/store";
+import GlobalApi from "@/app/_util/GlobalApi";
 
 const MyEvaluated = () => {
+  const {
+    
+    setResultEvaluate,
+    ProfileDetail,
+    currentlyEvaluationPeriod,
+  } = useStore();
+
+  const fetchResultEval = async () => {
+    try {
+      // Add additional checks before making the API call
+      if (!ProfileDetail?.id || !currentlyEvaluationPeriod?.period_id) {
+        console.log("Missing required data for fetching result evaluation");
+        return;
+      }
+      const payload = {
+        evaluator_id: ProfileDetail.id,
+        period_id: currentlyEvaluationPeriod.period_id,
+      };
+      const response = await GlobalApi.getResultEvaluate(payload);
+      setResultEvaluate(response?.data);
+    } catch (error) {
+      console.error({ message: error });
+    }
+  };
+  useEffect(() => {
+    fetchResultEval();
+  }, [currentlyEvaluationPeriod, ProfileDetail.id]);
   return (
     <div className="h-full flex flex-col gap-5">
       <div className="flex flex-col justify-between gap-5">

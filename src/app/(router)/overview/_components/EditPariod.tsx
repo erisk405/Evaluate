@@ -46,8 +46,8 @@ const EditPariod = ({
     },
   });
   const [timeRange, setTimeRange] = useState<TimeRange>({
-    from: new Date(),
-    to: new Date(),
+    from: new Date(defaultPeriod.start),
+    to: new Date(defaultPeriod.end),
   });
   const { fetchCurrentPeriod } = useStore();
   const onUpdate = async (values: z.infer<typeof formSchema>) => {

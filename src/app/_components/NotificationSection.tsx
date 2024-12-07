@@ -99,7 +99,6 @@ const NotificationSection = ({
   };
 
   useEffect(() => {
-    console.log("ProfileDetail", ProfileDetail);
     if (ProfileDetail.role?.role_name === "admin") {
       fetchRoleRequest();
       socket.on("adminNotification", (receive) => {

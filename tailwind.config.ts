@@ -91,7 +91,7 @@ const config = {
 					}
 				},
 				'wiggle': {
-					'0%, 100%': { transform: 'rotate(-20deg)' },
+					'0%, 100%': { transform: 'rotate(-15deg)' },
 					'50%': { transform: 'rotate(3deg)' },
 				},
 				'float': {
@@ -108,7 +108,7 @@ const config = {
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
-				'wiggle': 'wiggle 3s ease-in-out infinite',
+				'wiggle': 'wiggle 5s ease-in-out infinite',
 				'wiggle-float': 'wiggle 1s ease-in-out infinite, float 2s ease-in-out infinite'
 			}
 		}

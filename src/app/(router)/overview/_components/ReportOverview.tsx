@@ -5,9 +5,11 @@ import RadarChartSection from "./RadarChartSection";
 import BarChartMultiple from "./BarChartMultiple";
 import {
   Building2,
+  Cat,
   CircleCheck,
   CircleDotDashed,
   CircleX,
+  Combine,
   Container,
   Handshake,
   Package,
@@ -29,7 +31,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import GlobalApi from "@/app/_util/GlobalApi";
+import useStore from "@/app/store/store";
 
 const invoices = [
   {
@@ -77,29 +81,71 @@ const invoices = [
 ];
 
 export const description = "A radial chart with a grid";
-const data = [
-  {
-    id: "FN01",
-    title: "เสร็จแล้ววันนี้",
-    icon: <Handshake size={25} />,
-    quantity: 172,
-  },
-  {
-    id: "FN02",
-    title: "ยังไม่เสร็จสิ้น",
-    icon: <Package size={25} />,
-    quantity: 42,
-  },
-  {
-    id: "FN03",
-    title: "อื่นๆ",
-    icon: <Container size={25} />,
-    quantity: 16,
-  },
-];
-const ReportOverview = () => {
-  const [supervise, setSupervise] = useState();
 
+const ReportOverview = () => {
+  // const [supervise, setSupervise] = useState();
+  const { resultEvalEachDepartment, setResultEvalEachDepartment } = useStore();
+  const { currentlyEvaluationPeriod } = useStore();
+  const getResultEvaluatePerDepart = async () => {
+    try {
+      if (!currentlyEvaluationPeriod?.period_id) {
+        throw new Error("Not found currentlyEvaluationPeriod");
+      }
+      const response = await GlobalApi.getResultEvaluatePerDepart(
+        currentlyEvaluationPeriod?.period_id
+      );
+      console.log(response?.data);
+
+      setResultEvalEachDepartment(response?.data);
+    } catch (error) {
+      console.error({ message: error });
+    }
+  };
+
+  const calculateSummention = (data: number[]) =>
+    data.reduce((sum, val) => sum + val, 0);
+  // บันทึกค่า" ที่คำนวณไว้แล้ว (memoize) และจะคำนวณค่าใหม่เฉพาะเมื่อค่าที่ใช้ใน dependency array เปลี่ยนแปลงเท่านั้น
+  const AllFinished = useMemo(() => {
+    const averages =
+      resultEvalEachDepartment?.map((item) => Number(item.totalFinished)) || [];
+    return calculateSummention(averages);
+  }, [resultEvalEachDepartment]);
+  const AllUnfinished = useMemo(() => {
+    const averages =
+      resultEvalEachDepartment?.map((item) => Number(item.totalUnfinished)) ||
+      [];
+    return calculateSummention(averages);
+  }, [resultEvalEachDepartment]);
+  const AllUser = useMemo(() => {
+    const averages =
+      resultEvalEachDepartment?.map((item) => Number(item.totalUsers)) || [];
+    return calculateSummention(averages);
+  }, [resultEvalEachDepartment]);
+
+  const data = [
+    {
+      id: "FN01",
+      title: "เสร็จสิ้นแล้ว",
+      icon: <Combine size={25} strokeWidth={1.2} />,
+      quantity: AllFinished,
+    },
+    {
+      id: "FN02",
+      title: "ยังไม่เสร็จสิ้น",
+      icon: <Package size={25} strokeWidth={1.2} />,
+      quantity: AllUnfinished,
+    },
+    {
+      id: "FN03",
+      title: "ทั้งหมด",
+      icon: <Container size={25} strokeWidth={1.2} />,
+      quantity: AllUser,
+    },
+  ];
+
+  useEffect(() => {
+    getResultEvaluatePerDepart();
+  }, [currentlyEvaluationPeriod?.period_id]);
   return (
     <div className="h-full flex flex-col gap-3">
       <div className="@container w-full grid grid-cols-3 lg:grid-cols-3 gap-3">
@@ -119,7 +165,9 @@ const ReportOverview = () => {
                 key={item.id}
                 className="flex gap-3 w-full justify-center bg-white p-2 shadow rounded-2xl items-center"
               >
-                <div className=" border rounded-full p-4">{item.icon}</div>
+                <div className=" border rounded-full p-4 animate-wiggle">
+                  {item.icon}
+                </div>
                 <div className="grid gap-1 grid-cols-1">
                   <div className="flex gap-2 items-end">
                     <h2 className="text-2xl font-bold text-stone-700">
@@ -159,7 +207,7 @@ const ReportOverview = () => {
               height={80}
               src={"/OverviewBannerIcon.png"}
               alt="OverviewBannerIcon"
-              className="absolute bottom-0 right-0"
+              className="absolute bottom-0 right-0 animate-wiggle"
             />
           </div>
         </motion.div>
@@ -177,17 +225,17 @@ const ReportOverview = () => {
             การประเมินแต่ละหน่วยงาน
           </h2>
           <div className="grid grid-cols-1  @[650px]:grid-cols-2 @[950px]:grid-cols-3 gap-3">
-            {[1, 2, 3, 4, 5, 6].map((item, index) => (
+            {resultEvalEachDepartment?.map((item, index) => (
               <div
                 key={index + "Go"}
                 className="w-full bg-white grid grid-cols-12 shadow overflow-hidden rounded-xl"
               >
-                <div className="w-full col-span-5">
+                <div className="w-full h-[160px] col-span-5">
                   <Image
                     width={300}
                     height={300}
                     alt="bannerDepartment"
-                    src={"/test.png"}
+                    src={item?.image.url ? item?.image.url : "/test.png"}
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -197,16 +245,16 @@ const ReportOverview = () => {
                       <div className="p-2 border rounded-full ">
                         <Building2 size={18} />
                       </div>
-                      <h2 className="text-sm">
-                        งานพัฒนาวิชาการและส่งเสริมการศึกษา
-                      </h2>
+                      <h2 className="text-sm">{item.department}</h2>
                     </div>
                     <div className="flex items-center gap-3">
                       <div className="p-2 border rounded-full ">
                         <UserRoundCheck size={18} />
                       </div>
                       <div className="grid grid-cols-1">
-                        <h2 className="font-bold">192 คน</h2>
+                        <h2 className="font-bold">
+                          {item.totalFinished}/{item.totalUsers}
+                        </h2>
                         <h2 className="text-sm">เสร็จสิ้นแล้วทั้งหมด</h2>
                       </div>
                     </div>
@@ -215,7 +263,7 @@ const ReportOverview = () => {
                         <UserRoundX size={18} />
                       </div>
                       <div className="grid grid-cols-1">
-                        <h2 className="font-bold">42 คน</h2>
+                        <h2 className="font-bold">{item.totalUnfinished}</h2>
                         <h2 className="text-sm">ยังไม่เสร็จ</h2>
                       </div>
                     </div>
