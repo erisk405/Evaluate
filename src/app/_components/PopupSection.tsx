@@ -28,7 +28,7 @@ export function ProfilePopup() {
     >
       <DialogTitle></DialogTitle>
       <DialogDescription></DialogDescription>
-      <DialogContent className="sm:max-w-[600px] p-1 sm:rounded-lg overflow-hidden">
+      <DialogContent className="sm:max-w-[500px] p-1 sm:rounded-lg overflow-hidden">
         <Myprofile />
       </DialogContent>
     </Dialog>
@@ -39,7 +39,9 @@ export function NotificationPopup() {
   return (
     <div
       className={`fixed opacity-1 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 overflow-hidden bg-white shadow-lg sm:max-w-[600px] w-full p-1 sm:rounded-lg ${
-        showNotifications ? " opacity-1 visible scale-100 z-50" : "scale-90 invisible opacity-0"
+        showNotifications
+          ? " opacity-1 visible scale-100 z-50"
+          : "scale-90 invisible opacity-0"
       } z-50 transition-all`}
     >
       <NotificationSection

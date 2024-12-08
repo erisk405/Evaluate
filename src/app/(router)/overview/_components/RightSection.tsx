@@ -21,9 +21,17 @@ import {
   CalendarClock,
   ChevronDown,
   ChevronUp,
+  CircleX,
   Clock9,
+  Cog,
+  DatabaseBackup,
+  DatabaseZap,
   Dot,
   EllipsisVertical,
+  HardDriveDownload,
+  LockKeyhole,
+  LockKeyholeOpen,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -332,32 +340,64 @@ const RightSection = ({ permission, period, setPeriod }: RightSectionProps) => {
                         {/* การแสดงผลช่วงเวลา */}
                         <div className="pl-6  w-full">
                           <div className="grid grid-cols-2 gap-1">
-                            <div className="flex items-center">
+                            <div className="flex gap-3 items-center">
                               <CalendarClock size={18} />
-                              <h2 className="truncate mx-auto">
+                              <h2 className="truncate ">
                                 {formatThaiDateTime(item.start).date}
                               </h2>
                             </div>
-                            <div className="flex items-center">
+                            <div className="flex gap-3 items-center">
                               <ArrowRight size={18} />
-                              <h2 className="truncate  mx-auto">
+                              <h2 className="truncate mr-auto">
                                 {formatThaiDateTime(item.end).date}
                               </h2>
                             </div>
                           </div>
                           <div className="grid grid-cols-2 gap-1">
-                            <div className="flex items-center">
+                            <div className="flex gap-3 items-center">
                               <Clock9 size={18} />
-                              <h2 className="truncate  mx-auto">
+                              <h2 className="truncate">
                                 {formatThaiDateTime(item.start).time} น.
                               </h2>
                             </div>
-                            <div className="flex items-center">
+                            <div className="flex gap-3 items-center">
                               <ArrowRight size={18} />
-                              <h2 className="truncate  mx-auto">
+                              <h2 className="truncate  mr-auto">
                                 {formatThaiDateTime(item.end).time} น.
                               </h2>
                             </div>
+                          </div>
+                          <div className="grid grid-cols-2 gap-1">
+                            <div className="flex gap-3 items-center">
+                              <div className="relative">
+                                <DatabaseZap
+                                  size={18}
+                                  className="absolute text-blue-500 animate-ping"
+                                />
+                                <DatabaseZap
+                                  size={18}
+                                  className="text-blue-500 "
+                                />
+                              </div>
+                              <h2 className="truncate ">ยังไม่เก็บข้อมูล</h2>
+                            </div>
+                            {!item.isAction ? (
+                              <div className="flex gap-3 items-center">
+                                <LockKeyhole
+                                  size={18}
+                                  className="text-yellow-500"
+                                />
+                                <h2 className="truncate ">ยังไม่เปิดใช้งาน</h2>
+                              </div>
+                            ) : (
+                              <div className="flex gap-3 items-center">
+                                <LockKeyholeOpen
+                                  size={18}
+                                  className="text-green-500"
+                                />
+                                <h2 className="truncate ">เปิดใช้งานอยู่</h2>
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -368,7 +408,13 @@ const RightSection = ({ permission, period, setPeriod }: RightSectionProps) => {
                         <DropdownMenuContent>
                           <DropdownMenuLabel>เมนู</DropdownMenuLabel>
                           <DropdownMenuSeparator />
+                          <DropdownMenuItem className="flex items-center gap-2">
+                            <DatabaseBackup size={16} />
+                            บันทึกผล
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
                           <DropdownMenuItem
+                            className="flex items-center gap-2"
                             onSelect={() =>
                               setExpandedPeriodId(
                                 expandedPeriodId === item.period_id
@@ -377,14 +423,17 @@ const RightSection = ({ permission, period, setPeriod }: RightSectionProps) => {
                               )
                             }
                           >
+                            <Cog size={16} />
                             แก้ไข
                           </DropdownMenuItem>
                           <DropdownMenuItem
+                            className="flex items-center gap-2"
                             onSelect={() => {
                               setOpenAlert(true);
                               setDeletePeroid(item.period_id);
                             }}
                           >
+                            <CircleX size={16} />
                             ลบ
                           </DropdownMenuItem>
                         </DropdownMenuContent>

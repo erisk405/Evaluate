@@ -150,7 +150,7 @@ const EditRoleDialog = ({
                           role.permissionsAsAssessor
                             ?.find(
                               (permission) =>
-                                permission.evaluatorRole.id === item.id
+                                permission?.evaluatorRole?.id === item.id
                             )
                             ?.permissionForm.filter(
                               (form) => form.ingroup === true
@@ -177,7 +177,7 @@ const EditRoleDialog = ({
                           role.permissionsAsAssessor
                             ?.find(
                               (permission) =>
-                                permission.evaluatorRole.id === item.id
+                                permission?.evaluatorRole?.id === item.id
                             )
                             ?.permissionForm.filter(
                               (form) => form.ingroup === false

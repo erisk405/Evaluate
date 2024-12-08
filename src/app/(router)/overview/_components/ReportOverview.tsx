@@ -41,8 +41,6 @@ const ReportOverview = () => {
       const response = await GlobalApi.getResultEvaluatePerDepart(
         currentlyEvaluationPeriod?.period_id
       );
-      console.log(response?.data);
-
       setResultEvalEachDepartment(response?.data);
     } catch (error) {
       console.error({ message: error });
@@ -101,9 +99,17 @@ const ReportOverview = () => {
   ];
 
   useEffect(() => {
+    console.log("resultEvalEachDepartment", resultEvalEachDepartment);
+
     getResultEvaluatePerDepart();
     fetchSupervise();
   }, [currentlyEvaluationPeriod?.period_id]);
+
+  // useEffect(() => {
+  //   console.log("resultEvalEachDepartment",resultEvalEachDepartment);
+
+  // }, [resultEvalEachDepartment]);
+
   return (
     <div className="h-full flex flex-col gap-3">
       <div className="@container w-full grid grid-cols-3 lg:grid-cols-3 gap-3">
@@ -177,12 +183,21 @@ const ReportOverview = () => {
             delay: 0.1,
             ease: [0, 0.71, 0.2, 1.01],
           }}
-          className="col-span-3 "
+          className="col-span-3 my-3"
         >
-          <h2 className="text-xl font-bold text-stone-700 my-3">
+          <h2 className="text-2xl font-bold text-stone-700 my-3">
             การประเมินแต่ละหน่วยงาน
           </h2>
-          <InfoOfDepartmentEval />
+          {resultEvalEachDepartment?.length ? (
+            <InfoOfDepartmentEval />
+          ) : (
+            <div className="w-full flex justify-center items-center h-[180px]">
+              <h2 className="text-2xl">
+                ตอนนี้ไม่ได้อยู่ในช่วงเวลาการประเมินค้าบผม...{" "}
+              </h2>
+              <span className="text-4xl animate-bounce">🐱</span>
+            </div>
+          )}
         </motion.div>
         <motion.div
           initial={{ opacity: 0, y: -100 }}
@@ -192,34 +207,58 @@ const ReportOverview = () => {
             delay: 0.1,
             ease: [0, 0.71, 0.2, 1.01],
           }}
-          className="col-span-3 "
+          className="col-span-3 my-3"
         >
-          <h2 className="text-xl font-bold">
+          <h2 className="text-2xl font-bold my-3">
             บุคคลที่กำกับดูแลในแต่ละหน่วยงาน
           </h2>
-          <Table className="shadow bg-white rounded-lg my-3 ">
-            <TableCaption>A list of your recent invoices.</TableCaption>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[100px]">ลำดับ</TableHead>
-                <TableHead>หน่วยงานที่กำกับดูแล</TableHead>
-                <TableHead className="">ชื่อผู้ที่กำกับดูแล</TableHead>
-                <TableHead className="">หน่วยงาน/สังกัด</TableHead>
-                <TableHead className="">ตำแหน่ง</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {supervise?.map((item, index) => (
-                <TableRow key={item.department.id}>
-                  <TableCell className="font-medium">{index + 1}</TableCell>
-                  <TableCell>{item.department.department_name}</TableCell>
-                  <TableCell>{item.user.name}</TableCell>
-                  <TableCell>{item.user.name}</TableCell>
-                  <TableCell>{item.user.name}</TableCell>
+          {supervise.length ? (
+            <Table className="shadow bg-white rounded-lg my-3 ">
+              <TableCaption>A list of your recent invoices.</TableCaption>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[100px]">ลำดับ</TableHead>
+                  <TableHead>หน่วยงานที่กำกับดูแล</TableHead>
+                  <TableHead className="">ชื่อผู้ที่กำกับดูแล</TableHead>
+                  <TableHead className="">หน่วยงาน/สังกัด</TableHead>
+                  <TableHead className="">ตำแหน่ง</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {supervise?.map((item, index) => (
+                  <TableRow key={item.department.id}>
+                    <TableCell className="font-medium">{index + 1}</TableCell>
+                    <TableCell>{item.department.department_name}</TableCell>
+                    <TableCell className="flex items-center gap-2">
+                      <Image
+                        src={
+                          item.user.image
+                            ? item.user.image.url
+                            : "/profiletest.jpg"
+                        }
+                        width={30}
+                        height={30}
+                        alt="hover profile"
+                        className="rounded-lg w-[30px] h-[30px] object-cover"
+                      />
+                      {item.user.name}
+                    </TableCell>
+                    <TableCell>
+                      {item.user.department?.department_name}
+                    </TableCell>
+                    <TableCell>{item.user.role.role_name}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <div className="w-full flex justify-center items-center h-[180px]">
+              <h2 className="text-2xl">
+                ยังไม่ได้กำหนดบุคคลที่ต้อง"กำกับดูแล"ในแต่ละหน่วยงาน...{" "}
+              </h2>
+              <span className="text-4xl animate-bounce">🐱</span>
+            </div>
+          )}
         </motion.div>
       </div>
     </div>

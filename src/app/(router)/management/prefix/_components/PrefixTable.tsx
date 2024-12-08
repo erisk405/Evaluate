@@ -349,10 +349,10 @@ const PrefixTable = () => {
                   className="active:scale-95 transition-all select-none gap-2"
                 >
                   <Plus />
-                  Add question
+                  Add prefix name
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[625px]">
+              <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                   <DialogTitle>Craete Prefix</DialogTitle>
                   <DialogDescription>

@@ -200,11 +200,11 @@ export function UserInDepartment({
                   </Button>
                 ) : (
                   <div
-                    className="flex items-center gap-3 active:scale-95 transition-all text-yellow-500 select-none"
+                    className="flex items-center gap-3 font-bold active:scale-95  transition-all text-yellow-500 select-none"
                     onClick={() => setOpen(true)}
                   >
-                    <Lock size={18} />
-                    ยังไม่ได้อยู่ในช่วงเวลา
+                    <Lock size={18} className="min-w-[18px]" />
+                    <h2 className="">ยังไม่เปิดใช้งาน</h2>
                   </div>
                 )}
               </SheetTrigger>

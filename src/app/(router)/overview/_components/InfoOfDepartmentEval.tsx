@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { motion, useMotionValue, useSpring, Variants } from "framer-motion";
 import { getResultEvalEachDepartmentType } from "@/types/interface";
 import Image from "next/image";
-import { Building2, UserRoundCheck, UserRoundX } from "lucide-react";
+import { Building2, CircleOff, UserRoundCheck, UserRoundX } from "lucide-react";
 import useStore from "@/app/store/store";
 // Correctly typed variants
 const variants: Variants = {
@@ -14,9 +14,7 @@ const variants: Variants = {
   contact: {
     width: 300,
     height: 100,
-    // backgroundColor: "rgba(255, 255, 255, 255)",
     borderRadius: 10,
-    // mixBlendMode: "difference",
   },
 };
 
@@ -25,21 +23,56 @@ export const CursorContent = ({
 }: {
   item: getResultEvalEachDepartmentType;
 }) => {
-
   return (
-    <div className="flex items-center gap-2 p-2 bg-white shadow-lg rounded-lg">
-      <Image
-        src={item.image.url || "/test.png"}
-        width={50}
-        height={50}
-        alt="hover profile"
-        className="rounded-full w-[50px] h-[50px] object-cover"
-      />
-      <div>
-        <p className="font-bold text-sm">{item.department}</p>
-        <p className="text-xs text-gray-500">
-          Completed: {item.totalFinished}/{item.totalUsers}
-        </p>
+    <div className="p-2 bg-white shadow-lg rounded-lg">
+      <div className="flex items-center gap-2 ">
+        <Image
+          src={item.image.url || "/test.png"}
+          width={50}
+          height={50}
+          alt="hover profile"
+          className="rounded-lg w-[50px] h-[50px] object-cover"
+        />
+        <div>
+          <p className="font-bold text-sm">{item.department}</p>
+          <p className="text-xs text-gray-500">
+            Completed: {item.totalFinished}/{item.totalUsers}
+          </p>
+        </div>
+      </div>
+
+      <hr className="my-1" />
+      <div className="pl-6">
+        <p className="font-bold text-gray-700 text-sm">กำกับดูแลโดย</p>
+        <div className="grid grid-cols-5 items-center gap-2">
+          {item.supervise ? (
+            <Image
+              src={
+                item.supervise?.user?.image
+                  ? item.supervise?.user?.image.url
+                  : "/profiletest.jpg"
+              }
+              width={25}
+              height={25}
+              alt="hover profile"
+              className="rounded-full w-[25px] h-[25px] object-cover mx-auto"
+            />
+          ) : (
+            <CircleOff size={18} className="mx-auto" />
+          )}
+          <p className="text-sm col-span-4">
+            {item.supervise?.user?.name
+              ? item.supervise?.user?.name
+              : "ไม่มีบุคคลที่กำกับดูแลอยู่"}
+          </p>
+        </div>
+        <div className="grid grid-cols-5 mt-1 items-center gap-2">
+          <Building2 size={18} className="mx-auto" />
+          <p className="text-sm col-span-4">
+            {item.supervise?.user?.department?.department_name ||
+              "ไม่มีบุคคลที่กำกับดูแลอยู่"}
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -58,10 +91,9 @@ const InfoOfDepartmentEval = () => {
   const smoothCursorX = useSpring(cursorX, springConfig);
   const smoothCursorY = useSpring(cursorY, springConfig);
 
-
   const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
-    cursorX.set(event.clientX - 16);
-    cursorY.set(event.clientY - 16);
+    cursorX.set(event.clientX + 26);
+    cursorY.set(event.clientY + 26);
   };
   const setCursorBlock = (item: getResultEvalEachDepartmentType) => {
     setCursorVariant("contact");

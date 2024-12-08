@@ -21,12 +21,13 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { FormQuestion, PrefixType } from "@/types/interface";
+import { Input } from "@/components/ui/input";
 const formSchema = z.object({
-    prefix_name: z
-      .string()
-      .min(1, { message: "massage must be at least 10 characters." }) // ขั้นต่ำ 10 ตัวอักษร
-      .max(30, { message: "massage must not exceed 100 characters." }),
-  });
+  prefix_name: z
+    .string()
+    .min(1, { message: "massage must be at least 10 characters." }) // ขั้นต่ำ 10 ตัวอักษร
+    .max(30, { message: "massage must not exceed 100 characters." }),
+});
 // 2. กำหนด type จาก schema
 type FormValues = z.infer<typeof formSchema>;
 
@@ -45,7 +46,7 @@ const EditPrefixName = ({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-        prefix_name: prefix.prefix_name,
+      prefix_name: prefix.prefix_name,
     },
   });
   // 2. handleSubmit function ใน EditQuestionDialog
@@ -62,9 +63,9 @@ const EditPrefixName = ({
   };
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-[625px]">
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Edit Question</DialogTitle>
+          <DialogTitle>Edit prefix name</DialogTitle>
           <DialogDescription>
             Make changes to your question here. Click save when you're done.
           </DialogDescription>
@@ -80,7 +81,7 @@ const EditPrefixName = ({
                     <div className="grid gap-4 py-4">
                       <div className="grid w-full gap-1.5">
                         <Label htmlFor="message-2">Your Content</Label>
-                        <Textarea
+                        <Input
                           placeholder="Type your content here."
                           id="message-2"
                           {...field}

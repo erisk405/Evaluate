@@ -178,6 +178,7 @@ interface getResultEvalEachDepartmentType{
   department:string;
   id:string;
   image:ImageType;
+  supervise?:Supervise;
   totalFinished:number;
   totalUnfinished:number;
   totalUsers:number

@@ -52,12 +52,14 @@ text-green-500 px-2 py-1 rounded-xl transition-all active:scale-95"
             onClick={() => setOpen(true)}
           >
             <Lock size={18} />
-            ยังไม่ได้อยู่ในช่วงเวลา
+            <h2>ยังไม่เปิดใช้งาน</h2>
           </div>
         )}
       </SheetTrigger>
       {!userHaveBeenEvaluated?.some((u) => u.evaluator.id === item.id) &&
-        currentlyEvaluationPeriod?.isAction && (ProfileDetail.id && item.id !== ProfileDetail.id) && (
+        currentlyEvaluationPeriod?.isAction &&
+        ProfileDetail.id &&
+        item.id !== ProfileDetail.id && (
           <SheetContent
             side="bottom"
             className="h-[calc(100vh-10%)] xl:mx-52 rounded-tr-2xl rounded-tl-2xl overflow-scroll scrollbar-gemini"
