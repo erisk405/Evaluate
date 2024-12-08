@@ -31,10 +31,7 @@ import useStore from "@/app/store/store";
 import GlobalApi from "@/app/_util/GlobalApi";
 import { motion } from "framer-motion";
 import { UserInDepartment } from "./_components/UserInDepartment";
-import {
-  Department,
-  userHaveBeenEvaluatedType,
-} from "@/types/interface";
+import { Department, userHaveBeenEvaluatedType } from "@/types/interface";
 import axios from "axios";
 import EvaluateSheet from "./_components/EvaluateSheet";
 
@@ -174,7 +171,9 @@ const page = () => {
                 เพิ่ม department.supervise?.user เข้าไปถ้ามี */}
                 {[
                   ...(department.user?.filter((item) =>
-                    ["LEVEL_2", "LEVEL_4"].includes(item.role.role_level)
+                    ["LEVEL_2", "LEVEL_3", "LEVEL_4"].includes(
+                      item.role.role_level
+                    )
                   ) || []),
                   ...(department.supervise?.user && //หาก่อนว่าบุคคลนี้มีอยู่ใน department มั้ย ถ้ามีแสดงว่า เป็นหน่วยงานที่ตนเองสังกัด ถ้าไม่มี แสดงว่ามากำกับดูแล
                   !department.user?.some(
@@ -254,9 +253,7 @@ const page = () => {
               >
                 {/* ตั้งเงื่อนไขเพื่อไม่ให้เห็นชื่อตัวเองภายในหน่วยงานในตอนที่จะทำการประเมิน */}
                 <UserInDepartment
-                  member={department.user?.filter(
-                    (users) => users.id !== ProfileDetail.id
-                  )}
+                  member={department.user}
                   userHaveBeenEvaluated={userHaveBeenEvaluated}
                   fetchUserHaveBeenEvaluated={fetchUserHaveBeenEvaluated}
                 />

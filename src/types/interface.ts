@@ -183,6 +183,12 @@ interface getResultEvalEachDepartmentType{
   totalUsers:number
 }
 
+interface getAllSuperviseByAdminType{
+  supervise_id:string;
+  user:User;
+  department:Department;
+
+}
 export type {
   ImageType, Department, Role,
   User, RoleRequest, Notification,
@@ -195,5 +201,6 @@ export type {
   formResultsType,
   headDataType,
   getCountUserAsEvaluatedType,
-  getResultEvalEachDepartmentType
+  getResultEvalEachDepartmentType,
+  getAllSuperviseByAdminType
 };

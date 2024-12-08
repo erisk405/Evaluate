@@ -551,7 +551,7 @@ const RightSection = ({ permission, period, setPeriod }: RightSectionProps) => {
             </motion.div>
           )}
           <motion.div
-            className="bg-white p-5 h-full shadow rounded-2xl"
+            className="bg-white p-5 h-auto shadow rounded-2xl mt-3"
             initial={{ opacity: 0, x: 100 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{

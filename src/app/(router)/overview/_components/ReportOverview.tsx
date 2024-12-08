@@ -4,29 +4,19 @@ import { motion } from "framer-motion";
 import RadarChartSection from "./RadarChartSection";
 import BarChartMultiple from "./BarChartMultiple";
 import {
-  Building2,
-  Cat,
   CircleCheck,
   CircleDotDashed,
-  CircleX,
   Combine,
   Container,
-  Handshake,
   Package,
   TrendingUp,
-  User,
-  UserRoundCheck,
-  UserRoundX,
 } from "lucide-react";
 import Image from "next/image";
-import AreaChartSection from "./AreaChartSection";
-
 import {
   Table,
   TableBody,
   TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -34,58 +24,15 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import GlobalApi from "@/app/_util/GlobalApi";
 import useStore from "@/app/store/store";
-
-const invoices = [
-  {
-    id: "DE01",
-    department: "งานพัฒนาวิชาการและส่งเสริมการศึกษา",
-    evaluated: 73,
-    evaluate: 0,
-    member: 73,
-  },
-  {
-    id: "DE02",
-    department: "งานทะเบียนและประมวลผล",
-    evaluated: 58,
-    evaluate: 0,
-    member: 58,
-  },
-  {
-    id: "DE03",
-    department: "งานฝึกประสบการณ์วิชาชีพนักศึกษา",
-    evaluated: 10,
-    evaluate: 5,
-    member: 15,
-  },
-  {
-    id: "DE04",
-    department: "งานประกันคุณภาพและประเมินผล",
-    evaluated: 8,
-    evaluate: 3,
-    member: 11,
-  },
-  {
-    id: "DE05",
-    department: "งานบริหารงานทั่วไป",
-    evaluated: 33,
-    evaluate: 0,
-    member: 33,
-  },
-  {
-    id: "DE06",
-    department: "สำนักงานผู้อำนวยการ",
-    evaluated: 50,
-    evaluate: 5,
-    member: 55,
-  },
-];
+import InfoOfDepartmentEval from "./InfoOfDepartmentEval";
+import { getAllSuperviseByAdminType } from "@/types/interface";
 
 export const description = "A radial chart with a grid";
 
 const ReportOverview = () => {
-  // const [supervise, setSupervise] = useState();
   const { resultEvalEachDepartment, setResultEvalEachDepartment } = useStore();
   const { currentlyEvaluationPeriod } = useStore();
+  const [supervise, setSupervise] = useState<getAllSuperviseByAdminType[]>([]);
   const getResultEvaluatePerDepart = async () => {
     try {
       if (!currentlyEvaluationPeriod?.period_id) {
@@ -97,6 +44,16 @@ const ReportOverview = () => {
       console.log(response?.data);
 
       setResultEvalEachDepartment(response?.data);
+    } catch (error) {
+      console.error({ message: error });
+    }
+  };
+  const fetchSupervise = async () => {
+    try {
+      const response = await GlobalApi.getSupervises();
+      console.log("supervise", response?.data?.data);
+
+      setSupervise(response?.data?.data);
     } catch (error) {
       console.error({ message: error });
     }
@@ -145,6 +102,7 @@ const ReportOverview = () => {
 
   useEffect(() => {
     getResultEvaluatePerDepart();
+    fetchSupervise();
   }, [currentlyEvaluationPeriod?.period_id]);
   return (
     <div className="h-full flex flex-col gap-3">
@@ -221,57 +179,10 @@ const ReportOverview = () => {
           }}
           className="col-span-3 "
         >
-          <h2 className="text-xl font-bold text-stone-700">
+          <h2 className="text-xl font-bold text-stone-700 my-3">
             การประเมินแต่ละหน่วยงาน
           </h2>
-          <div className="grid grid-cols-1  @[650px]:grid-cols-2 @[950px]:grid-cols-3 gap-3">
-            {resultEvalEachDepartment?.map((item, index) => (
-              <div
-                key={index + "Go"}
-                className="w-full bg-white grid grid-cols-12 shadow overflow-hidden rounded-xl"
-              >
-                <div className="w-full h-[160px] col-span-5">
-                  <Image
-                    width={300}
-                    height={300}
-                    alt="bannerDepartment"
-                    src={item?.image.url ? item?.image.url : "/test.png"}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="grid grid-cols-1 col-span-7">
-                  <div className="p-3 flex flex-col col-span-1 lg:col-span-3 justify-between ">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 border rounded-full ">
-                        <Building2 size={18} />
-                      </div>
-                      <h2 className="text-sm">{item.department}</h2>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 border rounded-full ">
-                        <UserRoundCheck size={18} />
-                      </div>
-                      <div className="grid grid-cols-1">
-                        <h2 className="font-bold">
-                          {item.totalFinished}/{item.totalUsers}
-                        </h2>
-                        <h2 className="text-sm">เสร็จสิ้นแล้วทั้งหมด</h2>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 border rounded-full ">
-                        <UserRoundX size={18} />
-                      </div>
-                      <div className="grid grid-cols-1">
-                        <h2 className="font-bold">{item.totalUnfinished}</h2>
-                        <h2 className="text-sm">ยังไม่เสร็จ</h2>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <InfoOfDepartmentEval />
         </motion.div>
         <motion.div
           initial={{ opacity: 0, y: -100 }}
@@ -281,43 +192,30 @@ const ReportOverview = () => {
             delay: 0.1,
             ease: [0, 0.71, 0.2, 1.01],
           }}
-          className="col-span-3 bg-white rounded-lg"
+          className="col-span-3 "
         >
-          <Table>
+          <h2 className="text-xl font-bold">
+            บุคคลที่กำกับดูแลในแต่ละหน่วยงาน
+          </h2>
+          <Table className="shadow bg-white rounded-lg my-3 ">
             <TableCaption>A list of your recent invoices.</TableCaption>
             <TableHeader>
               <TableRow>
                 <TableHead className="w-[100px]">ลำดับ</TableHead>
-                <TableHead>หน่วยงาน</TableHead>
-                <TableHead className="text-center">สามาชิกทั้งหมด</TableHead>
-                <TableHead className="text-center ">
-                  ผู้ที่ประเมินเสร็จสิ้นแล้ว
-                </TableHead>
-                <TableHead className="text-center ">ยังไม่แล้วเสร็จ</TableHead>
-                <TableHead className="text-center ">status</TableHead>
+                <TableHead>หน่วยงานที่กำกับดูแล</TableHead>
+                <TableHead className="">ชื่อผู้ที่กำกับดูแล</TableHead>
+                <TableHead className="">หน่วยงาน/สังกัด</TableHead>
+                <TableHead className="">ตำแหน่ง</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {invoices.map((invoice, index) => (
-                <TableRow key={invoice.id}>
+              {supervise?.map((item, index) => (
+                <TableRow key={item.department.id}>
                   <TableCell className="font-medium">{index + 1}</TableCell>
-                  <TableCell>{invoice.department}</TableCell>
-                  <TableCell className="text-center">
-                    {invoice.member}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    {invoice.evaluated}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    {invoice.evaluate}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    {invoice.evaluated === invoice.member ? (
-                      <CircleCheck className="text-white bg-green-500 rounded-full" />
-                    ) : (
-                      <CircleDotDashed className="text-white bg-amber-500 rounded-full" />
-                    )}
-                  </TableCell>
+                  <TableCell>{item.department.department_name}</TableCell>
+                  <TableCell>{item.user.name}</TableCell>
+                  <TableCell>{item.user.name}</TableCell>
+                  <TableCell>{item.user.name}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

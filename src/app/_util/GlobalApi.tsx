@@ -463,6 +463,13 @@ const updatePeriod = (payload: PeriodType) => {
 // -----------------------------------------------------------
 //                       supervises Table
 // -----------------------------------------------------------
+const getSupervises = () => {
+  try {
+    return axios.get(`${apiUrl}/supervises`, { withCredentials: true });
+  } catch (error) {
+    console.error("API getSupervises", { message: error });
+  }
+};
 
 const createSupervise = (payload: { userId: string; departmentId: string }) => {
   try {
@@ -611,5 +618,6 @@ export default {
   findUserEvaluated,
   getResultEvaluate,
   getCountUserAsEvaluated,
-  getResultEvaluatePerDepart
+  getResultEvaluatePerDepart,
+  getSupervises
 };

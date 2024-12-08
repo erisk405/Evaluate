@@ -28,6 +28,7 @@ import {
   EarthLock,
   Hexagon,
   Lock,
+  ShieldHalf,
 } from "lucide-react";
 import {
   Sheet,
@@ -82,6 +83,7 @@ export function UserInDepartment({
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
   const [globalFilter, setGlobalFilter] = useState("");
+  const { ProfileDetail } = useStore();
   const columns: ColumnDef<User>[] = [
     {
       accessorKey: "index",
@@ -184,6 +186,10 @@ export function UserInDepartment({
                   <div className="flex items-center gap-3 active:scale-95 transition-all text-green-500 select-none">
                     <Bolt /> เสร็จสิ้นแล้ว
                   </div>
+                ) : row.original.id === ProfileDetail.id ? (
+                  <div className="flex items-center gap-3 active:scale-95 transition-all text-blue-500 select-none">
+                    <ShieldHalf /> ไม่สามารถประเมินตนเองได้
+                  </div>
                 ) : currentlyEvaluationPeriod?.isAction ? (
                   <Button
                     variant="ghost"
@@ -203,7 +209,8 @@ export function UserInDepartment({
                 )}
               </SheetTrigger>
               {!checkEvaluated &&
-                currentlyEvaluationPeriod?.isAction === true && (
+                currentlyEvaluationPeriod?.isAction === true &&
+                row.original.id !== ProfileDetail.id && (
                   <SheetContent
                     side="bottom"
                     className="h-[calc(100vh-10%)] xl:mx-52 rounded-tr-2xl rounded-tl-2xl overflow-scroll scrollbar-gemini"

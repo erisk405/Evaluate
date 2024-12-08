@@ -136,45 +136,49 @@ const EvaluateSection = ({
 
   const handleSubmit = async () => {
     try {
-      if (currentlyEvaluationPeriod) {
-        const allQuestions = Object.values(payload).flatMap((item) =>
-          item.question.map((q) => ({
-            questionId: q.questionId,
-            score: q.score,
-          }))
-        );
-        const data = {
-          period_id: currentlyEvaluationPeriod.period_id,
-          assessor_id: ProfileDetail.id!, // Ensuring non-null
-          evaluator_id: evaluatorUserTarget.id,
-          eval_depart_id: params.departmentId,
-          questions: allQuestions, // ตอนแรกเป็นarrays เลยส่งไปแบบ object ที่มีความสัมพันธ์แบบ key value
-        };
-        console.log("data", data);
-
-        const response = await GlobalApi.createEvaluate(data);
-        console.log("response", response);
-        // const { evaluator_id } = response?.data;
-        // socket.emit("roleRequestHandled", {
-        //   evaluator_id,
-        // });
-        toast({
-          title: "บันทึกข้อมูลเรียบร้อยแล้ว",
-          description: (
-            <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-x-auto">
-              <code className="text-white whitespace-pre-wrap break-words">
-                {JSON.stringify(response?.data, null, 2)}
-              </code>
-            </pre>
-          ),
-        });
-
-        setOpen(false);
-        // รอให้แอนิเมชันของ Sheet ปิดสำเร็จก่อน
-        await new Promise((resolve) => setTimeout(resolve, 300)); // รอ 300ms (ระยะเวลาแอนิเมชัน)
-        // เรียก fetchUserHaveBeenEvaluated หลังจากแอนิเมชันเสร็จสมบูรณ์
-        fetchUserHaveBeenEvaluated();
+      if (!selectedValues.length) {
+        throw new Error("Form data not found");
       }
+      if (!currentlyEvaluationPeriod) {
+        throw new Error("Not Found Currently about Determining the evaluation period");
+      }
+      const allQuestions = Object.values(payload).flatMap((item) =>
+        item.question.map((q) => ({
+          questionId: q.questionId,
+          score: q.score,
+        }))
+      );
+      const data = {
+        period_id: currentlyEvaluationPeriod.period_id,
+        assessor_id: ProfileDetail.id!, // Ensuring non-null
+        evaluator_id: evaluatorUserTarget.id,
+        eval_depart_id: params.departmentId,
+        questions: allQuestions, // ตอนแรกเป็นarrays เลยส่งไปแบบ object ที่มีความสัมพันธ์แบบ key value
+      };
+      console.log("data", data);
+
+      const response = await GlobalApi.createEvaluate(data);
+      console.log("response", response);
+      // const { evaluator_id } = response?.data;
+      // socket.emit("roleRequestHandled", {
+      //   evaluator_id,
+      // });
+      toast({
+        title: "บันทึกข้อมูลเรียบร้อยแล้ว",
+        description: (
+          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-x-auto">
+            <code className="text-white whitespace-pre-wrap break-words">
+              {JSON.stringify(response?.data, null, 2)}
+            </code>
+          </pre>
+        ),
+      });
+
+      setOpen(false);
+      // รอให้แอนิเมชันของ Sheet ปิดสำเร็จก่อน
+      await new Promise((resolve) => setTimeout(resolve, 300)); // รอ 300ms (ระยะเวลาแอนิเมชัน)
+      // เรียก fetchUserHaveBeenEvaluated หลังจากแอนิเมชันเสร็จสมบูรณ์
+      fetchUserHaveBeenEvaluated();
     } catch (error: unknown) {
       // ตรวจสอบว่า error เป็น instance ของ AxiosError หรือไม่
       if (axios.isAxiosError(error)) {

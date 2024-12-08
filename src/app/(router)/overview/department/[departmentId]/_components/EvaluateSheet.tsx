@@ -7,7 +7,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Bolt, Hexagon, Lock } from "lucide-react";
+import { Bolt, Hexagon, Lock, ShieldHalf } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import EvaluateSection from "./EvaluateSection";
 import { PeriodType, User, userHaveBeenEvaluatedType } from "@/types/interface";
@@ -24,7 +24,7 @@ const EvaluateSheet = ({
   fetchUserHaveBeenEvaluated,
 }: EvaluateSheetProp) => {
   const [open, setOpen] = useState(false);
-  const { currentlyEvaluationPeriod } = useStore();
+  const { currentlyEvaluationPeriod, ProfileDetail } = useStore();
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
@@ -34,6 +34,10 @@ const EvaluateSheet = ({
 text-green-500 px-2 py-1 rounded-xl transition-all active:scale-95"
           >
             <Bolt /> เสร็จสิ้นแล้ว
+          </div>
+        ) : item.id === ProfileDetail.id ? (
+          <div className="flex items-center gap-3 active:scale-95 transition-all text-blue-500 select-none">
+            <ShieldHalf /> ไม่สามารถประเมินตนเองได้
           </div>
         ) : currentlyEvaluationPeriod?.isAction ? (
           <div
@@ -53,7 +57,7 @@ text-green-500 px-2 py-1 rounded-xl transition-all active:scale-95"
         )}
       </SheetTrigger>
       {!userHaveBeenEvaluated?.some((u) => u.evaluator.id === item.id) &&
-        currentlyEvaluationPeriod?.isAction && (
+        currentlyEvaluationPeriod?.isAction && (ProfileDetail.id && item.id !== ProfileDetail.id) && (
           <SheetContent
             side="bottom"
             className="h-[calc(100vh-10%)] xl:mx-52 rounded-tr-2xl rounded-tl-2xl overflow-scroll scrollbar-gemini"

@@ -12,6 +12,7 @@ import {
 import Link from "next/link";
 import RadarChartGridFilled from "./RadarChartGridFilled";
 import GlobalApi from "@/app/_util/GlobalApi";
+import { getCountUserAsEvaluatedType } from "@/types/interface";
 
 export const description = "A radial chart with a custom shape";
 const ChartEvaluatePersonnel = () => {
@@ -57,8 +58,15 @@ const ChartEvaluatePersonnel = () => {
         period_id: currentlyEvaluationPeriod.period_id,
       };
       const response = await GlobalApi.getCountUserAsEvaluated(payload);
-      // console.log("getCountUserAsEvaluated", response?.data);
-      setResultCountUserAsEvaluated(response?.data);
+      console.log("getCountUserAsEvaluated", response?.data);
+      const sortedData = response?.data.sort(
+        (a: getCountUserAsEvaluatedType, b: getCountUserAsEvaluatedType) => {
+          // เรียงตามคอลัมน์ที่คุณต้องการ เช่น ชื่อ หรือ ID
+          return a.department_id.localeCompare(b.department_id); // ถ้าเรียงตามชId
+          // หรือ return a.id - b.id; // ถ้าเรียงตาม ID
+        }
+      );
+      setResultCountUserAsEvaluated(sortedData);
     } catch (error) {
       console.error({ message: error });
     }
