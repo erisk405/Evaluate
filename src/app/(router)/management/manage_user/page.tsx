@@ -20,7 +20,7 @@ const OptionEmployee = [
   },
   {
     id: "OEP03",
-    name: "ประเมินเสร็จสิ้นไปแล้ว",
+    name: "ยังไม่ได้ระบุหน่วยงาน",
     quantity: 65,
     img: "/male.svg",
     color: "from-blue-300 to-cyan-300",
@@ -52,7 +52,7 @@ const page = () => {
       console.error("Error fetching department data:", error);
     }
   };
-  
+
   useEffect(() => {
     fetchRole();
     getDepartment();
@@ -74,16 +74,17 @@ const page = () => {
                   <div className="">
                     <h2 className="text-xl">{item?.name}</h2>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <h2>View more</h2>
-                    <h2 className="">{item?.quantity}</h2>
+                  <div className="text-right">
+                    <h2 className="text-5xl">
+                      {item?.quantity} <span className="text-lg">คน</span>
+                    </h2>
                   </div>
                 </div>
               </div>
             </div>
           ))}
         </div>
-        <div className="bg-gray-100 p-4 rounded-3xl">
+        <div className="bg-white shadow p-4 rounded-3xl">
           <h2 className="text-xl font-semibold">All Employee List</h2>
           <p className="text-gray-500">
             The request is in the state Waiting for success

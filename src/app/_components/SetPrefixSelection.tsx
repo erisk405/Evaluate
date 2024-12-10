@@ -33,7 +33,6 @@ export default function SetPrefixSelection({ onPrefixChange }: any) {
       setPrefix(response?.data);
 
       setValue(ProfileDetail.prefix ? ProfileDetail.prefix.prefix_id : null);
-      onPrefixChange(ProfileDetail.prefix ? ProfileDetail.prefix.prefix_id : null)
     } catch (error) {
       console.log(error);
     }

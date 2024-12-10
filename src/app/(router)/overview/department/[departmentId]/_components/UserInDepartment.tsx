@@ -176,7 +176,7 @@ export function UserInDepartment({
           (u) => u.evaluator.id === row.original.id
         );
         const [open, setOpen] = useState(false);
-        // console.log("checkEvaluated", checkEvaluated);
+        // console.log("userHaveBeenEvaluated", userHaveBeenEvaluated);
         const { currentlyEvaluationPeriod } = useStore();
         return (
           <div className="flex justify-center">

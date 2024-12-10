@@ -63,7 +63,7 @@ const formSchema = z.object({
 
 export default function Myprofile() {
   // for image changing
-  const { ProfileDetail, updateProfileDetail, setShowProfile } = useStore();
+  const { ProfileDetail, updateProfileDetail } = useStore();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -89,6 +89,7 @@ export default function Myprofile() {
     defaultValues: {
       firstName: ProfileDetail?.name?.split(" ")[0],
       lastName: ProfileDetail?.name?.split(" ")[1],
+      prefix: ProfileDetail.prefix?.prefix_id,
       image: undefined,
       email: ProfileDetail?.email ? ProfileDetail?.email : "",
       Department: ProfileDetail?.department
@@ -100,46 +101,64 @@ export default function Myprofile() {
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsLoading(false);
+    setIsLoading(true); // Set to true at the start
     console.log(values);
 
-    const formData = new FormData();
-    if (values.image) {
-      formData.append("image", values.image);
-      try {
+    try {
+      // Image update
+      if (values.image) {
+        const formData = new FormData();
+        formData.append("image", values.image);
+
         const response = await GlobalApi.updateUserImage(formData);
-        // console.log("response",response.data);
-        const { id, name, image, prefix, email, role } = response.data;
-        updateProfileDetail({
-          id,
-          prefix,
-          name,
-          email,
-          image: image ? image.url : "/profiletest.jpg",
-          role,
-        });
-      } catch (error) {
-        console.error("Error updating user image:", error);
-      } finally {
-        setIsLoading(true);
-        toast({
-          description: `✅ Your are save success`,
-        });
+        if (response?.data) {
+          const { id, name, image, prefix, email, role } = response.data;
+          updateProfileDetail({
+            id,
+            prefix,
+            name,
+            email,
+            image: image?.url ?? "/profiletest.jpg",
+            role,
+          });
+        }
       }
+
+      // Role request logic
+      if (ProfileDetail.role && ProfileDetail.role.id !== values.role) {
+        if (ProfileDetail.roleRequests?.length === 0) {
+          await requestRole(values.role);
+        } else {
+          console.log("Don't request role, pending request exists!");
+        }
+      }
+
+      // Name update
+      let nameCombi = `${values.firstName} ${values.lastName}`;
+      const payload = {
+        name: nameCombi,
+        prefixId: values.prefix,
+      };
+
+      const nameResponse = await GlobalApi.updateProfileName(payload);
+      if (nameResponse?.data?.nameUpdate) {
+        const { name, prefix } = nameResponse.data.nameUpdate;
+        updateProfileDetail({ name, prefix });
+      }
+
+      // Success toast
+      toast({
+        description: "✅ Your changes were saved successfully",
+      });
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      toast({
+        description: "❌ Failed to save changes",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
     }
-    if (ProfileDetail.role && ProfileDetail.role.id === values.role) {
-      console.log(
-        "request role เดิม ",
-        values.role,
-        ":  ",
-        ProfileDetail.role.id
-      );
-    } else if (ProfileDetail.roleRequests?.length == 0) {
-      requestRole(values.role);
-    } else {
-      console.log("don't request role ,cause have pending request!!");
-    }
-    setIsLoading(true);
   }
 
   // function เอาไว้ใชักับ SetStatusSection เพื่อให้สามารถนำ valueจาก component ด้านนอกมาใช้ได้
@@ -193,7 +212,7 @@ export default function Myprofile() {
 
   return (
     <div className="">
-      <div className="relative bg-gray-100 w-full h-[100px]">
+      <div className="relative bg-gray-100 w-full h-[120px]">
         <div
           className="absolute bottom-0 translate-y-1/2 px-4 cursor-pointer"
           onClick={handleImageClick}

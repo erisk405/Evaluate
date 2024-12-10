@@ -45,16 +45,18 @@ const page = () => {
           <TableCaption>A list of your recent invoices.</TableCaption>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[100px]">Invoice</TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead className="w-[100px] text-center">ลำดับ</TableHead>
+              <TableHead className="text-center">Status</TableHead>
               <TableHead>Method</TableHead>
-              <TableHead className="text-right">Amount</TableHead>
+              <TableHead className="text-center">Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {data.map((item, index) => (
               <TableRow key={item.period_id}>
-                <TableCell className="font-medium">{index + 1}</TableCell>
+                <TableCell className="font-medium text-center">
+                  {index + 1}
+                </TableCell>
                 <TableCell className="w-[120px]">
                   <div className="bg-white cursor-pointer inline-flex border p-2 shadow rounded-xl items-center gap-1">
                     <div className="relative ">
@@ -70,8 +72,11 @@ const page = () => {
                 <TableCell>
                   <p>รอบที่ 1 ประจำปีงบประมาณ พ.ศ. 2567</p>
                 </TableCell>
-                <TableCell className="text-right">
-                  <Button className="active:scale-95 transition-all">
+                <TableCell className="text-center">
+                  <Button
+                    variant={"outline"}
+                    className="active:scale-95 transition-all"
+                  >
                     ตรวจสอบรายละเอียด
                   </Button>
                 </TableCell>

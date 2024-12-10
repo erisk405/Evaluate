@@ -28,7 +28,7 @@ export function ProfilePopup() {
     >
       <DialogTitle></DialogTitle>
       <DialogDescription></DialogDescription>
-      <DialogContent className="sm:max-w-[500px] p-1 sm:rounded-lg overflow-hidden">
+      <DialogContent className="sm:max-w-[550px] p-1 sm:rounded-lg overflow-hidden">
         <Myprofile />
       </DialogContent>
     </Dialog>

@@ -41,6 +41,7 @@ interface User {
   role: Role
   phone: string,
   department?: Department
+  supervise?:Supervise[]
 }
 
 interface Role {

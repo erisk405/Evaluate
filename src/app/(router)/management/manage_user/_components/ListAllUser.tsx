@@ -60,7 +60,6 @@ import GlobalApi from "@/app/_util/GlobalApi";
 import { PageNumber, User } from "@/types/interface";
 import React, { useEffect, useState } from "react";
 
-
 export function ListEmployee() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -77,6 +76,28 @@ export function ListEmployee() {
     fetchUserList();
   }, []);
   const columns: ColumnDef<User>[] = [
+    {
+      accessorKey: "index",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="text-neutral-800"
+          >
+            <h2>ลำดับ</h2>
+            <ArrowUpDown className="" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="lowercase w-[80px] text-center">{row.index + 1}</div>
+      ),
+      // Add sorting logic
+      sortingFn: (rowA, rowB) => {
+        return rowA.index - rowB.index;
+      },
+    },
     {
       accessorKey: "name",
       header: "Name",
@@ -263,10 +284,17 @@ export function ListEmployee() {
     onRowSelectionChange: setRowSelection,
     onGlobalFilterChange: setGlobalFilter,
     globalFilterFn: (row, columnId, filterValue) => {
-      const name = row.original.name.toLowerCase();
-      const email = row.original.email.toLowerCase();
       const searchValue = filterValue.toLowerCase();
-      return name.includes(searchValue) || email.includes(searchValue);
+      // สร้างอาร์เรย์ค่าทั้งหมดที่ต้องการค้นหา
+      const searchableFields = [
+        row.original.name?.toLowerCase(),
+        row.original.role?.role_name?.toLowerCase(),
+        row.original.email?.toLowerCase(),
+        row.original.phone?.toLowerCase(),
+        row.original.department?.department_name?.toLowerCase(),
+      ];
+      // ตรวจสอบว่า searchValue ตรงกับค่าที่อยู่ใน searchableFields หรือไม่
+      return searchableFields.some((field) => field?.includes(searchValue));
     },
   });
 
@@ -350,14 +378,14 @@ export function ListEmployee() {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="rounded-xl border bg-white">
+      <div className="rounded-lg border ">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id} className="text-neutral-800">
+                    <TableHead key={header.id}>
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -370,7 +398,7 @@ export function ListEmployee() {
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody>
+          <TableBody className="bg-white">
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow

@@ -73,6 +73,7 @@ text-green-500 px-2 py-1 rounded-xl transition-all active:scale-95"
             {/*        Conponent   Question and score input             */}
             {/* ------------------------------------------------------- */}
             <EvaluateSection
+              
               evaluatorUserTarget={item}
               fetchUserHaveBeenEvaluated={fetchUserHaveBeenEvaluated}
               setOpen={setOpen}

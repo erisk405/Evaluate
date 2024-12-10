@@ -7,12 +7,8 @@ import useStore from "@/app/store/store";
 import GlobalApi from "@/app/_util/GlobalApi";
 
 const MyEvaluated = () => {
-  const {
-    
-    setResultEvaluate,
-    ProfileDetail,
-    currentlyEvaluationPeriod,
-  } = useStore();
+  const { setResultEvaluate, ProfileDetail, currentlyEvaluationPeriod } =
+    useStore();
 
   const fetchResultEval = async () => {
     try {

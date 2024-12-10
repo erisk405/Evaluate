@@ -63,6 +63,17 @@ const fetchUserProfile = async (): Promise<AxiosResponse<UserProfile>> => {
   });
 };
 
+const updateProfileName = async (payload:{name:string,prefixId:string}) =>{
+  try {
+    return await axios.put(`${apiUrl}/myProfile`,payload,{
+      withCredentials: true, // ส่ง cookies ไปด้วย
+    })
+  } catch (error) {
+    console.error("Error updateProfileName:", error);
+    
+  }
+}
+
 const Logout = async () => {
   try {
     return await axios.post(
@@ -617,5 +628,6 @@ export default {
   getResultEvaluate,
   getCountUserAsEvaluated,
   getResultEvaluatePerDepart,
-  getSupervises
+  getSupervises,
+  updateProfileName
 };

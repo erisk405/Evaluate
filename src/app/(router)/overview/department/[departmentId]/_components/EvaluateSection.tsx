@@ -50,7 +50,6 @@ const EvaluateSection = ({
     PermissionFormItem[] | undefined
   >([]);
   const { ProfileDetail, currentlyEvaluationPeriod } = useStore();
-
   const [payload, setPayload] = useState<Payload>({});
   // เพิ่ม useEffect เพื่อ initialize payload เมื่อ formEvaluation เปลี่ยน
   useEffect(() => {
@@ -72,9 +71,6 @@ const EvaluateSection = ({
       setPayload(initialPayload);
     }
   }, [formEvaluation]);
-  useEffect(() => {
-    console.log("payload", payload);
-  }, [payload]);
 
   const handlePayloadChange = (
     headTitle: string,
@@ -165,7 +161,7 @@ const EvaluateSection = ({
         description: (
           <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-x-auto">
             <code className="text-white whitespace-pre-wrap break-words">
-              {/* {JSON.stringify(response?.data, null, 2)} */}
+              {JSON.stringify(response?.data, null, 2)}
             </code>
           </pre>
         ),
@@ -218,8 +214,15 @@ const EvaluateSection = ({
     }
   };
   useEffect(() => {
-    const ingroup =
-      evaluatorUserTarget.department?.id === ProfileDetail?.department?.id;
+    // console.log("evaluatorUserTarget", evaluatorUserTarget);
+    const isMySupervise = evaluatorUserTarget?.supervise?.some(
+      (item) => item.department_id === ProfileDetail?.department?.id
+    );
+    console.log("isMySupervise", isMySupervise);
+
+    const ingroup = isMySupervise
+      ? true
+      : evaluatorUserTarget.department?.id === ProfileDetail?.department?.id;
     // console.log("ingroup", ProfileDetail);
     // Find the appropriate permission for the evaluator
     const matchedPermission = ProfileDetail?.role?.permissionsAsAssessor.find(
@@ -230,7 +233,7 @@ const EvaluateSection = ({
     const Form = matchedPermission?.permissionForm.filter(
       (item) => item.ingroup === ingroup
     );
-    console.log("Form", Form);
+    // console.log("Form", Form);
     // Update the state with the filtered forms
     if (Form) {
       setFormEvaluation(Form);

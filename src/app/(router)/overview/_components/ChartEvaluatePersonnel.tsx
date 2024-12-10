@@ -57,6 +57,8 @@ const ChartEvaluatePersonnel = () => {
         assessor_id: ProfileDetail.id,
         period_id: currentlyEvaluationPeriod.period_id,
       };
+      console.log("payload",payload);
+      
       const response = await GlobalApi.getCountUserAsEvaluated(payload);
       console.log("getCountUserAsEvaluated", response?.data);
       const sortedData = response?.data.sort(
@@ -66,6 +68,7 @@ const ChartEvaluatePersonnel = () => {
           // หรือ return a.id - b.id; // ถ้าเรียงตาม ID
         }
       );
+      
       setResultCountUserAsEvaluated(sortedData);
     } catch (error) {
       console.error({ message: error });
