@@ -75,85 +75,85 @@ const ChartEvaluatePersonnel = () => {
     getCountUserAsEvaluated();
   }, [currentlyEvaluationPeriod, ProfileDetail]);
   return (
-    resultCountUserAsEvaluated && (
-      <div className="w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-2 p-4 gap-3">
-          <Card className="col-span-1">
-            <CardHeader>
-              <CardTitle>รูปแบบของ Bar Chart </CardTitle>
-              <div className="grid grid-cols-3">
-                <div className="flex flex-col justify-center">
-                  <h2 className="text-sm">ทั้งหมด</h2>
-                  <h2 className="font-bold">4268</h2>
-                </div>
-                <div className="flex flex-col justify-center">
-                  <h2 className="text-sm">เสร็จสิ้นแล้ว</h2>
-                  <h2 className="font-bold">215</h2>
-                </div>
-                <div className="flex flex-col justify-center">
-                  <h2 className="text-sm">ยังไม่เสร็จ</h2>
-                  <h2 className="font-bold">4020</h2>
-                </div>
+    <div className="w-full">
+      <div className="grid grid-cols-1 lg:grid-cols-2 p-4 gap-3">
+        <Card className="col-span-1">
+          <CardHeader>
+            <CardTitle>รูปแบบของ Bar Chart </CardTitle>
+            <div className="grid grid-cols-3">
+              <div className="flex flex-col justify-center">
+                <h2 className="text-sm">ทั้งหมด</h2>
+                <h2 className="font-bold">4268</h2>
               </div>
-            </CardHeader>
-            <CardContent>
-              <ChartContainer config={chartConfig}>
-                <BarChart accessibilityLayer data={chartData}>
-                  <XAxis
-                    dataKey="depart"
-                    tickLine={false}
-                    tickMargin={10}
-                    axisLine={false}
-                    tickFormatter={abbreviateDepartment}
-                  />
-                  <Bar
-                    dataKey="finished"
-                    stackId="a"
-                    fill="var(--color-finished)"
-                    radius={[0, 0, 0, 0]}
-                  />
-                  <Bar
-                    dataKey="unfinished"
-                    stackId="a"
-                    fill="var(--color-unfinished)"
-                    radius={[20, 20, 0, 0]}
-                  />
-                  <ChartTooltip
-                    content={
-                      <ChartTooltipContent
-                        className="w-[180px]"
-                        formatter={(value, name, item, index) => (
-                          <>
-                            <div
-                              className="h-2.5 w-2.5 shrink-0 rounded-[2px] bg-[--color-bg]"
-                              style={
-                                {
-                                  "--color-bg": `var(--color-${name})`,
-                                } as React.CSSProperties
-                              }
-                            />
-                            {chartConfig[name as keyof typeof chartConfig]
-                              ?.label || name}
-                            <div className="ml-auto flex items-baseline gap-0.5 font-mono font-medium tabular-nums text-foreground">
-                              {value}
-                              <span className="font-normal text-muted-foreground">
-                                คน
-                              </span>
-                            </div>
-                          </>
-                        )}
-                      />
-                    }
-                    cursor={false}
-                    defaultIndex={1}
-                  />
-                </BarChart>
-              </ChartContainer>
+              <div className="flex flex-col justify-center">
+                <h2 className="text-sm">เสร็จสิ้นแล้ว</h2>
+                <h2 className="font-bold">215</h2>
+              </div>
+              <div className="flex flex-col justify-center">
+                <h2 className="text-sm">ยังไม่เสร็จ</h2>
+                <h2 className="font-bold">4020</h2>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer config={chartConfig}>
+              <BarChart accessibilityLayer data={chartData}>
+                <XAxis
+                  dataKey="depart"
+                  tickLine={false}
+                  tickMargin={10}
+                  axisLine={false}
+                  tickFormatter={abbreviateDepartment}
+                />
+                <Bar
+                  dataKey="finished"
+                  stackId="a"
+                  fill="var(--color-finished)"
+                  radius={[0, 0, 0, 0]}
+                />
+                <Bar
+                  dataKey="unfinished"
+                  stackId="a"
+                  fill="var(--color-unfinished)"
+                  radius={[20, 20, 0, 0]}
+                />
+                <ChartTooltip
+                  content={
+                    <ChartTooltipContent
+                      className="w-[180px]"
+                      formatter={(value, name, item, index) => (
+                        <>
+                          <div
+                            className="h-2.5 w-2.5 shrink-0 rounded-[2px] bg-[--color-bg]"
+                            style={
+                              {
+                                "--color-bg": `var(--color-${name})`,
+                              } as React.CSSProperties
+                            }
+                          />
+                          {chartConfig[name as keyof typeof chartConfig]
+                            ?.label || name}
+                          <div className="ml-auto flex items-baseline gap-0.5 font-mono font-medium tabular-nums text-foreground">
+                            {value}
+                            <span className="font-normal text-muted-foreground">
+                              คน
+                            </span>
+                          </div>
+                        </>
+                      )}
+                    />
+                  }
+                  cursor={false}
+                  defaultIndex={1}
+                />
+              </BarChart>
+            </ChartContainer>
 
-              <div className="">
-                <h2 className="text-xl font-bold my-3">คุณประเมินไปแล้ว</h2>
-                <div className="grid sm:grid-cols-2 gap-4 text-sm ">
-                  {resultCountUserAsEvaluated?.map((item, index) => (
+            <div className="">
+              <h2 className="text-xl font-bold my-3">คุณประเมินไปแล้ว</h2>
+              <div className="grid sm:grid-cols-2 gap-4 text-sm ">
+                {resultCountUserAsEvaluated?.length ? (
+                  resultCountUserAsEvaluated?.map((item, index) => (
                     <div key={index + "Letgo"}>
                       <div className="grid grid-cols-3 items-center gap-2 border p-3 rounded-full">
                         <Link
@@ -170,17 +170,22 @@ const ChartEvaluatePersonnel = () => {
                         </div>
                       </div>
                     </div>
-                  ))}
-                </div>
+                  ))
+                ) : (
+                  <div className="flex items-center justify-center h-[160px] gap-3 w-full col-span-2">
+                    <h2 className="text-xl">ยังไม่ได้อยู่ในรอบการประเมิน</h2>
+                    <span className="animate-bounce text-xl">😾</span>
+                  </div>
+                )}
               </div>
-            </CardContent>
-          </Card>
-          <div className="col-span-1">
-            <RadarChartGridFilled />
-          </div>
+            </div>
+          </CardContent>
+        </Card>
+        <div className="col-span-1">
+          <RadarChartGridFilled />
         </div>
       </div>
-    )
+    </div>
   );
 };
 

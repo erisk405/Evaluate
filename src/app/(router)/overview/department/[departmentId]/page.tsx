@@ -65,7 +65,6 @@ const page = () => {
       if (currentlyEvaluationPeriod) {
         const payload = {
           assessor_id: ProfileDetail.id!,
-          eval_depart_id: params.departmentId,
           period_id: currentlyEvaluationPeriod.period_id,
         };
         const response = await GlobalApi.findUserEvaluated(payload);

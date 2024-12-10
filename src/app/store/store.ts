@@ -26,6 +26,7 @@ interface StoreState {
 
   ProfileDetail: {
     id: string | null;
+    prefix: PrefixType | null;
     name: string | null;
     email: string | null;
     image: string | null;
@@ -36,6 +37,7 @@ interface StoreState {
 
   updateProfileDetail: (updatedFields: {
     id?: string;
+    prefix?: PrefixType;
     name?: string;
     email?: string;
     image?: string;
@@ -76,6 +78,7 @@ interface StoreState {
 const useStore = create<StoreState>((set) => ({
   ProfileDetail: {
     id: null,
+    prefix: null,
     name: null,
     email: null,
     image: null,
@@ -121,6 +124,7 @@ const useStore = create<StoreState>((set) => ({
   })),
   updateProfileDetail: (updatedFields: {
     id?: string;
+    prefix?:PrefixType;
     name?: string;
     email?: string;
     image?: string;

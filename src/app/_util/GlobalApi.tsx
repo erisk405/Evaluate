@@ -501,7 +501,6 @@ type createEvaluateType = {
   period_id: string;
   assessor_id: string;
   evaluator_id: string;
-  eval_depart_id: string;
   questions: { questionId: string; score: string }[];
 };
 const createEvaluate = (payload: createEvaluateType) => {
@@ -516,13 +515,12 @@ const createEvaluate = (payload: createEvaluateType) => {
 
 type findUserEvaluatedType = {
   assessor_id: string;
-  eval_depart_id: string;
   period_id: string;
 };
 const findUserEvaluated = (payload: findUserEvaluatedType) => {
   try {
     return axios.get(
-      `${apiUrl}/findUserEval/${payload.assessor_id}/${payload.eval_depart_id}/${payload.period_id}`,
+      `${apiUrl}/findUserEval/${payload.assessor_id}/${payload.period_id}`,
       { withCredentials: true }
     );
   } catch (error) {

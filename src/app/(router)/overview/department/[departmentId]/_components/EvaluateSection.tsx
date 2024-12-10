@@ -46,8 +46,6 @@ const EvaluateSection = ({
   fetchUserHaveBeenEvaluated,
   setOpen,
 }: evaluateSection) => {
-  const [selectedValues, setSelectedValues] = useState<string[]>([]);
-  const params = useParams<{ departmentId: string }>();
   const [formEvaluation, setFormEvaluation] = useState<
     PermissionFormItem[] | undefined
   >([]);
@@ -74,11 +72,9 @@ const EvaluateSection = ({
       setPayload(initialPayload);
     }
   }, [formEvaluation]);
-  const handleValueChange = (index: number, value: string) => {
-    const newSelectedValues = [...selectedValues];
-    newSelectedValues[index] = value;
-    setSelectedValues(newSelectedValues);
-  };
+  useEffect(() => {
+    console.log("payload", payload);
+  }, [payload]);
 
   const handlePayloadChange = (
     headTitle: string,
@@ -136,11 +132,13 @@ const EvaluateSection = ({
 
   const handleSubmit = async () => {
     try {
-      if (!selectedValues.length) {
+      if (!payload) {
         throw new Error("Form data not found");
       }
       if (!currentlyEvaluationPeriod) {
-        throw new Error("Not Found Currently about Determining the evaluation period");
+        throw new Error(
+          "Not Found Currently about Determining the evaluation period"
+        );
       }
       const allQuestions = Object.values(payload).flatMap((item) =>
         item.question.map((q) => ({
@@ -152,7 +150,6 @@ const EvaluateSection = ({
         period_id: currentlyEvaluationPeriod.period_id,
         assessor_id: ProfileDetail.id!, // Ensuring non-null
         evaluator_id: evaluatorUserTarget.id,
-        eval_depart_id: params.departmentId,
         questions: allQuestions, // ตอนแรกเป็นarrays เลยส่งไปแบบ object ที่มีความสัมพันธ์แบบ key value
       };
       console.log("data", data);
@@ -168,7 +165,7 @@ const EvaluateSection = ({
         description: (
           <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-x-auto">
             <code className="text-white whitespace-pre-wrap break-words">
-              {JSON.stringify(response?.data, null, 2)}
+              {/* {JSON.stringify(response?.data, null, 2)} */}
             </code>
           </pre>
         ),
@@ -221,7 +218,8 @@ const EvaluateSection = ({
     }
   };
   useEffect(() => {
-    const ingroup = params.departmentId === ProfileDetail?.department?.id;
+    const ingroup =
+      evaluatorUserTarget.department?.id === ProfileDetail?.department?.id;
     // console.log("ingroup", ProfileDetail);
     // Find the appropriate permission for the evaluator
     const matchedPermission = ProfileDetail?.role?.permissionsAsAssessor.find(
@@ -239,7 +237,7 @@ const EvaluateSection = ({
     } else {
       setFormEvaluation([]);
     }
-  }, [params.departmentId, evaluatorUserTarget.role.id]);
+  }, [evaluatorUserTarget.department?.id, evaluatorUserTarget.role.id]);
 
   useEffect(() => {
     console.log("evaluatorUserTarget", evaluatorUserTarget);
@@ -293,7 +291,6 @@ const EvaluateSection = ({
                           defaultValue="3"
                           className="flex gap-3 justify-around flex-wrap "
                           onValueChange={(value) => {
-                            handleValueChange(index, value);
                             handlePayloadChange(item.form.name, item.form.id, {
                               id: ques.id,
                               content: ques.content,

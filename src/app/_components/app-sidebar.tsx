@@ -41,19 +41,19 @@ const data = {
       isActive: true,
       items: [
         {
-          title: "Department & Role",
+          title: "หน่วยงาน & ตำแหน่ง",
           url: "/management/department_role",
         },
         {
-          title: "Form",
+          title: "แบบฟอร์ม",
           url: "/management/manage_form",
         },
         {
-          title: "User",
+          title: "ผู้ใช้งาน",
           url: "/management/manage_user",
         },
         {
-          title: "Prefix",
+          title: "คำนำหน้า",
           url: "/management/prefix",
         },
       ],
@@ -64,8 +64,12 @@ const data = {
       icon: Bot,
       items: [
         {
-          title: "All result",
+          title: "ผลการประเมินทั้งหมด",
           url: "/evaluation/all_result",
+        },
+        {
+          title: "คลังเก็บข้อมูล",
+          url: "/evaluation/backup_result",
         },
         {
           title: "Export",
@@ -134,17 +138,17 @@ const data = {
   ],
   projects: [
     {
-      name: "Overview",
+      name: "หน้าหลัก",
       url: "/overview",
       icon: Frame,
     },
     {
-      name: "Evaluated",
-      url: "/evaluated",
+      name: "ผลการประเมิน",
+      url: "/personal_evaluation",
       icon: PieChart,
     },
     {
-      name: "History",
+      name: "ประวัติผลการประเมิน",
       url: "/history",
       icon: FolderClock,
     },
@@ -153,7 +157,6 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [isAdmin, setIsAdmin] = React.useState(false); // สถานะของ admin
-  const pathUrl = usePathname();
   const Protected = async () => {
     try {
       const response = await GlobalApi.fetchProtected();

@@ -16,17 +16,23 @@ import {
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import Link from "next/link";
-import { Check, CircleDashed, LinkIcon, Loader, Mail, RollerCoaster } from "lucide-react";
+import {
+  Check,
+  CircleDashed,
+  LinkIcon,
+  Loader,
+  Mail,
+  RollerCoaster,
+} from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import SetStatusSection from "./SetStatusSection";
 import { useRef, useState } from "react";
 import useStore from "../store/store";
 import GlobalApi from "../_util/GlobalApi";
 import { toast } from "@/components/ui/use-toast";
-import axios from "axios";
-import { apiUrl } from "../data/data-option";
 import socket from "@/lib/socket";
-import { Role, RoleRequest } from "@/types/interface";
+import { Role } from "@/types/interface";
+import SetPrefixSelection from "./SetPrefixSelection";
 
 const formSchema = z.object({
   image: z
@@ -50,11 +56,14 @@ const formSchema = z.object({
   role: z.string().min(1, {
     message: "Role is required",
   }),
+  prefix: z.string().min(1, {
+    message: "prefix is required",
+  }),
 });
 
 export default function Myprofile() {
   // for image changing
-  const { ProfileDetail, updateProfileDetail,setShowProfile } = useStore();
+  const { ProfileDetail, updateProfileDetail, setShowProfile } = useStore();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -82,7 +91,9 @@ export default function Myprofile() {
       lastName: ProfileDetail?.name?.split(" ")[1],
       image: undefined,
       email: ProfileDetail?.email ? ProfileDetail?.email : "",
-      Department: ProfileDetail?.department? ProfileDetail.department.department_name : 'no department',
+      Department: ProfileDetail?.department
+        ? ProfileDetail.department.department_name
+        : "no department",
       role: ProfileDetail?.role?.id,
     },
   });
@@ -97,10 +108,11 @@ export default function Myprofile() {
       formData.append("image", values.image);
       try {
         const response = await GlobalApi.updateUserImage(formData);
-        console.log(response);
-        const { id, name, image, email, role } = response.data;
+        // console.log("response",response.data);
+        const { id, name, image, prefix, email, role } = response.data;
         updateProfileDetail({
           id,
+          prefix,
           name,
           email,
           image: image ? image.url : "/profiletest.jpg",
@@ -115,12 +127,16 @@ export default function Myprofile() {
         });
       }
     }
-    if(ProfileDetail.role && ProfileDetail.role.id === values.role){
-      console.log('request role เดิม ',values.role,":  ",ProfileDetail.role.id);
-    }
-    else if (ProfileDetail.roleRequests?.length == 0) {
+    if (ProfileDetail.role && ProfileDetail.role.id === values.role) {
+      console.log(
+        "request role เดิม ",
+        values.role,
+        ":  ",
+        ProfileDetail.role.id
+      );
+    } else if (ProfileDetail.roleRequests?.length == 0) {
       requestRole(values.role);
-    }else{
+    } else {
       console.log("don't request role ,cause have pending request!!");
     }
     setIsLoading(true);
@@ -131,14 +147,23 @@ export default function Myprofile() {
   const handleRoleChange: any = (newRole: any) => {
     setValue("role", newRole);
   };
+  const handlePrefixChange: any = (newPrefix: any) => {
+    console.log("handlePrefixChange", newPrefix);
+
+    setValue("prefix", newPrefix);
+  };
   //use Socket io for sendRoleRequest to admin
   const requestRole = async (roleId: any) => {
     try {
-      const response = await GlobalApi.sendRoleRequest(ProfileDetail?.id,roleId);
+      const response = await GlobalApi.sendRoleRequest(
+        ProfileDetail?.id,
+        roleId
+      );
       // หาว่ามีการร้องขอมามั้ย ถ้ามีก็ให้ updateProfileDetailไว้ เพื่อคงสถานะ แล้วนำไปใช้ในการ disable button
-      console.log("response:",response);
-      
-      const { id, role_name, description,role_level } = response?.data.data.role;
+      console.log("response:", response);
+
+      const { id, role_name, description, role_level } =
+        response?.data.data.role;
       const roleRequests: { role: Role; status: string }[] = [
         {
           role: {
@@ -146,7 +171,7 @@ export default function Myprofile() {
             description,
             role_name,
             role_level,
-            permissionsAsAssessor: []
+            permissionsAsAssessor: [],
           },
           status: "PENDING",
         },
@@ -224,7 +249,22 @@ export default function Myprofile() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
             <div className="grid grid-cols-11 items-center gap-3">
-              <h2 className="col-span-3">Name</h2>
+              <div className="col-span-3">
+                <FormField
+                  control={form.control}
+                  name="prefix"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <SetPrefixSelection
+                          onPrefixChange={handlePrefixChange}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
               {/* firstName */}
               <div className="col-span-4">
                 <FormField
@@ -275,7 +315,7 @@ export default function Myprofile() {
               render={({ field }) => (
                 <FormItem>
                   <div className="grid grid-cols-11 items-center gap-3">
-                    <h2 className="col-span-3">Email address</h2>
+                    <h2 className="col-span-3 text-sm">Email address</h2>
                     <FormControl className="col-span-8">
                       <div className="relative">
                         <Mail
@@ -304,7 +344,7 @@ export default function Myprofile() {
               render={({ field }) => (
                 <FormItem>
                   <div className="grid grid-cols-11 items-center gap-3">
-                    <h2 className="col-span-3">Department</h2>
+                    <h2 className="col-span-3 text-sm">Department</h2>
                     <FormControl className="col-span-8">
                       <div className="relative">
                         <Input
@@ -329,7 +369,7 @@ export default function Myprofile() {
               render={() => (
                 <FormItem>
                   <div className="grid grid-cols-11 items-center gap-3">
-                    <h2 className="col-span-3">Role</h2>
+                    <h2 className="col-span-3 text-sm">Role</h2>
                     <FormControl className="col-span-8">
                       <div className="relative">
                         <div className="flex items-center gap-3">
@@ -387,7 +427,7 @@ export default function Myprofile() {
               render={({ field }) => (
                 <FormItem>
                   <div className="grid grid-cols-11 items-center gap-3">
-                    <h2 className="col-span-3">Picture</h2>
+                    <h2 className="col-span-3 text-sm">Picture</h2>
                     <FormControl>
                       <Input
                         id="picture"

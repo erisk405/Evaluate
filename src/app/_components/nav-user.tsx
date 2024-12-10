@@ -33,12 +33,8 @@ import Link from "next/link";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
-  const {
-    showProfile,
-    ProfileDetail,
-    updateProfileDetail,
-    setShowProfile,
-  } = useStore();
+  const { showProfile, ProfileDetail, updateProfileDetail, setShowProfile } =
+    useStore();
 
   const [notifications, setNotifications] = useState<any[]>([]);
 
@@ -55,11 +51,13 @@ export function NavUser() {
   const fetchUser = async () => {
     try {
       const response = await GlobalApi.fetchUserProfile();
-      const { id, name, image, email, role, roleRequests, department } =
+      const { id, name, image, email, prefix, role, roleRequests, department } =
         response.data;
+      // console.log("responseNev-User", response.data);
 
       updateProfileDetail({
         id,
+        prefix,
         name,
         email,
         image: image ? image.url : "/profiletest.jpg",
