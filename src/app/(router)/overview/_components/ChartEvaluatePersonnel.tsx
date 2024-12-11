@@ -26,7 +26,7 @@ const ChartEvaluatePersonnel = () => {
     resultCountUserAsEvaluated?.map((item) => ({
       depart: item.department_name,
       finished: item.evaluated,
-      unfinished: item.evaluator,
+      unfinished: item.evaluator - item.evaluated,
     })) || [];
   const chartConfig = {
     finished: {
@@ -39,10 +39,10 @@ const ChartEvaluatePersonnel = () => {
     },
   } satisfies ChartConfig;
   const abbreviateDepartment = (departName: string): string => {
-    if (departName.length <= 10) {
+    if (departName.length <= 8) {
       return departName;
     } else {
-      return `${departName.slice(0, 10)}...`;
+      return `${departName.slice(0, 5)}...`;
     }
   };
 
@@ -57,8 +57,8 @@ const ChartEvaluatePersonnel = () => {
         assessor_id: ProfileDetail.id,
         period_id: currentlyEvaluationPeriod.period_id,
       };
-      console.log("payload",payload);
-      
+      console.log("payload", payload);
+
       const response = await GlobalApi.getCountUserAsEvaluated(payload);
       console.log("getCountUserAsEvaluated", response?.data);
       const sortedData = response?.data.sort(
@@ -68,7 +68,7 @@ const ChartEvaluatePersonnel = () => {
           // หรือ return a.id - b.id; // ถ้าเรียงตาม ID
         }
       );
-      
+
       setResultCountUserAsEvaluated(sortedData);
     } catch (error) {
       console.error({ message: error });
@@ -118,7 +118,7 @@ const ChartEvaluatePersonnel = () => {
                   dataKey="unfinished"
                   stackId="a"
                   fill="var(--color-unfinished)"
-                  radius={[20, 20, 0, 0]}
+                  radius={[0, 0, 0, 0]}
                 />
                 <ChartTooltip
                   content={

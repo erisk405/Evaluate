@@ -82,7 +82,7 @@ const page = () => {
       const response = await GlobalApi.getDepartmentById(params.departmentId);
       const data = response?.data.department_data;
       setDepartment(data);
-      // console.log("department", data);
+      console.log("department", data);
     } catch (error) {
       console.log({ message: error });
     }

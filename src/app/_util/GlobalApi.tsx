@@ -63,16 +63,18 @@ const fetchUserProfile = async (): Promise<AxiosResponse<UserProfile>> => {
   });
 };
 
-const updateProfileName = async (payload:{name:string,prefixId:string}) =>{
+const updateProfileName = async (payload: {
+  name: string;
+  prefixId: string;
+}) => {
   try {
-    return await axios.put(`${apiUrl}/myProfile`,payload,{
+    return await axios.put(`${apiUrl}/myProfile`, payload, {
       withCredentials: true, // ส่ง cookies ไปด้วย
-    })
+    });
   } catch (error) {
     console.error("Error updateProfileName:", error);
-    
   }
-}
+};
 
 const Logout = async () => {
   try {
@@ -88,6 +90,23 @@ const Logout = async () => {
   }
 };
 
+const forgotPassowrd = async (email: string) => {
+  try {
+    return await axios.get(`${apiUrl}/forgot-password/${email}`);
+  } catch (error) {
+    console.error("Error forgotPassowrd:", { message: error });
+  }
+};
+const resetPassword = async (payload: {
+  newPassword: string;
+  token: string | string[];
+}) => {
+  try {
+    return await axios.put(`${apiUrl}/reset-password`, payload);
+  } catch (error) {
+    console.error("Error resetPassword:", { message: error });
+  }
+};
 // -----------------------------------------------------------
 //                       for user
 // -----------------------------------------------------------
@@ -629,5 +648,7 @@ export default {
   getCountUserAsEvaluated,
   getResultEvaluatePerDepart,
   getSupervises,
-  updateProfileName
+  updateProfileName,
+  forgotPassowrd,
+  resetPassword,
 };

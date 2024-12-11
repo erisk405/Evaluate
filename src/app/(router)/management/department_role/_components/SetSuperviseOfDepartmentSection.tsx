@@ -35,8 +35,7 @@ export default function SetSuperviseOfDepartmentSection({
       const response = await GlobalApi.getAllUsers();
       const filterUser = response?.data?.filter(
         (item: User) =>
-          item.role.role_level === "LEVEL_3" ||
-          item.role.role_level === "LEVEL_4"
+          item.role.role_level === "LEVEL_3"
       );
       setUser(filterUser);
       console.log("defaultValue",defaultValue);
