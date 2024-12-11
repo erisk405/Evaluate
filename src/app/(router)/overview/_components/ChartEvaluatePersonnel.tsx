@@ -1,8 +1,14 @@
 "use client";
 import useStore from "@/app/store/store";
-import React, { useEffect, useState } from "react";
-import { Bar, BarChart, XAxis } from "recharts";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import React, { useEffect, useMemo, useState } from "react";
+import { Bar, BarChart, CartesianGrid, LabelList, XAxis } from "recharts";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   ChartConfig,
   ChartContainer,
@@ -13,7 +19,8 @@ import Link from "next/link";
 import RadarChartGridFilled from "./RadarChartGridFilled";
 import GlobalApi from "@/app/_util/GlobalApi";
 import { getCountUserAsEvaluatedType } from "@/types/interface";
-
+import { Combine, ContainerIcon, Package } from "lucide-react";
+import Image from "next/image";
 export const description = "A radial chart with a custom shape";
 const ChartEvaluatePersonnel = () => {
   const {
@@ -26,15 +33,16 @@ const ChartEvaluatePersonnel = () => {
     resultCountUserAsEvaluated?.map((item) => ({
       depart: item.department_name,
       finished: item.evaluated,
-      unfinished: item.evaluator - item.evaluated,
+      total: item.evaluator,
     })) || [];
+
   const chartConfig = {
     finished: {
       label: "เสร็จแล้ว",
       color: "hsl(var(--chart-1))",
     },
-    unfinished: {
-      label: "ยังไม่เสร็จ",
+    total: {
+      label: "ทั้งหมด",
       color: "hsl(var(--chart-2))",
     },
   } satisfies ChartConfig;
@@ -42,7 +50,7 @@ const ChartEvaluatePersonnel = () => {
     if (departName.length <= 8) {
       return departName;
     } else {
-      return `${departName.slice(0, 5)}...`;
+      return `${departName.slice(0, 7)}...`;
     }
   };
 
@@ -74,33 +82,69 @@ const ChartEvaluatePersonnel = () => {
       console.error({ message: error });
     }
   };
+
+  const calculetSummention = (data: number[]) =>
+    data.reduce((sum, val) => sum + val, 0) || 0;
+
+  const totalUserInDepart = useMemo(() => {
+    const total =
+      resultCountUserAsEvaluated?.map((item) => Number(item.evaluator)) || [];
+    return calculetSummention(total);
+  }, [resultCountUserAsEvaluated]);
+
+  const totalFinish = useMemo(() => {
+    const total =
+      resultCountUserAsEvaluated?.map((item) => Number(item.evaluated)) || [];
+    return calculetSummention(total);
+  }, [resultCountUserAsEvaluated]);
+
+  const totalUnfinish = useMemo(() => {
+    const total =
+      resultCountUserAsEvaluated?.map(
+        (item) => Number(item.evaluator) - Number(item.evaluated)
+      ) || [];
+    return calculetSummention(total);
+  }, [resultCountUserAsEvaluated]);
+
   useEffect(() => {
     getCountUserAsEvaluated();
   }, [currentlyEvaluationPeriod, ProfileDetail]);
   return (
     <div className="w-full">
       <div className="grid grid-cols-1 lg:grid-cols-2 p-4 gap-3">
-        <Card className="col-span-1">
+        <Card>
           <CardHeader>
-            <CardTitle>รูปแบบของ Bar Chart </CardTitle>
-            <div className="grid grid-cols-3">
-              <div className="flex flex-col justify-center">
-                <h2 className="text-sm">ทั้งหมด</h2>
-                <h2 className="font-bold">4268</h2>
+            <CardTitle className="mb-3">
+              บุคคลที่คุณประเมินไปแล้วในแต่ละหน่วยงาน
+            </CardTitle>
+            <div className="inline-flex justify-around">
+              <div className="flex items-center gap-2 p-2 shadow rounded-lg justify-center">
+                <Combine strokeWidth={1} className="text-blue-500" />
+                <h2 className="text-sm ">ทั้งหมด</h2>
+                <h2 className="">{totalUserInDepart}</h2>
               </div>
-              <div className="flex flex-col justify-center">
-                <h2 className="text-sm">เสร็จสิ้นแล้ว</h2>
-                <h2 className="font-bold">215</h2>
+              <div className="flex items-center gap-2 p-2 shadow rounded-lg  justify-center">
+                <Package strokeWidth={1} className="text-green-500" />
+                <h2 className="text-sm ">เสร็จสิ้นแล้ว</h2>
+                <h2 className="">{totalFinish}</h2>
               </div>
-              <div className="flex flex-col justify-center">
-                <h2 className="text-sm">ยังไม่เสร็จ</h2>
-                <h2 className="font-bold">4020</h2>
+              <div className="flex items-center gap-2 p-2 shadow rounded-lg  justify-center">
+                <ContainerIcon strokeWidth={1} className="text-yellow-500" />
+                <h2 className="text-sm ">ยังไม่เสร็จ</h2>
+                <h2 className="">{totalUnfinish}</h2>
               </div>
             </div>
           </CardHeader>
           <CardContent>
             <ChartContainer config={chartConfig}>
-              <BarChart accessibilityLayer data={chartData}>
+              <BarChart
+                accessibilityLayer
+                data={chartData}
+                margin={{
+                  top: 20,
+                }}
+              >
+                <CartesianGrid vertical={false} />
                 <XAxis
                   dataKey="depart"
                   tickLine={false}
@@ -108,68 +152,56 @@ const ChartEvaluatePersonnel = () => {
                   axisLine={false}
                   tickFormatter={abbreviateDepartment}
                 />
-                <Bar
-                  dataKey="finished"
-                  stackId="a"
-                  fill="var(--color-finished)"
-                  radius={[0, 0, 0, 0]}
-                />
-                <Bar
-                  dataKey="unfinished"
-                  stackId="a"
-                  fill="var(--color-unfinished)"
-                  radius={[0, 0, 0, 0]}
-                />
                 <ChartTooltip
-                  content={
-                    <ChartTooltipContent
-                      className="w-[180px]"
-                      formatter={(value, name, item, index) => (
-                        <>
-                          <div
-                            className="h-2.5 w-2.5 shrink-0 rounded-[2px] bg-[--color-bg]"
-                            style={
-                              {
-                                "--color-bg": `var(--color-${name})`,
-                              } as React.CSSProperties
-                            }
-                          />
-                          {chartConfig[name as keyof typeof chartConfig]
-                            ?.label || name}
-                          <div className="ml-auto flex items-baseline gap-0.5 font-mono font-medium tabular-nums text-foreground">
-                            {value}
-                            <span className="font-normal text-muted-foreground">
-                              คน
-                            </span>
-                          </div>
-                        </>
-                      )}
-                    />
-                  }
                   cursor={false}
-                  defaultIndex={1}
+                  content={<ChartTooltipContent hideLabel />}
                 />
+                <Bar dataKey="finished" fill="var(--color-finished)" radius={8}>
+                  <LabelList
+                    position="top"
+                    offset={12}
+                    className="fill-foreground"
+                    fontSize={12}
+                  />
+                </Bar>
+                <Bar dataKey="total" fill="var(--color-total)" radius={8}>
+                  <LabelList
+                    position="top"
+                    offset={12}
+                    className="fill-foreground"
+                    fontSize={12}
+                  />
+                </Bar>
               </BarChart>
             </ChartContainer>
-
             <div className="">
               <h2 className="text-xl font-bold my-3">คุณประเมินไปแล้ว</h2>
               <div className="grid sm:grid-cols-2 gap-4 text-sm ">
                 {resultCountUserAsEvaluated?.length ? (
                   resultCountUserAsEvaluated?.map((item, index) => (
                     <div key={index + "Letgo"}>
-                      <div className="grid grid-cols-3 items-center gap-2 border p-3 rounded-full">
+                      <div className="relative flex flex-col shadow items-center p-3 rounded-lg">
                         <Link
                           href={`/overview/department/${item.department_id}`}
-                          className="cursor-pointer w-full border-r col-span-2 truncate hover:text-blue-500 transition-all active:scale-95"
+                          className="cursor-pointer w-full col-span-2 truncate hover:text-blue-500
+                           transition-all active:scale-95"
                         >
                           {item.department_name}
                         </Link>
-                        <div className="col-span-1 flex justify-center gap-2 truncate font-bold text-blue-500">
-                          <h2>
-                            {item.evaluated}/{item.evaluator}
-                          </h2>
-                          <span>คน</span>
+                        <div className=" flex justify-between px-2 items-center w-full">
+                          <div className="inline-flex rounded-lg  mt-1 items-center gap-1 truncate font-bold text-blue-500">
+                            <h2 className="text-sm ">
+                              {item.evaluated} / {item.evaluator}
+                            </h2>
+                            <span>คน</span>
+                          </div>
+                          <Image
+                            width={30}
+                            height={30}
+                            src={"/OverviewBannerIcon.png"}
+                            alt="OverviewBannerIcon"
+                            className="animate-wiggle"
+                          />
                         </div>
                       </div>
                     </div>
