@@ -98,7 +98,7 @@ const forgotPassowrd = async (email: string) => {
   }
 };
 const resetPassword = async (payload: {
-  newPassword: string;
+  newPassword?: string;
   token: string | string[];
 }) => {
   try {

@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { ChevronLeft, Key, KeyRound, RectangleEllipsis } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Form,
   FormControl,
@@ -21,6 +21,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import GlobalApi from "@/app/_util/GlobalApi";
+import axios from "axios";
 
 const formSchema = z
   .object({
@@ -48,6 +49,7 @@ const formSchema = z
 const page = () => {
   const [status, setStatus] = useState(false);
   const [loading, setLoading] = useState(false);
+  const Router = useRouter();
   const param = useParams();
   const {
     setError,
@@ -87,6 +89,32 @@ const page = () => {
       });
     }
   };
+  useEffect(() => {
+    const initialFetch = async () => {
+      try {
+        const token = param.token;
+        const payload = {
+          token,
+        };
+        const response = await GlobalApi.resetPassword(payload);
+        // Handle successful fetch
+        if (!response) {
+          Router.push("/sign-in");
+        }
+      } catch (error) {
+        // Handle error
+        toast({
+          variant: "destructive",
+          title: "Failed to fetch protected data",
+          description:
+            error instanceof Error
+              ? error.message
+              : "An unknown error occurred",
+        });
+      }
+    };
+    initialFetch();
+  }, []);
   return (
     <div className="flex justify-center h-screen ">
       <div className="w-[980px] h-screen bg-white  p-10">
@@ -104,7 +132,7 @@ const page = () => {
             </Link>
           </div>
 
-          {status ? (
+          {!status ? (
             <div className="flex flex-col gap-6 items-center">
               <div className="flex flex-col gap-6 items-center">
                 <div className="border-2 px-4 py-2 rounded-xl">
@@ -193,7 +221,9 @@ const page = () => {
                   href={"/sign-in"}
                   className="flex items-center gap-3 hover:text-blue-500"
                 >
-                  <Button variant={"outline"} className="text-lg">Back to log in</Button>
+                  <Button variant={"outline"} className="text-lg">
+                    Back to log in
+                  </Button>
                 </Link>
               </div>
             </div>

@@ -17,6 +17,7 @@ import {
 import {
   AlarmClockPlus,
   ArrowRight,
+  Atom,
   Building2,
   CalendarClock,
   ChevronDown,
@@ -610,8 +611,8 @@ const RightSection = ({ permission, period, setPeriod }: RightSectionProps) => {
             }}
           >
             <h2 className="font-bold text-xl flex gap-3">
-              <Building2 className="text-stone-800" />
-              <TextEffect preset="slide">Department</TextEffect>
+              <Atom className=" text-sky-400" />
+              <TextEffect preset="slide">รายงานแต่ละหน่วยงาน</TextEffect>
             </h2>
             <div className="mt-5 border rounded-xl bg-gray-50 shadow-inner">
               <DepartmentSection />

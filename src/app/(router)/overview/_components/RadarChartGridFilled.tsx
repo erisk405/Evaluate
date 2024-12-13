@@ -133,7 +133,7 @@ const RadarChartGridFilled = () => {
                     <span>{item.formName}</span>
                   </TableCell>
                   <TableCell className="text-end truncate">
-                    {item.totalSDPerForm}
+                    {item.totalSDPerForm.toFixed(2)}
                   </TableCell>
                   <TableCell className="text-end truncate">
                     {item.totalAVGPerForm.toFixed(2)}
