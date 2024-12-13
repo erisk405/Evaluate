@@ -51,9 +51,6 @@ const ChartEvaluatedYou = () => {
           color: "hsl(var(--chart-1))",
         },
       };
-  useEffect(() => {
-    console.log("resultEvaluate", resultEvaluate);
-  }, [resultEvaluate]);
 
   return (
     <div className="">

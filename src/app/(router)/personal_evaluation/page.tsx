@@ -57,6 +57,7 @@ import { Button } from "@/components/ui/button";
 import Personal_result from "./_components/Personal-result";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import GlobalApi from "@/app/_util/GlobalApi";
 
 export const columns: ColumnDef<PeriodType>[] = [
   {
@@ -127,42 +128,56 @@ export const columns: ColumnDef<PeriodType>[] = [
     cell: ({ row }) => {
       return (
         <Drawer>
-          <DrawerTrigger asChild className="">
-            <div className="text-center">
-              <Button
-                variant={"outline"}
-                className="active:scale-95 transition-all"
-              >
-                ตรวจสอบรายละเอียด
-              </Button>
-            </div>
+          <DrawerTrigger asChild>
+            {new Date(row.original.start) > new Date() ? (
+              <div className="text-center">
+                <Button
+                  variant={"outline"}
+                  className="active:scale-95 transition-all"
+                  disabled // Instead of forcing it closed
+                >
+                  ไม่สามารถตรวจสอบได้
+                </Button>
+              </div>
+            ) : (
+              <div className="text-center">
+                <Button
+                  variant={"outline"}
+                  className="active:scale-95 transition-all"
+                >
+                  ตรวจสอบรายละเอียด
+                </Button>
+              </div>
+            )}
           </DrawerTrigger>
-          <DrawerContent className="h-[calc(100dvh-10%)] ">
-            <div className="mx-auto w-full overflow-auto scrollbar-gemini">
-              <div className="mx-auto w-full max-w-lg ">
-                <DrawerHeader className="flex flex-col justify-center items-center">
-                  <DrawerTitle className="text-xl">
-                    สรุปผลการประเมินสมรรถนะ 360 องศา นายกฤตภาส สัมฤทธิ์
-                  </DrawerTitle>
-                  <DrawerDescription>
-                    รอบที่ 1 ประจำปีงบประมาณ พ.ศ. 2567 (1 กันยายน 2566 - 28
-                    กุมภาพันธ์ 2567)
-                  </DrawerDescription>
-                </DrawerHeader>
+          {new Date(row.original.start) < new Date() && (
+            <DrawerContent className="h-[calc(100dvh-10%)] ">
+              <div className="mx-auto w-full overflow-auto scrollbar-gemini">
+                <div className="mx-auto w-full max-w-lg ">
+                  <DrawerHeader className="flex flex-col justify-center items-center">
+                    <DrawerTitle className="text-xl">
+                      สรุปผลการประเมินสมรรถนะ 360 องศา นายกฤตภาส สัมฤทธิ์
+                    </DrawerTitle>
+                    <DrawerDescription>
+                      รอบที่ 1 ประจำปีงบประมาณ พ.ศ. 2567 (1 กันยายน 2566 - 28
+                      กุมภาพันธ์ 2567)
+                    </DrawerDescription>
+                  </DrawerHeader>
+                </div>
+                <div className="mx-auto w-full max-w-7xl">
+                  <Personal_result period={row.original} />
+                </div>
+                <div className="mx-auto w-full max-w-lg">
+                  <DrawerFooter>
+                    <Button>Export</Button>
+                    <DrawerClose asChild>
+                      <Button variant="outline">Cancel</Button>
+                    </DrawerClose>
+                  </DrawerFooter>
+                </div>
               </div>
-              <div className="mx-auto w-full max-w-7xl">
-                <Personal_result />
-              </div>
-              <div className="mx-auto w-full max-w-lg">
-                <DrawerFooter>
-                  <Button>Export</Button>
-                  <DrawerClose asChild>
-                    <Button variant="outline">Cancel</Button>
-                  </DrawerClose>
-                </DrawerFooter>
-              </div>
-            </div>
-          </DrawerContent>
+            </DrawerContent>
+          )}
         </Drawer>
       );
     },
@@ -207,17 +222,6 @@ const page = () => {
     onRowSelectionChange: setRowSelection,
     onGlobalFilterChange: setGlobalFilter,
   });
-  useEffect(() => {
-    const fetchInitailData = async () => {
-      try {
-        const PeriodData = await fetchCurrentPeriod();
-        setData(PeriodData);
-      } catch (error) {
-        console.error({ message: error });
-      }
-    };
-    fetchInitailData();
-  }, []);
   // สร้างฟังก์ชันสำหรับสร้าง pagination items
 
   const totalPages = Math.ceil(
@@ -260,6 +264,18 @@ const page = () => {
     }
     return pageNumbers;
   };
+
+  useEffect(() => {
+    const fetchInitailData = async () => {
+      try {
+        const PeriodData = await fetchCurrentPeriod();
+        setData(PeriodData);
+      } catch (error) {
+        console.error({ message: error });
+      }
+    };
+    fetchInitailData();
+  }, []);
   return (
     <div className="m-5 w-full gap-3">
       <h2 className="text-3xl font-bold text-stone-700">

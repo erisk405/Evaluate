@@ -26,7 +26,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import useStore from "@/app/store/store";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 const RadarChartGridFilled = () => {
   const { resultEvaluate } = useStore();
 
@@ -61,25 +61,11 @@ const RadarChartGridFilled = () => {
       return `${formname.slice(0, 10)}...`;
     }
   };
-  // ฟังก์ชันสำหรับคำนวณค่าเฉลี่ย
-  const calculateAverage = (data: number[]) =>
-    data.reduce((sum, val) => sum + val, 0) / data.length || 0;
-  // คำนวณค่าเฉลี่ย`item.average` และ `item.SD`
-  // บันทึกค่า" ที่คำนวณไว้แล้ว (memoize) และจะคำนวณค่าใหม่เฉพาะเมื่อค่าที่ใช้ใน dependency array เปลี่ยนแปลงเท่านั้น
-  const totalAverage = useMemo(() => {
-    const averages =
-      resultEvaluate?.formResults?.map((item) =>
-        Number(item.totalAVGPerForm)
-      ) || [];
-    return calculateAverage(averages);
-  }, [resultEvaluate]);
-  const totalAverageSD = useMemo(() => {
-    const averages =
-      resultEvaluate?.formResults?.map((item) => Number(item.totalSDPerForm)) ||
-      [];
-    return calculateAverage(averages);
-  }, [resultEvaluate]);
-
+  
+  useEffect(()=>{
+    console.log("resultEvaluate",resultEvaluate);
+    
+  },[])
   return (
     <Card>
       <CardHeader className="items-center pb-4">
@@ -145,10 +131,10 @@ const RadarChartGridFilled = () => {
             <TableRow>
               <TableCell>Total</TableCell>
               <TableCell className="text-right font-bold text-blue-500 text-lg">
-                {totalAverageSD.toFixed(2)}
+                {resultEvaluate?.headData.totalSD.toFixed(2)}
               </TableCell>
               <TableCell className="text-right font-bold text-green-500 text-lg">
-                {totalAverage.toFixed(2)}
+                {resultEvaluate?.headData.totalAVG.toFixed(2)}
               </TableCell>
             </TableRow>
           </TableFooter>

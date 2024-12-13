@@ -45,7 +45,7 @@ const DepartmentSection = () => {
                     className="col-span-2 w-full h-[120px] shadow object-cover"
                     loading="lazy"
                   />
-                  <div className="group-hover:drop-shadow-md col-span-3">
+                  <div className="group-hover:drop-shadow group-hover:text-blue-500 col-span-3">
                     <h2 className="text-start p-3">{item?.department_name}</h2>
                   </div>
                 </div>

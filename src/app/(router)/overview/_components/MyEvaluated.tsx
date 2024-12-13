@@ -18,7 +18,6 @@ const MyEvaluated = () => {
         return;
       }
       const payload = {
-        evaluator_id: ProfileDetail.id,
         period_id: currentlyEvaluationPeriod.period_id,
       };
       const response = await GlobalApi.getResultEvaluate(payload);

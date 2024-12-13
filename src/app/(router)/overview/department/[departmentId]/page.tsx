@@ -64,13 +64,12 @@ const page = () => {
     try {
       if (currentlyEvaluationPeriod) {
         const payload = {
-          assessor_id: ProfileDetail.id!,
           period_id: currentlyEvaluationPeriod.period_id,
         };
         // console.log("payload",payload);
         const response = await GlobalApi.findUserEvaluated(payload);
         setUserHaveBeenEvaluated(response?.data);
-        // console.log("response",response?.data);
+        // console.log("findUserEvaluated",response?.data);
       }
     } catch (error) {
       console.error({ message: error });
@@ -82,7 +81,7 @@ const page = () => {
       const response = await GlobalApi.getDepartmentById(params.departmentId);
       const data = response?.data.department_data;
       setDepartment(data);
-      console.log("department", data);
+      // console.log("department", data);
     } catch (error) {
       console.log({ message: error });
     }

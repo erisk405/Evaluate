@@ -57,18 +57,17 @@ const ChartEvaluatePersonnel = () => {
   const getCountUserAsEvaluated = async () => {
     try {
       // Add additional checks before making the API call
-      if (!ProfileDetail?.id || !currentlyEvaluationPeriod?.period_id) {
+      if (!currentlyEvaluationPeriod?.period_id) {
         console.log("Missing required data for fetching result evaluation");
         return;
       }
       const payload = {
-        assessor_id: ProfileDetail.id,
         period_id: currentlyEvaluationPeriod.period_id,
       };
-      console.log("payload", payload);
+      // console.log("payload", payload);
 
       const response = await GlobalApi.getCountUserAsEvaluated(payload);
-      console.log("getCountUserAsEvaluated", response?.data);
+      // console.log("getCountUserAsEvaluated", response?.data);
       const sortedData = response?.data.sort(
         (a: getCountUserAsEvaluatedType, b: getCountUserAsEvaluatedType) => {
           // เรียงตามคอลัมน์ที่คุณต้องการ เช่น ชื่อ หรือ ID

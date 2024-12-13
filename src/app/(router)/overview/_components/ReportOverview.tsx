@@ -99,8 +99,7 @@ const ReportOverview = () => {
   ];
 
   useEffect(() => {
-    console.log("resultEvalEachDepartment", resultEvalEachDepartment);
-
+    // console.log("resultEvalEachDepartment", resultEvalEachDepartment);
     getResultEvaluatePerDepart();
     fetchSupervise();
   }, [currentlyEvaluationPeriod?.period_id]);

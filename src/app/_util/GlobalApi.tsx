@@ -544,46 +544,40 @@ const createEvaluate = (payload: createEvaluateType) => {
 };
 
 type findUserEvaluatedType = {
-  assessor_id: string;
   period_id: string;
 };
 const findUserEvaluated = (payload: findUserEvaluatedType) => {
   try {
-    return axios.get(
-      `${apiUrl}/findUserEval/${payload.assessor_id}/${payload.period_id}`,
-      { withCredentials: true }
-    );
+    return axios.get(`${apiUrl}/findUserEval/${payload.period_id}`, {
+      withCredentials: true,
+    });
   } catch (error) {
     console.error("API createPeriod", { message: error });
   }
 };
 type getResultEvaluateProp = {
-  evaluator_id: string;
   period_id: string;
 };
 const getResultEvaluate = (payload: getResultEvaluateProp) => {
-  if (!payload.evaluator_id || !payload.period_id) {
+  if (!payload.period_id) {
     throw new Error("Missing evaluator_id or period_id");
   }
   try {
-    return axios.get(
-      `${apiUrl}/resultEvaluate/${payload.evaluator_id}/${payload.period_id}`,
-      { withCredentials: true }
-    );
+    return axios.get(`${apiUrl}/resultEvaluate/${payload.period_id}`, {
+      withCredentials: true,
+    });
   } catch (error) {
     console.error("API resultEvaluate", { message: error });
   }
 };
 type getCountUserAsEvaluatedProp = {
-  assessor_id: string;
   period_id: string;
 };
 const getCountUserAsEvaluated = (payload: getCountUserAsEvaluatedProp) => {
   try {
-    return axios.get(
-      `${apiUrl}/countUserEvaluated/${payload.assessor_id}/${payload.period_id}`,
-      { withCredentials: true }
-    );
+    return axios.get(`${apiUrl}/countUserEvaluated/${payload.period_id}`, {
+      withCredentials: true,
+    });
   } catch (error) {
     console.error("API getCountUserAsEvaluated", { message: error });
   }
@@ -596,6 +590,16 @@ const getResultEvaluatePerDepart = (period_id: string) => {
     });
   } catch (error) {
     console.error("API getResultEvaluatePerDepart", { message: error });
+  }
+};
+
+const getResultEvaluateDetail = (period_id: string) => {
+  try {
+    return axios.get(`${apiUrl}/resultEvaluateDetail/${period_id}`, {
+      withCredentials: true,
+    });
+  } catch (error) {
+    console.error("API getResultEvaluateDetail", { message: error });
   }
 };
 
@@ -651,4 +655,5 @@ export default {
   updateProfileName,
   forgotPassowrd,
   resetPassword,
+  getResultEvaluateDetail
 };

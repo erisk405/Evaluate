@@ -1,5 +1,5 @@
-"use client"
-import React from "react";
+"use client";
+import React, { useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -11,6 +11,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ChevronUp } from "lucide-react";
+import useStore from "@/app/store/store";
+import GlobalApi from "@/app/_util/GlobalApi";
+import { PeriodType } from "@/types/interface";
 
 const data = [
   {
@@ -140,7 +143,27 @@ const data = [
     ],
   },
 ];
-const Personal_result = () => {
+
+type Personal_resultProp = {
+  period: PeriodType;
+};
+const Personal_result = ({ period }: Personal_resultProp) => {
+  const fetchResultEvaluateDetail = async () => {
+    try {
+      if (!period) {
+        throw new Error("period not found");
+      }
+      const response = await GlobalApi.getResultEvaluateDetail(
+        period.period_id
+      );
+      console.log("fetchResultEvaluateDetail", response);
+    } catch (error) {
+      console.error({ message: error });
+    }
+  };
+  useEffect(() => {
+    fetchResultEvaluateDetail();
+  }, []);
   return (
     <div className="border rounded-lg">
       <Table>
@@ -152,9 +175,13 @@ const Personal_result = () => {
             </TableHead>
             <TableHead className="text-stone-700">หัวข้อคำถาม</TableHead>
             <TableHead className="w-[500px] text-stone-700">ข้อคำถาม</TableHead>
-            <TableHead className="text-center text-stone-700">ค่าเฉลี่ย</TableHead>
+            <TableHead className="text-center text-stone-700">
+              ค่าเฉลี่ย
+            </TableHead>
             <TableHead className="text-center text-stone-700">ค่า sd</TableHead>
-            <TableHead className="text-center text-stone-700">เพิ่ม / ลด</TableHead>
+            <TableHead className="text-center text-stone-700">
+              เพิ่ม / ลด
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
