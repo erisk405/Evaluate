@@ -2,10 +2,10 @@
 import GlobalApi from "@/app/_util/GlobalApi";
 import useStore from "@/app/store/store";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ImageType, PeriodType } from "@/types/interface";
+import { ImageType } from "@/types/interface";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 
 const DepartmentSection = () => {
   const { departments, setDepartments } = useStore();
@@ -13,6 +13,7 @@ const DepartmentSection = () => {
     try {
       const response = await GlobalApi.getDepartment();
       setDepartments(response?.data); // ตั้งค่าเป็นอาเรย์ว่างถ้าไม่มีข้อมูล
+      // console.log("departments", departments);
     } catch (error) {
       console.error("Error fetching department data:", error);
     }
@@ -30,7 +31,7 @@ const DepartmentSection = () => {
                 href={`/overview/department/${item.id}`}
                 key={item?.id}
                 className="overflow-hidden cursor-pointer col-span-1 rounded-2xl shadow
-                hover:scale-95 active:scale-90 bg-white group transition-all border"
+                hover:scale-95 active:scale-90 bg-white group transition-all"
               >
                 <div className="grid grid-cols-5 relative">
                   <Image
@@ -45,8 +46,11 @@ const DepartmentSection = () => {
                     className="col-span-2 w-full h-[120px] shadow object-cover"
                     loading="lazy"
                   />
-                  <div className="group-hover:drop-shadow group-hover:text-blue-500 col-span-3">
+                  <div className="group-hover:text-blue-500 h-full grid grid-cols-1 col-span-3">
                     <h2 className="text-start p-3">{item?.department_name}</h2>
+                    <div className="text-end mt-auto relative right-3 bottom-2">
+                      <h2 className="text-sm">{item?._count?.user} คน</h2>
+                    </div>
                   </div>
                 </div>
               </Link>

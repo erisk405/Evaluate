@@ -188,9 +188,9 @@ const ChartEvaluatePersonnel = () => {
                           {item.department_name}
                         </Link>
                         <div className=" flex justify-between px-2 items-center w-full">
-                          <div className="inline-flex rounded-lg  mt-1 items-center gap-1 truncate font-bold text-blue-500">
+                          <div className="inline-flex rounded-lg  mt-1 items-center gap-1 truncate text-blue-500">
                             <h2 className="text-sm ">
-                              {item.evaluated} / {item.evaluator}
+                              {item.evaluated}/{item.evaluator}
                             </h2>
                             <span>คน</span>
                           </div>

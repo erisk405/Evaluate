@@ -179,6 +179,7 @@ const RightSection = ({ permission, period, setPeriod }: RightSectionProps) => {
       }
     }
   };
+
   useEffect(() => {
     const initializeFunction = async () => {
       await fetchCurrentPeriod();
@@ -187,6 +188,7 @@ const RightSection = ({ permission, period, setPeriod }: RightSectionProps) => {
       initializeFunction();
     }
   }, []);
+  
   return (
     <div className="flex gap-3 flex-col h-full">
       <div className="@container">
@@ -612,7 +614,7 @@ const RightSection = ({ permission, period, setPeriod }: RightSectionProps) => {
           >
             <h2 className="font-bold text-xl flex gap-3">
               <Atom className=" text-sky-400" />
-              <TextEffect preset="slide">รายงานแต่ละหน่วยงาน</TextEffect>
+              <TextEffect preset="slide">รายการแต่ละหน่วยงาน</TextEffect>
             </h2>
             <div className="mt-5 border rounded-xl bg-gray-50 shadow-inner">
               <DepartmentSection />

@@ -1,6 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
-import Autoplay from "embla-carousel-autoplay";
+import React from "react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -10,15 +9,12 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import Image from "next/image";
 import {
   ArrowRight,
   CalendarClock,
   Clock9,
   Dot,
-  ShieldCheck,
 } from "lucide-react";
-import GlobalApi from "@/app/_util/GlobalApi";
 import { PeriodType } from "@/types/interface";
 
 type CarouselSectionProp = {
@@ -101,17 +97,33 @@ const CarouselSection = ({
                         </div>
                         {/* การแสดงผลช่วงเวลา */}
                         <div className="pl-6 ">
-                          <div className="flex items-center gap-1">
-                            <CalendarClock size={18} />
-                            <h2>{formatThaiDateTime(item.start).date}</h2>
-                            <ArrowRight size={18} />
-                            <h2>{formatThaiDateTime(item.end).date}</h2>
+                          <div className="grid grid-cols-2 gap-1">
+                            <div className="flex gap-3 items-center">
+                              <CalendarClock size={18} />
+                              <h2 className="truncate ">
+                                {formatThaiDateTime(item.start).date}
+                              </h2>
+                            </div>
+                            <div className="flex gap-3 items-center">
+                              <ArrowRight size={18} />
+                              <h2 className="truncate ">
+                                {formatThaiDateTime(item.end).date}
+                              </h2>
+                            </div>
                           </div>
-                          <div className="flex items-center  gap-1">
-                            <Clock9 size={18} />
-                            <h2>{formatThaiDateTime(item.start).time} น.</h2>
-                            <ArrowRight size={18} />
-                            <h2>{formatThaiDateTime(item.end).time} น.</h2>
+                          <div className="grid grid-cols-2 gap-1">
+                            <div className="flex gap-3 items-center">
+                              <Clock9 size={18} />
+                              <h2 className="truncate ">
+                                {formatThaiDateTime(item.start).time} น.
+                              </h2>
+                            </div>
+                            <div className="flex gap-3 items-center">
+                              <ArrowRight size={18} />
+                              <h2 className="truncate ">
+                                {formatThaiDateTime(item.end).time} น.
+                              </h2>
+                            </div>
                           </div>
                         </div>
                       </div>

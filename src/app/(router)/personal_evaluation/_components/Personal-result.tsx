@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -10,244 +10,288 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ChevronUp } from "lucide-react";
-import useStore from "@/app/store/store";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
 import GlobalApi from "@/app/_util/GlobalApi";
-import { PeriodType } from "@/types/interface";
-
-const data = [
-  {
-    id: "CO01",
-    HeadTitle: "ทักษะการปฎิบัติงาน",
-    subData: [
-      {
-        id: "INV001",
-        avg: "4.36",
-        sd: "0.87",
-        paymentMethod: "ปริมาณผลงาน",
-      },
-      {
-        id: "INV002",
-        avg: "4.50",
-        sd: "0.87",
-        paymentMethod: "ความอุสาหพยายาม",
-      },
-      {
-        id: "INV003",
-        avg: "4.50",
-        sd: "0.68",
-        paymentMethod: "การบำรุงรักษาเครื่องมือและอุปกรณ์ที่ใช้",
-      },
-      {
-        id: "INV004",
-        avg: "4.44",
-        sd: "0.68",
-        paymentMethod: "การตัดสินใจและแก้ปัญหาเฉพาะหน้า",
-      },
-      {
-        id: "INV005",
-        avg: "4.50",
-        sd: "0.92",
-        paymentMethod: "ความคิดริเริ่มในการปฎิบัติงาน",
-      },
-      {
-        id: "INV006",
-        avg: "4.00",
-        sd: "0.92",
-        paymentMethod: "ความรับผิดชอบต่อหน้าที่ที่ได้รับมอบหมาย",
-      },
-      {
-        id: "INV007",
-        avg: "4.00",
-        sd: "0.67",
-        paymentMethod: "ความรวดเร็วในการปฎิบัติงาน",
-      },
-      {
-        id: "INV008",
-        avg: "4.40",
-        sd: "0.67",
-        paymentMethod: "ตรงต่อเวลาในการทำงาน",
-      },
-    ],
-  },
-  {
-    id: "CO02",
-    HeadTitle: "ความรู้เชิงวิชาการ",
-    subData: [
-      {
-        id: "INA001",
-        avg: "4.00",
-        sd: "0.87",
-        paymentMethod: "มีความคิดริเริ่ม/การนำวิธี่ที่มีประสิทธิภาพมาใช้",
-      },
-      {
-        id: "INA002",
-        avg: "4.00",
-        sd: "0.67",
-        paymentMethod: "ความใฝ่หาความรู้และคุณภาพงาน",
-      },
-      {
-        id: "INA003",
-        avg: "4.20",
-        sd: "0.74",
-        paymentMethod: "การจัดระบบบริหารควบคุมและติดตามผลงาน",
-      },
-      {
-        id: "INA004",
-        avg: "4.00",
-        sd: "0.74",
-        paymentMethod: "ทักษะและเทคนิคในการทำงาน",
-      },
-      {
-        id: "INA005",
-        avg: "4.11",
-        sd: "0.74",
-        paymentMethod: "การวางแผนและการเตรียมอุปกรณ์ก่อนการทำงาน",
-      },
-    ],
-  },
-  {
-    id: "CO03",
-    HeadTitle: "จิตพิสัยในการทำงาน",
-    subData: [
-      {
-        id: "IND001",
-        avg: "4.80",
-        sd: "0.81",
-        paymentMethod: "การอุทิศเวลาให้แก่ราชการอย่างสม่ำเสมอ",
-      },
-      {
-        id: "IND002",
-        avg: "4.65",
-        sd: "0.75",
-        paymentMethod: "ลักษณะการเป็นผู้นำและผู้ตามที่ดี",
-      },
-      {
-        id: "IND003",
-        avg: "4.54",
-        sd: "0.78",
-        paymentMethod: "การให้คำปรึกษาและประสานงานกับผู้เกี่ยวข้อง",
-      },
-      {
-        id: "IND004",
-        avg: "4.54",
-        sd: "0.67",
-        paymentMethod: "ความประพฤติและการควบคุมอารมณ์",
-      },
-      {
-        id: "IND005",
-        avg: "4.60",
-        sd: "0.63",
-        paymentMethod: "บุคลิกภาพและการแต่งกาย",
-      },
-    ],
-  },
-];
+import {
+  formResultsType,
+  getResultEvaluateType,
+  PeriodType,
+} from "@/types/interface";
+import { Button } from "@/components/ui/button";
 
 type Personal_resultProp = {
   period: PeriodType;
 };
+
+const SCORE_TYPE_LABELS: Record<string, string> = {
+  Executive: "ผู้บริหาร",
+  Manager: "ผู้จัดการ",
+  Employee: "พนักงาน",
+};
 const Personal_result = ({ period }: Personal_resultProp) => {
+  const [loading, setLoading] = useState(false);
+  const [resultEvaluateDetail, setResultEvaluateDetail] =
+    useState<getResultEvaluateType>();
+  const [scoreTypes, setScoreTypes] = useState<string[]>([]);
+  const [Characteristics, SetCharacteristics] = useState<string>();
+
   const fetchResultEvaluateDetail = async () => {
+    setLoading(true);
     try {
-      if (!period) {
-        throw new Error("period not found");
-      }
+      if (!period) throw new Error("period not found");
+
       const response = await GlobalApi.getResultEvaluateDetail(
         period.period_id
       );
-      console.log("fetchResultEvaluateDetail", response);
+      const data = response?.data;
+
+      if (data) {
+        setResultEvaluateDetail(data);
+        resultsByCharacteristics(data.headData.totalAvg);
+        setScoreTypes(extractScoreTypes(data.formResults));
+      }
+    } catch (error) {
+      console.error("Failed to fetch evaluation details", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  //หาว่ามันมีทั้งหมดที่ type ใน formResults นี้ โดยตรวจสอบจาก score.type
+  const extractScoreTypes = (formResults: formResultsType[]) => {
+    const types = new Set<string>();
+    formResults.forEach((form) =>
+      form.questions.forEach((question) =>
+        question.scores?.forEach((score) => types.add(score.type))
+      )
+    );
+
+    return Array.from(types);
+  };
+
+  const resultsByCharacteristics = (totalAvg: number) => {
+    try {
+      if (totalAvg >= 4.5) {
+        SetCharacteristics("10");
+      } else if (totalAvg >= 3.5) {
+        SetCharacteristics("9");
+      } else if (totalAvg >= 2.5) {
+        SetCharacteristics("8");
+      } else if (totalAvg >= 1.5) {
+        SetCharacteristics("7");
+      } else if (totalAvg < 1.5) {
+        SetCharacteristics("6");
+      } else {
+        SetCharacteristics("");
+      }
     } catch (error) {
       console.error({ message: error });
     }
   };
+
+  const renderTableHeaders = (scoreTypes: string[]) => (
+    <>
+      <TableRow className="text-lg bg-blue-300">
+        <TableHead rowSpan={2} className="text-center text-stone-800">
+          ลำดับ
+        </TableHead>
+        <TableHead rowSpan={2} className="text-center border text-stone-800">
+          หัวข้อคำถาม
+        </TableHead>
+        <TableHead rowSpan={2} className="text-center border text-stone-800">
+          ข้อคำถาม
+        </TableHead>
+        <TableHead colSpan={2} className="text-center border text-stone-800">
+          ผลรวมเฉลี่ย
+        </TableHead>
+        {scoreTypes.map((type) => (
+          <TableHead
+            key={type}
+            colSpan={2}
+            className="text-center border text-stone-800"
+          >
+            {SCORE_TYPE_LABELS[type] || type}
+          </TableHead>
+        ))}
+      </TableRow>
+      <TableRow className="text-lg bg-blue-300">
+        <TableHead className="text-center border text-stone-800">
+          ค่าเฉลี่ย
+        </TableHead>
+        <TableHead className="text-center border text-stone-800">
+          ค่า SD
+        </TableHead>
+        {scoreTypes.map((type) => (
+          <React.Fragment key={type}>
+            <TableHead className="text-center border text-stone-800">
+              ค่าเฉลี่ย
+            </TableHead>
+            <TableHead className="text-center border text-stone-800">
+              ค่า SD
+            </TableHead>
+          </React.Fragment>
+        ))}
+      </TableRow>
+    </>
+  );
+
   useEffect(() => {
     fetchResultEvaluateDetail();
   }, []);
+  useEffect(() => {
+    scoreTypes.flatMap((type) => console.log("type", type));
+  }, [scoreTypes]);
+  
   return (
-    <div className="border rounded-lg">
-      <Table>
-        <TableCaption>A list of your recent invoices.</TableCaption>
-        <TableHeader>
-          <TableRow className="text-lg bg-blue-300">
-            <TableHead className="w-[50px] text-center text-stone-700">
-              ลำดับ
-            </TableHead>
-            <TableHead className="text-stone-700">หัวข้อคำถาม</TableHead>
-            <TableHead className="w-[500px] text-stone-700">ข้อคำถาม</TableHead>
-            <TableHead className="text-center text-stone-700">
-              ค่าเฉลี่ย
-            </TableHead>
-            <TableHead className="text-center text-stone-700">ค่า sd</TableHead>
-            <TableHead className="text-center text-stone-700">
-              เพิ่ม / ลด
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {data.map((item) => (
-            <React.Fragment key={item.id}>
-              <TableRow className="text-[16px] bg-blue-100">
-                <TableCell colSpan={3} className="font-bold ">
-                  {item.HeadTitle}
-                </TableCell>
-                <TableCell className="text-center">4.36</TableCell>
-                <TableCell className="text-center">0.87</TableCell>
-                <TableCell className="flex justify-center items-center gap-1 text-emerald-500">
-                  0.17{" "}
-                  <span className="bg-emerald-500 text-white rounded-full">
-                    <ChevronUp size={16} />
-                  </span>
-                </TableCell>
-              </TableRow>
-              {item.subData.map((sup, index) => (
-                <TableRow key={sup.id} className="text-[16px]">
-                  <TableCell className="font-medium text-center">
-                    {index + 1}
+    <div className="mx-auto w-full overflow-auto scrollbar-gemini">
+      <div className="mx-auto w-full max-w-xl">
+        <DrawerHeader className="flex flex-col justify-center items-center">
+          <DrawerTitle className="text-xl">
+            สรุปผลการประเมินสมรรถนะ 360 องศา <br />
+            {resultEvaluateDetail?.headData.evaluatorName}
+          </DrawerTitle>
+          <DrawerDescription>
+            {resultEvaluateDetail?.headData.periodName} สังกัดที่{" "}
+            {resultEvaluateDetail?.headData?.department}
+          </DrawerDescription>
+        </DrawerHeader>
+      </div>
+      {/* Body of Table */}
+      <div className="mx-auto w-full max-w-screen-2xl">
+        <div className="border rounded-lg">
+          <Table>
+            <TableCaption>ผลการประเมินรายละเอียด</TableCaption>
+
+            <TableHeader>{renderTableHeaders(scoreTypes)}</TableHeader>
+
+            <TableBody>
+              {resultEvaluateDetail?.formResults.map((form) => (
+                <React.Fragment key={form.formId}>
+                  {/* Form Level Summary Row */}
+                  {/* ผลรวมในแต่ละด้าน */}
+                  <TableRow className="text-[16px] bg-blue-100">
+                    <TableCell colSpan={3} className="font-bold">
+                      {form.formName}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      {form.totalAvgPerForm.toFixed(2)}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      {form.totalSDPerForm.toFixed(2)}
+                    </TableCell>
+                    {/* Dynamic Scores Rendering */}
+                    {scoreTypes.flatMap((type) => {
+                      const matchedScore = form.total?.find(
+                        (match) => match.total === type
+                      );
+                      return [
+                        <TableCell key={`${type}-avg`} className="text-center">
+                          {matchedScore?.average.toFixed(2) || "-"}
+                        </TableCell>,
+                        <TableCell key={`${type}-sd`} className="text-center">
+                          {matchedScore?.sd.toFixed(2) || "-"}
+                        </TableCell>,
+                      ];
+                    })}
+                  </TableRow>
+
+                  {/* Questions Rows */}
+                  {form.questions.map((question, index) => (
+                    <TableRow key={question.questionId} className="text-[16px]">
+                      <TableCell className="font-medium text-center">
+                        {index + 1}
+                      </TableCell>
+                      <TableCell>{form.formName}</TableCell>
+                      <TableCell>{question.questionName}</TableCell>
+                      {question.sumScore && [
+                        <TableCell key={`sumScore-avg`} className="text-center">
+                          {question.sumScore?.average.toFixed(2) || "-"}
+                        </TableCell>,
+                        <TableCell key={`sumScore-Sd`} className="text-center">
+                          {question.sumScore?.standardDeviation.toFixed(2) ||
+                            "-"}
+                        </TableCell>,
+                      ]}
+                      {/* Dynamic Scores Rendering */}
+                      {scoreTypes.flatMap((type) => {
+                        const matchedScore = question.scores?.find(
+                          (score) => score.type === type
+                        );
+                        return [
+                          <TableCell
+                            key={`${type}-avg`}
+                            className="text-center"
+                          >
+                            {matchedScore?.average.toFixed(2) || "-"}
+                          </TableCell>,
+                          <TableCell key={`${type}-sd`} className="text-center">
+                            {matchedScore?.sd.toFixed(2) || "-"}
+                          </TableCell>,
+                        ];
+                      })}
+                    </TableRow>
+                  ))}
+                </React.Fragment>
+              ))}
+
+              {/* Total Summary Row */}
+              {resultEvaluateDetail?.headData && (
+                <TableRow className="text-[16px] bg-yellow-200">
+                  <TableCell colSpan={2} className="font-bold text-right">
+                    ผลรวมของ
                   </TableCell>
-                  <TableCell>{item.HeadTitle}</TableCell>
-                  <TableCell>{sup.paymentMethod}</TableCell>
-                  <TableCell className="text-center">{sup.avg}</TableCell>
-                  <TableCell className="text-center">{sup.sd}</TableCell>
-                  <TableCell className="flex justify-center items-center gap-1 text-emerald-500">
-                    0.87{" "}
-                    <span className="bg-emerald-500 text-white rounded-full">
-                      <ChevronUp size={16} />
-                    </span>
+                  <TableCell className="text-left">
+                    {resultEvaluateDetail.headData.evaluatorName}
+                  </TableCell>
+                  <TableCell
+                    colSpan={scoreTypes.length * 2 + 2}
+                    className="text-center"
+                  >
+                    เฉลี่ยรวม:{" "}
+                    {resultEvaluateDetail.headData.totalAvg?.toFixed(2) || "-"},
+                    SD รวม:{" "}
+                    {resultEvaluateDetail.headData.totalSD?.toFixed(2) || "-"}
                   </TableCell>
                 </TableRow>
-              ))}
-            </React.Fragment>
-          ))}
-          <TableRow className="text-[16px] bg-yellow-200">
-            <TableCell colSpan={2} className="font-bold text-right">
-              ผลรวมของ
-            </TableCell>
-            <TableCell className="text-left">นายกฤตภาส สัมฤทธิ์</TableCell>
-            <TableCell className="text-center">4.35</TableCell>
-            <TableCell className="text-center">0.81</TableCell>
-            <TableCell className="flex justify-center items-center gap-1 text-emerald-500">
-              0.87{" "}
-              <span className="bg-emerald-500 text-white rounded-full">
-                <ChevronUp size={16} />
-              </span>
-            </TableCell>
-          </TableRow>
-        </TableBody>
-        <TableFooter>
-          <TableRow className="text-right">
-            <TableCell colSpan={3}></TableCell>
-            <TableCell colSpan={3} className="text-center">
-              <h2>
-                ผลการประเมินการปฎิบัติงานตามคุณลักษณะและพฤติกรรมในการปฎิบัติงาน
-              </h2>
-              <h2 className="flex justify-around mt-4">
-                เท่ากับ <span className="text-xl">9</span> คะแนน
-              </h2>
-            </TableCell>
-          </TableRow>
-        </TableFooter>
-      </Table>
+              )}
+            </TableBody>
+
+            <TableFooter>
+              <TableRow className="text-right">
+                <TableCell
+                  colSpan={5 + scoreTypes.length * 2}
+                  className="text-center"
+                >
+                  <h2>
+                    ผลการประเมินการปฎิบัติงานตามคุณลักษณะและพฤติกรรมในการปฎิบัติงาน
+                  </h2>
+                  <h2 className="flex justify-around mt-4">
+                    เท่ากับ <span className="text-xl">{Characteristics}</span>{" "}
+                    คะแนน
+                  </h2>
+                </TableCell>
+              </TableRow>
+            </TableFooter>
+          </Table>
+        </div>
+      </div>
+      <div className="mx-auto w-full max-w-lg">
+        <DrawerFooter>
+          <Button>Export</Button>
+          <DrawerClose asChild>
+            <Button variant="outline">Cancel</Button>
+          </DrawerClose>
+        </DrawerFooter>
+      </div>
     </div>
   );
 };

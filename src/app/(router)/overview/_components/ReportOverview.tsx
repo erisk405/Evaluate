@@ -42,6 +42,8 @@ const ReportOverview = () => {
         currentlyEvaluationPeriod?.period_id
       );
       setResultEvalEachDepartment(response?.data);
+      // console.log("setResultEvalEachDepartment",response?.data);
+      
     } catch (error) {
       console.error({ message: error });
     }

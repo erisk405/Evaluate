@@ -35,13 +35,13 @@ interface UserImage {
 interface User {
   id: string,
   name: string,
-  prefix?:string,
+  prefix?: string,
   email: string,
   image: UserImage,
   role: Role
   phone: string,
   department?: Department
-  supervise?:Supervise[]
+  supervise?: Supervise[]
 }
 
 interface Role {
@@ -143,54 +143,89 @@ interface userHaveBeenEvaluatedType {
   period: { period_id: string, title: string }
   evaluator: { id: string, name: string }
 }
-
+// --------------------------------------------------------------------------------
+// This is Type of all getResultEvaluateType and getResultEvaluateDetail form database
+// --------------------------------------------------------------------------------
 interface getResultEvaluateType {
   formResults: formResultsType[];
   headData: headDataType;
 }
 interface formResultsType {
-  evaluatedPerForm:number;
-  formId:string;
-  formName:string;
-  totalAsserPerForm:number;
-  totalAVGPerForm:number;
-  totalSDPerForm:number;
+  evaluatedPerForm: number;
+  formId: string;
+  formName: string;
+  questions: resultPerQuestionsType[];
+  totalAsserPerForm: number;
+
+  total: TotalEachType[];
+  totalAvgPerForm: number;
+  totalSDPerForm: number;
+}
+interface TotalEachType {
+  average: number;
+  sd: number;
+  total: string
+}
+
+interface resultPerQuestionsType {
+  questionId: string,
+  questionName: string,
+  scores?: scoresType[],
+  sumScore: {
+    average: number,
+    standardDeviation: number
+  }
 }
 
 interface headDataType {
+  department?: string,
   evaluatorName: string;
   periodName: string;
-  success:boolean;
-  totalAVG:number;
-  totalAssessorsHasPermiss:number;
-  totalEvaluated:number;
-  totalSD:number;
+  roleLevel?: string;
+  roleName?: string;
+  success?: {
+    message: string,
+    success: boolean
+  }
+  totalAVG: number;
+
+  totalAvg?: number;
+  totalAssessorsHasPermiss: number;
+  totalEvaluated: number;
+  totalSD: number;
 }
 
+interface scoresType {
+  average: number,
+  sd: number,
+  type: string
+}
 
+// ---------------------------------------------------------------------------
 interface getCountUserAsEvaluatedType {
-  department_id:string;
-  department_name:string;
-  evaluated:number; // มีที่คนที่เราประเมินสมาชิกในหน่วยงานนั้น
-  evaluator:number // มีสมาชิกที่อยู่ในแผนกนั้นกี่คน
+  department_id: string;
+  department_name: string;
+  evaluated: number; // มีที่คนที่เราประเมินสมาชิกในหน่วยงานนั้น
+  evaluator: number // มีสมาชิกที่อยู่ในแผนกนั้นกี่คน
 }
 
-interface getResultEvalEachDepartmentType{
-  department:string;
-  id:string;
-  image:ImageType;
-  supervise?:Supervise;
-  totalFinished:number;
-  totalUnfinished:number;
-  totalUsers:number
+interface getResultEvalEachDepartmentType {
+  department: string;
+  id: string;
+  image: ImageType;
+  supervise?: Supervise;
+  totalFinished: number;
+  totalUnfinished: number;
+  totalUsers: number
 }
 
-interface getAllSuperviseByAdminType{
-  supervise_id:string;
-  user:User;
-  department:Department;
-
+interface getAllSuperviseByAdminType {
+  supervise_id: string;
+  user: User;
+  department: Department;
 }
+
+
 export type {
   ImageType, Department, Role,
   User, RoleRequest, Notification,
@@ -204,5 +239,6 @@ export type {
   headDataType,
   getCountUserAsEvaluatedType,
   getResultEvalEachDepartmentType,
-  getAllSuperviseByAdminType
+  getAllSuperviseByAdminType,
+  scoresType
 };

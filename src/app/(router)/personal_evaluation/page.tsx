@@ -152,30 +152,7 @@ export const columns: ColumnDef<PeriodType>[] = [
           </DrawerTrigger>
           {new Date(row.original.start) < new Date() && (
             <DrawerContent className="h-[calc(100dvh-10%)] ">
-              <div className="mx-auto w-full overflow-auto scrollbar-gemini">
-                <div className="mx-auto w-full max-w-lg ">
-                  <DrawerHeader className="flex flex-col justify-center items-center">
-                    <DrawerTitle className="text-xl">
-                      สรุปผลการประเมินสมรรถนะ 360 องศา นายกฤตภาส สัมฤทธิ์
-                    </DrawerTitle>
-                    <DrawerDescription>
-                      รอบที่ 1 ประจำปีงบประมาณ พ.ศ. 2567 (1 กันยายน 2566 - 28
-                      กุมภาพันธ์ 2567)
-                    </DrawerDescription>
-                  </DrawerHeader>
-                </div>
-                <div className="mx-auto w-full max-w-7xl">
-                  <Personal_result period={row.original} />
-                </div>
-                <div className="mx-auto w-full max-w-lg">
-                  <DrawerFooter>
-                    <Button>Export</Button>
-                    <DrawerClose asChild>
-                      <Button variant="outline">Cancel</Button>
-                    </DrawerClose>
-                  </DrawerFooter>
-                </div>
-              </div>
+              <Personal_result period={row.original} />
             </DrawerContent>
           )}
         </Drawer>

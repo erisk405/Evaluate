@@ -1,5 +1,6 @@
 import {
   Boxes,
+  CalendarClock,
   Cog,
   FolderKanban,
   TrendingUp,
@@ -23,11 +24,12 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useStore from "@/app/store/store";
+import { formatThaiDateTime } from "./RightSection";
 
 const ChartEvaluatedYou = () => {
-  const { resultEvaluate } = useStore();
+  const { resultEvaluate, currentlyEvaluationPeriod } = useStore();
 
   const chartData = resultEvaluate?.formResults?.map((item) => ({
     form: item.formName,
@@ -51,6 +53,19 @@ const ChartEvaluatedYou = () => {
           color: "hsl(var(--chart-1))",
         },
       };
+  const currentlyEvaluationPeriodThaiFormat = useMemo(() => {
+    if (!currentlyEvaluationPeriod) return null;
+
+    const formattedStart = formatThaiDateTime(currentlyEvaluationPeriod?.start);
+    const formattedEnd = formatThaiDateTime(currentlyEvaluationPeriod?.end);
+
+    return {
+      startDate: formattedStart.date,
+      startTime: formattedStart.time,
+      endDate: formattedEnd.date,
+      endTime: formattedEnd.time,
+    };
+  }, [currentlyEvaluationPeriod]);
 
   return (
     <div className="">
@@ -78,7 +93,14 @@ const ChartEvaluatedYou = () => {
         <Card className="flex flex-col border-none shadow-none">
           <CardHeader className="items-center pb-0">
             <CardTitle>คุณถูกประเมินไปแล้วทั้งหมด</CardTitle>
-            <CardDescription>January - June 2024</CardDescription>
+            <CardDescription>
+              {currentlyEvaluationPeriod && (
+                <>
+                  {currentlyEvaluationPeriodThaiFormat?.startDate} {" - "}
+                  {currentlyEvaluationPeriodThaiFormat?.endDate}
+                </>
+              )}
+            </CardDescription>
           </CardHeader>
           <CardContent className="flex-1 relative pb-0">
             {resultEvaluate && resultEvaluate?.headData?.totalEvaluated > 0 ? (
@@ -147,11 +169,17 @@ const ChartEvaluatedYou = () => {
           </CardContent>
           <CardFooter className="flex-col gap-2 text-sm">
             <div className="flex items-center gap-2 font-medium leading-none">
-              Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
+              {currentlyEvaluationPeriod?.title}
+              <CalendarClock className="h-4 w-4" />
             </div>
-            <div className="leading-none text-muted-foreground">
-              Showing total result for the last 6 months
-            </div>
+            {currentlyEvaluationPeriod && (
+              <div>
+                {currentlyEvaluationPeriodThaiFormat?.startDate} เวลา{" "}
+                {currentlyEvaluationPeriodThaiFormat?.startTime} {" จนถึง "}
+                {currentlyEvaluationPeriodThaiFormat?.endDate} เวลา{" "}
+                {currentlyEvaluationPeriodThaiFormat?.endTime}
+              </div>
+            )}
           </CardFooter>
         </Card>
         <motion.div

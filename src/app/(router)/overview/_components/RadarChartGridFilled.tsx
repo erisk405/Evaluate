@@ -1,5 +1,5 @@
 "use client";
-import { TrendingUp } from "lucide-react";
+import { CalendarClock, TrendingUp } from "lucide-react";
 import { PolarAngleAxis, PolarGrid, Radar, RadarChart } from "recharts";
 import {
   Card,
@@ -26,9 +26,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import useStore from "@/app/store/store";
-import { useEffect, useMemo } from "react";
+import { formatThaiDateTime } from "./RightSection";
 const RadarChartGridFilled = () => {
-  const { resultEvaluate } = useStore();
+  const { resultEvaluate, currentlyEvaluationPeriod } = useStore();
 
   const chartData = resultEvaluate?.formResults?.map((item) => ({
     form: item.formName,
@@ -61,17 +61,13 @@ const RadarChartGridFilled = () => {
       return `${formname.slice(0, 10)}...`;
     }
   };
-  
-  useEffect(()=>{
-    console.log("resultEvaluate",resultEvaluate);
-    
-  },[])
+
   return (
     <Card>
       <CardHeader className="items-center pb-4">
         <CardTitle>ผลการประเมินในขณะนี้</CardTitle>
         <CardDescription>
-          Showing total visitors for the last 6 months
+          แสดงผลรวมทั้งหมดในแต่ละด้านภายในระยะเวลาของรอบการประเมิน
         </CardDescription>
       </CardHeader>
       <CardContent className="pb-0">
@@ -92,14 +88,24 @@ const RadarChartGridFilled = () => {
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
         <div className="flex items-center gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
+          {currentlyEvaluationPeriod?.title}
+          <CalendarClock className="h-4 w-4" />
         </div>
         <div className="flex items-center gap-2 leading-none text-muted-foreground">
-          January - June 2024
+          {currentlyEvaluationPeriod && (
+            <div>
+              {formatThaiDateTime(currentlyEvaluationPeriod?.start).date} เวลา{" "}
+              {formatThaiDateTime(currentlyEvaluationPeriod?.start).time}{" "}
+              {" จนถึง "}
+              {
+                formatThaiDateTime(currentlyEvaluationPeriod?.end).date
+              } เวลา {formatThaiDateTime(currentlyEvaluationPeriod?.end).time}
+            </div>
+          )}
         </div>
       </CardFooter>
 
-      <div>
+      <div className="border-t">
         <Table>
           <TableCaption>A list of your recent invoices.</TableCaption>
           <TableHeader>
@@ -107,8 +113,12 @@ const RadarChartGridFilled = () => {
               <TableHead className="w-auto truncate">
                 ด้านในการประเมิน
               </TableHead>
-              <TableHead className="text-end truncate">ส่วนเบี่ยงเบน</TableHead>
-              <TableHead className="text-end truncate">ค่าเฉลี่ย</TableHead>
+              <TableHead className="text-center truncate">
+                ส่วนเบี่ยงเบน(SD.)
+              </TableHead>
+              <TableHead className="text-center truncate">
+                ค่าเฉลี่ย(AVG)
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -118,10 +128,10 @@ const RadarChartGridFilled = () => {
                   <TableCell className="font-medium truncate">
                     <span>{item.formName}</span>
                   </TableCell>
-                  <TableCell className="text-end truncate">
+                  <TableCell className="text-center truncate">
                     {item.totalSDPerForm.toFixed(2)}
                   </TableCell>
-                  <TableCell className="text-end truncate">
+                  <TableCell className="text-center truncate">
                     {item.totalAVGPerForm.toFixed(2)}
                   </TableCell>
                 </TableRow>
@@ -129,11 +139,11 @@ const RadarChartGridFilled = () => {
           </TableBody>
           <TableFooter>
             <TableRow>
-              <TableCell>Total</TableCell>
-              <TableCell className="text-right font-bold text-blue-500 text-lg">
+              <TableCell>รวมทั้งหมด</TableCell>
+              <TableCell className="text-center text-blue-500 text-[16px]">
                 {resultEvaluate?.headData.totalSD.toFixed(2)}
               </TableCell>
-              <TableCell className="text-right font-bold text-green-500 text-lg">
+              <TableCell className="text-center text-green-500 text-[16px]">
                 {resultEvaluate?.headData.totalAVG.toFixed(2)}
               </TableCell>
             </TableRow>
