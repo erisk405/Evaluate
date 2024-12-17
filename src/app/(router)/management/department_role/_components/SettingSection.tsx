@@ -139,8 +139,7 @@ export default function SettingSection({
   };
 
   useEffect(() => {
-    console.log("department", department);
-
+    // console.log("department", department);
     fetchDepart();
   }, []);
   return (

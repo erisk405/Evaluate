@@ -2,6 +2,7 @@
 import {
   CircleHelp,
   EllipsisVertical,
+  GitFork,
   MessageCircleQuestion,
   Plus,
   Settings2,
@@ -51,87 +52,93 @@ import {
 
 import { QuestionList } from "./_components/QuestionList";
 import { toast } from "sonner";
+import { Separator } from "@/components/ui/separator";
+import { formStates, Role } from "@/types/interface";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import GeneralEditPage from "../manage_form/_components/GeneralEditPage";
+import FormLevelEditPage from "../manage_form/_components/FormLevelEditPage";
 
 interface SlideStates {
   [key: string]: boolean;
 }
 
-interface formStates {
-  id: string;
-  name: string;
+enum SideBarEditSection {
+  General = "General",
+  FormLevel = "FormLevel",
 }
 
-const formSchema = z.object({
-  formName: z
-    .string()
-    .min(5, { message: "Role name must be at least 5 characters." }) // ขั้นต่ำ 5 ตัวอักษร
-    .max(50, { message: "Role name must not exceed 50 characters." }), // สูงสุด 50 ตัวอักษร
-});
-
 const page = () => {
+  const { roles, setRole } = useStore();
   const [slideStates, setSlideStates] = useState<SlideStates>({});
   const [formState, setFormState] = useState<formStates[]>([]);
   const { openForm, setOpenForm } = useStore();
+  const [loading, setLoading] = useState(false);
+  const [sideBarEdit, setSideBarEdit] = useState<SideBarEditSection>(
+    SideBarEditSection.General
+  );
 
   // ตัว icon slide ตอนจะตั้งค่า
-  const toggleSlide = (id: string) => {
-    setSlideStates((prevStates) => ({
-      ...prevStates,
-      [id]: !(prevStates[id] ?? false),
-    }));
+  const toggleSlide = (id: string) =>
+    setSlideStates((prev) => ({ ...prev, [id]: !prev[id] }));
+
+  const handleApiError = (error: any, message: string) => {
+    console.error({ message: error });
+    toast("เกิดข้อผิดพลาด", {
+      description: (
+        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+          <code className="text-white">
+            {JSON.stringify(error?.response?.data?.message, null, 2)}
+          </code>
+        </pre>
+      ),
+    });
+  };
+
+  const showToast = (title: string, description: string) => {
+    toast(title, { description });
   };
 
   // เพื่อให้ง่ายเรางานกด create โดยไม่ต้องใส่ชื่อมาเลย จะให้ใส่ชื่อภายหลัง ในส่วนของการเพิ่มฟอร์ม
   const addForm = async (name: string) => {
     try {
       const response = await GlobalApi.createForm(name);
-      const newform = response?.data;
+      const newform = response?.data.form;
+      console.log("newform", newform);
+
+      fetchForm();
       setFormState((prev) => [...prev, newform]);
-      toast("Event has been created", {
-        description: `ชื่อฟอร์ม : ${response?.data.name}`,
-      });
+      showToast("สร้างฟอร์มเรียนร้อย", `ชื่อฟอร์ม : ${newform.name}`);
     } catch (error: any) {
       console.error({ message: error });
-      toast("เกิดข้อผิดพลาด", {
-        description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">
-              {JSON.stringify(error?.response?.data?.message, null, 2)}
-            </code>
-          </pre>
-        ),
-      });
+      handleApiError(error, "Error while creating form");
     }
   };
 
   const deleteForm = async (id: string) => {
     try {
       const response = await GlobalApi.deleteForm(id);
-      toast("Event has been deleted form", {
-        description: `ชื่อฟอร์ม : ${response?.data.name}`,
-      });
+      if (!response) {
+        throw new Error("cannot delete");
+      }
+      showToast("ลบฟอร์มเรียนร้อย", `ชื่อฟอร์ม : ${response?.data.name}`);
       fetchForm();
     } catch (error: any) {
       console.error({ message: error });
-      toast("เกิดข้อผิดพลาด", {
-        description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">
-              {JSON.stringify(error?.response?.data?.message, null, 2)}
-            </code>
-          </pre>
-        ),
-      });
+      handleApiError(error, "Error while delete form");
     }
   };
 
   // แสดงรายการแบบฟอร์มทั้งหมเ
   const fetchForm = async () => {
+    setLoading(true);
     try {
       const response = await GlobalApi.getForm();
+      console.log("form", response?.data);
       setFormState(response?.data);
     } catch (error) {
       console.error({ message: error });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -140,41 +147,23 @@ const page = () => {
     setOpenForm(id);
   };
 
-  // set ค่า defualt
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      formName: "",
-    },
-  });
-
-  // ที่ต้องใช้ handleSubmit ที่เรียกจาก function แบบนี้ เพราะเราอยากได้ id จาก formState มาด้วยจึงต้องทำแยก
-  const handleSaveChanges = (formId: string) => {
-    form.handleSubmit((values) => onSubmit(values, formId))();
-  };
-  // onSubmit ของ Edit form ในการเปลี่ยนชื่อ
-  const onSubmit = async (
-    values: z.infer<typeof formSchema>,
-    formId: string
-  ) => {
-    try {
-      const data = {
-        id: formId,
-        name: values.formName,
-      };
-      console.log(data);
-      await GlobalApi.updateForm(data);
-      fetchForm();
-    } catch (error) {
-      console.error({ message: error });
+  const renderSectionContent = (item: formStates) => {
+    switch (sideBarEdit) {
+      case SideBarEditSection.General:
+        return <GeneralEditPage formItem={item} fetchForm={fetchForm} />;
+      case SideBarEditSection.FormLevel:
+        return <FormLevelEditPage formItem={item} fetchForm={fetchForm} />;
+      default:
+        return <div className="col-span-3 h-[400px] pl-7">Not found page</div>;
     }
   };
+
   useEffect(() => {
     fetchForm();
   }, []);
-  useEffect(() => {
-    console.log("openForm", openForm);
-  }, [openForm]);
+  // useEffect(() => {
+  //   console.log("openForm", openForm);
+  // }, [openForm]);
   return (
     <div className="m-5 w-full rounded-lg h-full">
       <div className="bg-white shadow p-6">
@@ -195,146 +184,125 @@ const page = () => {
             {formState &&
               formState.map((item, index) => (
                 <div
-                  key={item.id}
-                  className={`border-b w-full h-16 rounded-sm flex items-center p-3  group cursor-pointer ${
-                    openForm.id === item.id
-                      ? "bg-neutral-100 text-stone-700"
-                      : "bg-white hover:bg-neutral-50"
-                  }`}
-                  onClick={() => handleItemClick(item.id)}
+                  className="relative overflow-hidden"
+                  key={item.id + "main"}
                 >
-                  <div className="flex justify-between w-full items-center overflow-hidden">
-                    <h2 className="text-md select-none truncate">
-                      {item.name}
-                    </h2>
-                    <div
-                      className={`flex justify-end gap-3 ${
-                        slideStates[item.id] ? "pl-48" : "w-auto"
-                      }`}
-                    >
-                      <div className="relative">
-                        <div
-                          className={`absolute top-0 ${
-                            slideStates[item.id]
-                              ? "transition-all -translate-x-full -left-1/2"
-                              : "transition-all translate-x-0"
-                          }`}
-                        >
-                          <div className="flex items-center gap-3">
-                            <Dialog>
-                              <DialogTrigger asChild>
-                                <div className="hover:bg-blue-100 hover:text-blue-500 rounded-lg">
-                                  <div className="w-[100px] flex gap-2 justify-center  items-center">
-                                    <Settings2 strokeWidth={1.25} size={20} />
-                                    <h2>เปลี่ยนชื่อ</h2>
-                                  </div>
-                                </div>
-                              </DialogTrigger>
-                              <DialogContent className="sm:max-w-[425px]">
-                                <DialogHeader>
-                                  <DialogTitle>Edit From</DialogTitle>
-                                  <DialogDescription className="text-red-500">
-                                    ชื่อของแบบฟอร์มจะส่งผลกับการ Export
-                                    เอกสารด้วย โปรดตรวจสอบให้แน่ใจ
-                                  </DialogDescription>
-                                </DialogHeader>
-                                <Form {...form}>
-                                  <form onSubmit={(e) => e.preventDefault()}>
-                                    <div className="grid gap-2 ">
-                                      <div className="">
-                                        <FormField
-                                          control={form.control}
-                                          name="formName"
-                                          render={({ field }) => (
-                                            <FormItem>
-                                              <Label htmlFor="name">Name</Label>
-                                              <FormControl>
-                                                <Input
-                                                  id="name"
-                                                  className="col-span-3 mt-2"
-                                                  {...field}
-                                                />
-                                              </FormControl>
-                                              <p className="text-sm text-muted-foreground">
-                                                Your message will be copied to
-                                                the describtion role.
-                                              </p>
-                                              <FormMessage />
-                                            </FormItem>
-                                          )}
-                                        />
-                                      </div>
-                                    </div>
+                  <div
+                    className={`border-b w-full h-16 rounded-sm flex items-center p-3  group cursor-pointer ${
+                      openForm.id === item.id
+                        ? "bg-neutral-100 text-stone-700"
+                        : "bg-white hover:bg-neutral-50"
+                    }`}
+                    onClick={() => handleItemClick(item.id)}
+                  >
+                    <div className="flex justify-between w-full items-center overflow-hidden ">
+                      <h2 className="text-md select-none truncate">
+                        {item.name}
+                      </h2>
+                    </div>
+                  </div>
 
-                                    <DialogFooter>
-                                      <DialogClose asChild>
-                                        <Button
-                                          type="submit"
-                                          className="mt-3"
-                                          onClick={() =>
-                                            handleSaveChanges(item.id)
-                                          }
-                                        >
-                                          Save changes
-                                        </Button>
-                                      </DialogClose>
-                                    </DialogFooter>
-                                  </form>
-                                </Form>
-                              </DialogContent>
-                            </Dialog>
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                <div className="hover:bg-neutral-300 rounded-full">
-                                  <div className="w-[60px] flex gap-2 justify-center items-center">
-                                    <Trash2 strokeWidth={1.25} size={20} />
-                                    <h2>ลบ</h2>
-                                  </div>
+                  <div
+                    className={`absolute top-1/2 -translate-y-1/2 right-0 gap-3 ${
+                      slideStates[item.id] ? "pl-48" : "w-auto"
+                    }`}
+                  >
+                    <div className="relative">
+                      <div
+                        className={`absolute top-0 ${
+                          slideStates[item.id]
+                            ? "transition-all -translate-x-full -left-1/2 "
+                            : "transition-all translate-x-0 left-1/2"
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <div className="hover:bg-blue-100 hover:text-blue-500 rounded-lg">
+                                <div className="w-[100px] flex gap-2 justify-center cursor-pointer items-center">
+                                  <Settings2 strokeWidth={1.25} size={20} />
+                                  <h2>ตั้งค่า</h2>
                                 </div>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>
-                                    Are you absolutely sure?
-                                  </AlertDialogTitle>
-                                  <AlertDialogDescription className="text-red-500">
-                                    โปรดตรวจสอบให้แน่ใจ หากลบแบบฟอร์มนี้
-                                    คำถามทั้งหมดของแบบฟอร์มนี้จะหายไป
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                  <AlertDialogAction
-                                    onClick={() => deleteForm(item?.id)}
-                                  >
-                                    Sure
-                                  </AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
-                          </div>
+                              </div>
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-[825px]  grid-cols-4">
+                              <DialogHeader className="col-span-4">
+                                <DialogTitle className="text-xl">
+                                  Edit From
+                                </DialogTitle>
+                                <DialogDescription className="text-red-500">
+                                  ชื่อของแบบฟอร์มจะส่งผลกับการ Export เอกสารด้วย
+                                  โปรดตรวจสอบให้แน่ใจ
+                                </DialogDescription>
+                              </DialogHeader>
+                              <Separator className="shrink-0 h-[0.5px] w-full col-span-4 bg-gray-200" />
+                              <div className="col-span-1 flex flex-col gap-2">
+                                {Object.values(SideBarEditSection).map(
+                                  (section) => (
+                                    <div
+                                      key={section}
+                                      className={`p-2 ${
+                                        sideBarEdit === section && "bg-gray-100"
+                                      } rounded-lg cursor-pointer`}
+                                      onClick={() => setSideBarEdit(section)}
+                                    >
+                                      <h2 className="text-sm">{section}</h2>
+                                    </div>
+                                  )
+                                )}
+                              </div>
+                              {renderSectionContent(item)}
+                            </DialogContent>
+                          </Dialog>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <div className="hover:bg-neutral-300 rounded-full">
+                                <div className="w-[60px] flex gap-2 justify-center cursor-pointer items-center">
+                                  <Trash2 strokeWidth={1.25} size={20} />
+                                  <h2>ลบ</h2>
+                                </div>
+                              </div>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>
+                                  Are you absolutely sure?
+                                </AlertDialogTitle>
+                                <AlertDialogDescription className="text-red-500">
+                                  โปรดตรวจสอบให้แน่ใจ หากลบแบบฟอร์มนี้
+                                  คำถามทั้งหมดของแบบฟอร์มนี้จะหายไป
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => deleteForm(item?.id)}
+                                >
+                                  Sure
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
                         </div>
+                      </div>
+                      <div
+                        onClick={() => toggleSlide(item.id)}
+                        className={`top-0 z-20 relative${
+                          openForm.id === item.id
+                            ? "bg-neutral-100 text-black "
+                            : "bg-white text-black group-hover:bg-neutral-50"
+                        }`}
+                      >
                         <div
-                          onClick={() => toggleSlide(item.id)}
-                          className={`  top-0 z-20 relative
-                          ${
-                            openForm.id === item.id
-                              ? "bg-neutral-100 text-black "
-                              : "bg-white text-black group-hover:bg-neutral-50"
-                          }  
-                    `}
+                          className={`${
+                            slideStates[item.id] ? "rotate-180" : "rotate-0"
+                          } transition-all rounded-md hover:bg-neutral-200`}
                         >
-                          <div
-                            className={`${
-                              slideStates[item.id] ? "rotate-180" : "rotate-0"
-                            } transition-all rounded-md hover:bg-neutral-200`}
-                          >
-                            {slideStates[item.id] ? (
-                              <X strokeWidth={1.25} size={25} />
-                            ) : (
-                              <EllipsisVertical strokeWidth={1.25} size={25} />
-                            )}
-                          </div>
+                          {slideStates[item.id] ? (
+                            <X strokeWidth={1.25} size={25} />
+                          ) : (
+                            <EllipsisVertical strokeWidth={1.25} size={25} />
+                          )}
                         </div>
                       </div>
                     </div>

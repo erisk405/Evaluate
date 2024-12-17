@@ -119,8 +119,8 @@ const page = () => {
       <div className="col-span-6 xl:col-span-4 ">
         <div className="bg-white w-full h-full shadow rounded-xl p-5">
           <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold text-stone-700 ">
-              Department manage
+            <h2 className="text-3xl font-bold text-stone-700 ">
+              การจัดการ<span className="text-blue-400">หน่วยงาน</span>
             </h2>
             <div
               className="hover:bg-blue-100 p-2 hover:text-blue-500 
@@ -157,6 +157,7 @@ const page = () => {
                             className="p-2 active:scale-95"
                           >
                             <Plus />
+                            สร้างหน่วยงาน
                           </Button>
                         </DialogTrigger>
                       </TooltipTrigger>

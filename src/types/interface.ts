@@ -35,7 +35,7 @@ interface UserImage {
 interface User {
   id: string,
   name: string,
-  prefix?: string,
+  prefix?: PrefixType,
   email: string,
   image: UserImage,
   role: Role
@@ -216,7 +216,9 @@ interface getResultEvalEachDepartmentType {
   supervise?: Supervise;
   totalFinished: number;
   totalUnfinished: number;
-  totalUsers: number
+  totalUsers: number;
+  unfinishUsers: User[];
+
 }
 
 interface getAllSuperviseByAdminType {
@@ -225,6 +227,17 @@ interface getAllSuperviseByAdminType {
   department: Department;
 }
 
+interface formStates {
+  id: string;
+  name: string;
+  roleFormVision: roleFormVision[]
+}
+interface roleFormVision {
+  role_form_id: string;
+  form_id: string;
+  level: string;
+  visionRole: Role;
+}
 
 export type {
   ImageType, Department, Role,
@@ -240,5 +253,7 @@ export type {
   getCountUserAsEvaluatedType,
   getResultEvalEachDepartmentType,
   getAllSuperviseByAdminType,
-  scoresType
+  scoresType,
+  formStates,
+  roleFormVision
 };

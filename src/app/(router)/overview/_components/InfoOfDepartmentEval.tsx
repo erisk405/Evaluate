@@ -5,6 +5,16 @@ import { getResultEvalEachDepartmentType } from "@/types/interface";
 import Image from "next/image";
 import { Building2, CircleOff, UserRoundCheck, UserRoundX } from "lucide-react";
 import useStore from "@/app/store/store";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 // Correctly typed variants
 const variants: Variants = {
   default: {
@@ -103,58 +113,87 @@ const InfoOfDepartmentEval = () => {
     setCursorText("");
     setCursorVariant("default");
   };
+  const renderDepartmentHoverInfo = (
+    item: getResultEvalEachDepartmentType,
+    index: number
+  ) => {
+    return (
+      <div
+        key={index + "Go"}
+        onMouseEnter={() => setCursorBlock(item)} // ส่งข้อมูล `item` เข้าไป
+        onMouseLeave={contactLeave}
+        className="w-full bg-white hover:scale-95 active:scale-90 grid grid-cols-12 shadow overflow-hidden rounded-xl transition-transform"
+      >
+        <div className="w-full h-[160px] col-span-5">
+          <Image
+            width={300}
+            height={300}
+            alt="bannerDepartment"
+            src={item?.image.url ? item?.image.url : "/test.png"}
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <div className="grid grid-cols-1 col-span-7">
+          <div className="p-3 flex flex-col col-span-1 lg:col-span-3 justify-between ">
+            <div className="flex items-center gap-3">
+              <div className="p-2 border rounded-full ">
+                <Building2 size={18} />
+              </div>
+              <h2 className="text-sm">{item.department}</h2>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="p-2 border rounded-full ">
+                <UserRoundCheck size={18} />
+              </div>
+              <div className="grid grid-cols-1">
+                <h2 className="font-bold">
+                  {item.totalFinished}/{item.totalUsers}
+                </h2>
+                <h2 className="text-sm">เสร็จสิ้นแล้วทั้งหมด</h2>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="p-2 border rounded-full ">
+                <UserRoundX size={18} />
+              </div>
+              <div className="grid grid-cols-1">
+                <h2 className="font-bold">{item.totalUnfinished}</h2>
+                <h2 className="text-sm">ยังไม่เสร็จ</h2>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
   return (
     <div
       className="grid grid-cols-1  @[650px]:grid-cols-2 @[950px]:grid-cols-3 gap-3"
       onMouseMove={handleMouseMove}
     >
       {resultEvalEachDepartment?.map((item, index) => (
-        <div
-          key={index + "Go"}
-          onMouseEnter={() => setCursorBlock(item)} // ส่งข้อมูล `item` เข้าไป
-          onMouseLeave={contactLeave}
-          className="w-full bg-white grid grid-cols-12 shadow overflow-hidden rounded-xl"
-        >
-          <div className="w-full h-[160px] col-span-5">
-            <Image
-              width={300}
-              height={300}
-              alt="bannerDepartment"
-              src={item?.image.url ? item?.image.url : "/test.png"}
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <div className="grid grid-cols-1 col-span-7">
-            <div className="p-3 flex flex-col col-span-1 lg:col-span-3 justify-between ">
-              <div className="flex items-center gap-3">
-                <div className="p-2 border rounded-full ">
-                  <Building2 size={18} />
+        <Dialog key={item.id}>
+          <DialogTrigger asChild>
+            {renderDepartmentHoverInfo(item, index)}
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[825px]">
+            <DialogHeader>
+              <DialogTitle>ข้อมูลสมาชิกภายในหน่วยงาน</DialogTitle>
+              <DialogDescription>
+                Make changes to your profile here. Click save when you're done.
+              </DialogDescription>
+            </DialogHeader>
+            <ScrollArea className="h-[458px]">
+              {item.unfinishUsers?.map((item) => (
+                <div className="grid grid-cols-4 gap-4 px-5 py-4" key={item.id}>
+                  <div className="col-span-3">{item.name}</div>
+                  <div className="col-span-1">ยังประเมินไม่ครบ</div>
                 </div>
-                <h2 className="text-sm">{item.department}</h2>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="p-2 border rounded-full ">
-                  <UserRoundCheck size={18} />
-                </div>
-                <div className="grid grid-cols-1">
-                  <h2 className="font-bold">
-                    {item.totalFinished}/{item.totalUsers}
-                  </h2>
-                  <h2 className="text-sm">เสร็จสิ้นแล้วทั้งหมด</h2>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="p-2 border rounded-full ">
-                  <UserRoundX size={18} />
-                </div>
-                <div className="grid grid-cols-1">
-                  <h2 className="font-bold">{item.totalUnfinished}</h2>
-                  <h2 className="text-sm">ยังไม่เสร็จ</h2>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+              ))}
+            </ScrollArea>
+            <DialogFooter></DialogFooter>
+          </DialogContent>
+        </Dialog>
       ))}
 
       {/* Your mapped content here */}

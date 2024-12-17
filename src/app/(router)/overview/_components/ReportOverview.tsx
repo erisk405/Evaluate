@@ -106,10 +106,10 @@ const ReportOverview = () => {
     fetchSupervise();
   }, [currentlyEvaluationPeriod?.period_id]);
 
-  // useEffect(() => {
-  //   console.log("resultEvalEachDepartment",resultEvalEachDepartment);
+  useEffect(() => {
+    console.log("resultEvalEachDepartment",resultEvalEachDepartment);
 
-  // }, [resultEvalEachDepartment]);
+  }, [resultEvalEachDepartment]);
 
   return (
     <div className="h-full flex flex-col gap-3">

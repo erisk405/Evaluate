@@ -602,6 +602,23 @@ const getResultEvaluateDetail = (period_id: string) => {
     console.error("API getResultEvaluateDetail", { message: error });
   }
 };
+type updateVisionOfFormProp ={
+  formId:string,
+  stackFormLevel:typeOfStach[]
+}
+type typeOfStach ={
+  role_id: string;
+  visionLevel: "VISION_1" | "VISION_2" | "UNSET";
+}
+const updateVisionOfForm = (payload:updateVisionOfFormProp) => {
+  try {
+    return axios.put(`${apiUrl}/roleFormVision`,payload, {
+      withCredentials: true,
+    });
+  } catch (error) {
+    console.error("API getResultEvaluateDetail", { message: error });
+  }
+};
 
 export default {
   fetchUserProfile,
@@ -655,5 +672,6 @@ export default {
   updateProfileName,
   forgotPassowrd,
   resetPassword,
-  getResultEvaluateDetail
+  getResultEvaluateDetail,
+  updateVisionOfForm,
 };

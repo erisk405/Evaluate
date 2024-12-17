@@ -24,6 +24,7 @@ import useStore from "@/app/store/store";
 import GlobalApi from "@/app/_util/GlobalApi";
 import SetRoleUserOptions from "./SetRoleUserOptions";
 import SetDepartmentUserOptions from "./SetDepartmentUserOptions";
+import SetPrefixSelection from "@/app/_components/SetPrefixSelection";
 
 const formSchema = z.object({
   image: z
@@ -46,6 +47,9 @@ const formSchema = z.object({
   }),
   role: z.string().min(1, {
     message: "Role is required",
+  }),
+  prefix: z.string().min(1, {
+    message: "prefix is required",
   }),
 });
 
@@ -84,6 +88,7 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
       email: userDetail?.email ? userDetail?.email : "",
       Department: userDetail?.department?.id || "", // Ensure a string is provided
       role: userDetail?.role?.id,
+      prefix: userDetail?.prefix?.prefix_id
     },
   });
 
@@ -92,7 +97,6 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
     try {
       setIsLoading(false);
       console.log(values);
-      // console.log("userDetail",userDetail);
 
       const formData = new FormData();
       if (values.image) {
@@ -123,8 +127,7 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
       refreshData();
       setIsLoading(true);
     } catch (error) {
-      console.log("error",{message:error});
-      
+      console.log("error", { message: error });
     }
   }
 
@@ -136,7 +139,10 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
   const handleDepertmentChange: any = (newData: any) => {
     setValue("Department", newData);
   };
-
+  const handlePrefixChange: any = (newPrefix: any) => {
+    console.log("handlePrefixChange", newPrefix);
+    setValue("prefix", newPrefix);
+  };
   return (
     <div className="">
       <div className="relative w-full h-[100px]">
@@ -194,7 +200,23 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
             <div className="grid grid-cols-11 items-center gap-3">
-              <h2 className="col-span-3">Name</h2>
+              <div className="col-span-3">
+                <FormField
+                  control={form.control}
+                  name="prefix"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <SetPrefixSelection
+                          onPrefixChange={handlePrefixChange}
+                          userPrefix={userDetail.prefix}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
               {/* firstName */}
               <div className="col-span-4">
                 <FormField
@@ -245,7 +267,7 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
               render={({ field }) => (
                 <FormItem>
                   <div className="grid grid-cols-11 items-center gap-3">
-                    <h2 className="col-span-3">Email address</h2>
+                    <h2 className="col-span-3 text-sm">Email address</h2>
                     <FormControl className="col-span-8">
                       <div className="relative">
                         <Mail
@@ -273,7 +295,7 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
               render={({ field }) => (
                 <FormItem>
                   <div className="grid grid-cols-11 items-center gap-3">
-                    <h2 className="col-span-3">Department</h2>
+                    <h2 className="col-span-3 text-sm">Department</h2>
                     <FormControl className="col-span-8">
                       <div className="relative">
                         <div className="flex items-center gap-3">
@@ -297,7 +319,7 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
               render={() => (
                 <FormItem>
                   <div className="grid grid-cols-11 items-center gap-3">
-                    <h2 className="col-span-3">Role</h2>
+                    <h2 className="col-span-3 text-sm">Role</h2>
                     <FormControl className="col-span-8">
                       <div className="relative">
                         <div className="flex items-center gap-3">
@@ -314,13 +336,14 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
               )}
             />
             <Separator />
+            {/* Picture */}
             <FormField
               control={form.control}
               name="image"
               render={({ field }) => (
                 <FormItem>
                   <div className="grid grid-cols-11 items-center gap-3">
-                    <h2 className="col-span-3">Picture</h2>
+                    <h2 className="col-span-3 text-sm">Picture</h2>
                     <FormControl>
                       <Input
                         id="picture"
@@ -344,7 +367,7 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
             <Separator />
             <FormItem>
               <div className="grid grid-cols-11 items-center gap-3">
-                <h2 className="col-span-3">Reset Password</h2>
+                <h2 className="col-span-3 text-sm">Reset Password</h2>
                 <Button variant={"outline"} className="px-16 active:scale-95">
                   Reset
                 </Button>

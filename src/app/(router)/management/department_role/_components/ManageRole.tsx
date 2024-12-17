@@ -10,12 +10,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import {
   BadgeAlert,
   BadgeCheck,
   Dot,
@@ -277,7 +271,9 @@ const ManageRole = () => {
   // }, [permissions]);
   return (
     <div className="@container">
-      <h2 className="text-2xl font-bold text-stone-700">Manage Role</h2>
+      <h2 className="text-3xl font-bold text-stone-700">
+        การจัดการ<span className="text-blue-400">ตำแหน่ง</span>
+      </h2>
       <div className="flex justify-between items-center my-3">
         <div className="flex items-center space-x-2">
           <Switch id="airplane-mode" />
@@ -286,20 +282,13 @@ const ManageRole = () => {
 
         {/* ส่วนของการสร้างRole */}
         <Dialog open={open} onOpenChange={setOpen}>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <DialogTrigger asChild>
-                  <Button variant="outline" className="p-2 active:scale-95">
-                    <Plus />
-                  </Button>
-                </DialogTrigger>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Create Role</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <DialogTrigger asChild>
+            <Button variant="outline" className="p-2 active:scale-95">
+              <Plus />
+              สร้างตำแหน่ง
+            </Button>
+          </DialogTrigger>
+
           <DialogContent className="sm:max-w-[625px]">
             <DialogHeader>
               <DialogTitle>

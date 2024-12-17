@@ -1,38 +1,10 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { ListEmployee } from "./_components/ListAllUser";
 import GlobalApi from "@/app/_util/GlobalApi";
 import useStore from "@/app/store/store";
-const OptionEmployee = [
-  {
-    id: "OEP01",
-    name: "สมาชิกทั้งหมด",
-    quantity: 100,
-    img: "/team.svg",
-    color: "from-red-300 to-pink-300",
-  },
-  {
-    id: "OEP02",
-    name: "ยังไม่ได้ระบุตำแหน่งงาน",
-    quantity: 15,
-    img: "/NewEmployee.svg",
-    color: "from-green-200 to-emerald-300",
-  },
-  {
-    id: "OEP03",
-    name: "ยังไม่ได้ระบุหน่วยงาน",
-    quantity: 65,
-    img: "/male.svg",
-    color: "from-blue-300 to-cyan-300",
-  },
-  {
-    id: "OEP04",
-    name: "ยังประเมินไม่ครบ",
-    quantity: 20,
-    img: "/female.svg",
-    color: "from-purple-300 to-fuchsia-300",
-  },
-];
+import { User } from "@/types/interface";
+
 const page = () => {
   const { setRole, setDepartments } = useStore();
   const fetchRole = async () => {
@@ -52,9 +24,48 @@ const page = () => {
       console.error("Error fetching department data:", error);
     }
   };
+  const [allUser, setAllUser] = useState<User[]>([]);
+  const fetchUserList = async () => {
+    try {
+      const response = await GlobalApi.getAllUsers();
+      // console.log("AllUser", response?.data);
+      setAllUser(response?.data);
+    } catch (error) {
+      console.error({ message: error });
+    }
+  };
 
+  const OptionEmployee = [
+    {
+      id: "OEP01",
+      name: "สมาชิกทั้งหมด",
+      quantity: allUser.length,
+      color: "from-red-300 to-pink-300",
+    },
+    {
+      id: "OEP02",
+      name: "ยังไม่ระบุตำแหน่งงาน",
+      quantity: allUser.filter((fil) => fil.role.role_name === "member").length,
+      color: "from-green-200 to-emerald-300",
+    },
+    {
+      id: "OEP03",
+      name: "ยังไม่ระบุหน่วยงาน",
+      quantity: allUser.filter(
+        (fil) => !fil.department && fil.role.role_name !== "admin"
+      ).length,
+      color: "from-blue-300 to-cyan-300",
+    },
+    {
+      id: "OEP04",
+      name: "ยังไม่ถูกเพิ่มรูปโปรไฟล์",
+      quantity: allUser.filter((fil) => !fil.image).length,
+      color: "from-purple-300 to-fuchsia-300",
+    },
+  ];
   useEffect(() => {
     fetchRole();
+    fetchUserList();
     getDepartment();
   }, []);
   return (
@@ -89,7 +100,7 @@ const page = () => {
           <p className="text-gray-500">
             The request is in the state Waiting for success
           </p>
-          <ListEmployee />
+          <ListEmployee allUser={allUser} fetchUserList={fetchUserList} />
         </div>
       </div>
     </div>

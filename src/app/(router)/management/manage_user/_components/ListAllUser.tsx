@@ -59,23 +59,41 @@ import UserProfile from "./UserProfile";
 import GlobalApi from "@/app/_util/GlobalApi";
 import { PageNumber, User } from "@/types/interface";
 import React, { useEffect, useState } from "react";
+import { Checkbox } from "@/components/ui/checkbox";
 
-export function ListEmployee() {
+type ListEmployeeProp = {
+  allUser: User[];
+  fetchUserList: () => void;
+};
+export function ListEmployee({ allUser, fetchUserList }: ListEmployeeProp) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
   const [globalFilter, setGlobalFilter] = useState("");
-  const [allUser, setAllUser] = useState<User[]>([]);
-  const fetchUserList = async () => {
-    const response = await GlobalApi.getAllUsers();
-    // console.log("AllUser", response?.data);
-    setAllUser(response?.data);
-  };
-  useEffect(() => {
-    fetchUserList();
-  }, []);
   const columns: ColumnDef<User>[] = [
+    {
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
     {
       accessorKey: "index",
       header: ({ column }) => {
@@ -103,7 +121,7 @@ export function ListEmployee() {
       header: "Name",
       cell: ({ row }) => {
         const image = row.original.image;
-        console.log("image :", image);
+        // console.log("image :", image);
 
         return (
           <div className="capitalize flex items-center gap-3">
@@ -236,10 +254,10 @@ export function ListEmployee() {
               <DialogHeader>
                 <DialogTitle>
                   <div className="flex items-center gap-2">
-                    <div className="bg-cyan-50 p-2 rounded-full">
+                    <div className="bg-blue-50 p-2 rounded-full">
                       <UserRoundCog size={30} className="text-blue-500" />
                     </div>
-                    <h2 className="text-2xl">Edit user</h2>
+                    <h2 className="text-xl text-stone-800">Edit user</h2>
                   </div>
                 </DialogTitle>
                 <DialogDescription>
@@ -429,7 +447,10 @@ export function ListEmployee() {
         </Table>
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="flex-1 text-sm text-muted-foreground"></div>
+        <div className="flex-1 text-sm text-muted-foreground">
+          {table.getFilteredSelectedRowModel().rows.length} of{" "}
+          {table.getFilteredRowModel().rows.length} row(s) selected.
+        </div>
         <div className="space-x-2">
           <Pagination>
             <PaginationContent>
