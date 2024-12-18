@@ -27,7 +27,6 @@ import {
   getResultEvaluateType,
   PeriodType,
 } from "@/types/interface";
-import { Button } from "@/components/ui/button";
 import CategorizedTable from "./categorizedTable";
 import OverviewOfResults from "./overview-of-results";
 
@@ -49,7 +48,7 @@ const Personal_result = ({ period }: Personal_resultProp) => {
         period.period_id
       );
       const data = response?.data;
-      console.log("data", data);
+      // console.log("data", data);
 
       if (data) {
         setResultEvaluateDetail(data);
@@ -84,8 +83,8 @@ const Personal_result = ({ period }: Personal_resultProp) => {
         <div className="flex justify-center items-center">
           <TabsList className="w-auto">
             <TabsTrigger value="all-result">ผลรวมทั้งหมด</TabsTrigger>
-            {resultEvaluateDetail?.formResults.map((item) => (
-              <TabsTrigger value={`${item.formId}`}>
+            {resultEvaluateDetail?.formResults.map((item,index) => (
+              <TabsTrigger value={`${item.formId}`} key={index+'trigger'}>
                 {item.formName}
               </TabsTrigger>
             ))}
@@ -94,8 +93,8 @@ const Personal_result = ({ period }: Personal_resultProp) => {
         <TabsContent value="all-result">
           <OverviewOfResults resultEvaluateDetail={resultEvaluateDetail} />
         </TabsContent>
-        {resultEvaluateDetail?.formResults.map((item) => (
-          <TabsContent value={`${item.formId}`}>
+        {resultEvaluateDetail?.formResults.map((item,index) => (
+          <TabsContent value={`${item.formId}`} key={index+'tabsContent'}>
             <CategorizedTable formResultsItem={item} />
           </TabsContent>
         ))}

@@ -80,29 +80,6 @@ const CategorizedTable = ({ formResultsItem }: categorizedTableProp) => {
       </TableRow>
     </>
   );
-
-  const resultsByCharacteristics = (totalAvg: number | undefined) => {
-    try {
-      if (!totalAvg) {
-        throw new Error("totalAvg is undefined");
-      }
-      if (totalAvg >= 4.5) {
-        SetCharacteristics("10");
-      } else if (totalAvg >= 3.5) {
-        SetCharacteristics("9");
-      } else if (totalAvg >= 2.5) {
-        SetCharacteristics("8");
-      } else if (totalAvg >= 1.5) {
-        SetCharacteristics("7");
-      } else if (totalAvg < 1.5) {
-        SetCharacteristics("6");
-      } else {
-        SetCharacteristics("");
-      }
-    } catch (error) {
-      console.error({ message: error });
-    }
-  };
   //หาว่ามันมีทั้งหมดที่ type ใน formResults นี้ โดยตรวจสอบจาก score.type
   const extractScoreTypes = (formResultsItem: formResultsType) => {
     const types = new Set<string>();
@@ -119,9 +96,9 @@ const CategorizedTable = ({ formResultsItem }: categorizedTableProp) => {
     }
   }, []);
 
-  useEffect(() => {
-    scoreTypes.flatMap((type) => console.log("type", type));
-  }, [scoreTypes]);
+  // useEffect(() => {
+  //   scoreTypes.flatMap((type) => console.log("type", type));
+  // }, [scoreTypes]);
 
   return (
     <div className="mx-auto w-full max-w-screen-2xl">
@@ -190,45 +167,7 @@ const CategorizedTable = ({ formResultsItem }: categorizedTableProp) => {
                 })}
               </TableRow>
             ))}
-
-            {/* Total Summary Row */}
-            {/* {resultEvaluateDetail?.headData && (
-              <TableRow className="text-[16px] bg-yellow-200">
-                <TableCell colSpan={2} className="font-bold text-right">
-                  ผลรวมของ
-                </TableCell>
-                <TableCell className="text-left">
-                  {resultEvaluateDetail.headData.evaluatorName}
-                </TableCell>
-                <TableCell
-                  colSpan={scoreTypes.length * 2 + 2}
-                  className="text-center"
-                >
-                  เฉลี่ยรวม:{" "}
-                  {resultEvaluateDetail.headData.totalAvg?.toFixed(2) || "-"},
-                  SD รวม:{" "}
-                  {resultEvaluateDetail.headData.totalSD?.toFixed(2) || "-"}
-                </TableCell>
-              </TableRow>
-            )} */}
           </TableBody>
-
-          <TableFooter>
-            <TableRow className="text-right">
-              <TableCell
-                colSpan={5 + scoreTypes.length * 2}
-                className="text-center"
-              >
-                <h2>
-                  ผลการประเมินการปฎิบัติงานตามคุณลักษณะและพฤติกรรมในการปฎิบัติงาน
-                </h2>
-                <h2 className="flex justify-around mt-4">
-                  เท่ากับ <span className="text-xl">{Characteristics}</span>{" "}
-                  คะแนน
-                </h2>
-              </TableCell>
-            </TableRow>
-          </TableFooter>
         </Table>
       </div>
     </div>

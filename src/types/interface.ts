@@ -1,5 +1,6 @@
 type RoleLevel = "LEVEL_1" | "LEVEL_2" | "LEVEL_3" | "LEVEL_4";
 type PageNumber = number | 'ellipsis' | 'ellipsis1' | 'ellipsis2';
+type LevelFormVision = "VISION_1" | "VISION_2" | "UNSET";
 interface ImageType {
   id: string;
   url: string; // Add any additional fields that may be part of the image object
@@ -168,6 +169,7 @@ interface TotalEachType {
 }
 
 interface resultPerQuestionsType {
+  level: LevelFormVision;
   questionId: string,
   questionName: string,
   scores?: scoresType[],
@@ -255,5 +257,7 @@ export type {
   getAllSuperviseByAdminType,
   scoresType,
   formStates,
-  roleFormVision
+  roleFormVision,
+  resultPerQuestionsType,
+  LevelFormVision
 };
