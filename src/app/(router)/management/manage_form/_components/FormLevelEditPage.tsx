@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { GitFork } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -46,6 +46,24 @@ const FormLevelEditPage = ({ formItem, fetchForm }: FormLevelEditPageProp) => {
       visionLevel: "VISION_1" | "VISION_2" | "UNSET";
     };
   }>({});
+
+  // เพิ่ม state เก็บค่าเริ่มต้นของ stackFormLevel เพราะเดี๋ยวจะเอาไปเทียบกับ stackFormLevel ว่าต่างกันมั้ย
+  const [initialStackFormLevel, setInitialStackFormLevel] = useState<{
+    [key: string]: {
+      role_id: string;
+      visionLevel: "VISION_1" | "VISION_2" | "UNSET";
+    };
+  }>({});
+
+  const isFormUnchanged = useMemo(() => {
+    return (
+      JSON.stringify(stackFormLevel) === JSON.stringify(initialStackFormLevel)
+    );
+  }, [stackFormLevel, initialStackFormLevel]);
+
+  const showToast = (title: string, description: string) => {
+    toast(title, { description });
+  };
   const handleApiError = (error: any, message: string) => {
     console.error({ message: error });
     toast("เกิดข้อผิดพลาด", {
@@ -79,8 +97,14 @@ const FormLevelEditPage = ({ formItem, fetchForm }: FormLevelEditPageProp) => {
       };
 
       const response = await GlobalApi.updateVisionOfForm(payload);
-      console.log("response", response);
-      console.log("payload", payload);
+      if (!response) {
+        throw new Error("Can not updated vision form.");
+      }
+      showToast("อัพเดทVision Form สำเร็จ", `ระบบได้ save Vision form นี้แล้ว`);
+      // console.log("response", response);
+      // console.log("payload", payload);
+      // อัพเดทค่า initialStackFormLevel หลังจาก save สำเร็จ 
+      setInitialStackFormLevel(stackFormLevel);
     } catch (error) {
       handleApiError(error, "Error while update vision");
     }
@@ -100,9 +124,12 @@ const FormLevelEditPage = ({ formItem, fetchForm }: FormLevelEditPageProp) => {
   }, []);
   useEffect(() => {
     if (roles.length > 0) {
-      setStackFormLevel(createInitialStackFormLevel(roles));
+      const initialState = createInitialStackFormLevel(roles);
+      setStackFormLevel(initialState);
+      setInitialStackFormLevel(initialState);
     }
   }, [roles]);
+
   return (
     <div className="col-span-3 relative h-[430px] pl-7">
       <h2 className="text-lg font-medium">Form Level</h2>
@@ -154,7 +181,11 @@ const FormLevelEditPage = ({ formItem, fetchForm }: FormLevelEditPageProp) => {
         </ScrollArea>
       </div>
       <div className="absolute bottom-0 right-0">
-        <Button type="submit" onClick={() => handleSaveChanges(formItem.id)}>
+        <Button
+          type="submit"
+          onClick={() => handleSaveChanges(formItem.id)}
+          disabled={isFormUnchanged}
+        >
           Save changes
         </Button>
       </div>

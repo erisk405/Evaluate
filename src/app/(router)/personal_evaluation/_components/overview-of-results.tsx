@@ -186,7 +186,7 @@ const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
               <div
                 key={vesion_level}
                 className={`my-5  ${
-                  vesion_level === "VISION_1" ? "w-[70%] mx-auto" : "w-full"
+                  vesion_level === "VISION_1" ? "lg:w-[70%] mx-auto" : "w-full"
                 }`}
               >
                 <Table className="border rounded-lg">
@@ -297,7 +297,7 @@ const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
             )
           )}
         <div className="w-full">
-          <div className="w-[70%] mx-auto">
+          <div className="lg:w-[70%] mx-auto">
             <Table className="border rounded-lg ">
               <TableCaption>ผลการประเมินรายละเอียด</TableCaption>
               <TableHeader className=" text-lg bg-blue-300 text-center text-stone-800">

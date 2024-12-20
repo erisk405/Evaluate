@@ -542,6 +542,23 @@ const createEvaluate = (payload: createEvaluateType) => {
     console.error("API evaluate", { message: error });
   }
 };
+type updateEvaluateType = {
+  evaluate_id: string | undefined;
+  details: detailsType[];
+};
+type detailsType = {
+  id: string;
+  score: number;
+};
+const updateEvaluate = (payload: updateEvaluateType) => {
+  try {
+    return axios.put(`${apiUrl}/evaluate`, payload, {
+      withCredentials: true,
+    });
+  } catch (error) {
+    console.error({ message: error });
+  }
+};
 
 type findUserEvaluatedType = {
   period_id: string;
@@ -602,17 +619,17 @@ const getResultEvaluateDetail = (period_id: string) => {
     console.error("API getResultEvaluateDetail", { message: error });
   }
 };
-type updateVisionOfFormProp ={
-  formId:string,
-  stackFormLevel:typeOfStach[]
-}
-type typeOfStach ={
+type updateVisionOfFormProp = {
+  formId: string;
+  stackFormLevel: typeOfStach[];
+};
+type typeOfStach = {
   role_id: string;
   visionLevel: "VISION_1" | "VISION_2" | "UNSET";
-}
-const updateVisionOfForm = (payload:updateVisionOfFormProp) => {
+};
+const updateVisionOfForm = (payload: updateVisionOfFormProp) => {
   try {
-    return axios.put(`${apiUrl}/roleFormVision`,payload, {
+    return axios.put(`${apiUrl}/roleFormVision`, payload, {
       withCredentials: true,
     });
   } catch (error) {
@@ -674,4 +691,5 @@ export default {
   resetPassword,
   getResultEvaluateDetail,
   updateVisionOfForm,
+  updateEvaluate,
 };

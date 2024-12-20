@@ -141,8 +141,15 @@ interface PrefixType {
 }
 
 interface userHaveBeenEvaluatedType {
+  id?:string,
+  evaluateDetail: evaluateDetailType[]
   period: { period_id: string, title: string }
-  evaluator: { id: string, name: string }
+  evaluator: { id: string, name: string, prefix: PrefixType }
+}
+interface evaluateDetailType {
+  formQuestion: FormQuestion,
+  id: string,
+  score: number
 }
 // --------------------------------------------------------------------------------
 // This is Type of all getResultEvaluateType and getResultEvaluateDetail form database

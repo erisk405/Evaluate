@@ -13,7 +13,11 @@ import {
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
-import { PermissionFormItem, User } from "@/types/interface";
+import {
+  PermissionFormItem,
+  User,
+  userHaveBeenEvaluatedType,
+} from "@/types/interface";
 import useStore from "@/app/store/store";
 import { useParams } from "next/navigation";
 import GlobalApi from "@/app/_util/GlobalApi";
@@ -26,89 +30,78 @@ type PayloadQuestion = {
   content: string;
   score: string;
 };
+type detailsType = {
+  id: string;
+  score: number;
+};
 
-type Payload = Record<
-  string,
-  {
+interface Payload {
+  [key: string]: {
     formId: string;
     question: PayloadQuestion[];
-  }
->;
-
-type evaluateSection = {
+  };
+}
+interface EvaluateSection {
   evaluatorUserTarget: User;
   fetchUserHaveBeenEvaluated: () => void;
   setOpen: (open: boolean) => void;
-};
+  defaultScoreOfUserHasEval?: userHaveBeenEvaluatedType;
+}
 
-const EvaluateSection = ({
+const SCORE_OPTIONS = [5, 4, 3, 2, 1];
+const DEFAULT_SCORE = "3";
+
+const EvaluateSection: React.FC<EvaluateSection> = ({
   evaluatorUserTarget,
   fetchUserHaveBeenEvaluated,
   setOpen,
-}: evaluateSection) => {
-  const [formEvaluation, setFormEvaluation] = useState<
-    PermissionFormItem[] | undefined
+  defaultScoreOfUserHasEval,
+}) => {
+  const [formEvaluation, setFormEvaluation] = useState<PermissionFormItem[]>(
+    []
+  );
+  const [payload, setPayload] = useState<Payload>({});
+  const [payloadForUpdate, setPayloadForUpdate] = useState<
+    Array<{ question_id: string; score: string }>
   >([]);
   const { ProfileDetail, currentlyEvaluationPeriod } = useStore();
-  const [payload, setPayload] = useState<Payload>({});
-  // เพิ่ม useEffect เพื่อ initialize payload เมื่อ formEvaluation เปลี่ยน
-  useEffect(() => {
-    if (formEvaluation && formEvaluation.length > 0) {
-      const initialPayload = formEvaluation.reduce<Payload>(
-        (acc, curr) => ({
-          ...acc,
-          [curr.form.name]: {
-            formId: curr.form.id,
-            question: curr.form.questions.map((item) => ({
-              questionId: item.id,
-              content: item.content,
-              score: "3",
-            })),
-          },
-        }),
-        {}
-      );
-      setPayload(initialPayload);
-    }
-  }, [formEvaluation]);
 
-  const handlePayloadChange = (
-    headTitle: string,
+  const handleScoreChange = (
+    formName: string,
     formId: string,
-    newValues: { id: string; content: string; score: string }
+    questionId: string,
+    newScore: string
   ) => {
-    // ใช้ setPayload เพื่ออัพเดท state โดยรับ previous state (prev) เป็น parameter
+    setPayload((prev) => ({
+      ...prev,
+      [formName]: {
+        formId,
+        question: prev[formName].question.map((q) =>
+          q.questionId === questionId ? { ...q, score: newScore } : q
+        ),
+      },
+    }));
+    // Update payload for existing evaluations
+    // ในส่วนนี้เป็นการจัดการกับการอัพเดทคะแนนสำหรับการประเมินที่มีอยู่แล้ว
+    if (defaultScoreOfUserHasEval) {
+      setPayloadForUpdate((prev) => {
+        // ถ้าไม่เจอจะได้ -1
+        const existingIndex = prev.findIndex(
+          (item) => item.question_id === questionId
+        );
+        const newItem = { question_id: questionId, score: newScore };
 
-    setPayload((prev) => {
-      // ดึงข้อมูลคำถามทั้งหมดของหัวข้อนั้นๆ จาก previous state
-      // prev[headTitle] คือการเข้าถึงข้อมูลของหัวข้อนั้นๆ เช่น "ทักษะการปฎิบัติงาน"
-      // .question คือการเข้าถึง array ของคำถามทั้งหมดในหัวข้อนั้น
-      const currentQuestions = prev[headTitle].question;
-      // console.log("currentQuestions:", currentQuestions);
-      // สร้าง array ใหม่โดยการ map ข้อมูลเดิม
-      const updatedQuestions = currentQuestions.map(
-        (question) =>
-          // นำค่าใหม่ newValues ที่ user กดมาอัพเดทลง state ใหม่ ก็เลย เอาquestion.questionId === newValues.id  เพื่ออัพเดทค่าไปใหม่
-          // ถ้าตรง: สร้าง object ใหม่โดย
-          // ...question = copy ข้อมูลเดิมทั้งหมดของคำถามนั้น (questionId, content)
-          // score: newValues.score = อัพเดทค่า score เป็นค่าใหม่ที่ user เลือก
-          question.questionId === newValues.id
-            ? { ...question, score: newValues.score }
-            : question // ถ้าไม่ตรง: ส่งคืนข้อมูลเดิมโดยไม่มีการเปลี่ยนแปลง
-      );
-
-      // สร้าง object ใหม่สำหรับ state
-      return {
-        ...prev, // copy ข้อมูลทั้งหมดจาก previous state
-        [headTitle]: {
-          // อัพเดทเฉพาะหัวข้อที่มีการเปลี่ยนแปลง
-          formId: formId, // กำหนด formID
-          question: updatedQuestions, // ใส่ array คำถามที่อัพเดทแล้ว
-        },
-      };
-    });
+        return existingIndex === -1
+          ? [...prev, newItem] // กรณีไม่เคยแก้ไข
+          : prev.map(
+              (
+                item,
+                index // กรณีเคยแก้ไขแล้ว
+              ) => (index === existingIndex ? newItem : item)
+            );
+      });
+    }
   };
-
   const handleRaioColorChange = (formId: string, questionId: string) => {
     // console.log("formId",formId,"questionId",questionId);
     const section = Object.values(payload).find(
@@ -125,126 +118,129 @@ const EvaluateSection = ({
       return ""; // Return empty string if no match found
     }
   };
-
   const handleSubmit = async () => {
     try {
-      if (!payload) {
-        throw new Error("Form data not found");
+      if (!payload || !currentlyEvaluationPeriod) {
+        throw new Error("Missing required data");
       }
-      if (!currentlyEvaluationPeriod) {
-        throw new Error(
-          "Not Found Currently about Determining the evaluation period"
+      // is created evaluation
+      if (!defaultScoreOfUserHasEval) {
+        const questions = Object.values(payload).flatMap((item) =>
+          item.question.map((q) => ({
+            questionId: q.questionId,
+            score: q.score,
+          }))
         );
-      }
-      const allQuestions = Object.values(payload).flatMap((item) =>
-        item.question.map((q) => ({
-          questionId: q.questionId,
-          score: q.score,
-        }))
-      );
-      const data = {
-        period_id: currentlyEvaluationPeriod.period_id,
-        assessor_id: ProfileDetail.id!, // Ensuring non-null
-        evaluator_id: evaluatorUserTarget.id,
-        questions: allQuestions, // ตอนแรกเป็นarrays เลยส่งไปแบบ object ที่มีความสัมพันธ์แบบ key value
-      };
-      console.log("data", data);
+        const data = {
+          period_id: currentlyEvaluationPeriod.period_id,
+          assessor_id: ProfileDetail.id!, // Ensuring non-null
+          evaluator_id: evaluatorUserTarget.id,
+          questions, // ตอนแรกเป็นarrays เลยส่งไปแบบ object ที่มีความสัมพันธ์แบบ key value
+        };
+        console.log("data", data);
 
-      const response = await GlobalApi.createEvaluate(data);
-      console.log("response", response);
-      // const { evaluator_id } = response?.data;
-      // socket.emit("roleRequestHandled", {
-      //   evaluator_id,
-      // });
-      toast({
-        title: "บันทึกข้อมูลเรียบร้อยแล้ว",
-        description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-x-auto">
-            <code className="text-white whitespace-pre-wrap break-words">
-              {JSON.stringify(response?.data, null, 2)}
-            </code>
-          </pre>
-        ),
-      });
+        const response = await GlobalApi.createEvaluate(data);
+        console.log("response", response);
+        toast({
+          title: "บันทึกข้อมูลเรียบร้อยแล้ว",
+          description: (
+            <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-x-auto">
+              <code className="text-white whitespace-pre-wrap break-words">
+                {JSON.stringify(response?.data, null, 2)}
+              </code>
+            </pre>
+          ),
+        });
+      } else {
+        // Update existing evaluation
+        const detailsUpdate = defaultScoreOfUserHasEval.evaluateDetail
+          .map((evd) => {
+            const update = payloadForUpdate.find(
+              (pfu) => pfu.question_id === evd.formQuestion.id
+            );
+            return update ? { id: evd.id, score: parseFloat(update.score) } : null;
+          })
+          .filter((item): item is detailsType => item !== null); // Type guard เพื่อให้ TypeScript รู้ว่า filter แล้วจะได้ detailsType แน่ๆ
+        console.log("details", detailsUpdate);
+
+        await GlobalApi.updateEvaluate({
+          evaluate_id: defaultScoreOfUserHasEval.id,
+          details: detailsUpdate,
+        });
+      }
 
       setOpen(false);
       // รอให้แอนิเมชันของ Sheet ปิดสำเร็จก่อน
       await new Promise((resolve) => setTimeout(resolve, 300)); // รอ 300ms (ระยะเวลาแอนิเมชัน)
       // เรียก fetchUserHaveBeenEvaluated หลังจากแอนิเมชันเสร็จสมบูรณ์
       fetchUserHaveBeenEvaluated();
-    } catch (error: unknown) {
-      // ตรวจสอบว่า error เป็น instance ของ AxiosError หรือไม่
-      if (axios.isAxiosError(error)) {
-        // ถ้าเป็น AxiosError ให้ดึงข้อมูลจาก response
-        toast({
-          title: "เกิดข้อผิดพลาด",
-          description: (
-            <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-x-auto">
-              <code className="text-white whitespace-pre-wrap break-words">
-                {JSON.stringify(error.response?.data?.message, null, 2)}
-              </code>
-            </pre>
-          ),
-        });
-      } else if (error instanceof Error) {
-        // ถ้าเป็น instance ของ Error ทั่วไป
-        toast({
-          title: "เกิดข้อผิดพลาด",
-          description: (
-            <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-x-auto">
-              <code className="text-white whitespace-pre-wrap break-words">
-                {JSON.stringify(error.message, null, 2)}
-              </code>
-            </pre>
-          ),
-        });
-      } else {
-        // กรณีที่ไม่สามารถระบุประเภทข้อผิดพลาดได้
-        toast({
-          title: "เกิดข้อผิดพลาดที่ไม่รู้จัก",
-          description: (
-            <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-x-auto">
-              <code className="text-white whitespace-pre-wrap break-words">
-                {JSON.stringify(error, null, 2)}
-              </code>
-            </pre>
-          ),
-        });
-      }
+    } catch (error) {
+      const errorMessage = axios.isAxiosError(error)
+        ? error.response?.data?.message
+        : error instanceof Error
+        ? error.message
+        : "เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ";
+
+      toast({
+        title: "เกิดข้อผิดพลาด",
+        description: errorMessage,
+        variant: "destructive",
+      });
     }
   };
   useEffect(() => {
-    // console.log("evaluatorUserTarget", evaluatorUserTarget);
-    const isMySupervise = evaluatorUserTarget?.supervise?.some(
-      (item) => item.department_id === ProfileDetail?.department?.id
-    );
-    console.log("isMySupervise", isMySupervise);
-
-    const ingroup = isMySupervise
-      ? true
-      : evaluatorUserTarget.department?.id === ProfileDetail?.department?.id;
-    // console.log("ingroup", ProfileDetail);
-    // Find the appropriate permission for the evaluator
-    const matchedPermission = ProfileDetail?.role?.permissionsAsAssessor.find(
-      (item) => item.evaluator_role_id === evaluatorUserTarget.role.id
-    );
-    // console.log("filteredPermissions", matchedPermission);
-    // Filter the forms based on the `ingroup` value
-    const Form = matchedPermission?.permissionForm.filter(
-      (item) => item.ingroup === ingroup
-    );
-    // console.log("Form", Form);
-    // Update the state with the filtered forms
-    if (Form) {
-      setFormEvaluation(Form);
-    } else {
-      setFormEvaluation([]);
-    }
-  }, [evaluatorUserTarget.department?.id, evaluatorUserTarget.role.id]);
-
+    const initializeFormEvaluation = () => {
+      // console.log("evaluatorUserTarget", evaluatorUserTarget);
+      const isMySupervise = evaluatorUserTarget?.supervise?.some(
+        (item) => item.department_id === ProfileDetail?.department?.id
+      );
+      // console.log("isMySupervise", isMySupervise);
+      const ingroup = isMySupervise
+        ? true
+        : evaluatorUserTarget.department?.id === ProfileDetail?.department?.id;
+      // console.log("ingroup", ProfileDetail);
+      // Find the appropriate permission for the evaluator
+      const matchedPermission = ProfileDetail?.role?.permissionsAsAssessor.find(
+        (item) => item.evaluator_role_id === evaluatorUserTarget.role.id
+      );
+      // console.log("filteredPermissions", matchedPermission);
+      // Filter the forms based on the `ingroup` value
+      const filteredForms = matchedPermission?.permissionForm.filter(
+        (item) => item.ingroup === ingroup
+      );
+      setFormEvaluation(filteredForms || []);
+    };
+    initializeFormEvaluation();
+  }, [evaluatorUserTarget, ProfileDetail]);
+  // เพิ่ม useEffect เพื่อ initialize payload เมื่อ formEvaluation เปลี่ยน
   useEffect(() => {
-    console.log("evaluatorUserTarget", evaluatorUserTarget);
-  }, [evaluatorUserTarget]);
+    if (!formEvaluation.length) return;
+    const initialPayload = formEvaluation.reduce<Payload>((acc, curr) => {
+      const questions = curr.form.questions.map((item) => {
+        const defaultScore = defaultScoreOfUserHasEval?.evaluateDetail.find(
+          (evd) => evd.formQuestion.id === item.id
+        );
+        return {
+          questionId: defaultScore?.formQuestion.id || item.id,
+          content: defaultScore?.formQuestion.content || item.content,
+          score: defaultScore?.score.toString() || DEFAULT_SCORE,
+        };
+      });
+      return {
+        ...acc,
+        [curr.form.name]: {
+          formId: curr.form.id,
+          question: questions,
+        },
+      };
+    }, {});
+    setPayload(initialPayload);
+  }, [formEvaluation, defaultScoreOfUserHasEval]);
+
+  // useEffect(() => {
+  //   console.log("evaluatorUserTarget", evaluatorUserTarget);
+  //   console.log("defaultScoreOfUserHasEval", defaultScoreOfUserHasEval);
+  // }, [evaluatorUserTarget]);
   return (
     <div className="mt-3">
       <div className="flex items-center w-full flex-col">
@@ -276,49 +272,50 @@ const EvaluateSection = ({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {formEvaluation?.map((item) => (
-                <React.Fragment key={item.form.id}>
+              {formEvaluation?.map(({ form }) => (
+                <React.Fragment key={form.id}>
                   <TableRow className="text-[16px] bg-blue-100">
                     <TableCell colSpan={3} className="font-bold text-stone-700">
-                      {item.form.name}
+                      {form.name}
                     </TableCell>
                   </TableRow>
-                  {item.form.questions?.map((ques, index) => (
-                    <TableRow key={ques.id} className="text-[16px]">
+                  {form.questions?.map((question, index) => (
+                    <TableRow key={question.id} className="text-[16px]">
                       <TableCell className="font-medium text-center">
                         {index + 1}
                       </TableCell>
-                      <TableCell>{ques.content}</TableCell>
+                      <TableCell>{question.content}</TableCell>
                       <TableCell className="text-center min-w-[50px] w-[400px] max-w-[400px]">
                         <RadioGroup
-                          defaultValue="3"
                           className="flex gap-3 justify-around flex-wrap "
                           onValueChange={(value) => {
-                            handlePayloadChange(item.form.name, item.form.id, {
-                              id: ques.id,
-                              content: ques.content,
-                              score: value,
-                            });
+                            handleScoreChange(
+                              form.name,
+                              form.id,
+                              question.id,
+                              value
+                            );
+                            // hadlePayloadUpdateChange(ques.id,value);
                           }}
                         >
                           {/* ---------------------------------- */}
                           {/*            score contenct          */}
                           {/* ---------------------------------- */}
-                          {[5, 4, 3, 2, 1].map((score) => (
+                          {SCORE_OPTIONS.map((score) => (
                             <div
                               key={score}
                               className="flex items-center relative"
                             >
                               <RadioGroupItem
                                 value={score.toString()}
-                                id={`r${score}${ques.id}`}
+                                id={`r${score}${question.id}`}
                                 className="z-0 w-10 h-10"
                               />
                               <Label
-                                htmlFor={`r${score}${ques.id}`}
+                                htmlFor={`r${score}${question.id}`}
                                 className={`
                         ${
-                          handleRaioColorChange(item.form.id, ques.id) ===
+                          handleRaioColorChange(form.id, question.id) ===
                           score.toString()
                             ? "bg-blue-500 text-white"
                             : "bg-white text-black"

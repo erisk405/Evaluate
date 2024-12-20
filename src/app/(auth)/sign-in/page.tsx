@@ -21,9 +21,9 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { apiUrl } from "@/app/data/data-option";
 
-import { useToast } from "@/components/ui/use-toast"
+import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
-import { Loader } from "lucide-react";
+import { Eye, EyeOff, Loader } from "lucide-react";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -48,8 +48,12 @@ const formSchema = z.object({
 const page = () => {
   const Router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { toast } = useToast();
-  const { setError , formState: { errors }} = useForm();
+  const {
+    setError,
+    formState: { errors },
+  } = useForm();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -62,20 +66,22 @@ const page = () => {
     console.log(values);
     try {
       setLoading(true);
-      const response = await axios.post(`${apiUrl}/sign-in`,values,{withCredentials:true});
-      if(!response){
-        throw new Error("Invalid token"); 
+      const response = await axios.post(`${apiUrl}/sign-in`, values, {
+        withCredentials: true,
+      });
+      if (!response) {
+        throw new Error("Invalid token");
       }
       toast({
         title: "Login success",
         description: `✅ Your are login success`,
-        className:"bg-black text-white"
+        className: "bg-black text-white",
       });
-      Router.push('/overview');
-    } catch (error:any) {
+      Router.push("/overview");
+    } catch (error: any) {
       setLoading(false);
       const errorMessage = error?.response?.data.message;
-      setError('password', { type: 'manual', message: errorMessage });
+      setError("password", { type: "manual", message: errorMessage });
     }
   };
   return (
@@ -116,23 +122,44 @@ const page = () => {
                     <FormItem>
                       <FormLabel>password</FormLabel>
                       <FormControl>
-                        <Input placeholder="password" type="password" {...field} />
+                        <div className="relative">
+                          <Input
+                            placeholder="password"
+                            type={`${showPassword ? "text" : "password"}`}
+                            {...field}
+                          />
+                          {!showPassword ? (
+                            <EyeOff
+                              onClick={() => setShowPassword(!showPassword)}
+                              strokeWidth={1.8}
+                              size={18}
+                              className="absolute top-1/2 -translate-y-1/2 right-3"
+                            />
+                          ) : (
+                            <Eye
+                              onClick={() => setShowPassword(!showPassword)}
+                              strokeWidth={1.8}
+                              size={18}
+                              className="absolute top-1/2 -translate-y-1/2 right-3"
+                            />
+                          )}
+                        </div>
                       </FormControl>
                       <FormDescription>
                         This is your public display password.
                       </FormDescription>
                       {errors.password?.message && (
                         <FormMessage>
-                          {typeof errors.password.message === 'string'
+                          {typeof errors.password.message === "string"
                             ? errors.password.message
-                            : 'An error occurred'}
+                            : "An error occurred"}
                         </FormMessage>
                       )}
                     </FormItem>
                   )}
                 />
-                <Button  type="submit" className="w-full">
-                  {loading ? <Loader  className="animate-spin"/> : "Login"}
+                <Button type="submit" className="w-full">
+                  {loading ? <Loader className="animate-spin" /> : "Login"}
                 </Button>
                 <Button variant="outline" className="w-full">
                   Login with Google

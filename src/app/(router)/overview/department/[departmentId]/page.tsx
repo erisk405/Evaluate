@@ -69,7 +69,7 @@ const page = () => {
         // console.log("payload",payload);
         const response = await GlobalApi.findUserEvaluated(payload);
         setUserHaveBeenEvaluated(response?.data);
-        // console.log("findUserEvaluated",response?.data);
+        console.log("findUserEvaluated", response?.data);
       }
     } catch (error) {
       console.error({ message: error });

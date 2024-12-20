@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   Sheet,
   SheetContent,
@@ -25,6 +25,9 @@ const EvaluateSheet = ({
 }: EvaluateSheetProp) => {
   const [open, setOpen] = useState(false);
   const { currentlyEvaluationPeriod, ProfileDetail } = useStore();
+  const defaultScoreOfUserHasEval = useMemo(() => {
+    return userHaveBeenEvaluated?.find((f) => f.evaluator.id === item.id);
+  }, [item, userHaveBeenEvaluated]);
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
@@ -56,8 +59,7 @@ text-green-500 px-2 py-1 rounded-xl transition-all active:scale-95"
           </div>
         )}
       </SheetTrigger>
-      {!userHaveBeenEvaluated?.some((u) => u.evaluator.id === item.id) &&
-        currentlyEvaluationPeriod?.isAction &&
+      {currentlyEvaluationPeriod?.isAction &&
         ProfileDetail.id &&
         item.id !== ProfileDetail.id && (
           <SheetContent
@@ -73,7 +75,7 @@ text-green-500 px-2 py-1 rounded-xl transition-all active:scale-95"
             {/*        Conponent   Question and score input             */}
             {/* ------------------------------------------------------- */}
             <EvaluateSection
-              
+              defaultScoreOfUserHasEval={defaultScoreOfUserHasEval}
               evaluatorUserTarget={item}
               fetchUserHaveBeenEvaluated={fetchUserHaveBeenEvaluated}
               setOpen={setOpen}

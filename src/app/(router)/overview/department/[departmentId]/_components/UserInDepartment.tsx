@@ -66,7 +66,7 @@ import {
 import EvaluateSection from "./EvaluateSection";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import useStore from "@/app/store/store";
 
 export function UserInDepartment({
@@ -177,6 +177,9 @@ export function UserInDepartment({
         );
         const [open, setOpen] = useState(false);
         // console.log("userHaveBeenEvaluated", userHaveBeenEvaluated);
+        const defaultScoreOfUserHasEval = useMemo(() => {
+          return userHaveBeenEvaluated?.find((f) => f.evaluator.id === row.original.id);
+        }, [row.original.id, userHaveBeenEvaluated]);
         const { currentlyEvaluationPeriod } = useStore();
         return (
           <div className="flex justify-center">
@@ -208,8 +211,7 @@ export function UserInDepartment({
                   </div>
                 )}
               </SheetTrigger>
-              {!checkEvaluated &&
-                currentlyEvaluationPeriod?.isAction === true &&
+              {currentlyEvaluationPeriod?.isAction === true &&
                 row.original.id !== ProfileDetail.id && (
                   <SheetContent
                     side="bottom"
@@ -224,6 +226,7 @@ export function UserInDepartment({
                     {/*        Conponent   Question and score input             */}
                     {/* ------------------------------------------------------- */}
                     <EvaluateSection
+                      defaultScoreOfUserHasEval={defaultScoreOfUserHasEval}
                       evaluatorUserTarget={row.original}
                       fetchUserHaveBeenEvaluated={fetchUserHaveBeenEvaluated}
                       setOpen={setOpen}

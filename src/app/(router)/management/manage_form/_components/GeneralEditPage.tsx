@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Form,
   FormControl,
@@ -30,12 +30,20 @@ type GeneralEditPageProp = {
 };
 const GeneralEditPage = ({ formItem, fetchForm }: GeneralEditPageProp) => {
   // set ค่า defualt
+  const [initialValue, setInitialValue] = useState(formItem.name);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       formName: formItem.name,
     },
   });
+
+  const currentValue = form.watch("formName");
+  const isFormUnchanged = currentValue === initialValue;
+
+  const showToast = (title: string, description: string) => {
+    toast(title, { description });
+  };
   // ที่ต้องใช้ handleSubmit ที่เรียกจาก function แบบนี้ เพราะเราอยากได้ id จาก formState มาด้วยจึงต้องทำแยก
   const handleSaveChanges = (formId: string) => {
     form.handleSubmit((values) => onSubmit(values, formId))();
@@ -62,8 +70,11 @@ const GeneralEditPage = ({ formItem, fetchForm }: GeneralEditPageProp) => {
         id: formId,
         name: values.formName,
       };
-      console.log("values", values);
-      await GlobalApi.updateForm(data);
+      // console.log("values", values);
+      const response = await GlobalApi.updateForm(data);
+      showToast("อัพเดทชื่อฟอร์มสำเร็จ", `updated to ${response?.data.name}`);
+      setInitialValue(values.formName); // Update the initial value after successful submission
+
       fetchForm();
     } catch (error) {
       console.error({ message: error });
@@ -105,6 +116,7 @@ const GeneralEditPage = ({ formItem, fetchForm }: GeneralEditPageProp) => {
               type="submit"
               className="mt-3"
               onClick={() => handleSaveChanges(formItem.id)}
+              disabled={isFormUnchanged || !form.formState.isValid}
             >
               Save changes
             </Button>
