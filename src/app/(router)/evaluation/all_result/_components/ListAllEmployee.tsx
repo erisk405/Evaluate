@@ -51,8 +51,8 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import Image from "next/image";
-import { PageNumber, User } from "@/types/interface";
-import GlobalApi from "@/app/_util/GlobalApi";
+import { PageNumber, PeriodType, User } from "@/types/interface";
+import GlobalApi, { handleErrorOnAxios } from "@/app/_util/GlobalApi";
 import React, { useEffect, useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -90,128 +90,8 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import FilterPeriod from "./FilterPeriod";
-export const columns: ColumnDef<User>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "name",
-    header: "ชื่อ-นามสกุล",
-    cell: ({ row }) => (
-      <div className="capitalize flex items-center gap-3">
-        <Image
-          src={row.original.image ? row.original.image.url : "/profiletest.jpg"} // ดึง url จาก image object row.original.image.url เข้าถึง property image ซึ่งเป็น object แล้วดึง url จาก UserImage object นั้น
-          width={40}
-          height={40}
-          alt="profiletable"
-          className="w-[40px] h-[40px] rounded-full object-cover"
-        />
-        {row.getValue("name")}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "role",
-    header: "ตำแหน่ง",
-    cell: ({ row }) => {
-      return (
-        <div className="flex items-center">{row.original.role.role_name}</div>
-      );
-    },
-  },
-  {
-    accessorKey: "email",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="text-md"
-        >
-          Email
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
-  },
-  {
-    accessorKey: "period",
-    header: "รอบการประเมิน",
-    cell: ({ row }) => {
-      return (
-        <div className="capitalize flex items-center gap-3 ">
-          <h2>รอบที่ 1</h2>
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "action",
-    header: "รายละเอียด",
-    cell: ({ row }) => {
-      return (
-        <div className="capitalize flex items-center gap-3 ">
-          <Drawer>
-            <DrawerTrigger asChild>
-              <Button
-                variant="outline"
-                className="flex items-center active:scale-95 transition-all"
-              >
-                ดูรายละเอียด
-              </Button>
-            </DrawerTrigger>
-            <DrawerContent className="h-[calc(100dvh-10%)] ">
-              <div className="mx-auto w-full overflow-auto scrollbar-gemini">
-                <div className="mx-auto w-full max-w-lg ">
-                  <DrawerHeader className="flex flex-col justify-center items-center">
-                    <DrawerTitle className="text-xl">
-                      สรุปผลการประเมินสมรรถนะ 360 องศา นายกฤตภาส สัมฤทธิ์
-                    </DrawerTitle>
-                    <DrawerDescription>
-                      รอบที่ 1 ประจำปีงบประมาณ พ.ศ. 2567 (1 กันยายน 2566 - 28
-                      กุมภาพันธ์ 2567)
-                    </DrawerDescription>
-                  </DrawerHeader>
-                </div>
-                <div className="mx-auto w-full max-w-7xl">
-                  <ResultSection />
-                </div>
-                <div className="mx-auto w-full max-w-lg">
-                  <DrawerFooter>
-                    <Button>Export</Button>
-                    <DrawerClose asChild>
-                      <Button variant="outline">Cancel</Button>
-                    </DrawerClose>
-                  </DrawerFooter>
-                </div>
-              </div>
-            </DrawerContent>
-          </Drawer>
-        </div>
-      );
-    },
-  },
-];
+import Personal_result from "@/app/(router)/personal_evaluation/_components/Personal-result";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export function ListAllEmployee() {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -219,14 +99,27 @@ export function ListAllEmployee() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [globalFilter, setGlobalFilter] = useState("");
   const [allUser, setAllUser] = useState<User[]>([]);
-
+  const [selectPeriod, setSelectPeriod] = useState<PeriodType | null>(null);
   // select ตัวนี้ใช้กับ การที่ต้องการ select ข้อมูลทั้งตารางมาใช้ได้ในส่วนของ employee ในdepartment นั้นๆ
   const [rowSelection, setRowSelection] = useState({});
 
+  const onPeriodChange = (period: PeriodType) => {
+    try {
+      setSelectPeriod(period);
+    } catch (error) {
+      handleErrorOnAxios(error);
+    }
+  };
   const getDataOfEmployee = async () => {
     const response = await GlobalApi.getAllUsers();
-    if (response?.data) {
-      setAllUser(response.data);
+    const filterData = response?.data.filter(
+      (item: User) =>
+        item.role.role_name !== "member" && item.role.role_name !== "admin"
+    );
+    // console.log("filterData", filterData);
+
+    if (filterData) {
+      setAllUser(filterData);
     } else {
       setAllUser([]);
     }
@@ -236,6 +129,119 @@ export function ListAllEmployee() {
     getDataOfEmployee();
   }, []);
 
+  const columns: ColumnDef<User>[] = [
+    {
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      accessorKey: "name",
+      header: "ชื่อ-นามสกุล",
+      cell: ({ row }) => (
+        <div className="capitalize flex items-center gap-3">
+          <Image
+            src={
+              row.original.image ? row.original.image.url : "/profiletest.jpg"
+            } // ดึง url จาก image object row.original.image.url เข้าถึง property image ซึ่งเป็น object แล้วดึง url จาก UserImage object นั้น
+            width={40}
+            height={40}
+            alt="profiletable"
+            className="w-[40px] h-[40px] rounded-full object-cover"
+          />
+          {row.original.prefix?.prefix_name ?? ""}
+          {row.getValue("name")}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "role",
+      header: "ตำแหน่ง",
+      cell: ({ row }) => {
+        return (
+          <div className="flex items-center">{row.original.role.role_name}</div>
+        );
+      },
+    },
+    {
+      accessorKey: "email",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="text-md"
+          >
+            Email
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="lowercase">{row.getValue("email")}</div>
+      ),
+    },
+    {
+      accessorKey: "period",
+      header: "รอบการประเมิน",
+      cell: ({ row }) => {
+        return (
+          <div className="capitalize flex items-center gap-3 ">
+            <h2>{selectPeriod?.title}</h2>
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "action",
+      header: "รายละเอียด",
+      cell: ({ row }) => {
+        // console.log("row",row.original);
+
+        return (
+          <div className="capitalize flex items-center gap-3 ">
+            <Drawer>
+              <DrawerTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="flex items-center active:scale-95 transition-all"
+                >
+                  ดูรายละเอียด
+                </Button>
+              </DrawerTrigger>
+              <DrawerContent className="h-[calc(100dvh-10%)] ">
+                <div className="mx-auto w-full overflow-auto scrollbar-gemini">
+                  <div className="mx-auto w-full max-w-7xl">
+                    <Personal_result
+                      period={selectPeriod!!}
+                      userId={row.original.id}
+                    />
+                  </div>
+                </div>
+              </DrawerContent>
+            </Drawer>
+          </div>
+        );
+      },
+    },
+  ];
   const table = useReactTable({
     data: allUser ?? [],
     columns,
@@ -318,7 +324,7 @@ export function ListAllEmployee() {
             />
           </div>
           <div className="col-span-1 w-full">
-            <FilterPeriod />
+            <FilterPeriod onPeriodChange={onPeriodChange} />
           </div>
           {/* ปุ้ม switch ที่ใช้ในเลือกเฉพาะที่ดำเนินการเสร็จแล้ว */}
           <div className="flex items-center space-x-2 w-full col-span-1">
@@ -406,16 +412,18 @@ export function ListAllEmployee() {
                   {/* รายชื่อทั้งหมดที่กำลังจะดำเนินการต่อใป ในการ export */}
                   <h2 className="my-3 text-sm">รายชื่อที่จะดำเนินการทั้งหมด</h2>
                   <div className="flex flex-wrap gap-2">
-                    {allUser.map((item, index) => (
-                      <div
-                        key={item.id}
-                        className="inline-flex px-2 items-center gap-1 rounded-xl border"
-                      >
-                        <Dot strokeWidth={6} className="text-blue-500" />
-                        <h2 className="text-sm">{item.name}</h2>
-                        <X size={14} />
-                      </div>
-                    ))}
+                    <ScrollArea className="max-h-[200px]">
+                      {table.getSelectedRowModel().rows.map((row) => (
+                        <div
+                          key={row.original.id}
+                          className="inline-flex px-2 items-center gap-1 rounded-xl border"
+                        >
+                          <Dot strokeWidth={6} className="text-blue-500" />
+                          <h2 className="text-sm">{row.original.name}</h2>
+                          <X size={14} />
+                        </div>
+                      ))}
+                    </ScrollArea>
                   </div>
                 </TabsContent>
                 <TabsContent value="export">

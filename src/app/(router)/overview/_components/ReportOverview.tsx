@@ -43,7 +43,6 @@ const ReportOverview = () => {
       );
       setResultEvalEachDepartment(response?.data);
       // console.log("setResultEvalEachDepartment",response?.data);
-      
     } catch (error) {
       console.error({ message: error });
     }
@@ -51,7 +50,7 @@ const ReportOverview = () => {
   const fetchSupervise = async () => {
     try {
       const response = await GlobalApi.getSupervises();
-      console.log("supervise", response?.data?.data);
+      // console.log("supervise", response?.data?.data);
 
       setSupervise(response?.data?.data);
     } catch (error) {
@@ -107,8 +106,7 @@ const ReportOverview = () => {
   }, [currentlyEvaluationPeriod?.period_id]);
 
   useEffect(() => {
-    console.log("resultEvalEachDepartment",resultEvalEachDepartment);
-
+    console.log("resultEvalEachDepartment", resultEvalEachDepartment);
   }, [resultEvalEachDepartment]);
 
   return (
@@ -242,6 +240,7 @@ const ReportOverview = () => {
                         alt="hover profile"
                         className="rounded-lg w-[30px] h-[30px] object-cover"
                       />
+                      {item.user.prefix?.prefix_name}
                       {item.user.name}
                     </TableCell>
                     <TableCell>

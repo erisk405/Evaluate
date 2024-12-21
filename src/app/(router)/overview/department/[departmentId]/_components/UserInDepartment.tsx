@@ -121,7 +121,8 @@ export function UserInDepartment({
                 className="w-[40px] h-[40px] rounded-full object-cover"
               />
             )}
-            {row.getValue("name")}
+            {row.original?.prefix?.prefix_name}
+            {row?.getValue("name")}
           </div>
         );
       },
@@ -178,7 +179,9 @@ export function UserInDepartment({
         const [open, setOpen] = useState(false);
         // console.log("userHaveBeenEvaluated", userHaveBeenEvaluated);
         const defaultScoreOfUserHasEval = useMemo(() => {
-          return userHaveBeenEvaluated?.find((f) => f.evaluator.id === row.original.id);
+          return userHaveBeenEvaluated?.find(
+            (f) => f.evaluator.id === row.original.id
+          );
         }, [row.original.id, userHaveBeenEvaluated]);
         const { currentlyEvaluationPeriod } = useStore();
         return (

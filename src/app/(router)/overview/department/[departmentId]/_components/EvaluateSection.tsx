@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Table,
   TableBody,
@@ -24,6 +24,7 @@ import GlobalApi from "@/app/_util/GlobalApi";
 import { toast } from "@/components/ui/use-toast";
 import axios from "axios";
 import { formatThaiDateTime } from "../../../_components/RightSection";
+import { Loader } from "lucide-react";
 
 type PayloadQuestion = {
   questionId: string;
@@ -60,7 +61,9 @@ const EvaluateSection: React.FC<EvaluateSection> = ({
   const [formEvaluation, setFormEvaluation] = useState<PermissionFormItem[]>(
     []
   );
+  const [loading, setLoading] = useState(false);
   const [payload, setPayload] = useState<Payload>({});
+  const [initialPayload, setInitialPayload] = useState<Payload>({});
   const [payloadForUpdate, setPayloadForUpdate] = useState<
     Array<{ question_id: string; score: string }>
   >([]);
@@ -120,6 +123,7 @@ const EvaluateSection: React.FC<EvaluateSection> = ({
   };
   const handleSubmit = async () => {
     try {
+      setLoading(true);
       if (!payload || !currentlyEvaluationPeriod) {
         throw new Error("Missing required data");
       }
@@ -139,16 +143,17 @@ const EvaluateSection: React.FC<EvaluateSection> = ({
         };
         console.log("data", data);
 
-        const response = await GlobalApi.createEvaluate(data);
-        console.log("response", response);
+        await GlobalApi.createEvaluate(data);
+        // console.log("response", response);
         toast({
           title: "บันทึกข้อมูลเรียบร้อยแล้ว",
           description: (
-            <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-x-auto">
-              <code className="text-white whitespace-pre-wrap break-words">
-                {JSON.stringify(response?.data, null, 2)}
-              </code>
-            </pre>
+            <div className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-x-auto">
+              <h2 className="text-white whitespace-pre-wrap break-words">
+                ระบบได้บันทึกข้อมูลลงคะแนนประเมินของ {evaluatorUserTarget.name}{" "}
+                แล้ว
+              </h2>
+            </div>
           ),
         });
       } else {
@@ -158,17 +163,34 @@ const EvaluateSection: React.FC<EvaluateSection> = ({
             const update = payloadForUpdate.find(
               (pfu) => pfu.question_id === evd.formQuestion.id
             );
-            return update ? { id: evd.id, score: parseFloat(update.score) } : null;
+            return update
+              ? { id: evd.id, score: parseFloat(update.score) }
+              : null;
           })
           .filter((item): item is detailsType => item !== null); // Type guard เพื่อให้ TypeScript รู้ว่า filter แล้วจะได้ detailsType แน่ๆ
         console.log("details", detailsUpdate);
 
-        await GlobalApi.updateEvaluate({
+        const response = await GlobalApi.updateEvaluate({
           evaluate_id: defaultScoreOfUserHasEval.id,
           details: detailsUpdate,
         });
+        console.log("response", response);
+
+        toast({
+          title: "บันทึกข้อมูลเรียบร้อยแล้ว",
+          description: (
+            <div className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-x-auto">
+              <h2 className="text-white whitespace-pre-wrap break-words">
+                ระบบได้แก้ไขคะแนนของ{" "}
+                {JSON.stringify(`${response?.data.result.updateDetail.length}`)}{" "}
+                ข้อคำถามนั้นแล้ว
+              </h2>
+            </div>
+          ),
+        });
       }
 
+      setLoading(false);
       setOpen(false);
       // รอให้แอนิเมชันของ Sheet ปิดสำเร็จก่อน
       await new Promise((resolve) => setTimeout(resolve, 300)); // รอ 300ms (ระยะเวลาแอนิเมชัน)
@@ -188,6 +210,10 @@ const EvaluateSection: React.FC<EvaluateSection> = ({
       });
     }
   };
+
+  const isScoreUnchanged = useMemo(() => {
+    return JSON.stringify(payload) === JSON.stringify(initialPayload);
+  }, [payload, initialPayload]);
   useEffect(() => {
     const initializeFormEvaluation = () => {
       // console.log("evaluatorUserTarget", evaluatorUserTarget);
@@ -234,7 +260,9 @@ const EvaluateSection: React.FC<EvaluateSection> = ({
         },
       };
     }, {});
+
     setPayload(initialPayload);
+    setInitialPayload(initialPayload);
   }, [formEvaluation, defaultScoreOfUserHasEval]);
 
   // useEffect(() => {
@@ -340,8 +368,12 @@ const EvaluateSection: React.FC<EvaluateSection> = ({
           </Table>
         </div>
         <div className="flex justify-center my-3">
-          <Button type="submit" onClick={handleSubmit}>
-            Save inform
+          <Button
+            type="submit"
+            onClick={handleSubmit}
+            disabled={defaultScoreOfUserHasEval && isScoreUnchanged}
+          >
+            {loading ? <Loader className="animate-spin" /> : "บันทึกข้อมูล"}
           </Button>
         </div>
       </div>

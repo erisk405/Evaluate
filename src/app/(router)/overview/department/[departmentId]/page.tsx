@@ -69,7 +69,7 @@ const page = () => {
         // console.log("payload",payload);
         const response = await GlobalApi.findUserEvaluated(payload);
         setUserHaveBeenEvaluated(response?.data);
-        console.log("findUserEvaluated", response?.data);
+        // console.log("findUserEvaluated", response?.data);
       }
     } catch (error) {
       console.error({ message: error });
@@ -213,7 +213,7 @@ const page = () => {
                             <h2 className="text-md text-gray-300">
                               {item?.role.role_name}
                             </h2>
-                            <h2 className="text-lg">{item?.name}</h2>
+                            <h2 className="text-lg">{item.prefix?.prefix_name+item?.name}</h2>
                             <div
                               className="inline-flex items-center gap-2 bg-neutral-800 
               px-4 py-1 rounded-full text-neutral-400"

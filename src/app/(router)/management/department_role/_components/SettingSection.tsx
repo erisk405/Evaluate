@@ -9,7 +9,16 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Cog, GraduationCap, Loader, MoonStar, Star } from "lucide-react";
+import {
+  Cog,
+  Flame,
+  Gem,
+  GraduationCap,
+  Loader,
+  MoonStar,
+  Star,
+  StarHalf,
+} from "lucide-react";
 import Image from "next/image";
 import {
   Form,
@@ -275,7 +284,7 @@ export default function SettingSection({
                   <div>
                     <div className="grid grid-cols-2 gap-2 rounded-lg">
                       <div className="flex justify-end items-center gap-2">
-                        <MoonStar strokeWidth={1.5} className="text-blue-500" />
+                        <Flame strokeWidth={1.5} className="text-orange-500" />
                         รองผู้อำนวยการ/กำกับดูแล :{" "}
                       </div>
                       <div className="flex items-center gap-2">
@@ -307,7 +316,7 @@ export default function SettingSection({
                       <div className="flex justify-end items-center gap-2">
                         <GraduationCap
                           strokeWidth={1.5}
-                          className="text-red-500"
+                          className="text-amber-500"
                         />
                         สังกัดที่หน่วยงาน :{" "}
                       </div>

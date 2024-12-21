@@ -18,38 +18,41 @@ import {
 } from "@/components/ui/popover";
 import { CommandList } from "cmdk";
 import { useEffect, useState } from "react";
-
-const itemsPeriod = [
-  {
-    id: "IP01",
-    label: "รอบที่ 1 ประจำปีงบประมาณ พ.ศ. 2568",
-  },
-  {
-    id: "IP02",
-    label: "รอบที่ 2 ประจำปีงบประมาณ พ.ศ. 2568",
-  },
-  {
-    id: "IP03",
-    label: "รอบที่ 1 ประจำปีงบประมาณ พ.ศ. 2567",
-  },
-  {
-    id: "IP04",
-    label: "รอบที่ 2 ประจำปีงบประมาณ พ.ศ. 2567",
-  },
-] as const;
+import useStore from "@/app/store/store";
+import { PeriodType } from "@/types/interface";
+import { handleErrorOnAxios } from "@/app/_util/GlobalApi";
 
 interface FilterPeriodProps {
-  onPeriodChange?: (value: string) => void;
+  onPeriodChange?: (value: PeriodType) => void; // Changed from string to PeriodType
   defaultValue?: string;
 }
 
-const FilterPeriod = ({ onPeriodChange, defaultValue }: any) => {
+const FilterPeriod = ({ onPeriodChange, defaultValue }: FilterPeriodProps) => {
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("IP01");
-
+  const [selectedId, setSelectedId] = useState(""); // เพิ่ม state สำหรับเก็บ ID
+  const [selectedTitle, setSelectedTitle] = useState(""); // เพิ่ม state สำหรับเก็บ title
+  const [periods, setPeriods] = useState<PeriodType[]>([]);
+  const { fetchCurrentPeriod } = useStore();
   useEffect(() => {
-    console.log("Value:", value);
-  }, [value]);
+    const initialfetch = async () => {
+      try {
+        const data = await fetchCurrentPeriod();
+        setPeriods(data);
+        setSelectedId(data[0].period_id);
+        setSelectedTitle(data[0].period_id);
+        // ตรวจสอบว่า onPeriodChange มีค่าก่อนเรียกใช้
+        if (onPeriodChange) {
+          onPeriodChange(data[0] ?? []);
+        }
+      } catch (error) {
+        handleErrorOnAxios(error);
+      }
+    };
+    initialfetch();
+  }, []);
+  // useEffect(() => {
+  //   console.log("value", value);
+  // }, [value]);
   return (
     <div>
       {" "}
@@ -63,8 +66,8 @@ const FilterPeriod = ({ onPeriodChange, defaultValue }: any) => {
           >
             <div className="flex items-center justify-between w-full">
               <span className="truncate">
-                {itemsPeriod.find((period) => period.label === value)?.label ||
-                  "เลือกรอบการประเมิน"}
+                {periods.find((period) => period.period_id === selectedId)
+                  ?.title || "เลือกรอบการประเมิน"}
               </span>
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50 flex-none" />
             </div>
@@ -76,14 +79,23 @@ const FilterPeriod = ({ onPeriodChange, defaultValue }: any) => {
             <CommandEmpty>No period found.</CommandEmpty>
             <CommandGroup>
               <CommandList>
-                {itemsPeriod.map((period) => (
+                {periods.map((period) => (
                   <CommandItem
-                    key={period.id}
-                    value={period.label}
-                    onSelect={(currentValue) => {
-                      setValue(currentValue);
+                    key={period.period_id}
+                    value={period.title}
+                    onSelect={(currentTitle) => {
                       if (onPeriodChange) {
-                        onPeriodChange(currentValue);
+                        // Find the full period object and pass it to the callback
+                        const selectedPeriod = periods.find(
+                          (p) => p.title === currentTitle
+                        );
+                        if (selectedPeriod) {
+                          setSelectedId(selectedPeriod.period_id);
+                          setSelectedTitle(currentTitle);
+                          if (onPeriodChange) {
+                            onPeriodChange(selectedPeriod);
+                          }
+                        }
                       }
                       setOpen(false);
                     }}
@@ -91,10 +103,10 @@ const FilterPeriod = ({ onPeriodChange, defaultValue }: any) => {
                     <Check
                       className={cn(
                         "mr-2 h-4 w-4",
-                        value === period.label ? "opacity-100" : "opacity-0"
+                        selectedId  === period.period_id  ? "opacity-100" : "opacity-0"
                       )}
                     />
-                    {period.label}
+                    {period.title}
                   </CommandItem>
                 ))}
               </CommandList>

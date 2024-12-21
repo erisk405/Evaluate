@@ -33,65 +33,44 @@ import {
 
 import useStore from "@/app/store/store";
 import GlobalApi from "@/app/_util/GlobalApi";
-const items = [
-  {
-    id: "IT01",
-    label: "สำนักงานอำนวยการ",
-  },
-  {
-    id: "IT02",
-    label: "งานบริหารงานทั่วไป",
-  },
-  {
-    id: "IT03",
-    label: "งานประกันคุณภาพและประเมินผล",
-  },
-  {
-    id: "IT04",
-    label: "งานพัฒนาวิชาการและส่งเสริมการศึกษา",
-  },
-  {
-    id: "IT05",
-    label: "งานทะเบียนและประมวลผล",
-  },
-  {
-    id: "IT06",
-    label: "งานฝึกประสบการณ์วิชาชีพนักศึกษา",
-  },
-] as const;
 
 const page = () => {
   const [open, setOpen] = useState(true);
   const [openPeriod, setOpenPeriod] = useState(true);
   const [openRole, setOpenRole] = useState(true);
-
+  const { departments, setDepartments } = useStore();
   const { roles, setRole } = useStore();
 
   const FormSchema = z.object({
-    items: z.array(z.string()).refine((value) => value.some((item) => item), {
-      message: "You have to select at least one item.",
-    }),
+    departments: z
+      .array(z.string())
+      .refine((value) => value.some((item) => item), {
+        message: "You have to select at least one item.",
+      }),
     itemsRole: z
       .array(z.string())
       .refine((value) => value.some((item) => item), {
         message: "You have to select at least one item.",
       }),
-    itemsPeriod: z
-      .array(z.string())
-      .refine((value) => value.some((item) => item), {
-        message: "You have to select at least one item.",
-      }),
   });
+  const getDepartment = async () => {
+    try {
+      const response = await GlobalApi.getDepartment();
+      setDepartments(response?.data); // ตั้งค่าเป็นอาเรย์ว่างถ้าไม่มีข้อมูล
+      // console.log("departments", departments);
+    } catch (error) {
+      console.error("Error fetching department data:", error);
+    }
+  };
+
+  useEffect(() => {
+    getDepartment();
+  }, []);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      items: ["IT04", "IT05"],
-      itemsRole: [
-        "81911879-52c6-4c8f-9732-fda56aac0e54",
-        "7d3cd037-67fa-4771-8885-a406622f7e39",
-        "3ee8b849-cc18-4e30-b0df-6aaab9e942b3",
-      ], // เพิ่มค่าเริ่มต้นเป็น array ว่าง
-      itemsPeriod: ["IP03", "IP04"],
+      departments: [],
+      itemsRole: [], // เพิ่มค่าเริ่มต้นเป็น array ว่าง
     },
   });
 
@@ -114,6 +93,20 @@ const page = () => {
   useEffect(() => {
     fetchRole();
   }, []);
+  useEffect(() => {
+    if (roles && roles.length > 0) {
+      const roleIds = roles
+        .filter(
+          (role) => role.role_name !== "member" && role.role_name !== "admin"
+        )
+        .map((role) => role.id);
+      form.setValue("itemsRole", roleIds);
+    }
+    if (departments && departments.length > 0) {
+      const departmentIds = departments.map((dep) => dep.id);
+      form.setValue("departments", departmentIds);
+    }
+  }, [roles, form, departments]);
   // useEffect(() => {
   //   console.log(roles);
   // }, [roles]);
@@ -139,7 +132,7 @@ const page = () => {
               >
                 <FormField
                   control={form.control}
-                  name="items"
+                  name="departments"
                   render={() => (
                     <FormItem>
                       <Collapsible open={open} onOpenChange={setOpen}>
@@ -162,11 +155,11 @@ const page = () => {
                         </CollapsibleTrigger>
 
                         <CollapsibleContent className="space-y-4 pl-6">
-                          {items.map((item) => (
+                          {departments.map((item) => (
                             <FormField
                               key={item.id}
                               control={form.control}
-                              name="items"
+                              name="departments"
                               render={({ field }) => (
                                 <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                                   <FormControl>
@@ -187,7 +180,7 @@ const page = () => {
                                     />
                                   </FormControl>
                                   <FormLabel className="font-normal">
-                                    {item.label}
+                                    {item.department_name}
                                   </FormLabel>
                                 </FormItem>
                               )}
@@ -204,10 +197,7 @@ const page = () => {
                   name="itemsRole"
                   render={() => (
                     <FormItem>
-                      <Collapsible
-                        open={openRole}
-                        onOpenChange={setOpenRole}
-                      >
+                      <Collapsible open={openRole} onOpenChange={setOpenRole}>
                         <CollapsibleTrigger className="w-full">
                           <div className="flex items-center justify-between w-full text-left mb-4">
                             <div>
@@ -227,37 +217,43 @@ const page = () => {
                         </CollapsibleTrigger>
 
                         <CollapsibleContent className="space-y-4 pl-6">
-                          {roles.map((item) => (
-                            <FormField
-                              key={item.id}
-                              control={form.control}
-                              name="itemsRole"
-                              render={({ field }) => (
-                                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                                  <FormControl>
-                                    <Checkbox
-                                      checked={field.value?.includes(item.id)}
-                                      onCheckedChange={(checked) => {
-                                        return checked
-                                          ? field.onChange([
-                                              ...field.value,
-                                              item.id,
-                                            ])
-                                          : field.onChange(
-                                              field.value?.filter(
-                                                (value) => value !== item.id
-                                              )
-                                            );
-                                      }}
-                                    />
-                                  </FormControl>
-                                  <FormLabel className="font-normal">
-                                    {item.role_name}
-                                  </FormLabel>
-                                </FormItem>
-                              )}
-                            />
-                          ))}
+                          {roles.map(
+                            (item) =>
+                              item.role_name !== "member" &&
+                              item.role_name !== "admin" && (
+                                <FormField
+                                  key={item.id}
+                                  control={form.control}
+                                  name="itemsRole"
+                                  render={({ field }) => (
+                                    <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                                      <FormControl>
+                                        <Checkbox
+                                          checked={field.value?.includes(
+                                            item.id
+                                          )}
+                                          onCheckedChange={(checked) => {
+                                            return checked
+                                              ? field.onChange([
+                                                  ...field.value,
+                                                  item.id,
+                                                ])
+                                              : field.onChange(
+                                                  field.value?.filter(
+                                                    (value) => value !== item.id
+                                                  )
+                                                );
+                                          }}
+                                        />
+                                      </FormControl>
+                                      <FormLabel className="font-normal">
+                                        {item.role_name}
+                                      </FormLabel>
+                                    </FormItem>
+                                  )}
+                                />
+                              )
+                          )}
                         </CollapsibleContent>
                       </Collapsible>
                       <FormMessage />

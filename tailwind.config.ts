@@ -97,11 +97,12 @@ const config = {
 				'float': {
 					'0%, 100%': {
 						transform: 'translateY(0)',
-						boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)'
+						filter: 'drop-shadow(-1px 20px 61px orange)'
+
 					},
 					'50%': {
 						transform: 'translateY(-10px)',
-						boxShadow: '0 20px 35px rgba(0, 0, 0, 0.2)'
+						filter: 'drop-shadow(0px 0px 100px #ffedbd)'
 					}
 				}
 			},

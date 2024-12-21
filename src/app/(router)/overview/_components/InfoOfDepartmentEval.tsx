@@ -176,7 +176,7 @@ const InfoOfDepartmentEval = () => {
           <DialogTrigger asChild>
             {renderDepartmentHoverInfo(item, index)}
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[825px]">
+          <DialogContent className="sm:max-w-[725px]">
             <DialogHeader>
               <DialogTitle>ข้อมูลสมาชิกภายในหน่วยงาน</DialogTitle>
               <DialogDescription>
@@ -185,9 +185,24 @@ const InfoOfDepartmentEval = () => {
             </DialogHeader>
             <ScrollArea className="h-[458px]">
               {item.unfinishUsers?.map((item) => (
-                <div className="grid grid-cols-4 gap-4 px-5 py-4" key={item.id}>
-                  <div className="col-span-3">{item.name}</div>
-                  <div className="col-span-1">ยังประเมินไม่ครบ</div>
+                <div
+                  className="grid grid-cols-4 items-center gap-4 px-5 py-2"
+                  key={item.id}
+                >
+                  <div className="col-span-3 flex items-center gap-3">
+                    <Image
+                      src={(item.image && item.image.url) || "/profiletest.jpg"}
+                      width={50}
+                      height={50}
+                      className="rounded-lg w-[50px] h-[50px] object-cover "
+                      alt="unfinishProfile"
+                    />
+                    <div className="text-sm">
+                      <h2>{item.name}</h2>
+                      <p className="text-gray-500">{item.role.role_name}</p>
+                    </div>
+                  </div>
+                  <div className="col-span-1 text-sm">ยังประเมินไม่ครบ</div>
                 </div>
               ))}
             </ScrollArea>

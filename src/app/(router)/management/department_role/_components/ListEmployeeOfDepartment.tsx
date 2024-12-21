@@ -117,6 +117,7 @@ export const columns: ColumnDef<User>[] = [
           alt="profiletable"
           className="w-[40px] h-[40px] rounded-full object-cover"
         />
+        {row.original.prefix?.prefix_name ?? ""}
         {row.getValue("name")}
       </div>
     ),
@@ -236,7 +237,7 @@ export function ListEmployeeOfDepartment({
       console.log("Payload:", payload); // For debugging
 
       const response = await GlobalApi.addUsersToDepartment(payload);
-      if (response.data) {
+      if (response?.data) {
         fetchUserEmptyDepartment(); // รอให้ addUsersToDepartment เสร็จสิ้นก่อน แล้วเรียก fetch อีกครั้ง เพื่อให้แสดงผลเลย ไม่ต้อง reload
       }
       setIsLoading(true);
@@ -258,7 +259,7 @@ export function ListEmployeeOfDepartment({
 
     try {
       const response = await GlobalApi.addUsersToDepartment(payload);
-      if (response.data) {
+      if (response?.data) {
         fetchUserEmptyDepartment(); // รอให้ addUsersToDepartment เสร็จสิ้นก่อน แล้วเรียก fetch อีกครั้ง เพื่อให้แสดงผลเลย ไม่ต้อง reload
       }
     } catch (error) {
@@ -294,7 +295,20 @@ export function ListEmployeeOfDepartment({
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
-    onGlobalFilterChange: setGlobalFilter,
+    globalFilterFn: (row, columnId, filterValue) => {
+      const searchValue = filterValue.toLowerCase();
+      // สร้างอาร์เรย์ค่าทั้งหมดที่ต้องการค้นหา
+      const searchableFields = [
+        row.original.prefix?.prefix_name.toLocaleLowerCase(),
+        row.original.name?.toLowerCase(),
+        row.original.role?.role_name?.toLowerCase(),
+        row.original.email?.toLowerCase(),
+        row.original.phone?.toLowerCase(),
+        row.original.department?.department_name?.toLowerCase(),
+      ];
+      // ตรวจสอบว่า searchValue ตรงกับค่าที่อยู่ใน searchableFields หรือไม่
+      return searchableFields.some((field) => field?.includes(searchValue));
+    },
   });
   // สร้างฟังก์ชันสำหรับสร้าง pagination items
   const totalPages = Math.ceil(
@@ -343,7 +357,7 @@ export function ListEmployeeOfDepartment({
     <div className="w-full ">
       <div className="flex items-center justify-between py-4">
         <Input
-          placeholder="Filter by name or email..."
+          placeholder="ค้นหา: ชื่อ / ตำแหน่ง / หน่วยงาน"
           value={globalFilter}
           onChange={(event) => setGlobalFilter(event.target.value)}
           className="max-w-sm rounded-lg"

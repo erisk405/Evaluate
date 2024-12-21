@@ -124,7 +124,7 @@ const useStore = create<StoreState>((set) => ({
   })),
   updateProfileDetail: (updatedFields: {
     id?: string;
-    prefix?:PrefixType;
+    prefix?: PrefixType;
     name?: string;
     email?: string;
     image?: string;
@@ -171,27 +171,26 @@ const useStore = create<StoreState>((set) => ({
   fetchCurrentPeriod: async () => {
     try {
       const response = await GlobalApi.getPeriod();
-      const sortedPeriods = response?.data.sort(
-        (a: PeriodType, b: PeriodType) => {
-          const now = new Date();
-          const endA = new Date(a.end);
-          const endB = new Date(b.end);
+      const now = new Date();
 
-          const isPastA = endA < now;
-          const isPastB = endB < now;
+      const sortedPeriods = response?.data.sort((a: PeriodType, b: PeriodType) => {
+        const startA = new Date(a.start);
+        const startB = new Date(b.start);
+        const endA = new Date(a.end);
+        const endB = new Date(b.end);
 
-          if (isPastA === isPastB) {
-            const startA = new Date(a.start);
-            const startB = new Date(b.start);
-            return (
-              Math.abs(startA.getTime() - now.getTime()) -
-              Math.abs(startB.getTime() - now.getTime())
-            );
-          }
+        // เช็คว่าช่วงเวลาไหนยังไม่หมดอายุ
+        const isActiveA = endA >= now;
+        const isActiveB = endB >= now;
 
-          return isPastA ? 1 : -1;
-        }
-      );
+        if (isActiveA && !isActiveB) return -1; // A ยังไม่หมดอายุ แต่ B หมดแล้ว
+        if (!isActiveA && isActiveB) return 1;  // B ยังไม่หมดอายุ แต่ A หมดแล้ว
+
+        // ถ้าทั้งคู่ยังไม่หมดอายุ หรือ หมดอายุทั้งคู่
+        // เรียงตามวันเริ่มต้นที่ใกล้จะถึง
+        return startA.getTime() - startB.getTime();
+      });
+
 
       const currentPeriod = sortedPeriods.find((p: PeriodType) => {
         const now = new Date();

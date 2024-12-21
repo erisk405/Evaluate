@@ -1,5 +1,6 @@
 "use client";
 
+import { toast } from "@/components/ui/use-toast";
 import { Department, PeriodType, PrefixType } from "@/types/interface";
 import axios, { AxiosResponse } from "axios";
 interface UserProfile {
@@ -10,8 +11,22 @@ interface UserProfile {
     url: string;
   };
 }
+
 const apiUrl = process.env.NEXT_PUBLIC_API_URL || `http://localhost:8000/api`;
 
+export const handleErrorOnAxios = (error:unknown) => {
+  const errorMessage = axios.isAxiosError(error)
+    ? error.response?.data?.message
+    : error instanceof Error
+    ? error.message
+    : "เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ";
+
+  toast({
+    title: "เกิดข้อผิดพลาด",
+    description: errorMessage,
+    variant: "destructive",
+  });
+};
 // -----------------------------------------------------------
 //                       prefix table
 // -----------------------------------------------------------
@@ -637,6 +652,16 @@ const updateVisionOfForm = (payload: updateVisionOfFormProp) => {
   }
 };
 
+const getResultEvaluateDetailForAdmin = (period_id: string, userId: string) => {
+  try {
+    return axios.get(`${apiUrl}/resultEvaluateDetail/${period_id}/${userId}`, {
+      withCredentials: true,
+    });
+  } catch (error) {
+    console.error("API getResultEvaluateDetailForAdmin", { message: error });
+    return handleErrorOnAxios(error)
+  }
+};
 export default {
   fetchUserProfile,
   Logout,
@@ -692,4 +717,5 @@ export default {
   getResultEvaluateDetail,
   updateVisionOfForm,
   updateEvaluate,
+  getResultEvaluateDetailForAdmin,
 };
