@@ -35,7 +35,8 @@ export function ProfilePopup() {
   );
 }
 export function NotificationPopup() {
-  const { showNotifications, setShowNotifications } = useStore();
+  const { showNotifications, setShowNotifications} = useStore();
+  
   return (
     <div
       className={`fixed opacity-1 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 overflow-hidden bg-white shadow-lg sm:max-w-[600px] w-full p-1 sm:rounded-lg ${

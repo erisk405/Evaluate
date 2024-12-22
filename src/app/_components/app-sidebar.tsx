@@ -13,6 +13,7 @@ import {
   Settings2,
   ShieldCheck,
   Vault,
+  Blend
 } from "lucide-react";
 
 import { NavMain } from "@/app/_components/nav-main";
@@ -36,6 +37,7 @@ const data = {
   navMain: [
     {
       title: "Management",
+      session:"admin",
       url: "#",
       icon: ShieldCheck,
       isActive: true,
@@ -61,6 +63,7 @@ const data = {
     {
       title: "Evaluation",
       url: "#",
+      session:"admin",
       icon: Bot,
       items: [
         {
@@ -80,6 +83,7 @@ const data = {
     {
       title: "Documentation",
       url: "#",
+      session:"user",
       icon: BookOpen,
       items: [
         {
@@ -103,6 +107,7 @@ const data = {
     {
       title: "Settings",
       url: "#",
+      session:"user",
       icon: Settings2,
       items: [
         {
@@ -152,6 +157,11 @@ const data = {
       url: "/history",
       icon: FolderClock,
     },
+    {
+      name: "บัญชีของฉัน",
+      url: "/account/general-data",
+      icon: Blend,
+    },
   ],
 };
 
@@ -196,7 +206,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        {isAdmin && <NavMain items={data.navMain} />}
+        <NavMain items={isAdmin ? data.navMain : data.navMain.filter(item => item.session !== 'admin')} />
         <NavProjects projects={data.projects} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>

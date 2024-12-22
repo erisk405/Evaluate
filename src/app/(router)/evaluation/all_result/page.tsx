@@ -34,25 +34,31 @@ import {
 import useStore from "@/app/store/store";
 import GlobalApi from "@/app/_util/GlobalApi";
 
+const FormSchema = z.object({
+  departments: z
+    .array(z.string())
+    .refine((value) => value.some((item) => item), {
+      message: "You have to select at least one item.",
+    }),
+  itemsRole: z.array(z.string()).refine((value) => value.some((item) => item), {
+    message: "You have to select at least one item.",
+  }),
+});
+type filterAreaType = {
+  departments: string[];
+  itemsRole: string[];
+};
+// type departmentType{
+
+// }
 const page = () => {
   const [open, setOpen] = useState(true);
   const [openPeriod, setOpenPeriod] = useState(true);
   const [openRole, setOpenRole] = useState(true);
+  const [filterDataArea, setFilterDataArea] = useState<filterAreaType>();
   const { departments, setDepartments } = useStore();
   const { roles, setRole } = useStore();
 
-  const FormSchema = z.object({
-    departments: z
-      .array(z.string())
-      .refine((value) => value.some((item) => item), {
-        message: "You have to select at least one item.",
-      }),
-    itemsRole: z
-      .array(z.string())
-      .refine((value) => value.some((item) => item), {
-        message: "You have to select at least one item.",
-      }),
-  });
   const getDepartment = async () => {
     try {
       const response = await GlobalApi.getDepartment();
@@ -77,6 +83,7 @@ const page = () => {
   function onSubmit(data: z.infer<typeof FormSchema>) {
     try {
       console.log(data);
+      setFilterDataArea(data);
     } catch (error) {
       console.error({ message: data });
     }
@@ -112,12 +119,12 @@ const page = () => {
   // }, [roles]);
   return (
     <div className="m-5 grid grid-cols-4 w-full gap-3">
-      <div className="w-full col-span-3">
+      <div className="w-full col-span-4 xl:col-span-3">
         <h2 className="text-3xl font-bold text-stone-700">รายชื่อทั้งหมด</h2>
-        <ListAllEmployee />
+        <ListAllEmployee filterDataArea={filterDataArea} />
       </div>
-      <div className="col-span-1">
-        <Card className="w-[350px]">
+      <div className="col-span-4 xl:col-span-1">
+        <Card>
           <CardHeader>
             <CardTitle className="text-stone-700">Filter area</CardTitle>
             <CardDescription>

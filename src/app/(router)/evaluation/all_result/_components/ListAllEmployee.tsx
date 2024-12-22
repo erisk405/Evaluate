@@ -93,7 +93,14 @@ import FilterPeriod from "./FilterPeriod";
 import Personal_result from "@/app/(router)/personal_evaluation/_components/Personal-result";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-export function ListAllEmployee() {
+type ListAllEmployeeProp = {
+  filterDataArea: filterAreaType | undefined;
+};
+type filterAreaType = {
+  departments: string[];
+  itemsRole: string[];
+};
+export function ListAllEmployee({ filterDataArea }: ListAllEmployeeProp) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -110,25 +117,6 @@ export function ListAllEmployee() {
       handleErrorOnAxios(error);
     }
   };
-  const getDataOfEmployee = async () => {
-    const response = await GlobalApi.getAllUsers();
-    const filterData = response?.data.filter(
-      (item: User) =>
-        item.role.role_name !== "member" && item.role.role_name !== "admin"
-    );
-    // console.log("filterData", filterData);
-
-    if (filterData) {
-      setAllUser(filterData);
-    } else {
-      setAllUser([]);
-    }
-  };
-
-  useEffect(() => {
-    getDataOfEmployee();
-  }, []);
-
   const columns: ColumnDef<User>[] = [
     {
       id: "select",
@@ -310,6 +298,40 @@ export function ListAllEmployee() {
     }
     return pageNumbers;
   };
+
+  // กรองมาแค่ตัวที่ select Area เลือกมา
+  useEffect(() => {
+    const filterEmployees = async () => {
+      try {
+        const response = await GlobalApi.getAllUsers();
+        let filteredData = response?.data.filter(
+          (item: User) =>
+            item.role.role_name !== "member" && item.role.role_name !== "admin"
+        );
+
+        if (filterDataArea) {
+          filteredData = filteredData.filter((user: User) => {
+            const departmentMatch =
+              filterDataArea.departments.length === 0 ||
+              filterDataArea.departments.includes(
+                user.department ? user.department.id : ""
+              );
+            const roleMatch =
+              filterDataArea.itemsRole.length === 0 ||
+              filterDataArea.itemsRole.includes(user.role.id);
+
+            return departmentMatch && roleMatch;
+          });
+        }
+        setAllUser(filteredData || []);
+      } catch (error) {
+        console.error("Error filtering employees:", error);
+        setAllUser([]);
+      }
+    };
+
+    filterEmployees();
+  }, [filterDataArea]); // Run when filterDataArea changes
   return (
     <div className="w-full ">
       <div className="flex items-center w-full gap-3 justify-between py-4">
@@ -433,15 +455,17 @@ export function ListAllEmployee() {
                     ประจำปีงบประมาณ 2567
                   </h2>
                   <div className="flex flex-wrap gap-2">
-                    {allUser.map((item, index) => (
-                      <div
-                        key={item.id}
-                        className="inline-flex px-2 items-center gap-1 rounded-xl border"
-                      >
-                        <Dot strokeWidth={6} className="text-blue-500" />
-                        <h2 className="text-sm">{item.name}</h2>
-                      </div>
-                    ))}
+                    <ScrollArea className="max-h-[200px]">
+                      {table.getSelectedRowModel().rows.map((row) => (
+                        <div
+                          key={row.original.id}
+                          className="inline-flex px-2 items-center gap-1 rounded-xl border"
+                        >
+                          <Dot strokeWidth={6} className="text-blue-500" />
+                          <h2 className="text-sm">{row.original.name}</h2>
+                        </div>
+                      ))}
+                    </ScrollArea>
                   </div>
                   <Separator className="my-3" />
                   <h2 className="text-sm">

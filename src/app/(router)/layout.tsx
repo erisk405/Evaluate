@@ -15,7 +15,8 @@ import { NotificationPopup, ProfilePopup } from "../_components/PopupSection";
 import { Bell } from "lucide-react";
 import useStore from "../store/store";
 const layout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
-  const { setShowNotifications, showNotifications } = useStore();
+  const { showNotifications, setShowNotifications, notificationCounts } =
+    useStore();
   return (
     <div className="">
       <SidebarProvider>
@@ -42,10 +43,20 @@ const layout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
             ></div>
             {/* icon for notificate */}
             <div
-              className="flex gap-2 items-center mr-14 cursor-pointer hover:bg-neutral-200 p-2 rounded-lg "
+              className="flex gap-2 items-center mr-14  cursor-pointer hover:bg-neutral-200 p-2 rounded-lg "
               onClick={() => setShowNotifications(!showNotifications)}
             >
-              <Bell size={18} />
+              <div className="relative">
+                {notificationCounts > 0 && (
+                  <div
+                    className={`absolute -top-2 -right-2  text-white rounded-full bg-red-500 w-4 h-4 flex items-center justify-center`}
+                  >
+                    <h2 className="text-sm">{notificationCounts}</h2>
+                  </div>
+                )}
+
+                <Bell size={18} />
+              </div>
               Notifications
             </div>
           </header>

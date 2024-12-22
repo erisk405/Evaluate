@@ -23,7 +23,7 @@ const NotificationSection = ({
 }: notificationSectionProp) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [slideOut, setSlideOut] = useState<string | null>(null);
-  const [quantity, setQuantity] = useState(0);
+  const { notificationCounts, setNotificationCount } = useStore();
   const { ProfileDetail, updateProfileDetail } = useStore();
   const [page, setPage] = useState(1);
   const loaderRef = useRef<HTMLDivElement>(null);
@@ -52,7 +52,7 @@ const NotificationSection = ({
         setNotifications((prev) =>
           prev.filter((item) => item.id !== requestId)
         );
-        setQuantity((prev) => prev - 1);
+        setNotificationCount(notificationCounts - 1);
         setSlideOut(null);
       }, 300);
     } catch (error) {
@@ -70,11 +70,11 @@ const NotificationSection = ({
     const skip = page * PAGE_LIMIT;
     // console.log("skip:" ,skip);
     // console.log("quantity:",quantity);
-    if (skip >= quantity) {
+    if (skip >= notificationCounts) {
       setPage(0);
     }
     setPage((prevPage) => prevPage + 1);
-  }, [quantity]);
+  }, [notificationCounts]);
 
   // function ที่นำRoleRequest มาSet ไว้ที่ notificate และ จำนวนของ notificate
   const fetchRoleRequest = async () => {
@@ -85,7 +85,7 @@ const NotificationSection = ({
       });
       console.log(response);
 
-      setQuantity(response.data.count);
+      setNotificationCount(response.data.count);
       setNotifications((prevNotifications) => {
         const existingIds = new Set(prevNotifications.map((item) => item.id));
         const newNotifications = response.data.data.filter(
@@ -105,8 +105,8 @@ const NotificationSection = ({
         console.log("receive", receive);
 
         playNotificationSound();
-        setQuantity((prev) => prev + 1);
-
+        const newCount = notificationCounts + 1;
+        setNotificationCount(newCount);
         setNotifications((prev) => [receive.data.data, ...prev]);
 
         const { user, role, createdAt } = receive.data.data;
@@ -123,8 +123,8 @@ const NotificationSection = ({
                 className="w-[40px] h-[40px] object-cover rounded-full"
               />
               <div className="text-lg">
-                <span className="font-bold">{user.name}</span>
-                <h1 className="text-md">
+                <span className="text-sm">{user.name}</span>
+                <h1 className="text-sm">
                   has requested the role{" "}
                   <span className="font-semibold text-blue-500">
                     {role.role_name}
@@ -149,7 +149,7 @@ const NotificationSection = ({
       socket.on("userNotification", (receive) => {
         if (receive.userId === ProfileDetail.id) {
           playNotificationSound();
-          setQuantity((prev) => prev + 1);
+          setNotificationCount(notificationCounts + 1);
           console.log("receive....", receive);
           const SenderImage = receive.AdminImage;
           const SenderName = receive.AdminName;
@@ -201,8 +201,8 @@ const NotificationSection = ({
                   className="w-[40px] h-[40px] object-cover rounded-full"
                 />
                 <div className="text-lg">
-                  <span className="font-bold">{SenderName}</span>
-                  <h1 className="text-md">
+                  <span className="text-sm">{SenderName}</span>
+                  <h1 className="text-sm">
                     Action your request to{" "}
                     <span className="font-semibold text-blue-500">
                       {SenderStatus}
@@ -287,10 +287,13 @@ const NotificationSection = ({
                   {/* notification-box user & admin */}
                   <div>
                     <h1 className="text-sm">{item.user.email}</h1>
-                    <h1 className="text-md font-bold">
+                    <h1 className="text-md ">
                       {ProfileDetail.role?.role_name === "admin" ? (
                         <>
-                          {item.user.name} Request Role {item.role.role_name}
+                          <span className="">{item.user.name}</span>{" "}
+                          <span className="font-bold">Request Role </span>
+                          <span className="text-blue-500">{item.role.role_name}</span>
+                          
                         </>
                       ) : (
                         <>

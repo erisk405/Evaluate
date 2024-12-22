@@ -24,11 +24,11 @@ import GlobalApi from "../_util/GlobalApi";
 export default function SetStatusSection({ onRoleChange , defaultValue ,isPending} : any) {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
-  const { roles, setRole } = useStore();
+  const { roles, setRole,ProfileDetail } = useStore();
   const fetchRole = async () => {
     try {
       const response = await GlobalApi.getRole();
-      console.log("role:", response);
+      // console.log("role:", response);
       setRole(response?.data);
 
       // Set default value based on fetched roles
@@ -44,9 +44,8 @@ export default function SetStatusSection({ onRoleChange , defaultValue ,isPendin
   };
   // ให้ เรียกใช้ function ใหม่หากเกิดการเปลี่ยนแปลงที่ rolRequest
   useEffect(() => {
-    
     fetchRole();
-  }, []);
+  }, [ProfileDetail]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

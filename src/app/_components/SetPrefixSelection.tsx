@@ -55,7 +55,7 @@ export default function SetPrefixSelection({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="justify-between w-auto"
+          className="justify-between w-[200px]"
         >
           {value
             ? prefix.find((item) => item.prefix_id === value)?.prefix_name

@@ -25,14 +25,14 @@ import {
   RollerCoaster,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import SetStatusSection from "./SetStatusSection";
 import { useEffect, useRef, useState } from "react";
-import useStore from "../store/store";
-import GlobalApi from "../_util/GlobalApi";
 import { toast } from "@/components/ui/use-toast";
 import socket from "@/lib/socket";
 import { Role } from "@/types/interface";
-import SetPrefixSelection from "./SetPrefixSelection";
+import useStore from "@/app/store/store";
+import GlobalApi from "@/app/_util/GlobalApi";
+import SetPrefixSelection from "@/app/_components/SetPrefixSelection";
+import SetStatusSection from "@/app/_components/SetStatusSection";
 
 const formSchema = z.object({
   image: z
@@ -61,7 +61,7 @@ const formSchema = z.object({
   }),
 });
 
-export default function Myprofile() {
+export default function page() {
   // for image changing
   const { ProfileDetail, updateProfileDetail } = useStore();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -159,8 +159,8 @@ export default function Myprofile() {
   }
   // function เอาไว้ใชักับ SetStatusSection เพื่อให้สามารถนำ valueจาก component ด้านนอกมาใช้ได้
   const { setValue } = form;
-  
-  const handleRoleChange= (newRole: string) => {
+
+  const handleRoleChange = (newRole: string) => {
     setValue("role", newRole);
   };
   const handlePrefixChange = (newPrefix: string) => {
@@ -208,121 +208,108 @@ export default function Myprofile() {
   };
 
   return (
-    <div className="">
-      <div className="relative bg-gray-100 w-full h-[120px]">
-        <div
-          className="absolute bottom-0 translate-y-1/2 px-4 cursor-pointer"
-          onClick={handleImageClick}
-        >
+    <div className="mx-auto max-w-[600px] ">
+      <h2 className="text-lg font-bold mb-5">Edit Profile</h2>
+      <div className="flex items-center gap-3 bg-white p-3 rounded-3xl shadow">
+        <div className=" px-4 cursor-pointer" onClick={handleImageClick}>
           {selectedImage ? (
             <Image
               src={selectedImage}
-              width={500}
-              height={500}
+              width={100}
+              height={100}
               alt={"profile"}
-              className="w-[85px] h-[85px] rounded-full object-cover border border-neutral-50 p-[2px] shadow-lg bg-white"
+              className="w-[70px] h-[70px] rounded-full object-cover border border-neutral-50 p-[2px] shadow bg-white"
               loading="lazy"
             />
           ) : ProfileDetail.image ? (
             <Image
               src={ProfileDetail?.image}
-              width={500}
-              height={500}
+              width={100}
+              height={100}
               alt={"profile"}
-              className="w-[85px] h-[85px] rounded-full object-cover border border-neutral-50 p-[2px] shadow-lg bg-white"
+              className="w-[70px] h-[70px] rounded-full object-cover border border-neutral-50 p-[2px] shadow bg-white"
               loading="lazy"
             />
           ) : (
-            <div className="w-[85px] h-[85px] rounded-full object-cover border border-neutral-50 p-[2px] shadow-lg bg-neutral-600 animate-pulse">
+            <div className="w-[70px] h-[70px] rounded-full object-cover border border-neutral-50 p-[2px] shadow-lg bg-neutral-600 animate-pulse">
               <div className="flex text-white h-full justify-center items-center animate-spin">
                 <Loader size={30} />
               </div>
             </div>
           )}
-
-          <div className="absolute button-0 right-0 -translate-x-full -translate-y-full bg-blue-500 text-white rounded-full p-1">
-            <Check strokeWidth={3} size={12} />
-          </div>
+        </div>
+        <div className="my-3">
+          <h2 className="">{ProfileDetail?.name}</h2>
+          <h2 className="text-sm text-gray-500">{ProfileDetail?.email}</h2>
         </div>
       </div>
       <div className="p-4">
-        <div className="relative flex justify-end text-sm">
-          <div className="flex gap-3 items-center">
-            <div className="flex items-center border gap-1 border-gray-300 py-2 px-3 rounded-xl hover:bg-neutral-100 transition-all active:scale-95">
-              <LinkIcon size={16} />
-              <Link href={"#"}>Copy link</Link>
-            </div>
-            <div className="border border-gray-300 py-2 px-3 rounded-xl hover:bg-neutral-100 transition-all active:scale-95">
-              <Link href={"#"}>View profile</Link>
-            </div>
-          </div>
-        </div>
-        <div className="my-3">
-          <h2 className="text-xl font-bold">{ProfileDetail?.name}</h2>
-          <h2 className="text-sm text-gray-500">{ProfileDetail?.email}</h2>
-        </div>
         <Separator className="my-3" />
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
-            <div className="grid grid-cols-11 items-center gap-3">
-              <div className="col-span-3">
-                <FormField
-                  control={form.control}
-                  name="prefix"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <SetPrefixSelection
-                          onPrefixChange={handlePrefixChange}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              {/* firstName */}
-              <div className="col-span-4">
-                <FormField
-                  control={form.control}
-                  name="firstName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Input
-                          id="firstName"
-                          type="text"
-                          className="focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+            {/* prefix */}
+            <FormField
+              control={form.control}
+              name="prefix"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="grid grid-cols-11 items-center gap-3">
+                    <h2 className="col-span-3 text-sm">คำนำหน้า</h2>
+                    <FormControl className="col-span-8 w-full">
+                      <SetPrefixSelection onPrefixChange={handlePrefixChange} />
+                    </FormControl>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Separator />
+            {/* firstName */}
+            <FormField
+              control={form.control}
+              name="firstName"
+              render={({ field }) => (
+                <FormItem className="col-span-11">
+                  <div className="grid grid-cols-11 items-center gap-3">
+                    <h2 className="col-span-3 text-sm">ชื่อ</h2>
+                    <FormControl className="col-span-8">
+                      <Input
+                        id="firstName"
+                        type="text"
+                        placeholder="ชื่อ"
+                        className="focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1"
+                        {...field}
+                      />
+                    </FormControl>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Separator />
+            {/* lastName */}
+            <FormField
+              control={form.control}
+              name="lastName"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="grid grid-cols-11 items-center gap-3">
+                    <h2 className="col-span-3 text-sm">นามสกุล</h2>
+                    <FormControl className="col-span-8">
+                      <Input
+                        id="lastName"
+                        type="text"
+                        placeholder="นามสกุล"
+                        className="focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1"
+                        {...field}
+                      />
+                    </FormControl>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-              {/* lastName */}
-              <div className="col-span-4">
-                <FormField
-                  control={form.control}
-                  name="lastName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl className="col-span-4">
-                        <Input
-                          id="lastName"
-                          type="text"
-                          className="focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
             <Separator />
             {/* email */}
             <FormField

@@ -13,13 +13,16 @@ interface StoreState {
   showProfile: boolean
   setShowProfile: (showProfile: boolean) => void;
 
+
+  notificationCounts: number;
+  setNotificationCount: (count: number) => void;
+
   showNotifications: boolean
   setShowNotifications: (showProfile: boolean) => void;
 
   profilePopup: {
     open: boolean;
   };
-
 
 
   toggleProfile: () => void;
@@ -105,6 +108,13 @@ const useStore = create<StoreState>((set) => ({
       showProfile: show
     }));
   },
+
+
+  notificationCounts: 0,
+  setNotificationCount: (count: number) => set(() => ({  // Implementation matches interface
+    notificationCounts: count
+  })),
+
   showNotifications: false,
   setShowNotifications: (show: boolean) => {
     set((state) => ({
