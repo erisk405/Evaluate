@@ -23,6 +23,8 @@ import {
   Loader,
   Mail,
   RollerCoaster,
+  ScanFace,
+  Shell,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useEffect, useRef, useState } from "react";
@@ -33,6 +35,7 @@ import useStore from "@/app/store/store";
 import GlobalApi from "@/app/_util/GlobalApi";
 import SetPrefixSelection from "@/app/_components/SetPrefixSelection";
 import SetStatusSection from "@/app/_components/SetStatusSection";
+import Loading from "@/app/_components/Loading";
 
 const formSchema = z.object({
   image: z
@@ -66,7 +69,7 @@ export default function page() {
   const { ProfileDetail, updateProfileDetail } = useStore();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   //  image
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
@@ -85,17 +88,6 @@ export default function page() {
   //   useForm
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      firstName: ProfileDetail?.name?.split(" ")[0],
-      lastName: ProfileDetail?.name?.split(" ")[1],
-      prefix: ProfileDetail.prefix?.prefix_id,
-      image: undefined,
-      email: ProfileDetail?.email ? ProfileDetail?.email : "",
-      Department: ProfileDetail?.department
-        ? ProfileDetail.department.department_name
-        : "no department",
-      role: ProfileDetail?.role?.id,
-    },
   });
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -129,8 +121,9 @@ export default function page() {
       };
 
       const nameResponse = await GlobalApi.updateProfileName(payload);
-      if (nameResponse?.data?.nameUpdate) {
-        const { name, prefix } = nameResponse.data.nameUpdate;
+
+      if (nameResponse?.data) {
+        const { name, prefix } = nameResponse.data.prefixUpdated;
         updateProfileDetail({ name, prefix });
       }
 
@@ -206,10 +199,38 @@ export default function page() {
       console.error("Failed to request role:", error);
     }
   };
+  // ใช้ useEffect เพื่อรอให้ ProfileDetail มีข้อมูลก่อน
+  useEffect(() => {
+    if (ProfileDetail) {
+      form.reset({
+        firstName: ProfileDetail.name?.split(" ")[0] || "",
+        lastName: ProfileDetail.name?.split(" ")[1] || "",
+        prefix: ProfileDetail.prefix?.prefix_id || "",
+        image: undefined,
+        email: ProfileDetail?.email || "",
+        Department:
+          ProfileDetail?.department?.department_name || "no department",
+        role: ProfileDetail?.role?.id || "",
+      });
+    }
+
+    setIsLoading(true);
+  }, [ProfileDetail]);
+
+  if (!isLoading) {
+    return (
+      <div>
+        <Loading />
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-[600px] ">
-      <h2 className="text-lg font-bold mb-5">Edit Profile</h2>
+      <div className="flex gap-3 items-center my-3">
+        <ScanFace size={40} strokeWidth={1.5} />
+        <h2 className="text-lg font-semibold ">Edit Profile</h2>
+      </div>
       <div className="flex items-center gap-3 bg-white p-3 rounded-3xl shadow">
         <div className=" px-4 cursor-pointer" onClick={handleImageClick}>
           {selectedImage ? (

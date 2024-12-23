@@ -16,6 +16,9 @@ import {
   ArrowUpDown,
   Building2,
   ChevronDown,
+  Group,
+  Layers,
+  Layers2,
   Pencil,
   Ribbon,
   UserRoundCog,
@@ -165,7 +168,7 @@ export function ListEmployee({ allUser, fetchUserList }: ListEmployeeProp) {
                   : "text-gray-500"
               } `}
             >
-              <Ribbon size={20} />
+              <Layers  strokeWidth={2} size={18} />
             </div>
             {role_name}
           </div>
@@ -209,7 +212,7 @@ export function ListEmployee({ allUser, fetchUserList }: ListEmployeeProp) {
         return (
           <div
             className="inline-flex items-center text-stone-800
-          justify-center gap-2  rounded-xl max-w-52"
+          justify-center gap-2 rounded-xl max-w-52"
           >
             <div
               className={`p-2 ${
@@ -218,7 +221,7 @@ export function ListEmployee({ allUser, fetchUserList }: ListEmployeeProp) {
                   : "bg-gray-100 text-gray-500"
               } rounded-full`}
             >
-              <Building2 strokeWidth={2} size={20} />
+              <Layers2  strokeWidth={2} size={18} />
             </div>
             <h2
               className={`${
@@ -288,7 +291,7 @@ export function ListEmployee({ allUser, fetchUserList }: ListEmployeeProp) {
     },
     initialState: {
       pagination: {
-        pageSize: 7,
+        pageSize: 12,
         pageIndex: 0, // หน้าเริ่มต้น
       },
     },
@@ -362,7 +365,7 @@ export function ListEmployee({ allUser, fetchUserList }: ListEmployeeProp) {
 
   return (
     <div className="w-full ">
-      <div className="flex items-center py-4">
+      <div className="flex items-center mb-3">
         <Input
           placeholder="Filter by name or email..."
           value={globalFilter}
@@ -398,7 +401,7 @@ export function ListEmployee({ allUser, fetchUserList }: ListEmployeeProp) {
       </div>
       <div className="rounded-lg border ">
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-gray-100">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {

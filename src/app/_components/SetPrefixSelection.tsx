@@ -34,11 +34,6 @@ export default function SetPrefixSelection({
     try {
       const response = await GlobalApi.getPrefix();
       setPrefix(response?.data);
-      if (userPrefix) {
-        setValue(userPrefix ? userPrefix.prefix_id : null);
-      } else {
-        setValue(ProfileDetail.prefix ? ProfileDetail.prefix.prefix_id : null);
-      }
     } catch (error) {
       console.log(error);
     }
@@ -46,6 +41,11 @@ export default function SetPrefixSelection({
   // ให้ เรียกใช้ function ใหม่หากเกิดการเปลี่ยนแปลงที่ rolRequest
   useEffect(() => {
     fetchPrefix();
+  }, []);
+  useEffect(() => {
+    setValue(ProfileDetail.prefix ? ProfileDetail.prefix.prefix_id : null);
+    // console.log("prefix",ProfileDetail.prefix.prefix_id );
+    
   }, [ProfileDetail]);
 
   return (
@@ -55,7 +55,7 @@ export default function SetPrefixSelection({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="justify-between w-[200px]"
+          className="justify-between col-span-3"
         >
           {value
             ? prefix.find((item) => item.prefix_id === value)?.prefix_name

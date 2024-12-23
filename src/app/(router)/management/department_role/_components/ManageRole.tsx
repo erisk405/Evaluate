@@ -271,8 +271,8 @@ const ManageRole = () => {
   // }, [permissions]);
   return (
     <div className="@container">
-      <h2 className="text-3xl font-bold text-stone-700">
-        การจัดการ<span className="text-blue-400">ตำแหน่ง</span>
+      <h2 className="text-3xl text-stone-700">
+        <span>🎓</span>การจัดการ<span className="text-blue-400">ตำแหน่ง</span>
       </h2>
       <div className="flex justify-between items-center my-3">
         <div className="flex items-center space-x-2">

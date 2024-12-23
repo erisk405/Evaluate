@@ -35,9 +35,6 @@ export function NavUser() {
   const { isMobile } = useSidebar();
   const { showProfile, ProfileDetail, updateProfileDetail, setShowProfile } =
     useStore();
-
-  const [notifications, setNotifications] = useState<any[]>([]);
-
   const handleLogout = async () => {
     try {
       await GlobalApi.Logout();
@@ -79,17 +76,6 @@ export function NavUser() {
     // Fetch user data on component mount
     fetchUser();
 
-    // Listen for notifications
-    const handleUserNotification = (data: any) => {
-      setNotifications((prev) => [...prev, data]);
-    };
-
-    socket.on("userNotification", handleUserNotification);
-
-    // Cleanup socket listener
-    return () => {
-      socket.off("userNotification", handleUserNotification);
-    };
   }, []);
 
   return (
