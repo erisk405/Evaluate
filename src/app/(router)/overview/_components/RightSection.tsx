@@ -60,7 +60,6 @@ import useStore from "@/app/store/store";
 type RightSectionProps = {
   permission?: string; // ใส่ ? เพื่อบอกว่าอาจเป็น undefined ได้
   period?: PeriodType[];
-  setPeriod: (data: PeriodType[]) => void;
 };
 
 const formSchema = z.object({
@@ -94,7 +93,7 @@ export const formatThaiDateTime = (isoString: string) => {
     time: `${thaiTime}`,
   };
 };
-const RightSection = ({ permission, period, setPeriod }: RightSectionProps) => {
+const RightSection = ({ permission, period }: RightSectionProps) => {
   const defaultDate = new Date(new Date().getFullYear(), new Date().getMonth()); // ปีและเดือนปัจจุบัน
   const [show, setShow] = useState(false);
   const [expandedPeriodId, setExpandedPeriodId] = useState<string | null>(null); // เปิดถาดสำหรับการแก้ไขช่วงเวลา
@@ -123,10 +122,7 @@ const RightSection = ({ permission, period, setPeriod }: RightSectionProps) => {
       };
       const response = await GlobalApi.createPeriod(data);
       // fetch period ใหม่
-      const fetchedPeriods = await fetchCurrentPeriod();
-      console.log("fetchedPeriods", fetchedPeriods);
-
-      setPeriod(fetchedPeriods);
+      await fetchCurrentPeriod();
       setShow(false);
       toast({
         title: "กำหนดช่วงเวลาเรียบร้อยแล้ว",
@@ -188,7 +184,7 @@ const RightSection = ({ permission, period, setPeriod }: RightSectionProps) => {
       initializeFunction();
     }
   }, []);
-  
+
   return (
     <div className="flex gap-3 flex-col h-full">
       <div className="@container">
@@ -344,7 +340,7 @@ const RightSection = ({ permission, period, setPeriod }: RightSectionProps) => {
                         <div className="pl-6  w-full">
                           <div className="grid grid-cols-2 gap-1">
                             <div className="flex gap-3 items-center">
-                              <CalendarClock size={18} />
+                              <span>📅</span>
                               <h2 className="truncate ">
                                 {formatThaiDateTime(item.start).date}
                               </h2>
@@ -358,7 +354,7 @@ const RightSection = ({ permission, period, setPeriod }: RightSectionProps) => {
                           </div>
                           <div className="grid grid-cols-2 gap-1">
                             <div className="flex gap-3 items-center">
-                              <Clock9 size={18} />
+                              <span>⏱️</span>
                               <h2 className="truncate">
                                 {formatThaiDateTime(item.start).time} น.
                               </h2>
@@ -373,31 +369,21 @@ const RightSection = ({ permission, period, setPeriod }: RightSectionProps) => {
                           <div className="grid grid-cols-2 gap-1">
                             <div className="flex gap-3 items-center">
                               <div className="relative">
-                                <DatabaseZap
-                                  size={18}
-                                  className="absolute text-blue-500 animate-ping"
-                                />
-                                <DatabaseZap
-                                  size={18}
-                                  className="text-blue-500 "
-                                />
+                                <span className="absolute text-blue-500 animate-ping">
+                                  🗄️
+                                </span>
+                                <span className="text-blue-500 ">🗄️</span>
                               </div>
                               <h2 className="truncate ">ยังไม่เก็บข้อมูล</h2>
                             </div>
                             {!item.isAction ? (
                               <div className="flex gap-3 items-center">
-                                <LockKeyhole
-                                  size={18}
-                                  className="text-yellow-500"
-                                />
+                                <span>🔒</span>
                                 <h2 className="truncate ">ยังไม่เปิดใช้งาน</h2>
                               </div>
                             ) : (
                               <div className="flex gap-3 items-center">
-                                <LockKeyholeOpen
-                                  size={18}
-                                  className="text-green-500"
-                                />
+                                <span>🔓</span>
                                 <h2 className="truncate ">เปิดใช้งานอยู่</h2>
                               </div>
                             )}
@@ -469,7 +455,6 @@ const RightSection = ({ permission, period, setPeriod }: RightSectionProps) => {
                             </div>
                             <EditPariod
                               defaultPeriod={item}
-                              setPeriod={setPeriod}
                               setExpandedPeriodId={setExpandedPeriodId}
                             />
                           </div>
@@ -486,7 +471,6 @@ const RightSection = ({ permission, period, setPeriod }: RightSectionProps) => {
                 openAlert={openAlert}
                 setOpenAlert={setOpenAlert}
                 periodId={deletePeriod}
-                setPeriod={setPeriod}
               />
             </div>
             <div className="w-full relative ">

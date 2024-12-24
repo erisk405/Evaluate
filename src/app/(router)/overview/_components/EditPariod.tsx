@@ -21,7 +21,6 @@ import useStore from "@/app/store/store";
 
 interface EditPeriodProps {
   defaultPeriod: PeriodType;
-  setPeriod: (data: PeriodType[]) => void;
   setExpandedPeriodId: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
@@ -36,7 +35,6 @@ const formSchema = z.object({
 const EditPariod = ({
   defaultPeriod,
   setExpandedPeriodId,
-  setPeriod,
 }: EditPeriodProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -60,8 +58,7 @@ const EditPariod = ({
         isAction: values.isActive ?? false,
       };
       const response = await GlobalApi.updatePeriod(data);
-      const fetchedPeriods = await fetchCurrentPeriod();
-      setPeriod(fetchedPeriods);
+      await fetchCurrentPeriod();
       setExpandedPeriodId(null); // พออัพเดทเสร็จก็ให้ ปิดถาดลง
       toast({
         title: "อัพเดทช่วงเวลาเรียบร้อยแล้ว",

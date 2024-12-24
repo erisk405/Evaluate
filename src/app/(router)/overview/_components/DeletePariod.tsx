@@ -20,14 +20,12 @@ interface DeletePeriodAlertProps {
   openAlert: boolean;
   setOpenAlert: (openAlert: boolean) => void;
   periodId: string;
-  setPeriod: (data: PeriodType[]) => void;
 }
 
 const DeletePariod = ({
   openAlert,
   setOpenAlert,
   periodId,
-  setPeriod,
 }: DeletePeriodAlertProps) => {
   const [check, setCheck] = useState(""); // check ให้แน่ใจว่าจะ Deleteจริงๆนะ
 
@@ -46,9 +44,7 @@ const DeletePariod = ({
           </pre>
         ),
       });
-      const fetchedPeriods = await fetchCurrentPeriod();
-
-      setPeriod(fetchedPeriods);
+      await fetchCurrentPeriod();
     } catch (error: any) {
       toast({
         title: "เกิดข้อผิดพลาด",

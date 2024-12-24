@@ -95,7 +95,7 @@ const Personal_result = ({ period, userId }: Personal_resultProp) => {
         </DrawerHeader>
       </div>
       {/* Body of Table */}
-      <Tabs defaultValue="all-result" className="w-[full]">
+      <Tabs defaultValue="all-result" className="w-full">
         <div className="flex justify-center items-center">
           <TabsList className="w-auto">
             <TabsTrigger value="all-result">ผลรวมทั้งหมด</TabsTrigger>

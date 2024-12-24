@@ -9,8 +9,7 @@ import { PeriodType } from "@/types/interface";
 import useStore from "@/app/store/store";
 const page = () => {
   const [checkPermission, setCheckPermission] = useState(null); // ใช้ในการcheckว่า คนนี้เป็น admin หรือ user เพื่อใช้ในการแสดงInterface ต่างๆ
-  const { fetchCurrentPeriod } = useStore();
-  const [period, setPeriod] = useState<PeriodType[]>([]);
+  const { fetchCurrentPeriod, allPeriod } = useStore();
 
   useEffect(() => {
     const fetchProtected = async () => {
@@ -26,8 +25,7 @@ const page = () => {
     fetchProtected();
     const initializePeriod = async () => {
       try {
-        const fetchedPeriods = await fetchCurrentPeriod();
-        setPeriod(fetchedPeriods);
+        await fetchCurrentPeriod();
       } catch (error) {
         // Handle error (e.g., show error message)
       }
@@ -54,8 +52,7 @@ const page = () => {
       <div className="xl:col-span-3 col-span-11 w-full">
         <RightSection
           permission={checkPermission}
-          period={period}
-          setPeriod={setPeriod}
+          period={allPeriod ? allPeriod : []}
         />
       </div>
     </div>

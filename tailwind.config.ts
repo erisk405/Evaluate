@@ -104,13 +104,25 @@ const config = {
 						transform: 'translateY(-10px)',
 						filter: 'drop-shadow(0px 0px 100px #ffedbd)'
 					}
-				}
+				},
+				'float2': {
+					'0%, 100%': {
+						transform: 'translateY(0)',
+						filter: 'drop-shadow(-1px 20px 61px #8338ec)'
+
+					},
+					'50%': {
+						transform: 'translateY(-10px)',
+						filter: 'drop-shadow(0px 0px 100px #9bf6ff)'
+					}
+				},
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'wiggle': 'wiggle 5s ease-in-out infinite',
-				'wiggle-float': 'wiggle 1s ease-in-out infinite, float 2s ease-in-out infinite'
+				'wiggle-float': 'wiggle 1s ease-in-out infinite, float 2s ease-in-out infinite',
+				'wiggle-float-blue': 'wiggle 1s ease-in-out infinite, float2 2s ease-in-out infinite'
 			}
 		}
 

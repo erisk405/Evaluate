@@ -161,8 +161,8 @@ export const columns: ColumnDef<PeriodType>[] = [
   },
 ];
 const page = () => {
-  const { fetchCurrentPeriod } = useStore();
-  const [data, setData] = useState<PeriodType[]>([]);
+  const { fetchCurrentPeriod, allPeriod } = useStore();
+
   const [globalFilter, setGlobalFilter] = useState("");
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -174,7 +174,7 @@ const page = () => {
   const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
-    data,
+    data: allPeriod ?? [],
     columns,
     state: {
       sorting,
@@ -202,7 +202,7 @@ const page = () => {
   // สร้างฟังก์ชันสำหรับสร้าง pagination items
 
   const totalPages = Math.ceil(
-    data.length / table.getState().pagination.pageSize
+    allPeriod ? allPeriod.length : 0 / table.getState().pagination.pageSize
   );
   const currentPage = table.getState().pagination.pageIndex + 1;
   // สร้างฟังก์ชันสำหรับคำนวณว่าควรแสดงหน้าไหนบ้าง
@@ -243,15 +243,17 @@ const page = () => {
   };
 
   useEffect(() => {
-    const fetchInitailData = async () => {
-      try {
-        const PeriodData = await fetchCurrentPeriod();
-        setData(PeriodData);
-      } catch (error) {
-        console.error({ message: error });
-      }
-    };
-    fetchInitailData();
+    if (!allPeriod) {
+      const fetchInitailData = async () => {
+        try {
+          await fetchCurrentPeriod();
+        } catch (error) {
+          console.error({ message: error });
+        }
+      };
+
+      fetchInitailData();
+    }
   }, []);
   return (
     <div className="m-5 w-full gap-3">

@@ -33,6 +33,7 @@ import {
 
 import useStore from "@/app/store/store";
 import GlobalApi from "@/app/_util/GlobalApi";
+import UpComingPeriod from "../_components/upcoming-period";
 
 const FormSchema = z.object({
   departments: z
@@ -274,6 +275,12 @@ const page = () => {
             </Form>
           </CardContent>
         </Card>
+        <div className="my-5 w-full">
+          <h2 className="text-xl my-3 font-bold">
+            รอบการประเมินที่ยังไม่บันทึก
+          </h2>
+          <UpComingPeriod/>
+        </div>
       </div>
     </div>
   );

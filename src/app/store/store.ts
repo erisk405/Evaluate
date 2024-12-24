@@ -73,6 +73,7 @@ interface StoreState {
   setResultEvalEachDepartment: (resultEvalEachDepartment: getResultEvalEachDepartmentType[]) => void
 
 
+  allPeriod: PeriodType[] | null;
   fetchCurrentPeriod: () => Promise<PeriodType[]>; // Add this method to the store
 
 }
@@ -159,6 +160,7 @@ const useStore = create<StoreState>((set) => ({
 
 
   currentlyEvaluationPeriod: null,
+  allPeriod:null,
 
   resultEvaluate: null,
   setResultEvaluate: (resultEvaluate) => set(() => ({
@@ -200,8 +202,11 @@ const useStore = create<StoreState>((set) => ({
         // เรียงตามวันเริ่มต้นที่ใกล้จะถึง
         return startA.getTime() - startB.getTime();
       });
-
-
+      if (sortedPeriods) {
+        set({
+          allPeriod: sortedPeriods
+        });
+      }
       const currentPeriod = sortedPeriods.find((p: PeriodType) => {
         const now = new Date();
         const start = new Date(p.start);
@@ -213,7 +218,6 @@ const useStore = create<StoreState>((set) => ({
           currentlyEvaluationPeriod: currentPeriod
         });
       }
-
       return sortedPeriods; // Return sorted periods
     } catch (error) {
       console.error({ message: error });
