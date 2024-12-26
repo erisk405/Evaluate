@@ -141,7 +141,7 @@ interface PrefixType {
 }
 
 interface userHaveBeenEvaluatedType {
-  id?:string,
+  id?: string,
   evaluateDetail: evaluateDetailType[]
   period: { period_id: string, title: string }
   evaluator: { id: string, name: string, prefix: PrefixType }
@@ -248,6 +248,55 @@ interface roleFormVision {
   visionRole: Role;
 }
 
+// ----------------------------------------
+//           Type for History Result
+// ----------------------------------------
+interface historyResult {
+  formResults: formResultHistoryType[];
+  headData: headDataHistoryType;
+}
+interface formResultHistoryType {
+  detailId: string;
+  formName: string;
+  level: string;
+  questions: questionsHistoryType[];
+  sumTotal: {
+    average_per_form: number;
+    sd_per_form: number;
+  }
+  total: inSideTotal[];
+  
+}
+interface questionsHistoryType {
+  id: string;
+  questionName: string;
+  scores: inSideScores[];
+  sumScore: {
+    average: number,
+    sd: number
+  }
+}
+interface inSideScores {
+  average: number;
+  sd: number;
+  type: string;
+}
+interface inSideTotal {
+  average_per_type: number;
+  sd_per_type: number;
+  type: string;
+}
+
+interface headDataHistoryType {
+  department: string;
+  periodName: string;
+  roleName: string;
+  total_SD: number;
+  total_mean: number;
+  userName: string;
+}
+
+
 export type {
   ImageType, Department, Role,
   User, RoleRequest, Notification,
@@ -266,5 +315,11 @@ export type {
   formStates,
   roleFormVision,
   resultPerQuestionsType,
-  LevelFormVision
+  LevelFormVision,
+  historyResult,
+  formResultHistoryType,
+  questionsHistoryType,
+  inSideScores,
+  inSideTotal,
+  headDataHistoryType
 };

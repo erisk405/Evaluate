@@ -77,7 +77,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import ResultSection from "@/app/(router)/history/_components/ResultSection";
+import ResultSection from "@/app/(router)/history/_components/list-history-section";
 import {
   Select,
   SelectContent,

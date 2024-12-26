@@ -14,7 +14,7 @@ interface UserProfile {
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL || `http://localhost:8000/api`;
 
-export const handleErrorOnAxios = (error:unknown) => {
+export const handleErrorOnAxios = (error: unknown) => {
   const errorMessage = axios.isAxiosError(error)
     ? error.response?.data?.message
     : error instanceof Error
@@ -659,7 +659,32 @@ const getResultEvaluateDetailForAdmin = (period_id: string, userId: string) => {
     });
   } catch (error) {
     console.error("API getResultEvaluateDetailForAdmin", { message: error });
-    return handleErrorOnAxios(error)
+    return handleErrorOnAxios(error);
+  }
+};
+
+// -----------------------------------------------
+//               History API
+// ----------------------------------------------
+const getResultEvaluateFormHistory = (period_id: string) => {
+  try {
+    return axios.get(`${apiUrl}/resultEvaluateFormHistory/${period_id}`, {
+      withCredentials: true,
+    });
+  } catch (error) {
+    console.error("API getResultEvaluateDetailForAdmin", { message: error });
+    return handleErrorOnAxios(error);
+  }
+};
+
+const saveEvaluationToHistory = (payload: { period_id: string }) => {
+  try {
+    return axios.post(`${apiUrl}/history`, payload, {
+      withCredentials: true,
+    });
+  } catch (error) {
+    console.error("API saveEvaluationToHistory", { message: error });
+    return handleErrorOnAxios(error);
   }
 };
 export default {
@@ -718,4 +743,6 @@ export default {
   updateVisionOfForm,
   updateEvaluate,
   getResultEvaluateDetailForAdmin,
+  getResultEvaluateFormHistory,
+  saveEvaluationToHistory,
 };

@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { formResultsType, getResultEvaluateType } from "@/types/interface";
+import { formResultHistoryType, formResultsType } from "@/types/interface";
 
 const SCORE_TYPE_LABELS: Record<string, string> = {
   Executive: "ผู้บริหาร",
@@ -18,12 +18,10 @@ const SCORE_TYPE_LABELS: Record<string, string> = {
   Employee: "พนักงาน",
 };
 type categorizedTableProp = {
-  formResultsItem: formResultsType | undefined;
+    formHistoryResultsItem: formResultHistoryType | undefined;
 };
-const CategorizedTable = ({ formResultsItem }: categorizedTableProp) => {
+const CategorizedHistoryTable = ({ formHistoryResultsItem }: categorizedTableProp) => {
   const [scoreTypes, setScoreTypes] = useState<string[]>([]);
-  const [Characteristics, SetCharacteristics] = useState<string>();
-
   const renderTableHeaders = (scoreTypes: string[]) => (
     <>
       <TableRow className="text-lg bg-blue-300">
@@ -70,7 +68,7 @@ const CategorizedTable = ({ formResultsItem }: categorizedTableProp) => {
     </>
   );
   //หาว่ามันมีทั้งหมดที่ type ใน formResults นี้ โดยตรวจสอบจาก score.type
-  const extractScoreTypes = (formResultsItem: formResultsType) => {
+  const extractScoreTypes = (formResultsItem: formResultHistoryType) => {
     const types = new Set<string>();
     formResultsItem.questions.forEach((question) =>
       question.scores?.forEach((score) => types.add(score.type))
@@ -79,9 +77,9 @@ const CategorizedTable = ({ formResultsItem }: categorizedTableProp) => {
     return Array.from(types);
   };
   useEffect(() => {
-    if (formResultsItem) {
+    if (formHistoryResultsItem) {
       //   resultsByCharacteristics(resultEvaluateDetail.headData.totalAvg);
-      setScoreTypes(extractScoreTypes(formResultsItem));
+      setScoreTypes(extractScoreTypes(formHistoryResultsItem));
     }
   }, []);
 
@@ -100,44 +98,44 @@ const CategorizedTable = ({ formResultsItem }: categorizedTableProp) => {
           <TableBody>
             <TableRow className="text-[16px] bg-blue-100">
               <TableCell colSpan={3} className="font-bold">
-                {formResultsItem?.formName}
+                {formHistoryResultsItem?.formName}
               </TableCell>
               <TableCell className="text-center">
-                {formResultsItem?.totalAvgPerForm.toFixed(2)}
+                {formHistoryResultsItem?.sumTotal.average_per_form.toFixed(2)}
               </TableCell>
               <TableCell className="text-center">
-                {formResultsItem?.totalSDPerForm.toFixed(2)}
+                {formHistoryResultsItem?.sumTotal.sd_per_form.toFixed(2)}
               </TableCell>
               {/* Dynamic Scores Rendering */}
               {scoreTypes.flatMap((type) => {
-                const matchedScore = formResultsItem?.total?.find(
-                  (match) => match.total === type
+                const matchedScore = formHistoryResultsItem?.total?.find(
+                  (match) => match.type === type
                 );
                 return [
                   <TableCell key={`${type}-avg`} className="text-center">
-                    {matchedScore?.average.toFixed(2) || "-"}
+                    {matchedScore?.average_per_type.toFixed(2) || "-"}
                   </TableCell>,
                   <TableCell key={`${type}-sd`} className="text-center">
-                    {matchedScore?.sd.toFixed(2) || "-"}
+                    {matchedScore?.sd_per_type.toFixed(2) || "-"}
                   </TableCell>,
                 ];
               })}
             </TableRow>
 
             {/* Questions Rows */}
-            {formResultsItem?.questions.map((question, index) => (
-              <TableRow key={question.questionId} className="text-[16px]">
+            {formHistoryResultsItem?.questions.map((question, index) => (
+              <TableRow key={question.id} className="text-[16px]">
                 <TableCell className="font-medium text-center">
                   {index + 1}
                 </TableCell>
-                <TableCell>{formResultsItem?.formName}</TableCell>
+                <TableCell>{formHistoryResultsItem?.formName}</TableCell>
                 <TableCell>{question.questionName}</TableCell>
                 {question.sumScore && [
                   <TableCell key={`sumScore-avg`} className="text-center">
                     {question.sumScore?.average.toFixed(2) || "-"}
                   </TableCell>,
                   <TableCell key={`sumScore-Sd`} className="text-center">
-                    {question.sumScore?.standardDeviation.toFixed(2) || "-"}
+                    {question.sumScore?.sd.toFixed(2) || "-"}
                   </TableCell>,
                 ]}
                 {/* Dynamic Scores Rendering */}
@@ -163,4 +161,4 @@ const CategorizedTable = ({ formResultsItem }: categorizedTableProp) => {
   );
 };
 
-export default CategorizedTable;
+export default CategorizedHistoryTable;

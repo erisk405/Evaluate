@@ -49,7 +49,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import GlobalApi from "@/app/_util/GlobalApi";
+import GlobalApi, { handleErrorOnAxios } from "@/app/_util/GlobalApi";
 import { PeriodType, TimeRange } from "@/types/interface";
 import DeletePariod from "./DeletePariod";
 import { toast } from "@/components/ui/use-toast";
@@ -173,6 +173,19 @@ const RightSection = ({ permission, period }: RightSectionProps) => {
           ),
         });
       }
+    }
+  };
+
+  const savePeriod = async (period_id: string) => {
+    try {
+      const payload = {
+        period_id,
+      };
+      const response = await GlobalApi.saveEvaluationToHistory(payload);
+      console.log("Save", response?.data);
+    } catch (error) {
+      console.error("API saveEvaluationToHistory", { message: error });
+      return handleErrorOnAxios(error);
     }
   };
 
@@ -397,7 +410,10 @@ const RightSection = ({ permission, period }: RightSectionProps) => {
                         <DropdownMenuContent>
                           <DropdownMenuLabel>เมนู</DropdownMenuLabel>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem className="flex items-center gap-2">
+                          <DropdownMenuItem
+                            className="flex items-center gap-2"
+                            onClick={() => savePeriod(item.period_id)}
+                          >
                             <DatabaseBackup size={16} />
                             บันทึกผล
                           </DropdownMenuItem>

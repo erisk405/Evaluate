@@ -121,7 +121,8 @@ export default function page() {
       };
 
       const nameResponse = await GlobalApi.updateProfileName(payload);
-
+      console.log("nameResponse",nameResponse);
+      
       if (nameResponse?.data) {
         const { name, prefix } = nameResponse.data.prefixUpdated;
         updateProfileDetail({ name, prefix });
