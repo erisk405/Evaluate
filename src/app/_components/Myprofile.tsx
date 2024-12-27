@@ -128,9 +128,11 @@ export default function Myprofile() {
         prefixId: values.prefix,
       };
 
-      const nameResponse = await GlobalApi.updateProfileName(payload);
-      if (nameResponse?.data?.nameUpdate) {
-        const { name, prefix } = nameResponse.data.nameUpdate;
+      const response = await GlobalApi.updateProfileName(payload);
+      console.log("nameResponse", response);
+
+      if (response?.data) {
+        const { name, prefix } = response.data;
         updateProfileDetail({ name, prefix });
       }
 
@@ -159,8 +161,8 @@ export default function Myprofile() {
   }
   // function เอาไว้ใชักับ SetStatusSection เพื่อให้สามารถนำ valueจาก component ด้านนอกมาใช้ได้
   const { setValue } = form;
-  
-  const handleRoleChange= (newRole: string) => {
+
+  const handleRoleChange = (newRole: string) => {
     setValue("role", newRole);
   };
   const handlePrefixChange = (newPrefix: string) => {

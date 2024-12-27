@@ -672,7 +672,7 @@ const getResultEvaluateFormHistory = (period_id: string) => {
       withCredentials: true,
     });
   } catch (error) {
-    console.error("API getResultEvaluateDetailForAdmin", { message: error });
+    console.error("API getResultEvaluateFormHistory", { message: error });
     return handleErrorOnAxios(error);
   }
 };
@@ -684,6 +684,17 @@ const saveEvaluationToHistory = (payload: { period_id: string }) => {
     });
   } catch (error) {
     console.error("API saveEvaluationToHistory", { message: error });
+    return handleErrorOnAxios(error);
+  }
+};
+
+const getResultEvaluateFormHistoryForAdmin = (period_id: string,userId:string) => {
+  try {
+    return axios.get(`${apiUrl}/resultEvaluateFormHistory/${period_id}/${userId}`, {
+      withCredentials: true,
+    });
+  } catch (error) {
+    console.error("API getResultEvaluateFormHistoryForAdmin", { message: error });
     return handleErrorOnAxios(error);
   }
 };
@@ -745,4 +756,5 @@ export default {
   getResultEvaluateDetailForAdmin,
   getResultEvaluateFormHistory,
   saveEvaluationToHistory,
+  getResultEvaluateFormHistoryForAdmin
 };

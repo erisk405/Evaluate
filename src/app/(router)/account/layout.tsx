@@ -51,8 +51,8 @@ const layout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
     fetchUser();
   }, []);
   return (
-    <div className="grid grid-cols-4 w-full bg-neutral-50 shadow-md border overflow-hidden rounded-xl h-screen">
-      <div className="col-span-1 p-4 border-r bg-white">
+    <div className="flex w-full bg-white  overflow-hidden rounded-xl h-screen">
+      <div className="min-w-[250px] w-[400px] p-4 border-r bg-white">
         <h2 className="text-xl text-stone-800 font-bold mb-4">Account</h2>
         <p className="text-sm text-gray-500 my-3">How you use options</p>
         {option.map((item, index) => (
@@ -68,7 +68,7 @@ const layout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
           </Link>
         ))}
       </div>
-      <div className="col-span-3 p-4">{children}</div>
+      <div className="bg-white p-4 w-full">{children}</div>
     </div>
   );
 };

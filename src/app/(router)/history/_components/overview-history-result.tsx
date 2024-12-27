@@ -10,7 +10,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { DrawerClose, DrawerFooter } from "@/components/ui/drawer";
+import {
+  DrawerClose,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
 import {
   formResultHistoryType,
   formResultsType,
@@ -19,42 +25,26 @@ import {
   LevelFormVision,
 } from "@/types/interface";
 import { Button } from "@/components/ui/button";
-import { adaptHistoryResult, CommonFormResult, CommonResultFormat } from "@/app/lib/adapters/results";
+import {
+  adaptHistoryResult,
+  CategorizedFormResults,
+  CommonFormResult,
+  CommonResultFormat,
+  VISION_LEVEL_CONFIGS,
+} from "@/app/lib/adapters/results";
 import { calculateCharacteristics } from "@/app/lib/utils/result-calculations";
+import { adaptCategorizeFormResultsByVisionLevel } from "@/app/lib/adapters/results/categorize-vision-results";
+import Loading from "@/app/_components/Loading";
 
 const SCORE_TYPE_LABELS: Record<string, string> = {
   Executive: "ผู้บริหาร",
   Manager: "ผู้จัดการ",
   Employee: "พนักงาน",
 };
-interface CategorizedFormResults {
-  formResults: {
-    [level in LevelFormVision]?: CommonFormResult[];
-  };
-}
-interface VisionLevelConfig {
-  showScoreTypes: boolean;
-  label: string;
-}
-const VISION_LEVEL_CONFIGS: Record<LevelFormVision, VisionLevelConfig> = {
-  VISION_1: {
-    showScoreTypes: false,
-    label: "ผลโดยรวมของตาราง",
-  },
-  VISION_2: {
-    showScoreTypes: true,
-    label: "จำแนกแต่ละหน่วยงาน",
-  },
-  UNSET: {
-    showScoreTypes: false,
-    label: "ยังไม่ถูกกำหนด VISION",
-  },
-};
+
 type categorizedTableProp = {
   resultHistoryDetail: historyResult | undefined;
 };
-
-
 
 const OverviewHistoryResult = ({
   resultHistoryDetail,
@@ -63,7 +53,7 @@ const OverviewHistoryResult = ({
   const [characteristics, setCharacteristics] = useState<string>();
   const [adaptedData, setAdaptedData] = useState<CommonResultFormat>();
   const [formResultsByVisionLevel, SetFormResultsByVisionLevel] =
-  useState<CategorizedFormResults>();
+    useState<CategorizedFormResults>();
   const renderTableHeaders = (
     scoreTypes: string[],
     vesion_level: LevelFormVision
@@ -124,45 +114,30 @@ const OverviewHistoryResult = ({
     );
     return Array.from(types);
   };
-  const categorizeFormResultsByVisionLevel = (
-    formResults: CommonFormResult[]
-  ): CategorizedFormResults => {
-    const categorized: CategorizedFormResults = {
-      formResults: {},
-    };
-    formResults.forEach((formResult) => {
-      const level = formResult.level;
-      // Type guard to ensure level is a valid LevelFormVision
-      console.log("level",level);
-      
-      if (Object.keys(VISION_LEVEL_CONFIGS).includes(level)) {
-        const typedLevel = level as LevelFormVision;
-        if (!categorized.formResults[typedLevel]) {
-          categorized.formResults[typedLevel] = [];
-        }
-        categorized.formResults[typedLevel]!.push(formResult);
-      }
-    });
-    return categorized;
-  };
   useEffect(() => {
     if (resultHistoryDetail) {
       const adapted = adaptHistoryResult(resultHistoryDetail);
       setAdaptedData(adapted);
-      setCharacteristics(calculateCharacteristics(adapted.headData.totalAverage));
-      setScoreTypes(extractScoreTypes(adapted.formResults));
-      
-      SetFormResultsByVisionLevel(
-        categorizeFormResultsByVisionLevel(adapted?.formResults)
+
+      const extractType = extractScoreTypes(adapted.formResults);
+      setScoreTypes(extractType);
+
+      const summaryCharacteristics = calculateCharacteristics(
+        adapted.headData.totalAverage
       );
+      setCharacteristics(summaryCharacteristics);
+
+      const adaptCategorize = adaptCategorizeFormResultsByVisionLevel(
+        adapted?.formResults
+      );
+      SetFormResultsByVisionLevel(adaptCategorize);
     }
   }, [resultHistoryDetail]);
-  useEffect(()=>{
-    console.log("formResultsByVisionLevel",formResultsByVisionLevel);
-    console.log("adaptedData?.formResults",adaptedData?.formResults);
-    
-  },[formResultsByVisionLevel,adaptedData])
-  return (
+
+  if (resultHistoryDetail === null) {
+    return <Loading />;
+  }
+  return resultHistoryDetail ? (
     <div className="mx-auto w-full max-w-screen-2xl">
       <div className="">
         {formResultsByVisionLevel &&
@@ -209,8 +184,7 @@ const OverviewHistoryResult = ({
                                   key={`${type}-avg`}
                                   className="text-center"
                                 >
-                                  {matchedScore?.average.toFixed(2) ||
-                                    "-"}
+                                  {matchedScore?.average.toFixed(2) || "-"}
                                 </TableCell>,
                                 <TableCell
                                   key={`${type}-sd`}
@@ -307,7 +281,7 @@ const OverviewHistoryResult = ({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {resultHistoryDetail?.formResults.map((item, index) => (
+                {adaptedData?.formResults.map((item, index) => (
                   <TableRow
                     className="text-[16px] "
                     key={"all-result-" + index}
@@ -319,29 +293,28 @@ const OverviewHistoryResult = ({
                       {item.formName}
                     </TableCell>
                     <TableCell colSpan={1} className="text-center">
-                      {item.sumTotal.average_per_form.toFixed(2)}
+                      {item.totals.average.toFixed(2)}
                     </TableCell>
                     <TableCell colSpan={1} className="text-center">
-                      {item.sumTotal.sd_per_form.toFixed(2)}
+                      {item.totals.sd.toFixed(2)}
                     </TableCell>
                   </TableRow>
                 ))}
 
                 {/* Total Summary Row */}
-                {resultHistoryDetail?.headData && (
+                {adaptedData?.headData && (
                   <TableRow className="text-[16px] bg-yellow-200">
                     <TableCell colSpan={1} className="font-bold text-right">
                       ผลรวมทั้งหมดของ
                     </TableCell>
                     <TableCell colSpan={4} className="text-left">
-                      {resultHistoryDetail.headData.userName}
+                      {adaptedData.headData.userName}
                     </TableCell>
                     <TableCell colSpan={1} className="text-center">
-                      {resultHistoryDetail.headData.total_mean?.toFixed(2) ||
-                        "-"}
+                      {adaptedData.headData.totalAverage?.toFixed(2) || "-"}
                     </TableCell>
                     <TableCell colSpan={1} className="text-center">
-                      {resultHistoryDetail.headData.total_SD?.toFixed(2) || "-"}
+                      {adaptedData.headData.totalSD?.toFixed(2) || "-"}
                     </TableCell>
                   </TableRow>
                 )}
@@ -372,6 +345,21 @@ const OverviewHistoryResult = ({
               <Button variant="outline">Cancel</Button>
             </DrawerClose>
           </DrawerFooter>
+        </div>
+      </div>
+    </div>
+  ) : (
+    <div className="mx-auto w-full  overflow-auto scrollbar-gemini">
+      <div className="mx-auto w-full max-w-xl ">
+        <DrawerHeader className="flex flex-col justify-center items-center">
+          <DrawerTitle className="text-xl"></DrawerTitle>
+          <DrawerDescription></DrawerDescription>
+        </DrawerHeader>
+        <div className="flex flex-col w-full h-[540px] items-center justify-center ">
+          <h2 className="text-9xl animate-wiggle-float">😿</h2>
+          <p className="text-3xl mt-20 text-orange-500">
+            ไม่พบผลการประเมินในรอบการประเมินนี้
+          </p>
         </div>
       </div>
     </div>

@@ -91,6 +91,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import Personal_result from "@/app/(router)/personal_evaluation/_components/Personal-result";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import MainResultHistory from "@/app/(router)/history/_components/main-result-history";
 
 type ListAllEmployeeProp = {
   filterDataArea: filterAreaType | undefined;
@@ -99,13 +100,12 @@ type filterAreaType = {
   departments: string[];
   itemsRole: string[];
 };
-const ResultUserList = () => {
+const ResultUserList = ({ period }: { period: PeriodType }) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [globalFilter, setGlobalFilter] = useState("");
   const [allUser, setAllUser] = useState<User[]>([]);
-  const [selectPeriod, setSelectPeriod] = useState<PeriodType | null>(null);
   // select ตัวนี้ใช้กับ การที่ต้องการ select ข้อมูลทั้งตารางมาใช้ได้ในส่วนของ employee ในdepartment นั้นๆ
   const [rowSelection, setRowSelection] = useState({});
   const columns: ColumnDef<User>[] = [
@@ -183,7 +183,7 @@ const ResultUserList = () => {
       cell: ({ row }) => {
         return (
           <div className="capitalize flex items-center gap-3 ">
-            <h2>{selectPeriod?.title} รอบที่ 1</h2>
+            <h2>{period?.title}</h2>
           </div>
         );
       },
@@ -192,8 +192,6 @@ const ResultUserList = () => {
       accessorKey: "action",
       header: "รายละเอียด",
       cell: ({ row }) => {
-        // console.log("row",row.original);
-
         return (
           <div className="capitalize flex items-center gap-3 ">
             <Drawer>
@@ -208,8 +206,8 @@ const ResultUserList = () => {
               <DrawerContent className="h-[calc(100dvh-10%)] ">
                 <div className="mx-auto w-full overflow-auto scrollbar-gemini">
                   <div className="mx-auto w-full max-w-7xl">
-                    <Personal_result
-                      period={selectPeriod!!}
+                    <MainResultHistory
+                      period={period}
                       userId={row.original.id}
                     />
                   </div>
@@ -309,13 +307,13 @@ const ResultUserList = () => {
     filterEmployees();
   }, []); // Run when filterDataArea changes
   return (
-    <div className="w-full ">
+    <div className="w-full mx-3 px-5">
       <div className="flex items-center w-full gap-3 justify-between py-4">
         <div className="grid grid-cols-2 xl:grid-cols-4 items-center gap-3 w-full">
           {/* ปุ่มค้นหาชื่อหรือ email */}
           <div className="col-span-2 w-full">
             <Input
-              placeholder="Filter by name or email..."
+              placeholder="ค้นหา: ชื่อ-นามสกุล"
               value={globalFilter}
               onChange={(event) => setGlobalFilter(event.target.value)}
               className=" rounded-lg "

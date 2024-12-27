@@ -108,7 +108,7 @@ const config = {
 				'float2': {
 					'0%, 100%': {
 						transform: 'translateY(0)',
-						filter: 'drop-shadow(-1px 20px 61px #8338ec)'
+						filter: 'drop-shadow(-1px 0px 30px cyan)'
 
 					},
 					'50%': {

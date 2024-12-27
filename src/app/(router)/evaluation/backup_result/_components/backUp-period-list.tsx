@@ -95,8 +95,6 @@ export const columns: ColumnDef<PeriodType>[] = [
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const payment = row.original;
-
       return (
         <Dialog>
           <DialogTrigger asChild>
@@ -109,8 +107,8 @@ export const columns: ColumnDef<PeriodType>[] = [
                 Make changes to your profile here. Click save when you're done.
               </DialogDescription>
             </DialogHeader>
-            <ScrollArea className="max-h-[650px] px-4">
-              <ResultUserList />
+            <ScrollArea className="max-h-[650px]">
+              <ResultUserList period={row.original} />
             </ScrollArea>
             <DialogFooter>
               <Button type="submit">Save changes</Button>

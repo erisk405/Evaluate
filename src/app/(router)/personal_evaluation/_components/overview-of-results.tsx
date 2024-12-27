@@ -17,6 +17,9 @@ import {
   LevelFormVision,
 } from "@/types/interface";
 import { Button } from "@/components/ui/button";
+import { adaptEvaluateResult, CategorizedFormResults, CommonFormResult, CommonResultFormat, VISION_LEVEL_CONFIGS } from "@/app/lib/adapters/results";
+import { calculateCharacteristics } from "@/app/lib/utils/result-calculations";
+import { adaptCategorizeFormResultsByVisionLevel } from "@/app/lib/adapters/results/categorize-vision-results";
 
 const SCORE_TYPE_LABELS: Record<string, string> = {
   Executive: "ผู้บริหาร",
@@ -26,38 +29,13 @@ const SCORE_TYPE_LABELS: Record<string, string> = {
 type categorizedTableProp = {
   resultEvaluateDetail: getResultEvaluateType | undefined;
 };
-interface CategorizedFormResults {
-  formResults: {
-    [level in LevelFormVision]?: formResultsType[];
-  };
-}
-interface VisionLevelConfig {
-  showScoreTypes: boolean;
-  label: string;
-}
-const VISION_LEVEL_CONFIGS: Record<LevelFormVision, VisionLevelConfig> = {
-  VISION_1: {
-    showScoreTypes: false,
-    label: "ผลโดยรวมของตาราง",
-  },
-  VISION_2: {
-    showScoreTypes: true,
-    label: "จำแนกแต่ละหน่วยงาน",
-  },
-  UNSET: {
-    showScoreTypes: false,
-    label: "ยังไม่ถูกกำหนด VISION",
-  },
-};
 const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
   const [scoreTypes, setScoreTypes] = useState<string[]>([]);
-  const [Characteristics, SetCharacteristics] = useState<string>();
-  const [formResultsByVisionLevel, SetFormResultsByVisionLevel] =
-    useState<CategorizedFormResults>();
+  const [characteristics, setCharacteristics] = useState<string>();
+  const [formResultsByVisionLevel, SetFormResultsByVisionLevel] =useState<CategorizedFormResults>();
 
-  const renderTableHeaders = (
-    scoreTypes: string[],
-    vesion_level: LevelFormVision
+  const [adaptedData, setAdaptedData] = useState<CommonResultFormat>();
+  const renderTableHeaders = (scoreTypes: string[],vesion_level: LevelFormVision
   ) => (
     <>
       <TableRow className="text-lg bg-blue-300">
@@ -105,30 +83,8 @@ const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
       </TableRow>
     </>
   );
-  const resultsByCharacteristics = (totalAvg: number | undefined) => {
-    try {
-      if (!totalAvg) {
-        throw new Error("totalAvg is undefined");
-      }
-      if (totalAvg >= 4.5) {
-        SetCharacteristics("10");
-      } else if (totalAvg >= 3.5) {
-        SetCharacteristics("9");
-      } else if (totalAvg >= 2.5) {
-        SetCharacteristics("8");
-      } else if (totalAvg >= 1.5) {
-        SetCharacteristics("7");
-      } else if (totalAvg < 1.5) {
-        SetCharacteristics("6");
-      } else {
-        SetCharacteristics("");
-      }
-    } catch (error) {
-      console.error({ message: error });
-    }
-  };
   //หาว่ามันมีทั้งหมดที่ type ใน formResults นี้ โดยตรวจสอบจาก score.type
-  const extractScoreTypes = (formResults: formResultsType[]) => {
+  const extractScoreTypes = (formResults: CommonFormResult[]) => {
     const types = new Set<string>();
     formResults.forEach((form) =>
       form.questions.forEach((question) =>
@@ -137,38 +93,19 @@ const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
     );
     return Array.from(types);
   };
-  const categorizeFormResultsByVisionLevel = (
-    formResults: formResultsType[]
-  ): CategorizedFormResults => {
-    const categorized: CategorizedFormResults = {
-      formResults: {},
-    };
-
-    formResults.forEach((formResult) => {
-      // จัดกลุ่มออกมาก่อน ว่าคำถามที่ส่งมามี VISION level อะไรบ้าง
-      const visionLevels = new Set(
-        formResult.questions.map((question) => question.level)
-      );
-
-      visionLevels.forEach((level) => {
-        // ถ้ายังไม่มี array vision นี้ก็ให้ สร้าง array เปล่าๆมาไว้เก็บค่าก่อน
-        if (!categorized.formResults[level]) {
-          categorized.formResults[level] = [];
-        }
-
-        // Add the entire form result to the appropriate level group
-        categorized.formResults[level]!.push(formResult);
-      });
-    });
-    return categorized;
-  };
   useEffect(() => {
     if (resultEvaluateDetail) {
-      resultsByCharacteristics(resultEvaluateDetail.headData.totalAvg);
-      setScoreTypes(extractScoreTypes(resultEvaluateDetail.formResults));
-      SetFormResultsByVisionLevel(
-        categorizeFormResultsByVisionLevel(resultEvaluateDetail.formResults)
-      );
+      const adapted = adaptEvaluateResult(resultEvaluateDetail);
+      setAdaptedData(adapted);
+      
+      const extractType = extractScoreTypes(adapted.formResults)
+      setScoreTypes(extractType);
+
+      const summaryCharacteristics = calculateCharacteristics(adapted.headData.totalAverage)
+      setCharacteristics(summaryCharacteristics);
+
+      const adaptCategorize = adaptCategorizeFormResultsByVisionLevel(adapted?.formResults);
+      SetFormResultsByVisionLevel(adaptCategorize);
     }
   }, [resultEvaluateDetail]);
 
@@ -199,7 +136,7 @@ const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
                   </TableHeader>
                   <TableBody>
                     {vision.map((form) => (
-                      <React.Fragment key={form.formId}>
+                      <React.Fragment key={form.id}>
                         {/* Form Level Summary Row */}
                         {/* ผลรวมในแต่ละด้าน */}
                         <TableRow className="text-[16px] bg-blue-100">
@@ -207,17 +144,17 @@ const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
                             {form.formName}
                           </TableCell>
                           <TableCell className="text-center">
-                            {form.totalAvgPerForm.toFixed(2)}
+                            {form.totals.average.toFixed(2)}
                           </TableCell>
                           <TableCell className="text-center">
-                            {form.totalSDPerForm.toFixed(2)}
+                            {form.totals.sd.toFixed(2)}
                           </TableCell>
                           {/* Dynamic Scores Rendering */}
                           {VISION_LEVEL_CONFIGS[vesion_level as LevelFormVision]
                             .showScoreTypes &&
                             scoreTypes.flatMap((type) => {
-                              const matchedScore = form.total?.find(
-                                (match) => match.total === type
+                              const matchedScore = form.totals.byType?.find(
+                                (score) => score.type === type
                               );
                               return [
                                 <TableCell
@@ -238,29 +175,24 @@ const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
 
                         {/* Questions Rows */}
                         {form.questions.map((question, index) => (
-                          <TableRow
-                            key={question.questionId}
-                            className="text-[16px]"
-                          >
+                          <TableRow key={question.id} className="text-[16px]">
                             <TableCell className="font-medium text-center">
                               {index + 1}
                             </TableCell>
                             <TableCell>{form.formName}</TableCell>
-                            <TableCell>{question.questionName}</TableCell>
-                            {question.sumScore && [
+                            <TableCell>{question.name}</TableCell>
+                            {question.scores && [
                               <TableCell
                                 key={`sumScore-avg`}
                                 className="text-center"
                               >
-                                {question.sumScore?.average.toFixed(2) || "-"}
+                                {question.summary.average.toFixed(2) || "-"}
                               </TableCell>,
                               <TableCell
                                 key={`sumScore-Sd`}
                                 className="text-center"
                               >
-                                {question.sumScore?.standardDeviation.toFixed(
-                                  2
-                                ) || "-"}
+                                {question.summary.sd?.toFixed(2) || "-"}
                               </TableCell>,
                             ]}
                             {/* Dynamic Scores Rendering */}
@@ -326,7 +258,7 @@ const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {resultEvaluateDetail?.formResults.map((item, index) => (
+                {adaptedData?.formResults.map((item, index) => (
                   <TableRow
                     className="text-[16px] "
                     key={"all-result-" + index}
@@ -338,29 +270,29 @@ const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
                       {item.formName}
                     </TableCell>
                     <TableCell colSpan={1} className="text-center">
-                      {item.totalAvgPerForm.toFixed(2)}
+                      {item.totals.average.toFixed(2)}
                     </TableCell>
                     <TableCell colSpan={1} className="text-center">
-                      {item.totalSDPerForm.toFixed(2)}
+                      {item.totals.sd.toFixed(2)}
                     </TableCell>
                   </TableRow>
                 ))}
 
                 {/* Total Summary Row */}
-                {resultEvaluateDetail?.headData && (
+                {adaptedData?.headData && (
                   <TableRow className="text-[16px] bg-yellow-200">
                     <TableCell colSpan={1} className="font-bold text-right">
                       ผลรวมทั้งหมดของ
                     </TableCell>
                     <TableCell colSpan={4} className="text-left">
-                      {resultEvaluateDetail.headData.evaluatorName}
+                      {adaptedData.headData.userName}
                     </TableCell>
                     <TableCell colSpan={1} className="text-center">
-                      {resultEvaluateDetail.headData.totalAvg?.toFixed(2) ||
+                      {adaptedData.headData.totalAverage?.toFixed(2) ||
                         "-"}
                     </TableCell>
                     <TableCell colSpan={1} className="text-center">
-                      {resultEvaluateDetail.headData.totalSD?.toFixed(2) || "-"}
+                      {adaptedData.headData.totalSD?.toFixed(2) || "-"}
                     </TableCell>
                   </TableRow>
                 )}
@@ -375,7 +307,7 @@ const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
                       ผลการประเมินการปฎิบัติงานตามคุณลักษณะและพฤติกรรมในการปฎิบัติงาน
                     </h2>
                     <h2 className="flex justify-around mt-4">
-                      เท่ากับ <span className="text-xl">{Characteristics}</span>{" "}
+                      เท่ากับ <span className="text-xl">{characteristics}</span>{" "}
                       คะแนน
                     </h2>
                   </TableCell>

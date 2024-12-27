@@ -85,88 +85,92 @@ const page = () => {
     }
   };
   return (
-    <div className="px-4 rounded-lg h-screen">
-      <div className="flex gap-3 items-center">
-        <Fingerprint size={40} />
-        <h2 className="text-lg font-semibold my-3">Change password?</h2>
-      </div>
-      <h2 className="text-gray-500">Must be at least 8 charector</h2>
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="max-w-[400px] my-3"
-        >
-          <div className="grid grid-cols-1 gap-3">
-            <div>
-              <FormField
-                control={form.control}
-                name="currPassword"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Current Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="********"
-                        {...field}
-                        type="password"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <div>
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="********"
-                        {...field}
-                        type="password"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <div>
-              <FormField
-                control={form.control}
-                name="confirmPassword"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Confirm password</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="********"
-                        {...field}
-                        type="password"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+    <div className="px-4 flex flex-col items-center  rounded-lg h-screen">
+      <div className="w-[428px]">
+        <div className="flex flex-col w-full items-center justify-center">
+          <div className="flex gap-3 items-center border p-2 rounded-lg shadow">
+            <Fingerprint size={50} />
           </div>
-          <Button
-            className="w-full mt-10 h-[40px] active:scale-95 transition-all"
-            type="submit"
+          <h2 className="text-2xl font-semibold my-3">Change password?</h2>
+          <h2 className="text-gray-500">Must be at least 8 charector</h2>
+        </div>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="w-full my-3"
           >
-            {loading ? (
-              <Loader className="animate-spin" />
-            ) : (
-              "Change account password"
-            )}
-          </Button>
-        </form>
-      </Form>
+            <div className="grid grid-cols-1 gap-3">
+              <div>
+                <FormField
+                  control={form.control}
+                  name="currPassword"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Current Password</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="********"
+                          {...field}
+                          type="password"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div>
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="********"
+                          {...field}
+                          type="password"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div>
+                <FormField
+                  control={form.control}
+                  name="confirmPassword"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Confirm password</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="********"
+                          {...field}
+                          type="password"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+            <Button
+              className="w-full mt-10 h-[40px] active:scale-95 transition-all"
+              type="submit"
+            >
+              {loading ? (
+                <Loader className="animate-spin" />
+              ) : (
+                "Change account password"
+              )}
+            </Button>
+          </form>
+        </Form>
+      </div>
     </div>
   );
 };

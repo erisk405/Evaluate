@@ -34,8 +34,9 @@ import CategorizedHistoryTable from "./categorized-history-table";
 
 type MainResultHistoryProp = {
   period: PeriodType;
+  userId: string;
 };
-const MainResultHistory = ({ period }: MainResultHistoryProp) => {
+const MainResultHistory = ({ period, userId }: MainResultHistoryProp) => {
   const [loading, setLoading] = useState(false);
   const [resultHistoryDetail, setResultHistoryDetail] =
     useState<historyResult>();
@@ -43,11 +44,25 @@ const MainResultHistory = ({ period }: MainResultHistoryProp) => {
   useEffect(() => {
     const getResultEvaluateFormHistory = async () => {
       try {
-        const response = await GlobalApi.getResultEvaluateFormHistory(
-          period.period_id
-        );
-        console.log("HistoryResult", response?.data);
-        setResultHistoryDetail(response?.data);
+        if (!period) throw new Error("period not found");
+
+        if (!userId) {
+          const response = await GlobalApi.getResultEvaluateFormHistory(
+            period.period_id
+          );
+          // console.log("HistoryResult", response?.data);
+          setResultHistoryDetail(response?.data);
+        } else {
+          const response = await GlobalApi.getResultEvaluateFormHistoryForAdmin(
+            period.period_id,
+            userId
+          );
+          const data = response?.data;
+          // console.log("data for admin", data);
+          if (data) {
+            setResultHistoryDetail(data);
+          }
+        }
       } catch (error) {
         console.log({ message: error });
       }

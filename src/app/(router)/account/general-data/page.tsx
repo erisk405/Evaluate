@@ -17,8 +17,11 @@ import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import Link from "next/link";
 import {
+  Bolt,
   Check,
   CircleDashed,
+  Dock,
+  Hexagon,
   LinkIcon,
   Loader,
   Mail,
@@ -120,11 +123,11 @@ export default function page() {
         prefixId: values.prefix,
       };
 
-      const nameResponse = await GlobalApi.updateProfileName(payload);
-      console.log("nameResponse",nameResponse);
-      
-      if (nameResponse?.data) {
-        const { name, prefix } = nameResponse.data.prefixUpdated;
+      const response = await GlobalApi.updateProfileName(payload);
+      console.log("nameResponse", response);
+
+      if (response?.data) {
+        const { name, prefix } = response.data;
         updateProfileDetail({ name, prefix });
       }
 
@@ -229,8 +232,8 @@ export default function page() {
   return (
     <div className="mx-auto max-w-[600px] ">
       <div className="flex gap-3 items-center my-3">
-        <ScanFace size={40} strokeWidth={1.5} />
-        <h2 className="text-lg font-semibold ">Edit Profile</h2>
+        <Bolt size={30} strokeWidth={1.2} />
+        <h2 className="text-xl ">ประวัติส่วนตัว</h2>
       </div>
       <div className="flex items-center gap-3 bg-white p-3 rounded-3xl shadow">
         <div className=" px-4 cursor-pointer" onClick={handleImageClick}>
@@ -266,7 +269,6 @@ export default function page() {
         </div>
       </div>
       <div className="p-4">
-        <Separator className="my-3" />
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
             {/* prefix */}
@@ -275,8 +277,8 @@ export default function page() {
               name="prefix"
               render={({ field }) => (
                 <FormItem>
-                  <div className="grid grid-cols-11 items-center gap-3">
-                    <h2 className="col-span-3 text-sm">คำนำหน้า</h2>
+                  <div className="flex items-center gap-3 rounded-lg">
+                    <h2 className="">คำนำหน้า</h2>
                     <FormControl className="col-span-8 w-full">
                       <SetPrefixSelection onPrefixChange={handlePrefixChange} />
                     </FormControl>
@@ -286,51 +288,52 @@ export default function page() {
               )}
             />
             <Separator />
-            {/* firstName */}
-            <FormField
-              control={form.control}
-              name="firstName"
-              render={({ field }) => (
-                <FormItem className="col-span-11">
-                  <div className="grid grid-cols-11 items-center gap-3">
+            <div className="grid grid-cols-2 gap-3">
+              {/* firstName */}
+              <FormField
+                control={form.control}
+                name="firstName"
+                render={({ field }) => (
+                  <FormItem className="col-span-1">
                     <h2 className="col-span-3 text-sm">ชื่อ</h2>
-                    <FormControl className="col-span-8">
-                      <Input
-                        id="firstName"
-                        type="text"
-                        placeholder="ชื่อ"
-                        className="focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1"
-                        {...field}
-                      />
-                    </FormControl>
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Separator />
-            {/* lastName */}
-            <FormField
-              control={form.control}
-              name="lastName"
-              render={({ field }) => (
-                <FormItem>
-                  <div className="grid grid-cols-11 items-center gap-3">
-                    <h2 className="col-span-3 text-sm">นามสกุล</h2>
-                    <FormControl className="col-span-8">
-                      <Input
-                        id="lastName"
-                        type="text"
-                        placeholder="นามสกุล"
-                        className="focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1"
-                        {...field}
-                      />
-                    </FormControl>
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    <div className="grid grid-cols-11 items-center gap-3 ">
+                      <FormControl className="col-span-11">
+                        <Input
+                          id="firstName"
+                          type="text"
+                          placeholder="ชื่อ"
+                          className="focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1"
+                          {...field}
+                        />
+                      </FormControl>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {/* lastName */}
+              <FormField
+                control={form.control}
+                name="lastName"
+                render={({ field }) => (
+                  <FormItem className="col-span-1">
+                    <h2 className="col-span-1 text-sm">นามสกุล</h2>
+                    <div className="grid grid-cols-11 items-center gap-3">
+                      <FormControl className="col-span-11">
+                        <Input
+                          id="lastName"
+                          type="text"
+                          placeholder="นามสกุล"
+                          className="focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1"
+                          {...field}
+                        />
+                      </FormControl>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
             <Separator />
             {/* email */}
@@ -339,9 +342,9 @@ export default function page() {
               name="email"
               render={({ field }) => (
                 <FormItem>
+                  <h2 className="col-span-3 text-sm">Email address</h2>
                   <div className="grid grid-cols-11 items-center gap-3">
-                    <h2 className="col-span-3 text-sm">Email address</h2>
-                    <FormControl className="col-span-8">
+                    <FormControl className="col-span-11">
                       <div className="relative">
                         <Mail
                           strokeWidth={1.5}
@@ -368,9 +371,9 @@ export default function page() {
               name="Department"
               render={({ field }) => (
                 <FormItem>
+                  <h2 className="col-span-3 text-sm">หน่วยงานที่สังกัด</h2>
                   <div className="grid grid-cols-11 items-center gap-3">
-                    <h2 className="col-span-3 text-sm">Department</h2>
-                    <FormControl className="col-span-8">
+                    <FormControl className="col-span-11">
                       <div className="relative">
                         <Input
                           id="Department"
@@ -393,9 +396,9 @@ export default function page() {
               name="role"
               render={() => (
                 <FormItem>
+                  <h2 className="col-span-3 text-sm">ตำแหน่ง</h2>
                   <div className="grid grid-cols-11 items-center gap-3">
-                    <h2 className="col-span-3 text-sm">Role</h2>
-                    <FormControl className="col-span-8">
+                    <FormControl className="col-span-11">
                       <div className="relative">
                         <div className="flex items-center gap-3">
                           <SetStatusSection
@@ -451,8 +454,8 @@ export default function page() {
               name="image"
               render={({ field }) => (
                 <FormItem>
+                  <h2 className="col-span-3 text-sm">รูปภาพ</h2>
                   <div className="grid grid-cols-11 items-center gap-3">
-                    <h2 className="col-span-3 text-sm">Picture</h2>
                     <FormControl>
                       <Input
                         id="picture"

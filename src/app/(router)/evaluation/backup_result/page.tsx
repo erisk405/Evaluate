@@ -54,10 +54,11 @@ const page = () => {
   return (
     <div className="p-3 w-full">
       <h2 className="text-3xl">คลังเก็บข้อมูล</h2>
-      <div className="grid grid-cols-2 bg-white shadow rounded-3xl overflow-hidden w-full p-5">
-        <div className="flex  gap-3 items-center ">
-          <div className="text-9xl bg-blue-500  text-white p-5 rounded-lg">
-            <DatabaseBackup strokeWidth={2} size={50} />
+      <div className="@container grid grid-cols-2 bg-white shadow rounded-xl overflow-hidden w-full p-3">
+        <div className="flex gap-3 items-center @[998px]:col-span-1 col-span-2">
+          <div className="flex justify-center items-center  w-[248px] text-white p-5 rounded-lg ">
+            <div className="text-6xl animate-wiggle-float-blue">☃️</div>
+            {/* <DatabaseBackup strokeWidth={2} size={50} /> */}
           </div>
           <div>
             <h2 className="text-xl">รอบของข้อมูลที่ถูกบันทึก</h2>
@@ -69,7 +70,7 @@ const page = () => {
             </p>
           </div>
         </div>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-3  @[998px]:col-span-1 col-span-2">
           {displayBackUp.map((item) => (
             <div
               className="flex flex-col justify-around h-full p-2 rounded-xl shadow"
@@ -82,8 +83,11 @@ const page = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
-        <Tabs defaultValue="account" className="w-full col-span-2 my-5">
+      <div className="grid grid-cols-3 gap-3 @container">
+        <Tabs
+          defaultValue="account"
+          className="w-full col-span-3 @[998px]:col-span-2 my-5"
+        >
           <div className="flex justify-start items-center">
             <TabsList className="w-auto">
               <TabsTrigger value="account">รอบการประเมิน</TabsTrigger>
@@ -128,11 +132,11 @@ const page = () => {
             </Card>
           </TabsContent>
         </Tabs>
-        <div className="my-5 w-full">
+        <div className="my-5 w-full col-span-3 @[998px]:col-span-1">
           <h2 className="text-xl my-3 font-bold">
             รอบการประเมินที่ยังไม่บันทึก
           </h2>
-          <UpComingPeriod/>
+          <UpComingPeriod />
         </div>
       </div>
     </div>
