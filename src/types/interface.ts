@@ -53,6 +53,9 @@ interface Role {
   permissionsAsAssessor: PermissionItem[];
 }
 
+// ----------------------------------------
+//           Type for Permission
+// ----------------------------------------
 interface PermissionItem {
   assessor_role_id: string;
   evaluator_role_id: string;
@@ -90,13 +93,7 @@ interface PermissionForm {
   };
   ingroup: boolean;
 }
-interface PeriodType {
-  period_id: string,
-  title: string,
-  start: string,
-  end: string
-  isAction: boolean
-}
+
 
 interface RoleRequest {
   role: Role;
@@ -117,7 +114,17 @@ interface Notification {
   };
   createdAt: string;
 }
-
+// ----------------------------------------
+//           Type for Period
+// ----------------------------------------
+interface PeriodType {
+  period_id: string,
+  title: string,
+  start: string,
+  end: string
+  isAction: boolean;
+  backUp: boolean;
+}
 interface FormQuestion {
   id: string;
   form_id?: string;
@@ -128,6 +135,10 @@ interface TimeRange {
   to?: Date;
 }
 
+
+// ----------------------------------------
+//           Type for Supervise
+// ----------------------------------------
 interface Supervise {
   supervise_id: string;
   user_id: string;
@@ -135,11 +146,17 @@ interface Supervise {
   user?: User;
 }
 
+// ----------------------------------------
+//           Type for prefix
+// ----------------------------------------
 interface PrefixType {
   prefix_id: string;
   prefix_name: string;
 }
 
+// ----------------------------------------
+//           Type for  userHaveBeenEvaluated
+// ----------------------------------------
 interface userHaveBeenEvaluatedType {
   id?: string,
   evaluateDetail: evaluateDetailType[]
@@ -210,7 +227,6 @@ interface scoresType {
   type: string
 }
 
-// ---------------------------------------------------------------------------
 interface getCountUserAsEvaluatedType {
   department_id: string;
   department_name: string;
@@ -265,7 +281,7 @@ interface formResultHistoryType {
     sd_per_form: number;
   }
   total: inSideTotal[];
-  
+
 }
 interface questionsHistoryType {
   id: string;
@@ -297,13 +313,26 @@ interface headDataHistoryType {
 }
 
 
+
+
 export type {
-  ImageType, Department, Role,
-  User, RoleRequest, Notification,
-  Permission, PermissionForm,
-  FormQuestion, PeriodType, PageNumber,
-  TimeRange, Supervise, PrefixType, PermissionFormItem,
-  PermissionItem, dataDepartmentByAdmin,
+  ImageType,
+  Department,
+  Role,
+  User,
+  RoleRequest,
+  Notification,
+  Permission,
+  PermissionForm,
+  FormQuestion,
+  PeriodType,
+  PageNumber,
+  TimeRange,
+  Supervise,
+  PrefixType,
+  PermissionFormItem,
+  PermissionItem,
+  dataDepartmentByAdmin,
   userHaveBeenEvaluatedType,
   getResultEvaluateType,
   formResultsType,

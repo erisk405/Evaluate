@@ -1,16 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
   Drawer,
   DrawerClose,
   DrawerContent,
@@ -30,6 +20,7 @@ import {
 import CategorizedTable from "./categorizedTable";
 import OverviewOfResults from "./overview-of-results";
 import Loading from "@/app/_components/Loading";
+import IndividualOverview from "./individual-overview";
 
 type Personal_resultProp = {
   period: PeriodType;
@@ -104,6 +95,9 @@ const Personal_result = ({ period, userId }: Personal_resultProp) => {
                 {item.formName}
               </TabsTrigger>
             ))}
+            <TabsTrigger value="individual-overview">
+              ภาพรวมของแต่ละบุคคล
+            </TabsTrigger>
           </TabsList>
         </div>
         <TabsContent value="all-result">
@@ -114,6 +108,9 @@ const Personal_result = ({ period, userId }: Personal_resultProp) => {
             <CategorizedTable formResultsItem={item} />
           </TabsContent>
         ))}
+        <TabsContent value="individual-overview">
+          <IndividualOverview period={period} />
+        </TabsContent>
       </Tabs>
     </div>
   ) : (

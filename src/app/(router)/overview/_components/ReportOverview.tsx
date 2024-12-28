@@ -133,7 +133,7 @@ const ReportOverview = () => {
                 </div>
                 <div className="grid gap-1 grid-cols-1">
                   <div className="flex gap-2 items-end">
-                    <h2 className="text-2xl font-bold text-stone-700">
+                    <h2 className="text-xl text-stone-700">
                       {item.quantity}
                     </h2>
                     <div className="flex items-center">

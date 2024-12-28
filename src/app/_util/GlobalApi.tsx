@@ -663,6 +663,17 @@ const getResultEvaluateDetailForAdmin = (period_id: string, userId: string) => {
   }
 };
 
+const getAllResultIndividualOverview = (period_id:string,userId:string) => {
+  try {
+    return axios.get(`${apiUrl}/allResultEvaluateOverview/${period_id}/${userId}`, {
+      withCredentials: true,
+    });
+  } catch (error) {
+    console.error("API getAllResultIndividualOverview", { message: error });
+    return handleErrorOnAxios(error);
+  }
+};
+
 // -----------------------------------------------
 //               History API
 // ----------------------------------------------
@@ -688,13 +699,36 @@ const saveEvaluationToHistory = (payload: { period_id: string }) => {
   }
 };
 
-const getResultEvaluateFormHistoryForAdmin = (period_id: string,userId:string) => {
+const getResultEvaluateFormHistoryForAdmin = (
+  period_id: string,
+  userId: string
+) => {
   try {
-    return axios.get(`${apiUrl}/resultEvaluateFormHistory/${period_id}/${userId}`, {
+    return axios.get(
+      `${apiUrl}/resultEvaluateFormHistory/${period_id}/${userId}`,
+      {
+        withCredentials: true,
+      }
+    );
+  } catch (error) {
+    console.error("API getResultEvaluateFormHistoryForAdmin", {
+      message: error,
+    });
+    return handleErrorOnAxios(error);
+  }
+};
+
+// -----------------------------------------------
+//               Export API
+// ----------------------------------------------
+const getExportEvaluationByUserId = (period_id: string, userId: string) => {
+  try {
+    return axios.get(`${apiUrl}/export/${period_id}/${userId}`, {
       withCredentials: true,
+      responseType: "arraybuffer",
     });
   } catch (error) {
-    console.error("API getResultEvaluateFormHistoryForAdmin", { message: error });
+    console.error("API getExportEvaluationByUserId", { message: error });
     return handleErrorOnAxios(error);
   }
 };
@@ -756,5 +790,7 @@ export default {
   getResultEvaluateDetailForAdmin,
   getResultEvaluateFormHistory,
   saveEvaluationToHistory,
-  getResultEvaluateFormHistoryForAdmin
+  getResultEvaluateFormHistoryForAdmin,
+  getExportEvaluationByUserId,
+  getAllResultIndividualOverview
 };

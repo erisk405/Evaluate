@@ -40,7 +40,7 @@ const MainResultHistory = ({ period, userId }: MainResultHistoryProp) => {
   const [loading, setLoading] = useState(false);
   const [resultHistoryDetail, setResultHistoryDetail] =
     useState<historyResult>();
-
+  
   useEffect(() => {
     const getResultEvaluateFormHistory = async () => {
       try {

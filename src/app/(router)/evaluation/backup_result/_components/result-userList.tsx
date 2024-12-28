@@ -287,6 +287,45 @@ const ResultUserList = ({ period }: { period: PeriodType }) => {
     }
     return pageNumbers;
   };
+  const handleExport = async () => {
+    try {
+      const selectData = table
+        .getSelectedRowModel()
+        .rows.map((row) => row.original);
+      // Process each export sequentially to handle downloads properly
+      for (const user of selectData) {
+        const response = await GlobalApi.getExportEvaluationByUserId(
+          period.period_id,
+          user.id
+        );
+
+        // สร้าง Blob object จากข้อมูลที่ได้จาก API
+        // Blob คือ object ที่เก็บข้อมูลไฟล์ในรูปแบบ binary
+        // type คือการระบุประเภทของไฟล์ ในที่นี้คือไฟล์ Excel
+        const blob = new Blob([response?.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        // สร้าง URL ชั่วคราวจาก Blob
+        // URL นี้จะใช้สำหรับดาวน์โหลดไฟล์
+        const url = window.URL.createObjectURL(blob);
+
+        // สร้าง element <a> (link) แบบชั่วคราวเพื่อใช้ในการดาวน์โหลด
+        const link = document.createElement("a");
+        // กำหนด URL ที่สร้างจาก Blob ให้กับ link
+        link.href = url;
+        link.download = `${period.title}_${user.name}.xlsx`;
+        document.body.appendChild(link);
+        // จำลองการคลิกที่ link เพื่อเริ่มการดาวน์โหลด
+        link.click();
+        // ทำความสะอาด: ลบ link และ URL ชั่วคราวออก เพื่อเริ่มรอบต่อไป
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      }
+    } catch (error) {
+      handleErrorOnAxios(error);
+    }
+  };
   // กรองมาแค่ตัวที่ select Area เลือกมา
   useEffect(() => {
     const filterEmployees = async () => {
@@ -458,7 +497,9 @@ const ResultUserList = ({ period }: { period: PeriodType }) => {
                 </TabsContent>
               </Tabs>
               <DialogFooter>
-                <Button type="submit">Export file</Button>
+                <Button type="submit" onClick={() => handleExport()}>
+                  Export file
+                </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>

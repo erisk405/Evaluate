@@ -380,15 +380,30 @@ const RightSection = ({ permission, period }: RightSectionProps) => {
                             </div>
                           </div>
                           <div className="grid grid-cols-2 gap-1">
-                            <div className="flex gap-3 items-center">
-                              <div className="relative">
-                                <span className="absolute text-blue-500 animate-ping">
-                                  🗄️
-                                </span>
-                                <span className="text-blue-500 ">🗄️</span>
+                            {!item.backUp ? (
+                              <div className="flex gap-3 items-center">
+                                <div className="relative">
+                                  <span className="absolute text-blue-500 animate-ping">
+                                    🗄️
+                                  </span>
+                                  <span className="text-blue-500 ">🗄️</span>
+                                </div>
+                                <h2 className="truncate ">ยังไม่เก็บข้อมูล</h2>
                               </div>
-                              <h2 className="truncate ">ยังไม่เก็บข้อมูล</h2>
-                            </div>
+                            ) : (
+                              <div className="flex gap-3 items-center">
+                                <div className="relative">
+                                  <span className="absolute text-blue-500">
+                                    🗄️
+                                  </span>
+                                  <span className="text-blue-500 ">🗄️</span>
+                                </div>
+                                <h2 className="truncate text-green-500">
+                                  เก็บข้อมูลแล้ว
+                                </h2>
+                              </div>
+                            )}
+
                             {!item.isAction ? (
                               <div className="flex gap-3 items-center">
                                 <span>🔒</span>

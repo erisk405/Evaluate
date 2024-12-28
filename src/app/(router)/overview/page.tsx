@@ -33,6 +33,10 @@ const page = () => {
     initializePeriod();
   }, []);
 
+  useEffect(()=>{
+    console.log("allPeriod",allPeriod);
+    
+  },[allPeriod])
   if (checkPermission === null) {
     return <Loading />;
   }
