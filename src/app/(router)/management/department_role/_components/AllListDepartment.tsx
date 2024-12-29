@@ -4,6 +4,18 @@ import Image from "next/image";
 import SettingSection from "./SettingSection";
 import useStore from "@/app/store/store";
 import { Department } from "@/types/interface";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 
 interface AllListDepartmentProps {
   department: Department[];
@@ -15,55 +27,77 @@ const AllListDepartment = ({
 }: AllListDepartmentProps) => {
   const { roles } = useStore();
   return (
-    <div className="w-full flex flex-col gap-3 my-4 sm:max-h-[700px] overflow-scroll scrollbar-gemini">
+    <div className="@container w-full flex flex-col gap-3 my-4 sm:max-h-[700px] overflow-scroll scrollbar-gemini">
       {department.length > 0
         ? department?.map((item) => (
             <div
               key={item?.id}
-              className="border-b p-4 rounded-xl flex items-center gap-3 "
+              className="border-b p-4 rounded-xl grid grid-cols-4  items-center gap-3 "
             >
-              <div className="w-[250px]">
+              <div className="w-full col-span-4 @[568px]:col-span-1">
                 <Image
                   src={item?.image ? item?.image.url : "/test.png"}
                   width={300}
                   height={200}
                   alt="banner"
-                  className="w-full h-[120px] object-cover rounded-lg"
+                  className="w-full h-[150px] object-cover rounded-lg"
                 />
               </div>
-              <div className="flex justify-between gap-5 w-full items-center">
-                <div className="ml-3 w-full ">
-                  <h2 className="text-lg">{item?.department_name}</h2>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                    {roles.map(
-                      (role) =>
-                        role.role_name !== "admin" &&
-                        role.role_name !== "member" && (
-                          <div key={role.id} className="flex justify-between text-sm">
-                            <h2 className="text-gray-500" >
-                              {role.role_name}
-                            </h2>
-                            <h2>
-                              {
-                                item?.user?.filter(
-                                  (users) =>
-                                    users.role.role_name === role.role_name
-                                ).length
-                              }{" "}
-                              คน
-                            </h2>
-                          </div>
-                        )
-                    )}
-                    <div className="flex justify-between  text-gray-500 text-sm">
-                      <h2 className="font-bold">ทั้งหมด</h2>
-                      <h2>{item?.user?.length} คน</h2>
-                    </div>
+              <div className="col-span-4 @[568px]:col-span-2 max-w-[468px] w-full mx-auto">
+                <h2 className="text-lg">{item?.department_name}</h2>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                  {roles.map(
+                    (role) =>
+                      role.role_name !== "admin" &&
+                      role.role_name !== "member" && (
+                        <div
+                          key={role.id}
+                          className="flex justify-between text-sm"
+                        >
+                          <h2 className="text-gray-500">{role.role_name}</h2>
+                          <h2>
+                            {
+                              item?.user?.filter(
+                                (users) =>
+                                  users.role.role_name === role.role_name
+                              ).length
+                            }{" "}
+                            คน
+                          </h2>
+                        </div>
+                      )
+                  )}
+                  <div className="flex justify-between  text-gray-500 text-sm">
+                    <h2 className="font-bold">ทั้งหมด</h2>
+                    <h2>{item?.user?.length} คน</h2>
                   </div>
                 </div>
-                <div className="">
-                  <SettingSection department={item} fetchDepart={fetchDepart} />
-                </div>
+              </div>
+              <div className="col-span-4 @[568px]:col-span-1 mx-auto">
+                <SettingSection department={item} fetchDepart={fetchDepart} />
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button className="w-full mt-3 text-white bg-red-500">
+                      ลบหน่วยงาน
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Are you absolutely sure?
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. This will permanently
+                        delete your account and remove your data from our
+                        servers.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction>Continue</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
             </div>
           ))

@@ -34,13 +34,13 @@ import CategorizedHistoryTable from "./categorized-history-table";
 
 type MainResultHistoryProp = {
   period: PeriodType;
-  userId: string;
+  userId?: string; // เมื่อ admin ส่งมา
 };
 const MainResultHistory = ({ period, userId }: MainResultHistoryProp) => {
   const [loading, setLoading] = useState(false);
   const [resultHistoryDetail, setResultHistoryDetail] =
     useState<historyResult>();
-  
+
   useEffect(() => {
     const getResultEvaluateFormHistory = async () => {
       try {

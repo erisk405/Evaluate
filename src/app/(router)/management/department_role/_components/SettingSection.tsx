@@ -16,6 +16,7 @@ import {
   GraduationCap,
   Loader,
   MoonStar,
+  ShieldCheck,
   Star,
   StarHalf,
 } from "lucide-react";
@@ -154,13 +155,13 @@ export default function SettingSection({
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="outline" className="flex items-center gap-2">
-          <Cog scale={13} /> Edit
+        <Button variant="outline" className="flex items-center gap-2 w-full">
+          <Cog scale={13} /> ตั้งค่า
         </Button>
       </SheetTrigger>
       <SheetContent
         side="right"
-        className="overflow-y-scroll sm:max-w-5xl scrollbar-gemini pb-10"
+        className="overflow-y-scroll w-full sm:max-w-5xl scrollbar-gemini pb-10"
       >
         <SheetHeader>
           <SheetTitle>Edit Department</SheetTitle>
@@ -170,106 +171,114 @@ export default function SettingSection({
         </SheetHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            <div>
-              <div className="flex justify-center items-end gap-3 my-5">
+            <div className="@container">
+              <div className="grid grid-cols-4 mx-8 gap-3 my-5">
                 <div
                   onClick={handleImageClick}
-                  className="relative cursor-pointer overflow-hidden group border rounded-lg"
+                  className="w-full h-full col-span-4 @[628px]:col-span-1 flex justify-center @[628px]:justify-center"
                 >
-                  <Image
-                    src={selectedImage || department.image?.url || "/test.png"}
-                    width={400}
-                    height={300}
-                    alt="ProfileDepartment"
-                    className="w-[300px] h-[200px] object-cover object-center rounded-lg"
-                  />
-                  <div
-                    className="absolute top-0 bg-black bg-opacity-70
+                  <div className="relative group border w-[280px] max-h-[220px] rounded-lg  cursor-pointer overflow-hidden ">
+                    <Image
+                      src={
+                        selectedImage || department.image?.url || "/test.png"
+                      }
+                      width={400}
+                      height={220}
+                      alt="ProfileDepartment"
+                      className="w-full h-full object-cover object-center rounded-lg"
+                    />
+                    <div
+                      className="absolute top-0 bg-black bg-opacity-70
                             left-0 bottom-0 right-0 text-white rounded-lg   
                             translate-x-full group-hover:translate-x-0 transition-all duration-300"
-                  >
-                    <div className="flex  justify-center font-bold items-center h-full text-3xl">
-                      Click!!
+                    >
+                      <div className="flex  justify-center font-bold items-center h-full text-3xl">
+                        Click!!
+                      </div>
                     </div>
                   </div>
                 </div>
-                <div className=" grid gap-3 w-[400px]">
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem className="">
-                        <FormControl>
-                          <div className="grid grid-cols-4 items-center gap-2">
-                            <Label htmlFor="name" className="text-left">
-                              Name
-                            </Label>
-                            <Input
-                              id="name"
-                              {...field}
-                              className="col-span-4"
-                            />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="image"
-                    render={({ field }) => (
-                      <FormItem className="">
-                        <FormControl>
-                          <div className="grid grid-cols-4 items-center gap-2">
-                            <Label htmlFor="image" className="text-left">
-                              image
-                            </Label>
-                            <Input
-                              id="image"
-                              onChange={(e) => {
-                                field.onChange(e.target.files?.[0]);
-                                handleImageChange(e);
-                              }}
-                              type="file"
-                              className="col-span-4"
-                              ref={fileInputRef}
-                            />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  {/* ---------------------------- */}
-                  {/* Select รองผู้อำนวยการ/กำกับดูแล  */}
-                  {/* ---------------------------- */}
-                  <div className="grid grid-cols-2 gap-3">
-                    <FormField
-                      control={form.control}
-                      name="supervise"
-                      render={({ field }) => (
-                        <FormItem className="">
-                          <FormControl>
-                            <div className="grid grid-cols-4 items-center gap-2">
-                              <Label
-                                htmlFor="supervise"
-                                className="text-left col-span-4"
-                              >
-                                รองผู้อำนวยการ/กำกับดูแล
-                              </Label>
-                              <div className="col-span-4">
-                                <SetSuperviseOfDepartmentSection
-                                  onSuperviserChange={handleSuperviseChange}
-                                  defaultValue={department?.supervise}
+                <div className="col-span-4 @[628px]:col-span-3 ">
+                  <div className="flex justify-center @[628px]:justify-start w-full">
+                    <div className="grid grid-cols-1 gap-3 max-w-[400px]">
+                      <FormField
+                        control={form.control}
+                        name="name"
+                        render={({ field }) => (
+                          <FormItem className="">
+                            <FormControl>
+                              <div className="grid grid-cols-4 items-center gap-2">
+                                <Label htmlFor="name" className="text-left">
+                                  Name
+                                </Label>
+                                <Input
+                                  id="name"
+                                  {...field}
+                                  className="col-span-4"
                                 />
                               </div>
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="image"
+                        render={({ field }) => (
+                          <FormItem className="">
+                            <FormControl>
+                              <div className="grid grid-cols-4 items-center gap-2">
+                                <Label htmlFor="image" className="text-left">
+                                  image
+                                </Label>
+                                <Input
+                                  id="image"
+                                  onChange={(e) => {
+                                    field.onChange(e.target.files?.[0]);
+                                    handleImageChange(e);
+                                  }}
+                                  type="file"
+                                  className="col-span-4"
+                                  ref={fileInputRef}
+                                />
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      {/* ---------------------------- */}
+                      {/* Select รองผู้อำนวยการ/กำกับดูแล  */}
+                      {/* ---------------------------- */}
+                      <div className="grid grid-cols-2 gap-3">
+                        <FormField
+                          control={form.control}
+                          name="supervise"
+                          render={({ field }) => (
+                            <FormItem className="">
+                              <FormControl>
+                                <div className="grid grid-cols-4 items-center gap-2">
+                                  <Label
+                                    htmlFor="supervise"
+                                    className="text-left col-span-4"
+                                  >
+                                    รองผู้อำนวยการ/กำกับดูแล
+                                  </Label>
+                                  <div className="col-span-4">
+                                    <SetSuperviseOfDepartmentSection
+                                      onSuperviserChange={handleSuperviseChange}
+                                      defaultValue={department?.supervise}
+                                    />
+                                  </div>
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -284,7 +293,7 @@ export default function SettingSection({
                   <div>
                     <div className="grid grid-cols-2 gap-2 rounded-lg">
                       <div className="flex justify-end items-center gap-2">
-                        <Flame strokeWidth={1.5} className="text-orange-500" />
+                        <ShieldCheck strokeWidth={1.5} className="text-blue-500" />
                         รองผู้อำนวยการ/กำกับดูแล :{" "}
                       </div>
                       <div className="flex items-center gap-2">
@@ -316,7 +325,7 @@ export default function SettingSection({
                       <div className="flex justify-end items-center gap-2">
                         <GraduationCap
                           strokeWidth={1.5}
-                          className="text-amber-500"
+                          className="text-green-500"
                         />
                         สังกัดที่หน่วยงาน :{" "}
                       </div>

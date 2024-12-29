@@ -134,15 +134,19 @@ const config = {
 			const newUtilities = {
 				'.scrollbar-gemini': {
 					'&::-webkit-scrollbar': {
-						width: '8px' // Adjust width as needed
+						width: '8px', // Adjust width as needed
+						height: '8px', // Add height for horizontal scrollbar
 					},
 					'&::-webkit-scrollbar-track': {
 						background: 'transparent' // Transparent background
+					},   // Horizontal scrollbar (x-axis) specific styles
+					'&::-webkit-scrollbar:horizontal': {
+						height: '8px', // Smaller height for horizontal scrollbar
 					},
 					'&::-webkit-scrollbar-thumb': {
-						background: '#454545',
-						border: '1px solid rgba(31, 29, 29, 0.5)',
-						borderRadius: '20px' // Rounded corners
+						background: '#8a8a8a',
+						border: '1px solid #8a8a8a',
+						borderRadius: '1px' // Rounded corners
 					}
 				}
 			};
