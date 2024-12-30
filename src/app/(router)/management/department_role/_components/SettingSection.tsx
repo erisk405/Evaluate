@@ -38,6 +38,7 @@ import { useEffect, useRef, useState } from "react";
 import useStore from "@/app/store/store";
 import { toast } from "@/components/ui/use-toast";
 import SetSuperviseOfDepartmentSection from "./SetSuperviseOfDepartmentSection";
+import { Separator } from "@/components/ui/separator";
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
@@ -164,7 +165,7 @@ export default function SettingSection({
         className="overflow-y-scroll w-full sm:max-w-5xl scrollbar-gemini pb-10"
       >
         <SheetHeader>
-          <SheetTitle>Edit Department</SheetTitle>
+          <SheetTitle>การตั้งค่าภายในหน่วยงาน</SheetTitle>
           <SheetDescription>
             Make changes to your Department here. Click save when you're done.
           </SheetDescription>
@@ -172,7 +173,7 @@ export default function SettingSection({
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className="@container">
-              <div className="grid grid-cols-4 mx-8 gap-3 my-5">
+              <div className="grid grid-cols-4 gap-3 my-5">
                 <div
                   onClick={handleImageClick}
                   className="w-full h-full col-span-4 @[628px]:col-span-1 flex justify-center @[628px]:justify-center"
@@ -198,9 +199,9 @@ export default function SettingSection({
                     </div>
                   </div>
                 </div>
-                <div className="col-span-4 @[628px]:col-span-3 ">
+                <div className="col-span-4 @[628px]:col-span-2 ">
                   <div className="flex justify-center @[628px]:justify-start w-full">
-                    <div className="grid grid-cols-1 gap-3 max-w-[400px]">
+                    <div className="grid grid-cols-1 gap-3 w-full">
                       <FormField
                         control={form.control}
                         name="name"
@@ -281,63 +282,70 @@ export default function SettingSection({
                     </div>
                   </div>
                 </div>
+                <div className="col-span-4 @[628px]:col-span-1">
+                  <div className="bg-white shadow rounded-xl overflow-hidden">
+                    <div className="relative bg-neutral-300 h-12 mb-7">
+                      {department?.supervise?.user && (
+                        <Image
+                          src={
+                            typeof department?.supervise?.user?.image ===
+                            "string"
+                              ? department?.supervise?.user?.image
+                              : (
+                                  department?.supervise?.user
+                                    ?.image as ImageType
+                                )?.url || "/profiletest.jpg"
+                          }
+                          width={100}
+                          height={100}
+                          alt="ProfileDepartment"
+                          className="absolute top- w-[50px] h-[50px] border-2  
+                          object-cover object-center rounded-full left-1/2 -translate-x-1/2
+                          top-1/2"
+                        />
+                      )}
+                    </div>
+                    <div className=" m-2 ">
+                      <h2 className="text-sm">
+                        {department?.supervise?.user?.prefix?.prefix_name}
+                        {department?.supervise?.user?.name}
+                      </h2>
+                      <p className="text-sm text-gray-500">
+                        {department?.supervise?.user?.role.role_name}
+                      </p>
+                      <div className="bg-neutral-100 p-2 rounded-lg">
+                        <div className="grid grid-cols-4 gap-3 p-1 rounded-lg">
+                          <div className="col-span-1 bg-neutral-300 w-[40px] h-[40px] rounded-full flex justify-center items-center">
+                            <h2 className="text-xl m-auto">🏢</h2>
+                          </div>
+                          <div className="grid grid-cols-1 col-span-3 ">
+                            <p className="text-sm text-gray-500">สังกัดที่</p>
+                            <h2 className="text-sm text-stone-700 truncate">
+                              {
+                                department?.supervise?.user?.department
+                                  ?.department_name
+                              }
+                            </h2>
+                          </div>
+                        </div>
+                      </div>
+                      <Separator className="my-2" />
+                      <div className="flex justify-center items-center">
+                        <h2 className="text-sm text-gray-500">
+                          กำกับดูแลหน่วยงานนี้แล้ว
+                        </h2>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="my-4">
+              <div className="my-4 ">
                 <div className="flex items-end justify-between">
                   <div>
-                    <h2 className="font-semibold ">Team Members</h2>
+                    <h2 className="font-semibold ">สมาชิกภายในหน่วยงาน</h2>
                     <p className="text-sm text-neutral-500">
                       Invite your team members to collaborate.
                     </p>
-                  </div>
-                  <div>
-                    <div className="grid grid-cols-2 gap-2 rounded-lg">
-                      <div className="flex justify-end items-center gap-2">
-                        <ShieldCheck strokeWidth={1.5} className="text-blue-500" />
-                        รองผู้อำนวยการ/กำกับดูแล :{" "}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {department?.supervise?.user && (
-                          <Image
-                            src={
-                              typeof department?.supervise?.user?.image ===
-                              "string"
-                                ? department?.supervise?.user?.image
-                                : (
-                                    department?.supervise?.user
-                                      ?.image as ImageType
-                                  )?.url || "/profiletest.jpg"
-                            }
-                            width={30}
-                            height={30}
-                            alt="ProfileDepartment"
-                            className="w-[30px] h-[30px] object-cover object-center rounded-full"
-                          />
-                        )}
-
-                        <h2 className="text-right text-stone-700">
-                          {department?.supervise?.user?.name}
-                        </h2>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3 p-1 rounded-lg">
-                      <div className="flex justify-end items-center gap-2">
-                        <GraduationCap
-                          strokeWidth={1.5}
-                          className="text-green-500"
-                        />
-                        สังกัดที่หน่วยงาน :{" "}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <h2 className="text-right text-stone-700">
-                          {
-                            department?.supervise?.user?.department
-                              ?.department_name
-                          }
-                        </h2>
-                      </div>
-                    </div>
                   </div>
                 </div>
 

@@ -131,7 +131,7 @@ const FormLevelEditPage = ({ formItem, fetchForm }: FormLevelEditPageProp) => {
   }, [roles]);
 
   return (
-    <div className="col-span-3 relative h-[430px] pl-7">
+    <div className="col-span-3 relative h-[430px]">
       <h2 className="text-lg font-medium">Form Level</h2>
       <p className="text-sm text-gray-500">
         ใช้ในการตรวจสอบและกำหนด

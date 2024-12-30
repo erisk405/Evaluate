@@ -1,12 +1,14 @@
 "use client";
 import {
   CircleHelp,
+  DiscAlbum,
   EllipsisVertical,
   GitFork,
   MessageCircleQuestion,
   Plus,
   Settings2,
   ShieldAlert,
+  SlidersHorizontal,
   Trash2,
   X,
 } from "lucide-react";
@@ -179,7 +181,7 @@ const page = () => {
               <h2 className="text-xl text-stone-700 font-semibold">
                 แบบฟอร์มทั้งหมด
               </h2>
-              <CircleHelp className="text-yellow-500" />
+              <CircleHelp className="text-blue-500" strokeWidth={1.5} />
             </div>
             {formState &&
               formState.map((item, index) => (
@@ -196,9 +198,12 @@ const page = () => {
                     onClick={() => handleItemClick(item.id)}
                   >
                     <div className="flex justify-between w-full items-center overflow-hidden ">
-                      <h2 className="text-md select-none truncate">
-                        {item.name}
-                      </h2>
+                      <div className="flex items-center">
+                        <span className="text-3xl">📑</span>
+                        <h2 className="text-md select-none truncate">
+                          {item.name}
+                        </h2>
+                      </div>
                     </div>
                   </div>
 
@@ -296,12 +301,15 @@ const page = () => {
                         <div
                           className={`${
                             slideStates[item.id] ? "rotate-180" : "rotate-0"
-                          } transition-all rounded-md hover:bg-neutral-200`}
+                          } transition-all rounded-md group`}
                         >
                           {slideStates[item.id] ? (
                             <X strokeWidth={1.25} size={25} />
                           ) : (
-                            <EllipsisVertical strokeWidth={1.25} size={25} />
+                            <div className="bg-white group-hover:bg-neutral-200 flex items-center cursor-pointer border py-1 gap-1 px-2 rounded-lg">
+                              <SlidersHorizontal strokeWidth={1.25} size={15} />
+                              ตั้งค่า
+                            </div>
                           )}
                         </div>
                       </div>

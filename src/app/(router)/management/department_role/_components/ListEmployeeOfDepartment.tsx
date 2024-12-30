@@ -81,6 +81,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Separator } from "@/components/ui/separator";
 
 export const columns: ColumnDef<User>[] = [
   {
@@ -363,17 +364,49 @@ export function ListEmployeeOfDepartment({
           className="max-w-sm rounded-lg"
         />
         <div className="flex items-center gap-3">
+          {/* for remove employee button  */}
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                className=" text-red-500"
+                variant="ghost"
+                disabled={
+                  table.getFilteredSelectedRowModel().rows.length > 0
+                    ? false
+                    : true
+                }
+              >
+                Removes
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription className="text-red-500">
+                  This action cannot be undone. This will permanently delete.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleUpdateSelectedRows}>
+                  Continue
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
           {/* for add employee button  */}
           <Dialog>
             <DialogTrigger asChild>
               <Button className="flex gap-2" onClick={fetchUserEmptyDepartment}>
                 <CirclePlus />
-                Add Employee
+                เพิ่มสมาชิก
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[500px]">
               <DialogHeader>
-                <DialogTitle>Add Employee</DialogTitle>
+                <DialogTitle className="text-stone-700">
+                  เพิ่มสมาชิก
+                </DialogTitle>
                 <DialogDescription>
                   Make changes to your profile here. Click save when you're
                   done.
@@ -397,10 +430,11 @@ export function ListEmployeeOfDepartment({
                   type="multiple"
                   className="flex flex-col gap-2 w-full mt-5 "
                 >
-                  <div className="flex justify-between w-full px-2 font-bold border-b border-black pb-2 ">
-                    <h2>Name</h2>
-                    <h2>Select</h2>
+                  <div className="flex justify-between w-full px-2">
+                    <h2 className="text-sm text-neutral-800">Name</h2>
+                    <h2 className="text-sm text-neutral-800">Select</h2>
                   </div>
+                  <Separator className="h-[.5px]" />
                   <div className="w-full sm:max-h-[400px] overflow-scroll scrollbar-gemini">
                     {usersEmptyDepartment.length > 0 ? (
                       usersEmptyDepartment.map((item: any) => (
@@ -465,36 +499,6 @@ export function ListEmployeeOfDepartment({
               </DialogFooter>
             </DialogContent>
           </Dialog>
-          {/* for remove employee button  */}
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button
-                className="border-red-500 text-red-500"
-                variant="outline"
-                disabled={
-                  table.getFilteredSelectedRowModel().rows.length > 0
-                    ? false
-                    : true
-                }
-              >
-                Removes
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                <AlertDialogDescription className="text-red-500">
-                  This action cannot be undone. This will permanently delete.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleUpdateSelectedRows}>
-                  Continue
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
 
           {/* for filter attribute from table  */}
           <DropdownMenu>

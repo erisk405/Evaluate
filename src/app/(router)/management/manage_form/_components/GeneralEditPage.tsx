@@ -82,7 +82,7 @@ const GeneralEditPage = ({ formItem, fetchForm }: GeneralEditPageProp) => {
     }
   };
   return (
-    <div className="col-span-3 h-[430px] pl-7">
+    <div className="col-span-3 h-[430px]">
       <h2 className="text-lg font-medium">General</h2>
       <p className="text-sm text-gray-500">
         ชื่อของแบบฟอร์มจะส่งผลกับการ Export เอกสารด้วย โปรดตรวจสอบให้แน่ใจ
