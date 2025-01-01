@@ -1,12 +1,17 @@
+"use client"
 import React from "react";
+import useStore from "../store/store";
 
 const Footer = () => {
+  const { theme } = useStore();
   return (
-    <footer className="bg-white">
+    <footer className={`${
+      theme === "light" ? "text-black" : "text-white"
+    }`}>
       <div className="mx-auto max-w-screen-xl px-4 pb-6 pt-16 sm:px-6 lg:px-8 lg:pt-24">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           <div>
-            <div className="flex justify-center text-teal-600 sm:justify-start">
+            <div className="flex justify-center text-blue-500 sm:justify-start">
               <svg
                 className="h-8"
                 viewBox="0 0 118 24"
@@ -67,7 +72,7 @@ const Footer = () => {
                   href="#"
                   rel="noreferrer"
                   target="_blank"
-                  className="text-teal-700 transition hover:text-teal-700/75"
+                  className="text-blue-500 transition hover:text-blue-500/75"
                 >
                   <span className="sr-only">Facebook</span>
                   <svg
@@ -90,7 +95,7 @@ const Footer = () => {
                   href="#"
                   rel="noreferrer"
                   target="_blank"
-                  className="text-teal-700 transition hover:text-teal-700/75"
+                  className="text-blue-500 transition hover:text-blue-500/75"
                 >
                   <span className="sr-only">Instagram</span>
                   <svg
@@ -113,7 +118,7 @@ const Footer = () => {
                   href="#"
                   rel="noreferrer"
                   target="_blank"
-                  className="text-teal-700 transition hover:text-teal-700/75"
+                  className="text-blue-500 transition hover:text-blue-500/75"
                 >
                   <span className="sr-only">Twitter</span>
                   <svg
@@ -132,7 +137,7 @@ const Footer = () => {
                   href="#"
                   rel="noreferrer"
                   target="_blank"
-                  className="text-teal-700 transition hover:text-teal-700/75"
+                  className="text-blue-500 transition hover:text-blue-500/75"
                 >
                   <span className="sr-only">GitHub</span>
                   <svg
@@ -155,7 +160,7 @@ const Footer = () => {
                   href="#"
                   rel="noreferrer"
                   target="_blank"
-                  className="text-teal-700 transition hover:text-teal-700/75"
+                  className="text-blue-500 transition hover:text-blue-500/75"
                 >
                   <span className="sr-only">Dribbble</span>
                   <svg
@@ -177,7 +182,7 @@ const Footer = () => {
 
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-4 lg:col-span-2">
             <div className="text-center sm:text-left">
-              <p className="text-lg font-medium text-gray-900">About Us</p>
+              <p className="text-lg font-medium">About Us</p>
 
               <ul className="mt-8 space-y-4 text-sm">
                 <li>
@@ -220,7 +225,7 @@ const Footer = () => {
             </div>
 
             <div className="text-center sm:text-left">
-              <p className="text-lg font-medium text-gray-900">Our Services</p>
+              <p className="text-lg font-medium ">Our Services</p>
 
               <ul className="mt-8 space-y-4 text-sm">
                 <li>
@@ -265,7 +270,7 @@ const Footer = () => {
             </div>
 
             <div className="text-center sm:text-left">
-              <p className="text-lg font-medium text-gray-900">Helpful Links</p>
+              <p className="text-lg font-medium ">Helpful Links</p>
 
               <ul className="mt-8 space-y-4 text-sm">
                 <li>
@@ -307,7 +312,7 @@ const Footer = () => {
             </div>
 
             <div className="text-center sm:text-left">
-              <p className="text-lg font-medium text-gray-900">Contact Us</p>
+              <p className="text-lg font-medium ">Contact Us</p>
 
               <ul className="mt-8 space-y-4 text-sm">
                 <li>
@@ -317,7 +322,7 @@ const Footer = () => {
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      className="size-5 shrink-0 text-gray-900"
+                      className="size-5 shrink-0 "
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -341,7 +346,7 @@ const Footer = () => {
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      className="size-5 shrink-0 text-gray-900"
+                      className="size-5 shrink-0 "
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"

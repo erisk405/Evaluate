@@ -100,7 +100,7 @@ const RightSection = ({ permission, period }: RightSectionProps) => {
   const [deletePeriod, setDeletePeroid] = useState("");
   // State สำหรับเก็บค่าเวลา
   const [openAlert, setOpenAlert] = useState(false);
-  const { currentlyEvaluationPeriod, fetchCurrentPeriod } = useStore();
+  const { currentlyEvaluationPeriod, fetchCurrentPeriod,theme } = useStore();
   const [timeRange, setTimeRange] = useState<TimeRange>({
     from: new Date(),
     to: new Date(),
@@ -209,7 +209,9 @@ const RightSection = ({ permission, period }: RightSectionProps) => {
               duration: 1,
               ease: [0, 0.71, 0.2, 1.01],
             }}
-            className="rounded-2xl flex @[23rem]:flex-row @[23rem]:items-start flex-col justify-center items-center shadow-sm border w-auto bg-white "
+            className={`rounded-2xl flex @[23rem]:flex-row @[23rem]:items-start flex-col justify-center items-center shadow-sm border w-auto ${
+              theme === "light" ? "text-black" : "text-white"
+            }`}
           >
             <Calendar
               className="border-b @[23rem]:border-r"
@@ -596,7 +598,9 @@ const RightSection = ({ permission, period }: RightSectionProps) => {
         </motion.div>
       ) : (
         // ส่วนของ user เท่าไป
-        <div>
+        <div className={`${
+          theme === "light" ? "text-black" : "text-white"
+        }`}>
           {period && (
             <motion.div
               initial={{ opacity: 0, scale: 0.5 }}
@@ -609,7 +613,7 @@ const RightSection = ({ permission, period }: RightSectionProps) => {
                   damping: 12,
                 },
               }}
-              className="py-8 px-2 rounded-lg shadow bg-white"
+              className="py-8 px-2 rounded-lg shadow "
             >
               <CarouselSection
                 period={period}
@@ -618,7 +622,7 @@ const RightSection = ({ permission, period }: RightSectionProps) => {
             </motion.div>
           )}
           <motion.div
-            className="bg-white p-5 h-auto shadow rounded-2xl mt-3"
+            className=" p-5 h-auto shadow rounded-2xl mt-3"
             initial={{ opacity: 0, x: 100 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{
@@ -631,7 +635,7 @@ const RightSection = ({ permission, period }: RightSectionProps) => {
               <Atom className=" text-sky-400" />
               <TextEffect preset="slide">รายการแต่ละหน่วยงาน</TextEffect>
             </h2>
-            <div className="mt-5 border rounded-xl bg-gray-50 shadow-inner">
+            <div className="mt-5 border rounded-xl shadow-inner">
               <DepartmentSection />
             </div>
           </motion.div>

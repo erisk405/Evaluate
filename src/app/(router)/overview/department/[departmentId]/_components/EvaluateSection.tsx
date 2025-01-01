@@ -67,7 +67,7 @@ const EvaluateSection: React.FC<EvaluateSection> = ({
   const [payloadForUpdate, setPayloadForUpdate] = useState<
     Array<{ question_id: string; score: string }>
   >([]);
-  const { ProfileDetail, currentlyEvaluationPeriod } = useStore();
+  const { ProfileDetail, currentlyEvaluationPeriod, theme } = useStore();
 
   const handleScoreChange = (
     formName: string,
@@ -272,7 +272,11 @@ const EvaluateSection: React.FC<EvaluateSection> = ({
   return (
     <div className="mt-3">
       <div className="flex items-center w-full flex-col">
-        <h2 className="text-xl text-stone-700 font-bold">
+        <h2
+          className={`text-xl ${
+            theme === "light" ? "text-neutral-800" : "text-white"
+          } font-bold`}
+        >
           {evaluatorUserTarget.name} ({evaluatorUserTarget.role.role_name})
         </h2>
         <h2 className="text-sm text-gray-500">
@@ -282,19 +286,41 @@ const EvaluateSection: React.FC<EvaluateSection> = ({
             formatThaiDateTime(currentlyEvaluationPeriod!.end).date}
         </h2>
       </div>
-      <div className=" bg-white my-4">
+      <div
+        className={` ${
+          theme === "light"
+            ? "text-neutral-800 bg-white"
+            : "text-white bg-background2"
+        } my-4`}
+      >
         <div className="rounded-lg border">
           <Table>
             <TableCaption>A list of your recent invoices.</TableCaption>
             <TableHeader>
-              <TableRow className="text-lg bg-blue-300 w-full">
-                <TableHead className="text-lg w-[100px] text-stone-700">
+              <TableRow
+                className={`text-lg  ${
+                  theme === "light" ? "bg-blue-300" : "bg-blue-400"
+                } w-full`}
+              >
+                <TableHead
+                  className={`text-lg w-[100px]  ${
+                    theme === "light" ? "text-stone-800" : "text-white"
+                  }`}
+                >
                   ลำดับ
                 </TableHead>
-                <TableHead className="text-lg text-stone-700">
+                <TableHead
+                  className={`text-lg  ${
+                    theme === "light" ? "text-stone-800" : "text-white"
+                  }`}
+                >
                   ข้อคำถาม
                 </TableHead>
-                <TableHead className="text-lg text-center text-stone-700">
+                <TableHead
+                  className={`text-lg text-center  ${
+                    theme === "light" ? "text-stone-800" : "text-white"
+                  }`}
+                >
                   ลงคะแนน
                 </TableHead>
               </TableRow>
@@ -302,8 +328,12 @@ const EvaluateSection: React.FC<EvaluateSection> = ({
             <TableBody>
               {formEvaluation?.map(({ form }) => (
                 <React.Fragment key={form.id}>
-                  <TableRow className="text-[16px] bg-blue-100">
-                    <TableCell colSpan={3} className="font-bold text-stone-700">
+                  <TableRow
+                    className={`text-[16px] bg-blue-100 text-stone-800 ${
+                      theme === "light" ? "hover:text-stone-800" : "hover:text-white"
+                    }`}
+                  >
+                    <TableCell colSpan={3} className={`font-bold  `}>
                       {form.name}
                     </TableCell>
                   </TableRow>

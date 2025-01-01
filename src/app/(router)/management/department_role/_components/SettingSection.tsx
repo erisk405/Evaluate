@@ -39,6 +39,7 @@ import useStore from "@/app/store/store";
 import { toast } from "@/components/ui/use-toast";
 import SetSuperviseOfDepartmentSection from "./SetSuperviseOfDepartmentSection";
 import { Separator } from "@/components/ui/separator";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
@@ -284,9 +285,13 @@ export default function SettingSection({
                 </div>
                 <div className="col-span-4 @[628px]:col-span-1">
                   <div className="bg-white shadow rounded-xl overflow-hidden">
-                    <div className="relative bg-neutral-300 h-12 mb-7">
-                      {department?.supervise?.user && (
-                        <Image
+                    <div className="relative bg-blue-200 h-12 mb-7">
+                      <Avatar
+                        className="absolute top- w-[50px] h-[50px] border-2  
+                        object-cover object-center rounded-full left-1/2 -translate-x-1/2
+                        top-1/2"
+                      >
+                        <AvatarImage
                           src={
                             typeof department?.supervise?.user?.image ===
                             "string"
@@ -294,48 +299,51 @@ export default function SettingSection({
                               : (
                                   department?.supervise?.user
                                     ?.image as ImageType
-                                )?.url || "/profiletest.jpg"
+                                )?.url
                           }
-                          width={100}
-                          height={100}
-                          alt="ProfileDepartment"
-                          className="absolute top- w-[50px] h-[50px] border-2  
-                          object-cover object-center rounded-full left-1/2 -translate-x-1/2
-                          top-1/2"
+                          alt="@shadcn"
                         />
-                      )}
+                        <AvatarFallback>EM</AvatarFallback>
+                      </Avatar>
                     </div>
-                    <div className=" m-2 ">
-                      <h2 className="text-sm">
-                        {department?.supervise?.user?.prefix?.prefix_name}
-                        {department?.supervise?.user?.name}
-                      </h2>
-                      <p className="text-sm text-gray-500">
-                        {department?.supervise?.user?.role.role_name}
-                      </p>
-                      <div className="bg-neutral-100 p-2 rounded-lg">
-                        <div className="grid grid-cols-4 gap-3 p-1 rounded-lg">
-                          <div className="col-span-1 bg-neutral-300 w-[40px] h-[40px] rounded-full flex justify-center items-center">
-                            <h2 className="text-xl m-auto">🏢</h2>
-                          </div>
-                          <div className="grid grid-cols-1 col-span-3 ">
-                            <p className="text-sm text-gray-500">สังกัดที่</p>
-                            <h2 className="text-sm text-stone-700 truncate">
-                              {
-                                department?.supervise?.user?.department
-                                  ?.department_name
-                              }
-                            </h2>
+                    {department?.supervise?.user ? (
+                      <div className="m-2 ">
+                        <h2 className="text-sm">
+                          {department?.supervise?.user?.prefix?.prefix_name}
+                          {department?.supervise?.user?.name}
+                        </h2>
+                        <p className="text-sm text-gray-500">
+                          {department?.supervise?.user?.role.role_name}
+                        </p>
+                        <div className="bg-neutral-100 p-2 rounded-lg">
+                          <div className="grid grid-cols-4 gap-3 p-1 rounded-lg">
+                            <div className="col-span-1 bg-neutral-300 w-[40px] h-[40px] rounded-full flex justify-center items-center">
+                              <h2 className="text-xl m-auto">🏢</h2>
+                            </div>
+                            <div className="grid grid-cols-1 col-span-3 ">
+                              <p className="text-sm text-gray-500">สังกัดที่</p>
+                              <h2 className="text-sm text-stone-700 truncate">
+                                {
+                                  department?.supervise?.user?.department
+                                    ?.department_name
+                                }
+                              </h2>
+                            </div>
                           </div>
                         </div>
+                        <Separator className="my-2" />
+                        <div className="flex justify-center items-center">
+                          <h2 className="text-sm text-gray-500">
+                            กำกับดูแลหน่วยงานนี้แล้ว
+                          </h2>
+                        </div>
                       </div>
-                      <Separator className="my-2" />
-                      <div className="flex justify-center items-center">
-                        <h2 className="text-sm text-gray-500">
-                          กำกับดูแลหน่วยงานนี้แล้ว
-                        </h2>
+                    ) : (
+                      <div className="flex flex-col justify-center items-center mb-7">
+                        <h2 className="">ยังไม่ได้กำหนด </h2>
+                        <p>รองผู้อำนวยการ/กำกับดูแล</p>
                       </div>
-                    </div>
+                    )}
                   </div>
                 </div>
               </div>

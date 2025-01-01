@@ -24,7 +24,7 @@ const EvaluateSheet = ({
   fetchUserHaveBeenEvaluated,
 }: EvaluateSheetProp) => {
   const [open, setOpen] = useState(false);
-  const { currentlyEvaluationPeriod, ProfileDetail } = useStore();
+  const { currentlyEvaluationPeriod, ProfileDetail , theme } = useStore();
   const defaultScoreOfUserHasEval = useMemo(() => {
     return userHaveBeenEvaluated?.find((f) => f.evaluator.id === item.id);
   }, [item, userHaveBeenEvaluated]);
@@ -67,7 +67,11 @@ text-green-500 px-2 py-1 rounded-xl transition-all active:scale-95"
             className="h-[calc(100vh-10%)] xl:mx-52 rounded-tr-2xl rounded-tl-2xl overflow-scroll scrollbar-gemini"
           >
             <SheetHeader>
-              <SheetTitle className="text-3xl text-center text-stone-700">
+              <SheetTitle
+                className={`text-3xl text-center ${
+                  theme === "light" ? "text-neutral-800" : "text-white"
+                }`}
+              >
                 แบบฟอร์มการประเมิน
               </SheetTitle>
             </SheetHeader>

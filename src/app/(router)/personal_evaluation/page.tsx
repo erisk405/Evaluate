@@ -74,7 +74,7 @@ export const columns: ColumnDef<PeriodType>[] = [
       const item = row.original;
       return (
         <div className="text-center w-[150px]">
-          <div className="bg-white cursor-pointer  inline-flex border p-2 shadow rounded-xl items-center gap-1">
+          <div className="cursor-pointer inline-flex border p-2 rounded-xl items-center gap-1">
             <div className="relative">
               {new Date(item.start) <= new Date() &&
               new Date() <= new Date(item.end) ? (
@@ -161,7 +161,7 @@ export const columns: ColumnDef<PeriodType>[] = [
   },
 ];
 const page = () => {
-  const { fetchCurrentPeriod, allPeriod } = useStore();
+  const { fetchCurrentPeriod, allPeriod ,theme} = useStore();
 
   const [globalFilter, setGlobalFilter] = useState("");
 
@@ -256,8 +256,10 @@ const page = () => {
     }
   }, []);
   return (
-    <div className="m-5 w-full gap-3">
-      <h2 className="text-3xl font-bold text-stone-700">
+    <div className={`m-5 w-full gap-3 ${
+      theme === "light" ? "text-neutral-700" : "text-white"
+    }`}>
+      <h2 className="text-3xl font-bold ">
         รายละเอียดผลงานประเมิน
       </h2>
       <div className="flex flex-col flex-wrap items-center justify-around my-10 gap-3">
@@ -275,7 +277,7 @@ const page = () => {
           <span className="text-3xl animate-bounce">😊</span>
         </p>
       </div>
-      <div className="bg-white p-5 rounded-xl shadow">
+      <div className="p-5 rounded-xl shadow">
         <div className="flex items-center py-4">
           <Input
             placeholder="รอบที่ x ประจำปี พ.ศ. xxxx"

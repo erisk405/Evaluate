@@ -83,7 +83,7 @@ export function UserInDepartment({
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
   const [globalFilter, setGlobalFilter] = useState("");
-  const { ProfileDetail } = useStore();
+  const { ProfileDetail, theme } = useStore();
   const columns: ColumnDef<User>[] = [
     {
       accessorKey: "index",
@@ -134,9 +134,9 @@ export function UserInDepartment({
         const role_name = row.original.role.role_name;
         return (
           <div
-            className={`capitalize inline-flex items-center
-              ${role_name != "member" ? "text-black" : "text-gray-500"}
-            `}
+            className={`capitalize inline-flex items-center  ${
+              theme === "light" ? "text-black" : "text-white"
+            }`}
           >
             {role_name}
           </div>
@@ -155,9 +155,7 @@ export function UserInDepartment({
           justify-start gap-2 border-gray-200 py-1"
           >
             <h2
-              className={`${
-                NameOfDepartment ? "text-stone-800" : "text-gray-500"
-              }`}
+              className={`${theme === "light" ? "text-black" : "text-white"}`}
             >
               {NameOfDepartment
                 ? NameOfDepartment.department_name
@@ -221,7 +219,11 @@ export function UserInDepartment({
                     className="h-[calc(100vh-10%)] xl:mx-52 rounded-tr-2xl rounded-tl-2xl overflow-scroll scrollbar-gemini"
                   >
                     <SheetHeader>
-                      <SheetTitle className="text-3xl text-center text-stone-700">
+                      <SheetTitle
+                        className={`text-3xl text-center ${
+                          theme === "light" ? "text-neutral-800" : "text-white"
+                        }`}
+                      >
                         แบบฟอร์มการประเมิน
                       </SheetTitle>
                     </SheetHeader>
@@ -359,7 +361,11 @@ export function UserInDepartment({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="rounded-xl border bg-white overflow-hidden">
+      <div
+        className={`rounded-xl border ${
+          theme === "light" ? "bg-white" : "text-white"
+        } overflow-hidden`}
+      >
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -372,7 +378,7 @@ export function UserInDepartment({
                         header.id === "actions" || header.id === "index"
                           ? "text-center"
                           : ""
-                      }  bg-gray-100`}
+                      }  ${theme === "light" ? "" : "bg-background2"} `}
                     >
                       {header.isPlaceholder
                         ? null

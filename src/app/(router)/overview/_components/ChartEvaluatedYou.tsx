@@ -29,7 +29,7 @@ import useStore from "@/app/store/store";
 import { formatThaiDateTime } from "./RightSection";
 
 const ChartEvaluatedYou = () => {
-  const { resultEvaluate, currentlyEvaluationPeriod } = useStore();
+  const { resultEvaluate, currentlyEvaluationPeriod, theme } = useStore();
 
   const chartData = resultEvaluate?.formResults?.map((item) => ({
     form: item.formName,
@@ -68,7 +68,9 @@ const ChartEvaluatedYou = () => {
   }, [currentlyEvaluationPeriod]);
 
   return (
-    <div className="">
+    <div className={`${
+      theme === "light" ? "text-neutral-800" : "text-white"
+    }`}>
       <div className="@container flex w-full justify-center items-center">
         <motion.div
           initial={{ opacity: 0, x: -100 }}
@@ -80,8 +82,10 @@ const ChartEvaluatedYou = () => {
           }}
           className="cursor-pointer "
         >
-          <div className="hidden @[700px]:flex text-xl items-center gap-3">
-            <h2>สำเร็จแล้ว</h2>
+          <div
+            className={`hidden @[700px]:flex text-xl  items-center gap-3`}
+          >
+            <h2 >สำเร็จแล้ว</h2>
             <div className="text-3xl">
               {resultEvaluate?.headData
                 ? resultEvaluate?.headData?.totalEvaluated
@@ -251,7 +255,6 @@ const ChartEvaluatedYou = () => {
                     pathColor: `hsl(var(--chart-${index + 1}))`,
                     textSize: "30px",
                     pathTransitionDuration: 0.5,
-                    textColor: "#000000",
                     trailColor: "rgb(243 244 246)",
                     backgroundColor: "#3e98c7",
                   })}
@@ -260,9 +263,7 @@ const ChartEvaluatedYou = () => {
             </div>
             <div className="mt-3">
               <hr />
-              <h2 className="text-[12px] text-neutral-500 mt-3">
-                1.3% Performance up
-              </h2>
+              <h2 className="text-[12px]  mt-3">1.3% Performance up</h2>
             </div>
           </motion.div>
         ))}

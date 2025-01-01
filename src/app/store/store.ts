@@ -18,12 +18,14 @@ interface StoreState {
   setNotificationCount: (count: number) => void;
 
   showNotifications: boolean
-  setShowNotifications: (showProfile: boolean) => void;
+  setShowNotifications: (showNotification: boolean) => void;
 
   profilePopup: {
     open: boolean;
   };
 
+  theme: string
+  setTheme: (theme: string) => void;
 
   toggleProfile: () => void;
 
@@ -111,6 +113,9 @@ const useStore = create<StoreState>((set) => ({
   },
 
 
+  theme: "light",
+  setTheme: (theme: string) => set({ theme }),
+
   notificationCounts: 0,
   setNotificationCount: (count: number) => set(() => ({  // Implementation matches interface
     notificationCounts: count
@@ -160,7 +165,7 @@ const useStore = create<StoreState>((set) => ({
 
 
   currentlyEvaluationPeriod: null,
-  allPeriod:null,
+  allPeriod: null,
 
   resultEvaluate: null,
   setResultEvaluate: (resultEvaluate) => set(() => ({

@@ -1,9 +1,11 @@
 "use client";
 import {
+  AlignJustify,
   CircleHelp,
   DiscAlbum,
   EllipsisVertical,
   GitFork,
+  Logs,
   MessageCircleQuestion,
   Plus,
   Settings2,
@@ -199,7 +201,7 @@ const page = () => {
                   >
                     <div className="flex justify-between w-full items-center overflow-hidden ">
                       <div className="flex items-center">
-                        <span className="text-3xl">📑</span>
+                        <span className="text-3xl">📖</span>
                         <h2 className="text-md select-none truncate">
                           {item.name}
                         </h2>
@@ -307,8 +309,8 @@ const page = () => {
                             <X strokeWidth={1.25} size={25} />
                           ) : (
                             <div className="bg-white group-hover:bg-neutral-200 flex items-center cursor-pointer border py-1 gap-1 px-2 rounded-lg">
-                              <SlidersHorizontal strokeWidth={1.25} size={15} />
-                              ตั้งค่า
+                              <AlignJustify strokeWidth={1.25} size={15} />
+                              เมนู
                             </div>
                           )}
                         </div>
@@ -329,7 +331,7 @@ const page = () => {
           <div className="col-span-5 @[65rem]:col-span-3 p-5 grid ">
             {/* ------------------------------------------------------ */}
             {/*                   Question Section                     */}
-            {/* ------------------------------------------------------- */}
+            {/* ------------------------------------------------------ */}
             {openForm.id === null ? ( // openForm.id คือจะเก็บ id ของ form นั้นๆไว้
               <div className="flex justify-center items-center gap-3 flex-col">
                 <div className="relative">

@@ -30,41 +30,75 @@ interface resultUserType {
   score: number;
   standardDeviation: number;
   user: {
-    departmentId:string;
-    departmentName:string;
-    id:string;
-    name:string;
-    roleName:string;
+    departmentId: string;
+    departmentName: string;
+    id: string;
+    name: string;
+    roleName: string;
   };
 }
 
 const IndividualOverview = ({ period }: { period: PeriodType }) => {
-  const { ProfileDetail } = useStore();
+  const { ProfileDetail,theme } = useStore();
   const [individual, setIndividual] = useState<IndividualType>();
   const renderTableHeaders = () => (
     <>
-      <TableRow className="text-lg bg-blue-300">
-        <TableHead rowSpan={2} className="text-center text-stone-800">
+      <TableRow
+        className={`text-lg ${
+          theme === "light" ? "bg-blue-300" : "bg-blue-400"
+        }`}
+      >
+        <TableHead rowSpan={2} className={`text-center ${
+            theme === "light"
+              ? "text-neutral-800"
+              : "text-white "
+          }`}>
           ลำดับ
         </TableHead>
-        <TableHead rowSpan={2} className="text-center border text-stone-800">
+        <TableHead rowSpan={2} className={`text-center border ${
+            theme === "light"
+              ? "text-neutral-800"
+              : "text-white "
+          }`}>
           รายชื่อผู้รับการประเมิน
         </TableHead>
-        <TableHead rowSpan={2} className="text-center border text-stone-800">
+        <TableHead rowSpan={2} className={`text-center border ${
+            theme === "light"
+              ? "text-neutral-800"
+              : "text-white "
+          }`}>
           สังกัดหน่วยงาน
         </TableHead>
-        <TableHead colSpan={2} className="text-center border text-stone-800">
+        <TableHead colSpan={2} className={`text-center border ${
+            theme === "light"
+              ? "text-neutral-800"
+              : "text-white "
+          }`}>
           ผลการประเมินการปฏิบัติงาน
         </TableHead>
-        <TableHead rowSpan={2} className="text-center border text-stone-800">
+        <TableHead rowSpan={2} className={`text-center border ${
+            theme === "light"
+              ? "text-neutral-800"
+              : "text-white "
+          }`}>
           ผลคะแนน
         </TableHead>
       </TableRow>
-      <TableRow className="text-lg bg-blue-300">
-        <TableHead className="text-center border text-stone-800">
+      <TableRow className={`text-lg ${
+          theme === "light" ? "bg-blue-300" : "bg-blue-400"
+        }`}>
+        <TableHead className={`text-center border ${
+            theme === "light"
+              ? "text-neutral-800"
+              : "text-white "
+          }`}>
           ค่าเฉลี่ย
         </TableHead>
-        <TableHead className="text-center border text-stone-800">
+        <TableHead className={`text-center border ${
+            theme === "light"
+              ? "text-neutral-800"
+              : "text-white "
+          }`}>
           ค่า SD
         </TableHead>
       </TableRow>
@@ -79,8 +113,7 @@ const IndividualOverview = ({ period }: { period: PeriodType }) => {
             ProfileDetail.id
           );
           setIndividual(response?.data);
-        //   console.log("Individual",response?.data);
-          
+          //   console.log("Individual",response?.data);
         }
       } catch (error) {
         handleErrorOnAxios(error);
@@ -98,13 +131,17 @@ const IndividualOverview = ({ period }: { period: PeriodType }) => {
 
           <TableBody>
             {/* Questions Rows */}
-            {individual?.resultUser.map((item,index) => (
+            {individual?.resultUser.map((item, index) => (
               <TableRow className="text-[16px]" key={item.user.id}>
-                <TableCell className="font-medium text-center">{index + 1}</TableCell>
+                <TableCell className="font-medium text-center">
+                  {index + 1}
+                </TableCell>
                 <TableCell>{item.user.name}</TableCell>
                 <TableCell>{item.user.departmentName}</TableCell>
                 <TableCell className="text-center">{item.mean}</TableCell>
-                <TableCell className="text-center">{item.standardDeviation}</TableCell>
+                <TableCell className="text-center">
+                  {item.standardDeviation}
+                </TableCell>
                 <TableCell className="text-center">{item.score}</TableCell>
               </TableRow>
             ))}

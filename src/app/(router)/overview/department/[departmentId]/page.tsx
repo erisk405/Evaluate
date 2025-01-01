@@ -42,6 +42,7 @@ const page = () => {
     updateProfileDetail,
     currentlyEvaluationPeriod,
     fetchCurrentPeriod,
+    theme,
   } = useStore();
   const [department, setDepartment] = useState<Department>();
   const [userHaveBeenEvaluated, setUserHaveBeenEvaluated] = useState<
@@ -109,10 +110,22 @@ const page = () => {
         <>
           <div className="flex justify-between">
             <Link href={"/overview"} className="flex items-center gap-3 group">
-              <div className="bg-white shadow rounded-lg group-hover:bg-black group-hover:text-white">
+              <div
+                className={`shadow rounded-lg ${
+                  theme === "light"
+                    ? "text-neutral-800 group-hover:bg-black group-hover:text-white "
+                    : "text-white group-hover:bg-blue-500 group-hover:text-text-white "
+                }  `}
+              >
                 <ChevronLeft size={28} />
               </div>
-              <span className="cursor-pointer">Back to overview</span>
+              <span
+                className={`cursor-pointer ${
+                  theme === "light" ? "text-neutral-800" : "text-white"
+                }`}
+              >
+                Back to overview
+              </span>
             </Link>
             <div>
               <AlertDialog>
@@ -157,7 +170,11 @@ const page = () => {
             </div>
           </div>
           {department.department_name ? (
-            <div>
+            <div
+              className={`${
+                theme === "light" ? "text-neutral-800" : "text-white"
+              }`}
+            >
               <h2 className="font-bold text-4xl">
                 {department.department_name}
               </h2>
@@ -196,9 +213,13 @@ const page = () => {
                   >
                     <div
                       className={`flex rounded-2xl gap-3 relative overflow-hidden
-      items-center px-8 py-4 shadow-xl 
-      bg-gradient-to-tl from-neutral-800 from-20% to-neutral-900 to-50%  group 
-      transition-all `}
+                      items-center px-8 py-4 shadow-xl 
+                      bg-gradient-to-tl from-neutral-800 from-20% to-neutral-900 to-50%  group 
+                      transition-all  ${
+                        theme === "light"
+                          ? "from-neutral-800 from-20% to-neutral-900 to-50% "
+                          : "from-blue-950 from-10% to-background2 to-50% "
+                      }`}
                     >
                       <div className="text-white w-full group-hover:text-white z-10">
                         <div className="flex gap-3">
@@ -213,7 +234,9 @@ const page = () => {
                             <h2 className="text-md text-gray-300">
                               {item?.role.role_name}
                             </h2>
-                            <h2 className="text-lg">{item.prefix?.prefix_name+item?.name}</h2>
+                            <h2 className="text-lg">
+                              {item.prefix?.prefix_name + item?.name}
+                            </h2>
                             <div
                               className="inline-flex items-center gap-2 bg-neutral-800 
               px-4 py-1 rounded-full text-neutral-400"

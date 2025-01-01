@@ -17,9 +17,16 @@ import {
   LevelFormVision,
 } from "@/types/interface";
 import { Button } from "@/components/ui/button";
-import { adaptEvaluateResult, CategorizedFormResults, CommonFormResult, CommonResultFormat, VISION_LEVEL_CONFIGS } from "@/app/lib/adapters/results";
+import {
+  adaptEvaluateResult,
+  CategorizedFormResults,
+  CommonFormResult,
+  CommonResultFormat,
+  VISION_LEVEL_CONFIGS,
+} from "@/app/lib/adapters/results";
 import { calculateCharacteristics } from "@/app/lib/utils/result-calculations";
 import { adaptCategorizeFormResultsByVisionLevel } from "@/app/lib/adapters/results/categorize-vision-results";
+import useStore from "@/app/store/store";
 
 const SCORE_TYPE_LABELS: Record<string, string> = {
   Executive: "ผู้บริหาร",
@@ -32,23 +39,59 @@ type categorizedTableProp = {
 const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
   const [scoreTypes, setScoreTypes] = useState<string[]>([]);
   const [characteristics, setCharacteristics] = useState<string>();
-  const [formResultsByVisionLevel, SetFormResultsByVisionLevel] =useState<CategorizedFormResults>();
+  const [formResultsByVisionLevel, SetFormResultsByVisionLevel] =
+    useState<CategorizedFormResults>();
 
+  const { theme } = useStore();
   const [adaptedData, setAdaptedData] = useState<CommonResultFormat>();
-  const renderTableHeaders = (scoreTypes: string[],vesion_level: LevelFormVision
+  const renderTableHeaders = (
+    scoreTypes: string[],
+    vesion_level: LevelFormVision
   ) => (
     <>
-      <TableRow className="text-lg bg-blue-300">
-        <TableHead rowSpan={2} className="text-center text-stone-800">
+      <TableRow
+        className={`text-lg ${
+          theme === "light" ? "bg-blue-300" : "bg-blue-400"
+        }`}
+      >
+        <TableHead
+          rowSpan={2}
+          className={`text-center border  ${
+            theme === "light"
+              ? "text-neutral-800"
+              : "text-white "
+          }`}
+        >
           ลำดับ
         </TableHead>
-        <TableHead rowSpan={2} className="text-center border text-stone-800">
+        <TableHead
+          rowSpan={2}
+          className={`text-center border ${
+            theme === "light"
+              ? "text-neutral-800"
+              : "text-white"
+          }`}
+        >
           หัวข้อคำถาม
         </TableHead>
-        <TableHead rowSpan={2} className="text-center border text-stone-800">
+        <TableHead
+          rowSpan={2}
+          className={`text-center border  ${
+            theme === "light"
+              ? "text-neutral-800"
+              : "text-white"
+          }`}
+        >
           ข้อคำถาม
         </TableHead>
-        <TableHead colSpan={2} className="text-center border text-stone-800">
+        <TableHead
+          colSpan={2}
+          className={`text-center border  ${
+            theme === "light"
+              ? "text-neutral-800"
+              : "text-white"
+          }`}
+        >
           ผลรวมเฉลี่ย
         </TableHead>
         {VISION_LEVEL_CONFIGS[vesion_level as LevelFormVision].showScoreTypes &&
@@ -56,26 +99,58 @@ const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
             <TableHead
               key={type}
               colSpan={2}
-              className="text-center border text-stone-800"
+              className={`text-center border  ${
+                theme === "light"
+                  ? "text-neutral-800"
+                  : "text-white "
+              }`}
             >
               {SCORE_TYPE_LABELS[type] || type}
             </TableHead>
           ))}
       </TableRow>
-      <TableRow className="text-lg bg-blue-300">
-        <TableHead className="text-center border text-stone-800">
+      <TableRow
+        className={`text-lg ${
+          theme === "light" ? "bg-blue-300" : "bg-blue-400"
+        }`}
+      >
+        <TableHead
+          className={`text-center border ${
+            theme === "light"
+              ? "text-neutral-800"
+              : "text-white "
+          }`}
+        >
           ค่าเฉลี่ย
         </TableHead>
-        <TableHead className="text-center border text-stone-800">
+        <TableHead
+          className={`text-center border ${
+            theme === "light"
+              ? "text-neutral-800"
+              : "text-white "
+          }`}
+        >
           ค่า SD.
         </TableHead>
         {VISION_LEVEL_CONFIGS[vesion_level].showScoreTypes &&
           scoreTypes.map((type) => (
             <React.Fragment key={type}>
-              <TableHead className="text-center border text-stone-800">
+              <TableHead
+                className={`text-center border  ${
+                  theme === "light"
+                    ? "text-neutral-800"
+                    : "text-white "
+                }`}
+              >
                 ค่าเฉลี่ย
               </TableHead>
-              <TableHead className="text-center border text-stone-800">
+              <TableHead
+                className={`text-center border  ${
+                  theme === "light"
+                    ? "text-neutral-800"
+                    : "text-white "
+                }`}
+              >
                 ค่า SD.
               </TableHead>
             </React.Fragment>
@@ -97,14 +172,18 @@ const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
     if (resultEvaluateDetail) {
       const adapted = adaptEvaluateResult(resultEvaluateDetail);
       setAdaptedData(adapted);
-      
-      const extractType = extractScoreTypes(adapted.formResults)
+
+      const extractType = extractScoreTypes(adapted.formResults);
       setScoreTypes(extractType);
 
-      const summaryCharacteristics = calculateCharacteristics(adapted.headData.totalAverage)
+      const summaryCharacteristics = calculateCharacteristics(
+        adapted.headData.totalAverage
+      );
       setCharacteristics(summaryCharacteristics);
 
-      const adaptCategorize = adaptCategorizeFormResultsByVisionLevel(adapted?.formResults);
+      const adaptCategorize = adaptCategorizeFormResultsByVisionLevel(
+        adapted?.formResults
+      );
       SetFormResultsByVisionLevel(adaptCategorize);
     }
   }, [resultEvaluateDetail]);
@@ -139,8 +218,14 @@ const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
                       <React.Fragment key={form.id}>
                         {/* Form Level Summary Row */}
                         {/* ผลรวมในแต่ละด้าน */}
-                        <TableRow className="text-[16px] bg-blue-100">
-                          <TableCell colSpan={3} className="font-bold">
+                        <TableRow
+                          className={`text-[16px] bg-blue-100 ${
+                            theme === "light"
+                              ? "text-neutral-700"
+                              : "text-neutral-700 hover:text-white"
+                          }`}
+                        >
+                          <TableCell colSpan={3} className={`font-bold `}>
                             {form.formName}
                           </TableCell>
                           <TableCell className="text-center">
@@ -232,26 +317,41 @@ const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
           <div className="lg:w-[70%] mx-auto">
             <Table className="border rounded-lg ">
               <TableCaption>ผลการประเมินรายละเอียด</TableCaption>
-              <TableHeader className=" text-lg bg-blue-300 text-center text-stone-800">
-                <TableRow className="text-lg bg-blue-300">
-                  <TableHead colSpan={1} className="text-center text-stone-800">
+              <TableHeader className={`text-lg`}>
+                <TableRow
+                  className={`text-lg ${
+                    theme === "light" ? "bg-blue-300" : "bg-blue-400"
+                  } `}
+                >
+                  <TableHead
+                    colSpan={1}
+                    className={`text-center ${
+                      theme === "light" ? "text-neutral-800" : "text-white "
+                    }`}
+                  >
                     ลำดับ
                   </TableHead>
                   <TableHead
                     colSpan={4}
-                    className="text-center border text-stone-800"
+                    className={`text-center border ${
+                      theme === "light" ? "text-neutral-800" : "text-white "
+                    }`}
                   >
                     ผลรวมในแต่ละด้าน
                   </TableHead>
                   <TableHead
                     colSpan={1}
-                    className="text-center border text-stone-800"
+                    className={`text-center border ${
+                      theme === "light" ? "text-neutral-800" : "text-white "
+                    }`}
                   >
                     ค่าเฉลี่ย
                   </TableHead>
                   <TableHead
                     colSpan={1}
-                    className="text-center border text-stone-800"
+                    className={`text-center border ${
+                      theme === "light" ? "text-neutral-800" : "text-white "
+                    }`}
                   >
                     ค่า SD.
                   </TableHead>
@@ -280,7 +380,13 @@ const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
 
                 {/* Total Summary Row */}
                 {adaptedData?.headData && (
-                  <TableRow className="text-[16px] bg-yellow-200">
+                  <TableRow
+                    className={`text-[16px] bg-yellow-200 ${
+                      theme === "light"
+                        ? "text-white"
+                        : "text-neutral-800 hover:text-white"
+                    }`}
+                  >
                     <TableCell colSpan={1} className="font-bold text-right">
                       ผลรวมทั้งหมดของ
                     </TableCell>
@@ -288,8 +394,7 @@ const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
                       {adaptedData.headData.userName}
                     </TableCell>
                     <TableCell colSpan={1} className="text-center">
-                      {adaptedData.headData.totalAverage?.toFixed(2) ||
-                        "-"}
+                      {adaptedData.headData.totalAverage?.toFixed(2) || "-"}
                     </TableCell>
                     <TableCell colSpan={1} className="text-center">
                       {adaptedData.headData.totalSD?.toFixed(2) || "-"}

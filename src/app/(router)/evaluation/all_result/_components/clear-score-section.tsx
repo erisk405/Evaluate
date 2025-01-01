@@ -42,6 +42,7 @@ import { Table } from "@tanstack/react-table";
 import { PeriodType, User } from "@/types/interface";
 import useStore from "@/app/store/store";
 import { formatThaiDateTime } from "@/app/(router)/overview/_components/RightSection";
+import { Item } from "@radix-ui/react-select";
 
 // Define the props interface for the ClearScoreSection component
 interface ClearScoreSectionProps {
@@ -49,6 +50,17 @@ interface ClearScoreSectionProps {
   selectPeriod: PeriodType;
 }
 const ClearScoreSection = ({ table, selectPeriod }: ClearScoreSectionProps) => {
+  const handleSubmit = () => {
+    try {
+      const selectData = table
+        .getSelectedRowModel()
+        .rows.map((row) => row.original);
+      console.log("filter",selectData.map(item => item.id));
+      
+    } catch (error) {
+      console.error("Error filtering employees:", error);
+    }
+  };
   const { roles } = useStore();
   return (
     <Dialog>
@@ -212,7 +224,9 @@ const ClearScoreSection = ({ table, selectPeriod }: ClearScoreSectionProps) => {
           </TabsContent>
         </Tabs>
         <DialogFooter>
-          <Button type="submit">Crear score</Button>
+          <Button type="submit" onClick={() => handleSubmit()}>
+            Crear score
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

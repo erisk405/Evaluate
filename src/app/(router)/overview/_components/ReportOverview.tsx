@@ -31,7 +31,7 @@ export const description = "A radial chart with a grid";
 
 const ReportOverview = () => {
   const { resultEvalEachDepartment, setResultEvalEachDepartment } = useStore();
-  const { currentlyEvaluationPeriod } = useStore();
+  const { currentlyEvaluationPeriod,theme, setTheme  } = useStore();
   const [supervise, setSupervise] = useState<getAllSuperviseByAdminType[]>([]);
   const getResultEvaluatePerDepart = async () => {
     try {
@@ -126,7 +126,9 @@ const ReportOverview = () => {
             {data.map((item, index) => (
               <div
                 key={item.id}
-                className="flex gap-3 w-full justify-center bg-white p-2 shadow rounded-2xl items-center"
+                className={`flex gap-3 w-full justify-center bg-white ${
+                  theme === "light" ? "bg-white" : "bg-black"
+                } p-2 shadow rounded-2xl items-center`}
               >
                 <div className=" border rounded-full p-4 animate-wiggle">
                   {item.icon}

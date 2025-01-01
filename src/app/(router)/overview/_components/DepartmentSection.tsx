@@ -31,7 +31,7 @@ const DepartmentSection = () => {
                 href={`/overview/department/${item.id}`}
                 key={item?.id}
                 className="overflow-hidden cursor-pointer col-span-1 rounded-2xl shadow
-                hover:scale-95 active:scale-90 bg-white group transition-all"
+                hover:scale-95 active:scale-90  group transition-all"
               >
                 <div className="grid grid-cols-5 relative">
                   <Image

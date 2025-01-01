@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Footer from "../_components/Footer";
 import { AppSidebar } from "@/app/_components/app-sidebar";
 import { Breadcrumb, BreadcrumbList } from "@/components/ui/breadcrumb";
@@ -12,11 +12,42 @@ import {
 import { Toaster } from "@/components/ui/sonner";
 import { DynamicBreadcrumb } from "../_components/DynamicBreadcrumb";
 import { NotificationPopup, ProfilePopup } from "../_components/PopupSection";
-import { Bell } from "lucide-react";
+import { Bell, Moon, Sun } from "lucide-react";
 import useStore from "../store/store";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 const layout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
   const { showNotifications, setShowNotifications, notificationCounts } =
     useStore();
+  const { theme, setTheme } = useStore();
+
+  // Update theme when component mounts and whenever theme changes
+  useEffect(() => {
+    
+    const root = window.document.documentElement;
+    root.classList.remove("light", "dark");
+    root.classList.add(theme);
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
+  // Load saved theme when component mounts
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme) {
+      setTheme(savedTheme);
+    } else {
+      // prefers-color-scheme เป็น CSS Media Query ที่ใช้ตรวจสอบว่าผู้ใช้ตั้งค่าระบบปฏิบัติการของเขาเป็น dark mode หรือ light mode
+      const prefersDark = window.matchMedia(
+        "(prefers-color-scheme: dark)"
+      ).matches;
+      setTheme(prefersDark ? "dark" : "light");
+    }
+  }, []);
   return (
     <div className="">
       <SidebarProvider>
@@ -42,27 +73,59 @@ const layout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
               }`}
             ></div>
             {/* icon for notificate */}
-            <div
-              className="flex gap-2 items-center mr-14  cursor-pointer hover:bg-neutral-200 p-2 rounded-lg "
-              onClick={() => setShowNotifications(!showNotifications)}
-            >
-              <div className="relative">
-                {notificationCounts > 0 && (
-                  <div
-                    className={`absolute -top-2 -right-2  text-white rounded-full bg-red-500 w-4 h-4 flex items-center justify-center`}
-                  >
-                    <h2 className="text-sm">{notificationCounts}</h2>
-                  </div>
-                )}
+            <div className="flex items-center gap-3 mr-14">
+              <div
+                className="flex gap-2 items-center cursor-pointer hover:bg-neutral-200 p-2 rounded-lg "
+                onClick={() => setShowNotifications(!showNotifications)}
+              >
+                <div className="relative">
+                  {notificationCounts > 0 && (
+                    <div
+                      className={`absolute -top-2 -right-2  text-white rounded-full bg-red-500 w-4 h-4 flex items-center justify-center`}
+                    >
+                      <h2 className="text-sm">{notificationCounts}</h2>
+                    </div>
+                  )}
 
-                <Bell size={18} />
+                  <Bell size={18} />
+                </div>
+                Notifications
               </div>
-              Notifications
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="icon" className="w-10 h-10">
+                    {theme === "light" ? (
+                      <Sun className="h-5 w-5" />
+                    ) : (
+                      <Moon className="h-5 w-5" />
+                    )}
+                    <span className="sr-only">Toggle theme</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => setTheme("light")}>
+                    <Sun className="h-4 w-4 mr-2" />
+                    Light
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setTheme("dark")}>
+                    <Moon className="h-4 w-4 mr-2" />
+                    Dark
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </header>
-          <div className="flex justify-center bg-white relative">
+          <div
+            className={`flex justify-center ${
+              theme === "light" ? "bg-white" : "bg-black"
+            } relative`}
+          >
             <div className="flex-1 min-h-screen  max-w-[1560px]">
-              <div className="flex flex-grow bg-gray-50 rounded-xl text-neutral-800">
+              <div
+                className={`flex flex-grow ${
+                  theme === "light" ? "bg-gray-50" : "bg-background"
+                } text-neutral-800`}
+              >
                 {children}
                 <Toaster expand={true} closeButton />
               </div>

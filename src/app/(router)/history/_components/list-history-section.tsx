@@ -73,7 +73,7 @@ export const columns: ColumnDef<PeriodType>[] = [
       const item = row.original;
       return (
         <div className="text-center w-[150px]">
-          <div className="bg-white cursor-pointer  inline-flex border p-2 shadow rounded-xl items-center gap-1">
+          <div className=" cursor-pointer  inline-flex border p-2 rounded-xl items-center gap-1">
             <div className="relative">
               {new Date(item.start) <= new Date() &&
               new Date() <= new Date(item.end) ? (

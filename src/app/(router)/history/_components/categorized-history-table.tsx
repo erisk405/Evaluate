@@ -11,6 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { formResultHistoryType, formResultsType } from "@/types/interface";
+import useStore from "@/app/store/store";
 
 const SCORE_TYPE_LABELS: Record<string, string> = {
   Executive: "ผู้บริหาร",
@@ -18,48 +19,97 @@ const SCORE_TYPE_LABELS: Record<string, string> = {
   Employee: "พนักงาน",
 };
 type categorizedTableProp = {
-    formHistoryResultsItem: formResultHistoryType | undefined;
+  formHistoryResultsItem: formResultHistoryType | undefined;
 };
-const CategorizedHistoryTable = ({ formHistoryResultsItem }: categorizedTableProp) => {
+const CategorizedHistoryTable = ({
+  formHistoryResultsItem,
+}: categorizedTableProp) => {
   const [scoreTypes, setScoreTypes] = useState<string[]>([]);
+  const { theme } = useStore();
   const renderTableHeaders = (scoreTypes: string[]) => (
     <>
-      <TableRow className="text-lg bg-blue-300">
-        <TableHead rowSpan={2} className="text-center text-stone-800">
+      <TableRow
+        className={`text-lg bg-blue-300  ${
+          theme === "light" ? "bg-blue-300" : "bg-blue-400"
+        }`}
+      >
+        <TableHead
+          rowSpan={2}
+          className={`text-center  ${
+            theme === "light" ? "text-neutral-800" : "text-white "
+          }`}
+        >
           ลำดับ
         </TableHead>
-        <TableHead rowSpan={2} className="text-center border text-stone-800">
+        <TableHead
+          rowSpan={2}
+          className={`text-center border  ${
+            theme === "light" ? "text-neutral-800" : "text-white "
+          }`}
+        >
           หัวข้อคำถาม
         </TableHead>
-        <TableHead rowSpan={2} className="text-center border text-stone-800">
+        <TableHead
+          rowSpan={2}
+          className={`text-center border  ${
+            theme === "light" ? "text-neutral-800" : "text-white "
+          }`}
+        >
           ข้อคำถาม
         </TableHead>
-        <TableHead colSpan={2} className="text-center border text-stone-800">
+        <TableHead
+          colSpan={2}
+          className={`text-center border  ${
+            theme === "light" ? "text-neutral-800" : "text-white "
+          }`}
+        >
           ผลรวมเฉลี่ย
         </TableHead>
         {scoreTypes.map((type) => (
           <TableHead
             key={type}
             colSpan={2}
-            className="text-center border text-stone-800"
+            className={`text-center border  ${
+              theme === "light" ? "text-neutral-800" : "text-white "
+            }`}
           >
             {SCORE_TYPE_LABELS[type] || type}
           </TableHead>
         ))}
       </TableRow>
-      <TableRow className="text-lg bg-blue-300">
-        <TableHead className="text-center border text-stone-800">
+      <TableRow
+        className={`text-lg ${
+          theme === "light" ? "bg-blue-300" : "bg-blue-400"
+        }`}
+      >
+        <TableHead
+          className={`text-center border  ${
+            theme === "light" ? "text-neutral-800" : "text-white "
+          }`}
+        >
           ค่าเฉลี่ย
         </TableHead>
-        <TableHead className="text-center border text-stone-800">
+        <TableHead
+          className={`text-center border  ${
+            theme === "light" ? "text-neutral-800" : "text-white "
+          }`}
+        >
           ค่า SD
         </TableHead>
         {scoreTypes.map((type) => (
           <React.Fragment key={type}>
-            <TableHead className="text-center border text-stone-800">
+            <TableHead
+              className={`text-center border  ${
+                theme === "light" ? "text-neutral-800" : "text-white "
+              }`}
+            >
               ค่าเฉลี่ย
             </TableHead>
-            <TableHead className="text-center border text-stone-800">
+            <TableHead
+              className={`text-center border  ${
+                theme === "light" ? "text-neutral-800" : "text-white "
+              }`}
+            >
               ค่า SD
             </TableHead>
           </React.Fragment>
@@ -96,7 +146,13 @@ const CategorizedHistoryTable = ({ formHistoryResultsItem }: categorizedTablePro
           <TableHeader>{renderTableHeaders(scoreTypes)}</TableHeader>
 
           <TableBody>
-            <TableRow className="text-[16px] bg-blue-100">
+            <TableRow
+              className={`text-[16px] bg-blue-100 ${
+                theme === "light"
+                  ? "text-neutral-800"
+                  : "text-neutral-800 hover:text-white"
+              }`}
+            >
               <TableCell colSpan={3} className="font-bold">
                 {formHistoryResultsItem?.formName}
               </TableCell>

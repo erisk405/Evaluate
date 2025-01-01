@@ -77,7 +77,7 @@ const AllListDepartment = ({
                 <SettingSection department={item} fetchDepart={fetchDepart} />
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button className="w-full mt-3 text-white bg-red-500">
+                    <Button className="w-full mt-3">
                       ลบหน่วยงาน
                     </Button>
                   </AlertDialogTrigger>
