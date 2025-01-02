@@ -15,6 +15,7 @@ import { toast } from "@/components/ui/use-toast";
 import { Input } from "@/components/ui/input";
 import { Fingerprint, Loader, RectangleEllipsis } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useTheme } from "next-themes";
 const formSchema = z
   .object({
     currPassword: z
@@ -53,6 +54,8 @@ const formSchema = z
   });
 const page = () => {
   const [loading, setLoading] = useState(false);
+  const { theme } = useTheme();
+  
   const {
     setError,
     formState: { errors },
@@ -85,7 +88,7 @@ const page = () => {
     }
   };
   return (
-    <div className="px-4 flex flex-col items-center  rounded-lg h-screen">
+    <div className={`px-4 flex flex-col items-center  rounded-lg h-screen ${theme === "light" ? 'text-zinc-900' :'text-zinc-50'}`}>
       <div className="w-[428px]">
         <div className="flex flex-col w-full items-center justify-center">
           <div className="flex gap-3 items-center border p-2 rounded-lg shadow">

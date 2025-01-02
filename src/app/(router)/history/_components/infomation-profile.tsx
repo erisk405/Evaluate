@@ -1,11 +1,14 @@
 "use client";
 import useStore from "@/app/store/store";
 import { Separator } from "@/components/ui/separator";
+import { useTheme } from "next-themes";
 import Image from "next/image";
 import React from "react";
 
 const InfomationProfile = () => {
-  const { ProfileDetail, theme } = useStore();
+  const { ProfileDetail } = useStore();
+  
+  const { theme } = useTheme();
   return (
     <div className={`p-3 `}>
       <div className="relative h-32 shadow rounded-xl">

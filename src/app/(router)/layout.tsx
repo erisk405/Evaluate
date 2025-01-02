@@ -21,33 +21,21 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { useTheme } from "next-themes";
+import Loading from "../_components/Loading";
 const layout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
-  const { showNotifications, setShowNotifications, notificationCounts } =
-    useStore();
-  const { theme, setTheme } = useStore();
-
-  // Update theme when component mounts and whenever theme changes
+  const { showNotifications, setShowNotifications, notificationCounts } = useStore();
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   useEffect(() => {
-    
-    const root = window.document.documentElement;
-    root.classList.remove("light", "dark");
-    root.classList.add(theme);
-    localStorage.setItem("theme", theme);
-  }, [theme]);
-
-  // Load saved theme when component mounts
-  useEffect(() => {
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme) {
-      setTheme(savedTheme);
-    } else {
-      // prefers-color-scheme เป็น CSS Media Query ที่ใช้ตรวจสอบว่าผู้ใช้ตั้งค่าระบบปฏิบัติการของเขาเป็น dark mode หรือ light mode
-      const prefersDark = window.matchMedia(
-        "(prefers-color-scheme: dark)"
-      ).matches;
-      setTheme(prefersDark ? "dark" : "light");
-    }
+    setMounted(true);
   }, []);
+
+  // การแก้ไขนี้จะช่วยป้องกัน hydration mismatch และทำให้การสลับ theme ทำงานได้อย่างถูกต้องทั้ง light และ dark mode 
+  if (!mounted) {
+    return <Loading/>; // หรือแสดง loading placeholder
+  }
+
   return (
     <div className="">
       <SidebarProvider>

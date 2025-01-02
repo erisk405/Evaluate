@@ -24,9 +24,6 @@ interface StoreState {
     open: boolean;
   };
 
-  theme: string
-  setTheme: (theme: string) => void;
-
   toggleProfile: () => void;
 
   ProfileDetail: {
@@ -112,9 +109,6 @@ const useStore = create<StoreState>((set) => ({
     }));
   },
 
-
-  theme: "light",
-  setTheme: (theme: string) => set({ theme }),
 
   notificationCounts: 0,
   setNotificationCount: (count: number) => set(() => ({  // Implementation matches interface

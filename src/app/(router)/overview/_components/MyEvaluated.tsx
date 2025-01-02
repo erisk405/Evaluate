@@ -41,7 +41,7 @@ const MyEvaluated = () => {
               delay: 0.2,
               ease: [0, 0.71, 0.2, 1.01],
             }}
-            className="bg-background2 rounded-2xl  shadow"
+            className="bg-background_secondary rounded-2xl  shadow"
           >
             <ChartEvaluatedYou />
           </motion.div>
@@ -53,7 +53,7 @@ const MyEvaluated = () => {
               delay: 0.1,
               ease: [0, 0.71, 0.2, 1.01],
             }}
-            className="bg-background2  rounded-2xl  shadow"
+            className="bg-background_secondary  rounded-2xl  shadow"
           >
             <ChartEvaluatePersonnel />
           </motion.div>

@@ -49,8 +49,8 @@ body {
     --background: 0 0% 100%;
     --foreground: 0 0% 3.9%;
     
-    --background2: 0 0% 100%;
-    --foreground2: 0 0% 3.9%;
+    --background_secondary: 0 0% 100%;
+    --foreground_secondary: 0 0% 3.9%;
 
     --card: 0 0% 100%;
     --card-foreground: 0 0% 3.9%;
@@ -133,8 +133,8 @@ body {
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
     
-    --background2: 222.2 84% 4.9%;
-    --foreground2: 210 40% 98%;
+    --background_secondary: 222.2 84% 4.9%;
+    --foreground_secondary: 210 40% 98%;
     
     --card: 222.2 84% 4.9%;
     --card-foreground: 210 40% 98%;

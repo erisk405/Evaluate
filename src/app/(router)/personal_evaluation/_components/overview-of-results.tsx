@@ -27,6 +27,7 @@ import {
 import { calculateCharacteristics } from "@/app/lib/utils/result-calculations";
 import { adaptCategorizeFormResultsByVisionLevel } from "@/app/lib/adapters/results/categorize-vision-results";
 import useStore from "@/app/store/store";
+import { useTheme } from "next-themes";
 
 const SCORE_TYPE_LABELS: Record<string, string> = {
   Executive: "ผู้บริหาร",
@@ -42,7 +43,7 @@ const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
   const [formResultsByVisionLevel, SetFormResultsByVisionLevel] =
     useState<CategorizedFormResults>();
 
-  const { theme } = useStore();
+  const { theme } = useTheme();
   const [adaptedData, setAdaptedData] = useState<CommonResultFormat>();
   const renderTableHeaders = (
     scoreTypes: string[],
@@ -57,9 +58,7 @@ const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
         <TableHead
           rowSpan={2}
           className={`text-center border  ${
-            theme === "light"
-              ? "text-neutral-800"
-              : "text-white "
+            theme === "light" ? "text-neutral-800" : "text-white "
           }`}
         >
           ลำดับ
@@ -67,9 +66,7 @@ const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
         <TableHead
           rowSpan={2}
           className={`text-center border ${
-            theme === "light"
-              ? "text-neutral-800"
-              : "text-white"
+            theme === "light" ? "text-neutral-800" : "text-white"
           }`}
         >
           หัวข้อคำถาม
@@ -77,9 +74,7 @@ const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
         <TableHead
           rowSpan={2}
           className={`text-center border  ${
-            theme === "light"
-              ? "text-neutral-800"
-              : "text-white"
+            theme === "light" ? "text-neutral-800" : "text-white"
           }`}
         >
           ข้อคำถาม
@@ -87,9 +82,7 @@ const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
         <TableHead
           colSpan={2}
           className={`text-center border  ${
-            theme === "light"
-              ? "text-neutral-800"
-              : "text-white"
+            theme === "light" ? "text-neutral-800" : "text-white"
           }`}
         >
           ผลรวมเฉลี่ย
@@ -100,9 +93,7 @@ const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
               key={type}
               colSpan={2}
               className={`text-center border  ${
-                theme === "light"
-                  ? "text-neutral-800"
-                  : "text-white "
+                theme === "light" ? "text-neutral-800" : "text-white "
               }`}
             >
               {SCORE_TYPE_LABELS[type] || type}
@@ -116,18 +107,14 @@ const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
       >
         <TableHead
           className={`text-center border ${
-            theme === "light"
-              ? "text-neutral-800"
-              : "text-white "
+            theme === "light" ? "text-neutral-800" : "text-white "
           }`}
         >
           ค่าเฉลี่ย
         </TableHead>
         <TableHead
           className={`text-center border ${
-            theme === "light"
-              ? "text-neutral-800"
-              : "text-white "
+            theme === "light" ? "text-neutral-800" : "text-white "
           }`}
         >
           ค่า SD.
@@ -137,18 +124,14 @@ const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
             <React.Fragment key={type}>
               <TableHead
                 className={`text-center border  ${
-                  theme === "light"
-                    ? "text-neutral-800"
-                    : "text-white "
+                  theme === "light" ? "text-neutral-800" : "text-white "
                 }`}
               >
                 ค่าเฉลี่ย
               </TableHead>
               <TableHead
                 className={`text-center border  ${
-                  theme === "light"
-                    ? "text-neutral-800"
-                    : "text-white "
+                  theme === "light" ? "text-neutral-800" : "text-white "
                 }`}
               >
                 ค่า SD.
@@ -381,12 +364,7 @@ const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
                 {/* Total Summary Row */}
                 {adaptedData?.headData && (
                   <TableRow
-                    className={`text-[16px] bg-yellow-200 ${
-                      theme === "light"
-                        ? "text-white"
-                        : "text-neutral-800 hover:text-white"
-                    }`}
-                  >
+                    className={`text-[16px] bg-yellow-200 text-neutral-800`}>
                     <TableCell colSpan={1} className="font-bold text-right">
                       ผลรวมทั้งหมดของ
                     </TableCell>

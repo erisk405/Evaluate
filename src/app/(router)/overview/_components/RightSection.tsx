@@ -56,6 +56,7 @@ import { toast } from "@/components/ui/use-toast";
 import EditPariod from "./EditPariod";
 import axios from "axios";
 import useStore from "@/app/store/store";
+import { useTheme } from "next-themes";
 
 type RightSectionProps = {
   permission?: string; // ใส่ ? เพื่อบอกว่าอาจเป็น undefined ได้
@@ -100,7 +101,9 @@ const RightSection = ({ permission, period }: RightSectionProps) => {
   const [deletePeriod, setDeletePeroid] = useState("");
   // State สำหรับเก็บค่าเวลา
   const [openAlert, setOpenAlert] = useState(false);
-  const { currentlyEvaluationPeriod, fetchCurrentPeriod,theme } = useStore();
+  
+  const { theme } = useTheme()
+  const { currentlyEvaluationPeriod, fetchCurrentPeriod } = useStore();
   const [timeRange, setTimeRange] = useState<TimeRange>({
     from: new Date(),
     to: new Date(),

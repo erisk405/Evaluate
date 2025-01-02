@@ -34,6 +34,7 @@ import { UserInDepartment } from "./_components/UserInDepartment";
 import { Department, userHaveBeenEvaluatedType } from "@/types/interface";
 import axios from "axios";
 import EvaluateSheet from "./_components/EvaluateSheet";
+import { useTheme } from "next-themes";
 
 const page = () => {
   const params = useParams<{ departmentId: string }>();
@@ -42,8 +43,8 @@ const page = () => {
     updateProfileDetail,
     currentlyEvaluationPeriod,
     fetchCurrentPeriod,
-    theme,
   } = useStore();
+  const { theme } = useTheme();
   const [department, setDepartment] = useState<Department>();
   const [userHaveBeenEvaluated, setUserHaveBeenEvaluated] = useState<
     userHaveBeenEvaluatedType[]
@@ -214,11 +215,11 @@ const page = () => {
                     <div
                       className={`flex rounded-2xl gap-3 relative overflow-hidden
                       items-center px-8 py-4 shadow-xl 
-                      bg-gradient-to-tl from-neutral-800 from-20% to-neutral-900 to-50%  group 
+                      bg-gradient-to-tl group 
                       transition-all  ${
                         theme === "light"
                           ? "from-neutral-800 from-20% to-neutral-900 to-50% "
-                          : "from-blue-950 from-10% to-background2 to-50% "
+                          : "from-blue-950 from-10% to-background_secondary to-50% "
                       }`}
                     >
                       <div className="text-white w-full group-hover:text-white z-10">

@@ -13,6 +13,7 @@ import {
 import GlobalApi, { handleErrorOnAxios } from "@/app/_util/GlobalApi";
 import useStore from "@/app/store/store";
 import { PeriodType, User } from "@/types/interface";
+import { useTheme } from "next-themes";
 
 interface IndividualType {
   headData: headDataIndividuaType;
@@ -39,7 +40,8 @@ interface resultUserType {
 }
 
 const IndividualOverview = ({ period }: { period: PeriodType }) => {
-  const { ProfileDetail,theme } = useStore();
+  const { ProfileDetail } = useStore();
+  const { theme } = useTheme();
   const [individual, setIndividual] = useState<IndividualType>();
   const renderTableHeaders = () => (
     <>
@@ -48,57 +50,64 @@ const IndividualOverview = ({ period }: { period: PeriodType }) => {
           theme === "light" ? "bg-blue-300" : "bg-blue-400"
         }`}
       >
-        <TableHead rowSpan={2} className={`text-center ${
-            theme === "light"
-              ? "text-neutral-800"
-              : "text-white "
-          }`}>
+        <TableHead
+          rowSpan={2}
+          className={`text-center ${
+            theme === "light" ? "text-neutral-800" : "text-white "
+          }`}
+        >
           ลำดับ
         </TableHead>
-        <TableHead rowSpan={2} className={`text-center border ${
-            theme === "light"
-              ? "text-neutral-800"
-              : "text-white "
-          }`}>
+        <TableHead
+          rowSpan={2}
+          className={`text-center border ${
+            theme === "light" ? "text-neutral-800" : "text-white "
+          }`}
+        >
           รายชื่อผู้รับการประเมิน
         </TableHead>
-        <TableHead rowSpan={2} className={`text-center border ${
-            theme === "light"
-              ? "text-neutral-800"
-              : "text-white "
-          }`}>
+        <TableHead
+          rowSpan={2}
+          className={`text-center border ${
+            theme === "light" ? "text-neutral-800" : "text-white "
+          }`}
+        >
           สังกัดหน่วยงาน
         </TableHead>
-        <TableHead colSpan={2} className={`text-center border ${
-            theme === "light"
-              ? "text-neutral-800"
-              : "text-white "
-          }`}>
+        <TableHead
+          colSpan={2}
+          className={`text-center border ${
+            theme === "light" ? "text-neutral-800" : "text-white "
+          }`}
+        >
           ผลการประเมินการปฏิบัติงาน
         </TableHead>
-        <TableHead rowSpan={2} className={`text-center border ${
-            theme === "light"
-              ? "text-neutral-800"
-              : "text-white "
-          }`}>
+        <TableHead
+          rowSpan={2}
+          className={`text-center border ${
+            theme === "light" ? "text-neutral-800" : "text-white "
+          }`}
+        >
           ผลคะแนน
         </TableHead>
       </TableRow>
-      <TableRow className={`text-lg ${
+      <TableRow
+        className={`text-lg ${
           theme === "light" ? "bg-blue-300" : "bg-blue-400"
-        }`}>
-        <TableHead className={`text-center border ${
-            theme === "light"
-              ? "text-neutral-800"
-              : "text-white "
-          }`}>
+        }`}
+      >
+        <TableHead
+          className={`text-center border ${
+            theme === "light" ? "text-neutral-800" : "text-white "
+          }`}
+        >
           ค่าเฉลี่ย
         </TableHead>
-        <TableHead className={`text-center border ${
-            theme === "light"
-              ? "text-neutral-800"
-              : "text-white "
-          }`}>
+        <TableHead
+          className={`text-center border ${
+            theme === "light" ? "text-neutral-800" : "text-white "
+          }`}
+        >
           ค่า SD
         </TableHead>
       </TableRow>

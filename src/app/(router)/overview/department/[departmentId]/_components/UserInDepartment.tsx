@@ -68,6 +68,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import React, { useMemo, useState } from "react";
 import useStore from "@/app/store/store";
+import { useTheme } from "next-themes";
 
 export function UserInDepartment({
   member,
@@ -83,7 +84,8 @@ export function UserInDepartment({
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
   const [globalFilter, setGlobalFilter] = useState("");
-  const { ProfileDetail, theme } = useStore();
+  const { ProfileDetail } = useStore();
+  const { theme } = useTheme();
   const columns: ColumnDef<User>[] = [
     {
       accessorKey: "index",
@@ -378,7 +380,7 @@ export function UserInDepartment({
                         header.id === "actions" || header.id === "index"
                           ? "text-center"
                           : ""
-                      }  ${theme === "light" ? "" : "bg-background2"} `}
+                      }  ${theme === "light" ? "" : "bg-background_secondary"} `}
                     >
                       {header.isPlaceholder
                         ? null

@@ -10,8 +10,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { formResultsType, getResultEvaluateType } from "@/types/interface";
-import useStore from "@/app/store/store";
+import { formResultsType } from "@/types/interface";
+import { useTheme } from "next-themes";
 
 const SCORE_TYPE_LABELS: Record<string, string> = {
   Executive: "ผู้บริหาร",
@@ -23,8 +23,7 @@ type categorizedTableProp = {
 };
 const CategorizedTable = ({ formResultsItem }: categorizedTableProp) => {
   const [scoreTypes, setScoreTypes] = useState<string[]>([]);
-  const [Characteristics, SetCharacteristics] = useState<string>();
-  const { theme } = useStore();
+  const { theme } = useTheme();
 
   const renderTableHeaders = (scoreTypes: string[]) => (
     <>

@@ -25,6 +25,7 @@ import { toast } from "@/components/ui/use-toast";
 import axios from "axios";
 import { formatThaiDateTime } from "../../../_components/RightSection";
 import { Loader } from "lucide-react";
+import { useTheme } from "next-themes";
 
 type PayloadQuestion = {
   questionId: string;
@@ -67,7 +68,8 @@ const EvaluateSection: React.FC<EvaluateSection> = ({
   const [payloadForUpdate, setPayloadForUpdate] = useState<
     Array<{ question_id: string; score: string }>
   >([]);
-  const { ProfileDetail, currentlyEvaluationPeriod, theme } = useStore();
+  const { ProfileDetail, currentlyEvaluationPeriod } = useStore();
+  const { theme } = useTheme()
 
   const handleScoreChange = (
     formName: string,
@@ -290,7 +292,7 @@ const EvaluateSection: React.FC<EvaluateSection> = ({
         className={` ${
           theme === "light"
             ? "text-neutral-800 bg-white"
-            : "text-white bg-background2"
+            : "text-white bg-background_secondary"
         } my-4`}
       >
         <div className="rounded-lg border">

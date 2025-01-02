@@ -2,6 +2,7 @@
 import GlobalApi from "@/app/_util/GlobalApi";
 import useStore from "@/app/store/store";
 import { CircleUserRound, Fingerprint } from "lucide-react";
+import { useTheme } from "next-themes";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useEffect } from "react";
@@ -23,7 +24,8 @@ const layout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
   const pathname = usePathname();
   const pathSegments = pathname.split("/").filter((segment) => segment !== "");
 
-  const { ProfileDetail, updateProfileDetail } = useStore();
+  const { theme } = useTheme();
+  const { updateProfileDetail } = useStore();
   // Fetch user data
   const fetchUser = async () => {
     try {
@@ -51,16 +53,17 @@ const layout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
     fetchUser();
   }, []);
   return (
-    <div className="flex w-full bg-white  overflow-hidden rounded-xl h-screen">
-      <div className="min-w-[250px] w-[400px] p-4 border-r bg-white">
-        <h2 className="text-xl text-stone-800 font-bold mb-4">Account</h2>
-        <p className="text-sm text-gray-500 my-3">How you use options</p>
+    <div className={`flex w-full ${theme === "light" ? 'bg-white' :'bg-background_secondary'} overflow-hidden h-screen`}>
+      <div className={`min-w-[250px] w-[400px] p-4 border-r ${theme === "light" ? 'bg-white' :'bg-black text-zinc-50'}`}>
+        <h2 className="text-xl  font-bold mb-4">Account</h2>
+        <p className="text-sm my-3">How you use options</p>
         {option.map((item, index) => (
           <Link
             href={`/account/${item.pathName}`}
-            className={`flex items-center gap-3 p-3 hover:bg-neutral-100 mb-2 rounded-lg ${
-              pathSegments.includes(item.pathName) ? "bg-neutral-100" : ""
-            }`}
+            className={`flex items-center gap-3 p-3 mb-2 rounded-lg 
+            ${pathSegments.includes(item.pathName) && theme === "light" && 'bg-zinc-900 text-zinc-50'} 
+            ${pathSegments.includes(item.pathName) && theme === "dark" && 'bg-zinc-800 text-zinc-50'} 
+            ${theme === "light" ? 'hover:bg-zinc-800 hover:text-zinc-50 ' :'hover:bg-zinc-700'}`}
             key={item.id}
           >
             <span>{item.icon}</span>
@@ -68,7 +71,7 @@ const layout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
           </Link>
         ))}
       </div>
-      <div className="bg-white p-4 w-full">{children}</div>
+      <div className="p-4 w-full">{children}</div>
     </div>
   );
 };

@@ -58,6 +58,7 @@ import Personal_result from "./_components/Personal-result";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import GlobalApi from "@/app/_util/GlobalApi";
+import { useTheme } from "next-themes";
 
 export const columns: ColumnDef<PeriodType>[] = [
   {
@@ -161,8 +162,8 @@ export const columns: ColumnDef<PeriodType>[] = [
   },
 ];
 const page = () => {
-  const { fetchCurrentPeriod, allPeriod ,theme} = useStore();
-
+  const { fetchCurrentPeriod, allPeriod} = useStore();
+  const { theme } = useTheme();
   const [globalFilter, setGlobalFilter] = useState("");
 
   const [sorting, setSorting] = React.useState<SortingState>([]);

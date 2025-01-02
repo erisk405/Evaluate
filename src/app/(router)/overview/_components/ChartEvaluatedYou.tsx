@@ -24,13 +24,15 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import useStore from "@/app/store/store";
 import { formatThaiDateTime } from "./RightSection";
+import { useTheme } from "next-themes";
 
 const ChartEvaluatedYou = () => {
-  const { resultEvaluate, currentlyEvaluationPeriod, theme } = useStore();
+  const { resultEvaluate, currentlyEvaluationPeriod } = useStore();
 
+  const { theme } = useTheme()
   const chartData = resultEvaluate?.formResults?.map((item) => ({
     form: item.formName,
     result: item.evaluatedPerForm,

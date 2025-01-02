@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import EvaluateSection from "./EvaluateSection";
 import { PeriodType, User, userHaveBeenEvaluatedType } from "@/types/interface";
 import useStore from "@/app/store/store";
+import { useTheme } from "next-themes";
 
 type EvaluateSheetProp = {
   userHaveBeenEvaluated: userHaveBeenEvaluatedType[];
@@ -24,7 +25,8 @@ const EvaluateSheet = ({
   fetchUserHaveBeenEvaluated,
 }: EvaluateSheetProp) => {
   const [open, setOpen] = useState(false);
-  const { currentlyEvaluationPeriod, ProfileDetail , theme } = useStore();
+  const { currentlyEvaluationPeriod, ProfileDetail } = useStore();
+  const { theme } = useTheme()
   const defaultScoreOfUserHasEval = useMemo(() => {
     return userHaveBeenEvaluated?.find((f) => f.evaluator.id === item.id);
   }, [item, userHaveBeenEvaluated]);
