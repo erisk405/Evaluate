@@ -71,6 +71,7 @@ import GlobalApi from "@/app/_util/GlobalApi";
 import EditQuestionDialog from "./EditQuestionDialog";
 
 import { toast } from "sonner";
+import { useThemeClass, useThemeStyles } from "@/hooks/useTheme";
 export type questionProp = {
   id: string;
   content: string;
@@ -87,6 +88,7 @@ type QuestionListProp = {
   formId: string;
 };
 export function QuestionList({ formId }: QuestionListProp) {
+  const styles = useThemeStyles();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -332,7 +334,7 @@ export function QuestionList({ formId }: QuestionListProp) {
                   This action cannot be undone. This will permanently delete.
                 </AlertDialogDescription>
               </AlertDialogHeader>
-              <h2 className="text-stone-700 ">รายละเอียดข้อมูลที่จะลบ </h2>
+              <h2 className={`${styles.text}`}>รายละเอียดข้อมูลที่จะลบ </h2>
               <ScrollArea className="h-52 w-full">
                 <div className="inline-flex flex-wrap gap-3 ">
                   {table
@@ -341,7 +343,7 @@ export function QuestionList({ formId }: QuestionListProp) {
                     .map((item) => (
                       <div
                         key={item.id}
-                        className="rounded-full border py-1 text-stone-700 text-sm px-2"
+                        className="rounded-full border py-1 text-sm px-2"
                       >
                         {item.content}
                       </div>

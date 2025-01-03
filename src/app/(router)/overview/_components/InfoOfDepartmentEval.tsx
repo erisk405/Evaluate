@@ -136,7 +136,7 @@ const InfoOfDepartmentEval = () => {
         onMouseLeave={contactLeave}
         className={`w-full hover:scale-95 active:scale-90 grid grid-cols-12 
           shadow overflow-hidden rounded-xl transition-transform 
-          ${styles.background_dark_gradient}`}
+          ${styles.background}`}
       >
         <div className="w-full h-[160px] col-span-5">
           <Image

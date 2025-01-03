@@ -72,6 +72,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Label } from "@/components/ui/label";
 import EditPrefixName from "./EditPrefixName";
+import { useThemeStyles } from "@/hooks/useTheme";
 
 const formSchema = z.object({
   prefix_name: z
@@ -81,6 +82,7 @@ const formSchema = z.object({
 });
 
 const PrefixTable = () => {
+  const styles = useThemeStyles();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -132,7 +134,9 @@ const PrefixTable = () => {
       }
       fetchPrefix();
       toast("Event has been delete", {
-        description: `ลบ ${selectData.map((item)=> item.prefix_name + ",")} เรียบร้อย`,
+        description: `ลบ ${selectData.map(
+          (item) => item.prefix_name + ","
+        )} เรียบร้อย`,
       });
     } catch (error: any) {
       console.error({ message: error });
@@ -208,7 +212,7 @@ const PrefixTable = () => {
             if (!response) {
               throw new Error("Question update fail");
             }
-            fetchPrefix() // fetch ข้อมูลใหม่
+            fetchPrefix(); // fetch ข้อมูลใหม่
             console.log("response", response);
             toast("Event has been updated", {
               description: `แก้คำนำหน้าเป็น : "${response?.data.prefix_name}" เรียบร้อยแล้ว`,
@@ -284,7 +288,7 @@ const PrefixTable = () => {
     fetchPrefix();
   }, []);
   return (
-    <div className="w-full  ">
+    <div className={`w-full ${styles.text}`}>
       <div className="flex items-center py-4">
         <Input
           placeholder="Filter prefix..."
@@ -301,7 +305,7 @@ const PrefixTable = () => {
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button
-                  className="hover:bg-red-50 border-none text-red-500 bg-white"
+                  className={`hover:bg-red-50 border-none text-red-500 ${styles.background}`}
                   disabled={
                     table.getFilteredSelectedRowModel().rows.length > 0
                       ? false
@@ -318,7 +322,7 @@ const PrefixTable = () => {
                     This action cannot be undone. This will permanently delete.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
-                <h2 className="text-stone-700 ">รายละเอียดข้อมูลที่จะลบ </h2>
+                <h2 className="">รายละเอียดข้อมูลที่จะลบ </h2>
                 <ScrollArea className="h-52 w-full">
                   <div className="inline-flex flex-wrap gap-3 ">
                     {table
@@ -327,7 +331,7 @@ const PrefixTable = () => {
                       .map((item) => (
                         <div
                           key={item.prefix_id}
-                          className="rounded-full border py-1 text-stone-700 text-sm px-2"
+                          className="rounded-full border py-1 text-sm px-2"
                         >
                           {item.prefix_name}
                         </div>
@@ -423,17 +427,20 @@ const PrefixTable = () => {
           </DropdownMenu>
         </div>
       </div>
-      <div className="rounded-md border bg-white">
+      <div className={`rounded-md border ${styles.background}`}>
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow
+                key={headerGroup.id}
+                className={`${styles.background_third_head_table} ${styles.text}`}
+              >
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead
                       className={`${
                         header.id === "index" ? "max-w-[5px]" : ""
-                      }`}
+                      } `}
                       key={header.id}
                     >
                       {header.isPlaceholder

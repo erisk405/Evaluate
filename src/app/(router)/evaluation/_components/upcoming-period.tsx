@@ -5,10 +5,12 @@ import { formatThaiDateTime } from "../../overview/_components/RightSection";
 import { Button } from "@/components/ui/button";
 import GlobalApi, { handleErrorOnAxios } from "@/app/_util/GlobalApi";
 import { Loader } from "lucide-react";
+import { useThemeStyles } from "@/hooks/useTheme";
 
 const UpComingPeriod = () => {
   const [loading, setLoading] = useState(false);
   const { allPeriod } = useStore();
+  const styles = useThemeStyles();
   const savePeriod = async (period_id: string) => {
     try {
       const payload = {
@@ -22,7 +24,7 @@ const UpComingPeriod = () => {
     }
   };
   return (
-    <div className="bg-white rounded-lg max-h-[800px] shadow">
+    <div className={`${styles.background} rounded-lg max-h-[800px] shadow`}>
       <div className="p-4">
         <h2>Upcoming period</h2>
       </div>

@@ -63,6 +63,7 @@ import GlobalApi from "@/app/_util/GlobalApi";
 import { PageNumber, User } from "@/types/interface";
 import React, { useEffect, useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useThemeClass, useThemeStyles } from "@/hooks/useTheme";
 
 type ListEmployeeProp = {
   allUser: User[];
@@ -70,6 +71,8 @@ type ListEmployeeProp = {
 };
 export function ListEmployee({ allUser, fetchUserList }: ListEmployeeProp) {
   const [sorting, setSorting] = useState<SortingState>([]);
+  const styles = useThemeStyles();
+  const { getThemeClass } = useThemeClass();
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
@@ -104,7 +107,6 @@ export function ListEmployee({ allUser, fetchUserList }: ListEmployeeProp) {
           <Button
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="text-neutral-800"
           >
             <h2>ลำดับ</h2>
             <ArrowUpDown className="" />
@@ -158,17 +160,27 @@ export function ListEmployee({ allUser, fetchUserList }: ListEmployeeProp) {
         return (
           <div
             className={`capitalize inline-flex items-center gap-2 p-2 rounded-lg 
-              ${role_name != "member" ? "text-stone-800" : "text-gray-500"}
+              ${role_name != "member" ? `${styles.text}` : "text-gray-500"}
             `}
           >
             <div
-              className={`p-1 rounded-full ${
-                role_name != "member"
-                  ? "bg-emerald-50 text-emerald-500"
-                  : "text-gray-500"
-              } `}
+              className={getThemeClass(
+                {
+                  light: `${
+                    role_name
+                      ? "bg-gradient-to-tl from-emerald-50 from-10% to-emerald-100 to-50% text-emerald-500"
+                      : "bg-gray-100 text-gray-500"
+                  }`,
+                  dark: `${
+                    role_name
+                      ? "bg-gradient-to-tl from-emerald-500 from-10% to-emerald-800 to-50% text-zinc-50"
+                      : "bg-gray-100 text-gray-500"
+                  }`,
+                },
+                `p-2 rounded-full`
+              )}
             >
-              <Layers  strokeWidth={2} size={18} />
+              <Layers strokeWidth={2} size={18} />
             </div>
             {role_name}
           </div>
@@ -182,7 +194,6 @@ export function ListEmployee({ allUser, fetchUserList }: ListEmployeeProp) {
           <Button
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="text-neutral-800"
           >
             Email
             <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -211,21 +222,31 @@ export function ListEmployee({ allUser, fetchUserList }: ListEmployeeProp) {
         const NameOfDepartment = row.original.department;
         return (
           <div
-            className="inline-flex items-center text-stone-800
+            className="inline-flex items-center 
           justify-center gap-2 rounded-xl max-w-52"
           >
             <div
-              className={`p-2 ${
-                NameOfDepartment
-                  ? "bg-cyan-50 text-cyan-500"
-                  : "bg-gray-100 text-gray-500"
-              } rounded-full`}
+              className={getThemeClass(
+                {
+                  light: `${
+                    NameOfDepartment
+                      ? "bg-gradient-to-tl from-blue-50 from-10% to-cyan-100 to-50% text-cyan-500"
+                      : "bg-gray-100 text-gray-500"
+                  }`,
+                  dark: `${
+                    NameOfDepartment
+                      ? "bg-gradient-to-tl from-blue-950 from-10% to-background_secondary to-50% text-zinc-50"
+                      : "bg-gray-100 text-gray-500"
+                  }`,
+                },
+                `p-2 rounded-full`
+              )}
             >
-              <Layers2  strokeWidth={2} size={18} />
+              <Layers2 strokeWidth={2} size={18} />
             </div>
             <h2
               className={`${
-                NameOfDepartment ? "text-stone-800" : "text-gray-500"
+                NameOfDepartment ? `${styles.text}` : "text-gray-500"
               } truncate`}
             >
               {NameOfDepartment
@@ -401,12 +422,12 @@ export function ListEmployee({ allUser, fetchUserList }: ListEmployeeProp) {
       </div>
       <div className="rounded-lg border ">
         <Table>
-          <TableHeader className="bg-gray-100">
+          <TableHeader className={` `}>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead key={header.id} className={`${styles.text}`}>
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -419,7 +440,7 @@ export function ListEmployee({ allUser, fetchUserList }: ListEmployeeProp) {
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody className="bg-white">
+          <TableBody className={`${styles.background}`}>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow

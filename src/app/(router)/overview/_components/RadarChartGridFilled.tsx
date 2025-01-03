@@ -27,9 +27,11 @@ import {
 } from "@/components/ui/table";
 import useStore from "@/app/store/store";
 import { formatThaiDateTime } from "./RightSection";
+import { useThemeStyles } from "@/hooks/useTheme";
 const RadarChartGridFilled = () => {
   const { resultEvaluate, currentlyEvaluationPeriod } = useStore();
 
+  const styles = useThemeStyles();
   const chartData = resultEvaluate?.formResults?.map((item) => ({
     form: item.formName,
     F01: item.totalAVGPerForm,
@@ -63,7 +65,7 @@ const RadarChartGridFilled = () => {
   };
 
   return (
-    <Card>
+    <Card className={`${styles.background} border-none shadow`}>
       <CardHeader className="items-center pb-4">
         <CardTitle>ผลการประเมินในขณะนี้</CardTitle>
         <CardDescription>
@@ -132,7 +134,7 @@ const RadarChartGridFilled = () => {
                     {item.totalSDPerForm.toFixed(2)}
                   </TableCell>
                   <TableCell className="text-center truncate">
-                    {item.totalAVGPerForm.toFixed(2)}
+                    {item.totalAVGPerForm?.toFixed(2)}
                   </TableCell>
                 </TableRow>
               ))}

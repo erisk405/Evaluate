@@ -47,7 +47,7 @@ const BarChartMultiple = () => {
   };
   return (
     <Card
-      className={`rounded-2xl ${styles.text}`}
+      className={`rounded-2xl ${styles.text} ${styles.background} shadow border-none`}
     >
       <CardHeader>
         <CardTitle>จำนวนผู้ประเมินในแต่ละวัน</CardTitle>

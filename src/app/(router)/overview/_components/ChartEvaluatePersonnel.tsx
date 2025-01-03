@@ -21,8 +21,10 @@ import GlobalApi from "@/app/_util/GlobalApi";
 import { getCountUserAsEvaluatedType } from "@/types/interface";
 import { Combine, ContainerIcon, Package } from "lucide-react";
 import Image from "next/image";
+import { useThemeStyles } from "@/hooks/useTheme";
 export const description = "A radial chart with a custom shape";
 const ChartEvaluatePersonnel = () => {
+  const styles = useThemeStyles();
   const {
     resultCountUserAsEvaluated,
     setResultCountUserAsEvaluated,
@@ -110,8 +112,8 @@ const ChartEvaluatePersonnel = () => {
   }, [currentlyEvaluationPeriod, ProfileDetail]);
   return (
     <div className="w-full">
-      <div className="grid grid-cols-1 lg:grid-cols-2 p-4 gap-3">
-        <Card>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+        <Card className={` ${styles.background} border-none shadow`}>
           <CardHeader>
             <CardTitle className="mb-3">
               บุคคลที่คุณประเมินไปแล้วในแต่ละหน่วยงาน

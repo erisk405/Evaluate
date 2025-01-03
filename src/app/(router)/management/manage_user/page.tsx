@@ -4,9 +4,11 @@ import { ListEmployee } from "./_components/ListAllUser";
 import GlobalApi from "@/app/_util/GlobalApi";
 import useStore from "@/app/store/store";
 import { User } from "@/types/interface";
+import { useThemeStyles } from "@/hooks/useTheme";
 
 const page = () => {
   const { setRole, setDepartments } = useStore();
+  const styles = useThemeStyles();
   const fetchRole = async () => {
     try {
       const response = await GlobalApi.getRole();
@@ -69,9 +71,11 @@ const page = () => {
     getDepartment();
   }, []);
   return (
-    <div className="p-4 w-full grid grid-cols-1">
+    <div className={`p-4 w-full grid grid-cols-1 ${styles.text}`}>
       <div className="">
-        <h2 className="text-3xl font-bold">รายชื่อผู้ใช้งานทั้งหมด <span className="animate-wiggle-float"></span></h2>
+        <h2 className="text-3xl font-bold">
+          รายชื่อผู้ใช้งานทั้งหมด <span className="animate-wiggle-float"></span>
+        </h2>
         <div className="flex justify-between flex-wrap gap-3 my-5 rounded-3xl">
           {OptionEmployee.map((item) => (
             <div key={item?.id} className="w-[290px] cursor-pointer">

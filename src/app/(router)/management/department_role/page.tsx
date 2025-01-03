@@ -35,6 +35,7 @@ import { toast } from "@/components/ui/use-toast";
 import useStore from "@/app/store/store";
 import ManageRole from "./_components/ManageRole";
 import { Department } from "@/types/interface";
+import { useThemeStyles } from "@/hooks/useTheme";
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
@@ -49,7 +50,7 @@ const page = () => {
   const [departmentData, setDepartmentData] = useState<Department[]>([]);
   // for load button
   const [isLoading, setIsLoading] = useState<boolean>(true);
-
+  const styles = useThemeStyles()
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
@@ -115,11 +116,11 @@ const page = () => {
     fetchRole();
   }, []);
   return (
-    <div className="m-5 w-full grid grid-cols-6 gap-5">
+    <div className={`m-5 w-full grid grid-cols-6 gap-5 ${styles.text}`}>
       <div className="col-span-6 xl:col-span-4 ">
-        <div className="bg-white w-full h-full shadow rounded-xl p-5">
+        <div className={`${styles.background} w-full h-full shadow rounded-xl p-5`}>
           <div className="flex justify-between items-center">
-            <h2 className="text-3xl text-stone-700 ">
+            <h2 className="text-3xl">
             <span>🛡️</span>การจัดการ<span className="text-blue-500">หน่วยงาน</span>
             </h2>
             <div
@@ -287,7 +288,7 @@ const page = () => {
         </div>
       </div>
       <div className="col-span-6 xl:col-span-2 ">
-        <div className="bg-white w-full h-full shadow rounded-xl p-5">
+        <div className={`${styles.background} w-full h-full shadow rounded-xl p-5`}>
           <ManageRole />
         </div>
       </div>

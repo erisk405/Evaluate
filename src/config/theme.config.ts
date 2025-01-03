@@ -26,6 +26,14 @@ export const themeClasses = {
     background_secondary_head_table: {
         light: 'bg-blue-100',
         dark: 'bg-blue-500'
+    },    
+    background_third_head_table: {
+        light: 'bg-zinc-100',
+        dark: 'bg-background_secondary'
+    },
+    background_card: {
+        light: 'bg-white',
+        dark: 'bg-zinc-800'
     },
     border: {
         light: 'border border-zinc-500',

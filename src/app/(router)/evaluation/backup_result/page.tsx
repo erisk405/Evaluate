@@ -17,6 +17,7 @@ import useStore from "@/app/store/store";
 import BackUpPeriodList from "./_components/backUp-period-list";
 import { formatThaiDateTime } from "../../overview/_components/RightSection";
 import UpComingPeriod from "../_components/upcoming-period";
+import { useThemeStyles } from "@/hooks/useTheme";
 
 const displayBackUp = [
   {
@@ -37,6 +38,7 @@ const displayBackUp = [
 ];
 
 const page = () => {
+  const styles = useThemeStyles();
   const { fetchCurrentPeriod, allPeriod } = useStore();
   useEffect(() => {
     if (!allPeriod) {
@@ -52,13 +54,12 @@ const page = () => {
     }
   }, []);
   return (
-    <div className="p-3 w-full">
+    <div className={`p-3 w-full ${styles.text}`}>
       <h2 className="text-3xl">คลังเก็บข้อมูล</h2>
-      <div className="@container grid grid-cols-2 bg-white shadow rounded-xl overflow-hidden w-full p-3">
+      <div className={`@container grid grid-cols-2 ${styles.background} shadow rounded-xl overflow-hidden w-full p-3 gap-3`}>
         <div className="flex gap-3 items-center @[998px]:col-span-1 col-span-2">
-          <div className="flex justify-center items-center  w-[248px] text-white p-5 rounded-lg ">
+          <div className="flex justify-center items-center w-[248px] p-5 rounded-lg ">
             <div className="text-6xl animate-wiggle-float-blue">☃️</div>
-            {/* <DatabaseBackup strokeWidth={2} size={50} /> */}
           </div>
           <div>
             <h2 className="text-xl">รอบของข้อมูลที่ถูกบันทึก</h2>
@@ -70,10 +71,10 @@ const page = () => {
             </p>
           </div>
         </div>
-        <div className="grid grid-cols-3 gap-3  @[998px]:col-span-1 col-span-2">
+        <div className="grid grid-cols-3 gap-3 @[998px]:col-span-1 col-span-2">
           {displayBackUp.map((item) => (
             <div
-              className="flex flex-col justify-around h-full p-2 rounded-xl shadow"
+              className={`flex flex-col justify-around h-full px-4 rounded-xl shadow ${styles.background_card}`}
               key={item.id}
             >
               <h2 className="">{item.title}</h2>

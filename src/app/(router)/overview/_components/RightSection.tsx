@@ -281,18 +281,18 @@ const RightSection = ({ permission, period }: RightSectionProps) => {
             delay: 0.1,
           }}
           className={`${
-            styles.background_secondary + " " + styles.text
+            styles.background + " " + styles.text
           } px-5 h-full shadow rounded-2xl`}
         >
           <div
-            className={`${styles.background_secondary} w-full 
+            className={`${styles.background} w-full 
             ${
               show
                 ? "pb-72 transition-all ease-in-out duration-300"
                 : "pb-5 transition-all ease-in-out duration-300"
             }  overflow-hidden`}
           >
-            <div className="font-bold text-xl flex items-center gap-3 py-5  relative z-30">
+            <div className={`font-bold ${styles.background} text-xl flex items-center gap-3 py-5 relative z-30`}>
               <TextEffect preset="slide">กำหนด วัน-เวลา การประเมิน</TextEffect>
               <AlarmClockPlus className="text-blue-500" />
             </div>
@@ -303,7 +303,7 @@ const RightSection = ({ permission, period }: RightSectionProps) => {
                 {period?.map((item, index) => (
                   <div
                     key={item.period_id}
-                    className={`grid transition-all my-3 shadow ${styles.background_dark_gradient} w-auto rounded-xl p-2`}
+                    className={`grid transition-all my-3 shadow ${styles.background_card} w-auto rounded-xl p-2`}
                   >
                     <div className="flex items-center">
                       <div className="relative w-full">
@@ -524,7 +524,7 @@ const RightSection = ({ permission, period }: RightSectionProps) => {
                 <Form {...form}>
                   <form
                     onSubmit={form.handleSubmit(onSubmit)}
-                    className={`flex flex-col gap-3 items-center w-full shadow p-4 ${styles.background} rounded-br-lg rounded-bl-lg`}
+                    className={`flex flex-col gap-3 items-center w-full shadow p-4 ${styles.background_card} rounded-br-lg rounded-bl-lg`}
                   >
                     <FormField
                       control={form.control}

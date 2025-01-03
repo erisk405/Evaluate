@@ -9,13 +9,9 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import {
-  ArrowRight,
-  CalendarClock,
-  Clock9,
-  Dot,
-} from "lucide-react";
+import { ArrowRight, CalendarClock, Clock9, Dot } from "lucide-react";
 import { PeriodType } from "@/types/interface";
+import { useThemeStyles } from "@/hooks/useTheme";
 
 type CarouselSectionProp = {
   period: PeriodType[] | undefined;
@@ -25,19 +21,20 @@ const CarouselSection = ({
   period,
   formatThaiDateTime,
 }: CarouselSectionProp) => {
+  const styles = useThemeStyles();
   return (
     <Carousel
       opts={{
         align: "start",
       }}
       orientation="vertical"
-      className="w-full"
+      className={`w-full `}
     >
       <CarouselContent className="-mt-1 h-[230px]">
         {period?.map((item, index) => (
           <CarouselItem key={index} className="pt-1 md:basis-1/2">
             <div className="p-1">
-              <Card>
+              <Card className={` ${styles.background} border-none shadow`}>
                 <CardContent className="flex items-center justify-center p-3">
                   <div
                     key={item.period_id}

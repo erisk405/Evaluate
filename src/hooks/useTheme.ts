@@ -36,6 +36,8 @@ export const useThemeStyles = () => {
     background_dark_gradient:getStyle('background_dark_gradient'),
     text_description:getStyle('text_description'),
     background_head_table:getStyle('background_head_table'),
-    background_secondary_head_table:getStyle('background_secondary_head_table')
+    background_secondary_head_table:getStyle('background_secondary_head_table'),
+    background_third_head_table:getStyle('background_third_head_table'),
+    background_card:getStyle('background_card'),
   }
 }

@@ -94,7 +94,7 @@ const ChartEvaluatedYou = () => {
             <h2>คน</h2>
           </div>
         </motion.div>
-        <Card className="flex flex-col border-none shadow-none">
+        <Card className={`flex flex-col border-none shadow-none ${styles.background}`}>
           <CardHeader className="items-center pb-0">
             <CardTitle>คุณถูกประเมินไปแล้วทั้งหมด</CardTitle>
             <CardDescription>

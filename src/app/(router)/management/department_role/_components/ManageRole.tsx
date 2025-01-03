@@ -62,6 +62,7 @@ import {
 import GlobalApi from "@/app/_util/GlobalApi";
 import EditRoleDialog from "./EditRoleDialog";
 import { toast } from "@/components/ui/use-toast";
+import { useThemeStyles } from "@/hooks/useTheme";
 
 const formSchema = z.object({
   roleName: z
@@ -90,6 +91,7 @@ type Permissions = {
 
 const ManageRole = () => {
   const { roles, setRole } = useStore();
+  const styles = useThemeStyles();
   const [permissions, setPermissions] = useState<Permissions>(
     roles
       .filter(
@@ -270,8 +272,8 @@ const ManageRole = () => {
   //   console.log("permission", permissions);
   // }, [permissions]);
   return (
-    <div className="@container">
-      <h2 className="text-3xl text-stone-700">
+    <div className={`@container ${styles.text}`}>
+      <h2 className="text-3xl">
         <span>🎓</span>การจัดการ<span className="text-blue-400">ตำแหน่ง</span>
       </h2>
       <div className="flex justify-between items-center my-3">
@@ -461,10 +463,10 @@ const ManageRole = () => {
               item.role_name !== "member" && (
                 <AccordionItem value={item.id} key={item.id}>
                   <AccordionTrigger>
-                    <div className="px-3 w-full h-14 rounded-xl flex justify-between items-center">
+                    <div className={`px-3 w-full h-14 rounded-xl flex justify-between items-center ${styles.text}`}>
                       <div className="flex items-center gap-1">
                         <BadgeCheck className="text-white bg-blue-500 overflow-hidden rounded-full" />
-                        <h2 className="text-lg text-black">{item.role_name}</h2>
+                        <h2 className="text-lg ">{item.role_name}</h2>
                       </div>
                     </div>
                   </AccordionTrigger>

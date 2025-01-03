@@ -62,6 +62,7 @@ import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import FilterPeriod from "./FilterPeriod";
 import Personal_result from "@/app/(router)/personal_evaluation/_components/Personal-result";
 import ClearScoreSection from "./clear-score-section";
+import { useThemeStyles } from "@/hooks/useTheme";
 
 type ListAllEmployeeProp = {
   filterDataArea: filterAreaType | undefined;
@@ -75,6 +76,7 @@ export function ListAllEmployee({ filterDataArea }: ListAllEmployeeProp) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [globalFilter, setGlobalFilter] = useState("");
+  const styles = useThemeStyles();
   const [allUser, setAllUser] = useState<User[]>([]);
   const [selectPeriod, setSelectPeriod] = useState<PeriodType | null>(null);
   // select ตัวนี้ใช้กับ การที่ต้องการ select ข้อมูลทั้งตารางมาใช้ได้ในส่วนของ employee ในdepartment นั้นๆ
@@ -303,7 +305,7 @@ export function ListAllEmployee({ filterDataArea }: ListAllEmployeeProp) {
     filterEmployees();
   }, [filterDataArea]); // Run when filterDataArea changes
   return (
-    <div className="w-full ">
+    <div className={`w-full ${styles.text}`}>
       <div className="flex items-center w-full gap-3 justify-between py-4">
         <div className="grid grid-cols-2 xl:grid-cols-4 items-center gap-3 w-full">
           {/* ปุ่มค้นหาชื่อหรือ email */}
@@ -359,15 +361,17 @@ export function ListAllEmployee({ filterDataArea }: ListAllEmployeeProp) {
       </div>
       {/* table employee on department  */}
 
-      <div className="rounded-xl border bg-white overflow-hidden">
+      <div className={`rounded-xl border ${styles.background} overflow-hidden`}>
         <Table>
           {/* หัวตาราง */}
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow
+                key={headerGroup.id}
+                className={`${styles.background_third_head_table}`}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id} className="text-md bg-gray-100">
+                    <TableHead key={header.id} className="text-md ">
                       {header.isPlaceholder
                         ? null
                         : flexRender(

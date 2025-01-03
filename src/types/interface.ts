@@ -191,6 +191,7 @@ interface formResultsType {
 
   total: TotalEachType[];
   totalAvgPerForm: number;
+  totalAVGPerForm?: number; // มาตัวเล็กตัวใหญ่ไม่เหมือนกันอันบนอีก ลำบากกุแก้
   totalSDPerForm: number;
 }
 interface TotalEachType {

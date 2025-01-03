@@ -92,16 +92,15 @@ import { Separator } from "@/components/ui/separator";
 import Personal_result from "@/app/(router)/personal_evaluation/_components/Personal-result";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import MainResultHistory from "@/app/(router)/history/_components/main-result-history";
+import { useThemeStyles } from "@/hooks/useTheme";
 
-type ListAllEmployeeProp = {
-  filterDataArea: filterAreaType | undefined;
-};
 type filterAreaType = {
   departments: string[];
   itemsRole: string[];
 };
 const ResultUserList = ({ period }: { period: PeriodType }) => {
   const [sorting, setSorting] = useState<SortingState>([]);
+  const styles = useThemeStyles();
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [globalFilter, setGlobalFilter] = useState("");
@@ -346,7 +345,7 @@ const ResultUserList = ({ period }: { period: PeriodType }) => {
     filterEmployees();
   }, []); // Run when filterDataArea changes
   return (
-    <div className="w-full mx-3 px-5">
+    <div className={`w-full mx-3 px-5 ${styles.text}`}>
       <div className="flex items-center w-full gap-3 justify-between py-4">
         <div className="grid grid-cols-2 xl:grid-cols-4 items-center gap-3 w-full">
           {/* ปุ่มค้นหาชื่อหรือ email */}
@@ -535,15 +534,15 @@ const ResultUserList = ({ period }: { period: PeriodType }) => {
       </div>
       {/* table employee on department  */}
 
-      <div className="rounded-xl border bg-white overflow-hidden">
+      <div className={`rounded-xl border ${styles.background} overflow-hidden`}>
         <Table>
           {/* หัวตาราง */}
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow key={headerGroup.id} className={`${styles.background_third_head_table}`}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id} className="text-md bg-gray-100">
+                    <TableHead key={header.id} className="text-md">
                       {header.isPlaceholder
                         ? null
                         : flexRender(

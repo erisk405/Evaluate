@@ -47,6 +47,7 @@ import { PeriodType } from "@/types/interface";
 import { formatThaiDateTime } from "@/app/(router)/overview/_components/RightSection";
 import ResultUserList from "./result-userList";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useThemeStyles } from "@/hooks/useTheme";
 export const columns: ColumnDef<PeriodType>[] = [
   {
     id: "select",
@@ -121,6 +122,7 @@ export const columns: ColumnDef<PeriodType>[] = [
 ];
 const BackUpPeriodList = () => {
   const { fetchCurrentPeriod, allPeriod } = useStore();
+  const styles = useThemeStyles();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -148,7 +150,7 @@ const BackUpPeriodList = () => {
     },
   });
   return (
-    <div className="w-full">
+    <div className={`w-full ${styles.text}`}>
       <div className="flex items-center py-4">
         <Input
           placeholder="ค้นหาโดยชื่อรอบ"
@@ -185,7 +187,7 @@ const BackUpPeriodList = () => {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="rounded-md border">
+      <div className={`rounded-md border `}>
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

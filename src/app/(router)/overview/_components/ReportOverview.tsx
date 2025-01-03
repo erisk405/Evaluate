@@ -162,7 +162,7 @@ const ReportOverview = () => {
         >
           <RadarChartSection />
           <div
-            className={`grid grid-cols-1 p-3 relative rounded-2xl h-[100px] overflow-hidden border ${styles.background_secondary} my-2`}
+            className={`grid grid-cols-1 p-3 relative rounded-2xl h-[100px] overflow-hidden shadow border-none ${styles.background} my-2`}
           >
             <h2>ทั้งหมดประเมินไปแล้ว</h2>
             <div className="flex items-center justify-between">
@@ -215,7 +215,7 @@ const ReportOverview = () => {
           </h2>
           {supervise.length ? (
             <Table
-              className={`shadow ${styles.background_dark_gradient} rounded-lg my-3`}
+              className={`shadow ${styles.background} rounded-lg my-3`}
             >
               <TableCaption>A list of your recent invoices.</TableCaption>
               <TableHeader>

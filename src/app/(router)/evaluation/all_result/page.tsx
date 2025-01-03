@@ -34,6 +34,7 @@ import {
 import useStore from "@/app/store/store";
 import GlobalApi from "@/app/_util/GlobalApi";
 import UpComingPeriod from "../_components/upcoming-period";
+import { useThemeStyles } from "@/hooks/useTheme";
 
 const FormSchema = z.object({
   departments: z
@@ -54,7 +55,7 @@ type filterAreaType = {
 // }
 const page = () => {
   const [open, setOpen] = useState(true);
-  const [openPeriod, setOpenPeriod] = useState(true);
+  const styles = useThemeStyles();
   const [openRole, setOpenRole] = useState(true);
   const [filterDataArea, setFilterDataArea] = useState<filterAreaType>();
   const { departments, setDepartments } = useStore();
@@ -119,15 +120,15 @@ const page = () => {
   //   console.log(roles);
   // }, [roles]);
   return (
-    <div className="m-5 grid grid-cols-4 w-full gap-3">
+    <div className={`m-5 grid grid-cols-4 w-full gap-3 ${styles.text}`}>
       <div className="w-full col-span-4 xl:col-span-3">
-        <h2 className="text-3xl font-bold text-stone-700">รายชื่อทั้งหมด</h2>
+        <h2 className="text-3xl font-bold">รายชื่อทั้งหมด</h2>
         <ListAllEmployee filterDataArea={filterDataArea} />
       </div>
       <div className="col-span-4 xl:col-span-1">
         <Card>
           <CardHeader>
-            <CardTitle className="text-stone-700">Filter area</CardTitle>
+            <CardTitle >Filter area</CardTitle>
             <CardDescription>
               Deploy your new project in one-click.
             </CardDescription>

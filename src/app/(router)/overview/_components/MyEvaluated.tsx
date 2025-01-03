@@ -5,11 +5,11 @@ import ChartEvaluatedYou from "./ChartEvaluatedYou";
 import ChartEvaluatePersonnel from "./ChartEvaluatePersonnel";
 import useStore from "@/app/store/store";
 import GlobalApi from "@/app/_util/GlobalApi";
+import { useThemeStyles } from "@/hooks/useTheme";
 
 const MyEvaluated = () => {
-  const { setResultEvaluate, ProfileDetail, currentlyEvaluationPeriod } =
-    useStore();
-
+  const { setResultEvaluate, ProfileDetail, currentlyEvaluationPeriod } = useStore();
+  const styles = useThemeStyles()
   const fetchResultEval = async () => {
     try {
       // Add additional checks before making the API call
@@ -41,7 +41,7 @@ const MyEvaluated = () => {
               delay: 0.2,
               ease: [0, 0.71, 0.2, 1.01],
             }}
-            className="bg-background_secondary rounded-2xl  shadow"
+            className={`${styles.background} rounded-2xl shadow`}
           >
             <ChartEvaluatedYou />
           </motion.div>
@@ -53,7 +53,7 @@ const MyEvaluated = () => {
               delay: 0.1,
               ease: [0, 0.71, 0.2, 1.01],
             }}
-            className="bg-background_secondary  rounded-2xl  shadow"
+            className={`rounded-2xl`}
           >
             <ChartEvaluatePersonnel />
           </motion.div>
