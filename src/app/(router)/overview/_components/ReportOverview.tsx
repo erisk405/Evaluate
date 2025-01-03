@@ -26,12 +26,14 @@ import GlobalApi from "@/app/_util/GlobalApi";
 import useStore from "@/app/store/store";
 import InfoOfDepartmentEval from "./InfoOfDepartmentEval";
 import { getAllSuperviseByAdminType } from "@/types/interface";
+import { useThemeStyles } from "@/hooks/useTheme";
 
 export const description = "A radial chart with a grid";
 
 const ReportOverview = () => {
   const { resultEvalEachDepartment, setResultEvalEachDepartment } = useStore();
-  const { currentlyEvaluationPeriod,theme, setTheme  } = useStore();
+  const { currentlyEvaluationPeriod } = useStore();
+  const styles = useThemeStyles();
   const [supervise, setSupervise] = useState<getAllSuperviseByAdminType[]>([]);
   const getResultEvaluatePerDepart = async () => {
     try {
@@ -110,7 +112,7 @@ const ReportOverview = () => {
   }, [resultEvalEachDepartment]);
 
   return (
-    <div className="h-full flex flex-col gap-3">
+    <div className={`h-full flex flex-col gap-3 ${styles.text}`}>
       <div className="@container w-full grid grid-cols-3 lg:grid-cols-3 gap-3">
         <motion.div
           initial={{ opacity: 0, y: -100 }}
@@ -126,24 +128,22 @@ const ReportOverview = () => {
             {data.map((item, index) => (
               <div
                 key={item.id}
-                className={`flex gap-3 w-full justify-center bg-white ${
-                  theme === "light" ? "bg-white" : "bg-black"
-                } p-2 shadow rounded-2xl items-center`}
+                className={`flex gap-3 w-full justify-center ${styles.background} p-2 shadow rounded-2xl items-center`}
               >
-                <div className=" border rounded-full p-4 animate-wiggle">
+                <div
+                  className={`${styles.border } rounded-full p-4 animate-wiggle`}
+                >
                   {item.icon}
                 </div>
                 <div className="grid gap-1 grid-cols-1">
                   <div className="flex gap-2 items-end">
-                    <h2 className="text-xl text-stone-700">
-                      {item.quantity}
-                    </h2>
+                    <h2 className="text-xl ">{item.quantity}</h2>
                     <div className="flex items-center">
                       <h2 className="text-green-500 text-sm ">+1.92%</h2>
                       <TrendingUp size={18} className="text-green-500" />
                     </div>
                   </div>
-                  <h2 className="text-sm text-stone-700">{item.title}</h2>
+                  <h2 className="text-sm">{item.title}</h2>
                 </div>
               </div>
             ))}
@@ -161,10 +161,12 @@ const ReportOverview = () => {
           className="col-span-3 @[45rem]:col-span-1 rounded-2xl"
         >
           <RadarChartSection />
-          <div className="grid grid-cols-1 p-3 relative rounded-2xl h-[100px] overflow-hidden border bg-white my-2">
+          <div
+            className={`grid grid-cols-1 p-3 relative rounded-2xl h-[100px] overflow-hidden border ${styles.background_secondary} my-2`}
+          >
             <h2>ทั้งหมดประเมินไปแล้ว</h2>
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold text-stone-700">182/250 คน</h2>
+              <h2 className="text-xl font-bold">182/250 คน</h2>
             </div>
             <h2>เฉลี่ยต่อวัน 10 คน</h2>
             <Image
@@ -186,9 +188,7 @@ const ReportOverview = () => {
           }}
           className="col-span-3 my-3"
         >
-          <h2 className="text-2xl font-bold text-stone-700 my-3">
-            การประเมินแต่ละหน่วยงาน
-          </h2>
+          <h2 className="text-2xl font-bold my-3">การประเมินแต่ละหน่วยงาน</h2>
           {resultEvalEachDepartment?.length ? (
             <InfoOfDepartmentEval />
           ) : (
@@ -214,7 +214,9 @@ const ReportOverview = () => {
             บุคคลที่กำกับดูแลในแต่ละหน่วยงาน
           </h2>
           {supervise.length ? (
-            <Table className="shadow bg-white rounded-lg my-3 ">
+            <Table
+              className={`shadow ${styles.background_dark_gradient} rounded-lg my-3`}
+            >
               <TableCaption>A list of your recent invoices.</TableCaption>
               <TableHeader>
                 <TableRow>

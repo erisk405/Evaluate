@@ -15,7 +15,7 @@ import { toast } from "@/components/ui/use-toast";
 import { Input } from "@/components/ui/input";
 import { Fingerprint, Loader, RectangleEllipsis } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useTheme } from "next-themes";
+import { useThemeStyles } from "@/hooks/useTheme";
 const formSchema = z
   .object({
     currPassword: z
@@ -54,12 +54,7 @@ const formSchema = z
   });
 const page = () => {
   const [loading, setLoading] = useState(false);
-  const { theme } = useTheme();
-  
-  const {
-    setError,
-    formState: { errors },
-  } = useForm();
+  const styles = useThemeStyles();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -88,7 +83,9 @@ const page = () => {
     }
   };
   return (
-    <div className={`px-4 flex flex-col items-center  rounded-lg h-screen ${theme === "light" ? 'text-zinc-900' :'text-zinc-50'}`}>
+    <div
+      className={`px-4 flex flex-col items-center  rounded-lg h-screen ${styles.text}`}
+    >
       <div className="w-[428px]">
         <div className="flex flex-col w-full items-center justify-center">
           <div className="flex gap-3 items-center border p-2 rounded-lg shadow">
@@ -98,10 +95,7 @@ const page = () => {
           <h2 className="text-gray-500">Must be at least 8 charector</h2>
         </div>
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="w-full my-3"
-          >
+          <form onSubmit={form.handleSubmit(onSubmit)} className="w-full my-3">
             <div className="grid grid-cols-1 gap-3">
               <div>
                 <FormField

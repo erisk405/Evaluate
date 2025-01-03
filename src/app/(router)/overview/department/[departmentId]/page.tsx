@@ -34,7 +34,7 @@ import { UserInDepartment } from "./_components/UserInDepartment";
 import { Department, userHaveBeenEvaluatedType } from "@/types/interface";
 import axios from "axios";
 import EvaluateSheet from "./_components/EvaluateSheet";
-import { useTheme } from "next-themes";
+import { useThemeClass, useThemeStyles } from "@/hooks/useTheme";
 
 const page = () => {
   const params = useParams<{ departmentId: string }>();
@@ -44,7 +44,8 @@ const page = () => {
     currentlyEvaluationPeriod,
     fetchCurrentPeriod,
   } = useStore();
-  const { theme } = useTheme();
+  const { getThemeClass } = useThemeClass();
+  const styles = useThemeStyles();
   const [department, setDepartment] = useState<Department>();
   const [userHaveBeenEvaluated, setUserHaveBeenEvaluated] = useState<
     userHaveBeenEvaluatedType[]
@@ -112,19 +113,18 @@ const page = () => {
           <div className="flex justify-between">
             <Link href={"/overview"} className="flex items-center gap-3 group">
               <div
-                className={`shadow rounded-lg ${
-                  theme === "light"
-                    ? "text-neutral-800 group-hover:bg-black group-hover:text-white "
-                    : "text-white group-hover:bg-blue-500 group-hover:text-text-white "
-                }  `}
+                className={getThemeClass(
+                  {
+                    light:
+                      "text-neutral-800 group-hover:bg-black group-hover:text-white ",
+                    dark: "text-white group-hover:bg-blue-500 group-hover:text-text-white ",
+                  },
+                  `shadow rounded-lg`
+                )}
               >
                 <ChevronLeft size={28} />
               </div>
-              <span
-                className={`cursor-pointer ${
-                  theme === "light" ? "text-neutral-800" : "text-white"
-                }`}
-              >
+              <span className={`cursor-pointer ${styles.text}`}>
                 Back to overview
               </span>
             </Link>
@@ -171,11 +171,7 @@ const page = () => {
             </div>
           </div>
           {department.department_name ? (
-            <div
-              className={`${
-                theme === "light" ? "text-neutral-800" : "text-white"
-              }`}
-            >
+            <div className={`${styles.text}`}>
               <h2 className="font-bold text-4xl">
                 {department.department_name}
               </h2>
@@ -213,14 +209,15 @@ const page = () => {
                     }}
                   >
                     <div
-                      className={`flex rounded-2xl gap-3 relative overflow-hidden
-                      items-center px-8 py-4 shadow-xl 
-                      bg-gradient-to-tl group 
-                      transition-all  ${
-                        theme === "light"
-                          ? "from-neutral-800 from-20% to-neutral-900 to-50% "
-                          : "from-blue-950 from-10% to-background_secondary to-50% "
-                      }`}
+                      className={getThemeClass(
+                        {
+                          light:"from-neutral-800 from-20% to-neutral-900 to-50%",
+                          dark: "from-blue-950 from-10% to-background_secondary to-50%",
+                        },
+                        `flex rounded-2xl gap-3 relative overflow-hidden items-center px-8 py-4 shadow-xl 
+                        bg-gradient-to-tl group 
+                        transition-all `
+                      )}
                     >
                       <div className="text-white w-full group-hover:text-white z-10">
                         <div className="flex gap-3">

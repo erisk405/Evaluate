@@ -15,6 +15,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useThemeStyles } from "@/hooks/useTheme";
 // Correctly typed variants
 const variants: Variants = {
   default: {
@@ -33,8 +34,12 @@ export const CursorContent = ({
 }: {
   item: getResultEvalEachDepartmentType;
 }) => {
+  const styles = useThemeStyles();
   return (
-    <div className="p-2 bg-white shadow-lg rounded-lg">
+    <div
+      className={`p-2 shadow-lg rounded-lg
+        ${styles.background_dark_gradient} `}
+    >
       <div className="flex items-center gap-2 ">
         <Image
           src={item.image.url || "/test.png"}
@@ -45,7 +50,9 @@ export const CursorContent = ({
         />
         <div>
           <p className="font-bold text-sm">{item.department}</p>
-          <p className="text-xs text-gray-500">
+          <p
+            className={`text-xs ${styles.text_description}`}
+          >
             Completed: {item.totalFinished}/{item.totalUsers}
           </p>
         </div>
@@ -53,7 +60,11 @@ export const CursorContent = ({
 
       <hr className="my-1" />
       <div className="pl-6">
-        <p className="font-bold text-gray-700 text-sm">กำกับดูแลโดย</p>
+        <p
+          className={`font-bold ${styles.text_description} text-sm`}
+        >
+          กำกับดูแลโดย
+        </p>
         <div className="grid grid-cols-5 items-center gap-2">
           {item.supervise ? (
             <Image
@@ -92,6 +103,7 @@ const InfoOfDepartmentEval = () => {
   const [cursorVariant, setCursorVariant] = useState<"default" | "contact">(
     "default"
   );
+  const styles = useThemeStyles();
   const { resultEvalEachDepartment } = useStore();
 
   const cursorX = useMotionValue(-100);
@@ -122,7 +134,9 @@ const InfoOfDepartmentEval = () => {
         key={index + "Go"}
         onMouseEnter={() => setCursorBlock(item)} // ส่งข้อมูล `item` เข้าไป
         onMouseLeave={contactLeave}
-        className="w-full bg-white hover:scale-95 active:scale-90 grid grid-cols-12 shadow overflow-hidden rounded-xl transition-transform"
+        className={`w-full hover:scale-95 active:scale-90 grid grid-cols-12 
+          shadow overflow-hidden rounded-xl transition-transform 
+          ${styles.background_dark_gradient}`}
       >
         <div className="w-full h-[160px] col-span-5">
           <Image

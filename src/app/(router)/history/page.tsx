@@ -2,16 +2,13 @@
 import React from "react";
 import InfomationProfile from "./_components/infomation-profile";
 import ListHistorySection from "./_components/list-history-section";
-import useStore from "@/app/store/store";
-import { useTheme } from "next-themes";
+import { useThemeStyles } from "@/hooks/useTheme";
 
 const page = () => {
-  const { theme } = useTheme();
+  const styles = useThemeStyles();
   return (
     <div
-      className={`m-3 w-full ${
-        theme === "light" ? "text-neutral-800" : "text-white "
-      }`}
+      className={`m-3 w-full ${styles.text}`}
     >
       <h2 className="text-3xl">ประวัติผลการประเมินของฉัน</h2>
       <div className=" bg-background_secondary shadow rounded-xl overflow-hidden w-full p-5 mb-3">
@@ -31,16 +28,12 @@ const page = () => {
       </div>
       <div className="grid grid-cols-4 gap-3">
         <div
-          className={`col-span-4 xl:col-span-1 shadow rounded-xl ${
-            theme === "light" ? "bg-white" : "bg-background_secondary"
-          }`}
+          className={`col-span-4 xl:col-span-1 shadow rounded-xl ${styles.background_secondary}`}
         >
           <InfomationProfile />
         </div>
         <div
-          className={`col-span-4 xl:col-span-3 p-4 rounded-xl shadow ${
-            theme === "light" ? "bg-white" : "bg-background_secondary"
-          }`}
+          className={`col-span-4 xl:col-span-3 p-4 rounded-xl shadow ${styles.background_secondary}`}
         >
           <div>
             <h2>History evaluate</h2>

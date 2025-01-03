@@ -56,7 +56,7 @@ import { toast } from "@/components/ui/use-toast";
 import EditPariod from "./EditPariod";
 import axios from "axios";
 import useStore from "@/app/store/store";
-import { useTheme } from "next-themes";
+import { useThemeStyles } from "@/hooks/useTheme";
 
 type RightSectionProps = {
   permission?: string; // ใส่ ? เพื่อบอกว่าอาจเป็น undefined ได้
@@ -101,8 +101,8 @@ const RightSection = ({ permission, period }: RightSectionProps) => {
   const [deletePeriod, setDeletePeroid] = useState("");
   // State สำหรับเก็บค่าเวลา
   const [openAlert, setOpenAlert] = useState(false);
-  
-  const { theme } = useTheme()
+
+  const styles = useThemeStyles();
   const { currentlyEvaluationPeriod, fetchCurrentPeriod } = useStore();
   const [timeRange, setTimeRange] = useState<TimeRange>({
     from: new Date(),
@@ -212,9 +212,8 @@ const RightSection = ({ permission, period }: RightSectionProps) => {
               duration: 1,
               ease: [0, 0.71, 0.2, 1.01],
             }}
-            className={`rounded-2xl flex @[23rem]:flex-row @[23rem]:items-start flex-col justify-center items-center shadow-sm border w-auto ${
-              theme === "light" ? "text-black" : "text-white"
-            }`}
+            className={`rounded-2xl flex @[23rem]:flex-row @[23rem]:items-start 
+              flex-col justify-center items-center shadow-sm border w-auto ${styles.text}`}
           >
             <Calendar
               className="border-b @[23rem]:border-r"
@@ -281,26 +280,30 @@ const RightSection = ({ permission, period }: RightSectionProps) => {
             ease: [0, 0.71, 0.2, 1.01],
             delay: 0.1,
           }}
-          className="bg-white px-5 h-full shadow rounded-2xl"
+          className={`${
+            styles.background_secondary + " " + styles.text
+          } px-5 h-full shadow rounded-2xl`}
         >
           <div
-            className={`bg-white w-full 
+            className={`${styles.background_secondary} w-full 
             ${
               show
                 ? "pb-72 transition-all ease-in-out duration-300"
                 : "pb-5 transition-all ease-in-out duration-300"
             }  overflow-hidden`}
           >
-            <div className="font-bold text-xl flex items-center gap-3 py-5 bg-white relative z-30">
+            <div className="font-bold text-xl flex items-center gap-3 py-5  relative z-30">
               <TextEffect preset="slide">กำหนด วัน-เวลา การประเมิน</TextEffect>
               <AlarmClockPlus className="text-blue-500" />
             </div>
-            <div className="bg-neutral-100 rounded-lg shadow-inner relative z-30 border-t border-b">
+            <div
+              className={`${styles.background} rounded-lg shadow-inner relative z-30 border-t border-b`}
+            >
               <ScrollArea className="max-h-[800px] w-full px-3">
                 {period?.map((item, index) => (
                   <div
                     key={item.period_id}
-                    className="grid transition-all my-3 shadow bg-white w-auto rounded-xl p-2"
+                    className={`grid transition-all my-3 shadow ${styles.background_dark_gradient} w-auto rounded-xl p-2`}
                   >
                     <div className="flex items-center">
                       <div className="relative w-full">
@@ -481,7 +484,7 @@ const RightSection = ({ permission, period }: RightSectionProps) => {
                           transition={{ duration: 0.3 }}
                           className="overflow-hidden"
                         >
-                          <div className="px-6">
+                          <div className="">
                             <hr className="mt-3" />
                             <div
                               onClick={() => setExpandedPeriodId(null)}
@@ -521,7 +524,7 @@ const RightSection = ({ permission, period }: RightSectionProps) => {
                 <Form {...form}>
                   <form
                     onSubmit={form.handleSubmit(onSubmit)}
-                    className="flex flex-col gap-3 items-center w-full shadow p-4 bg-white rounded-br-lg rounded-bl-lg"
+                    className={`flex flex-col gap-3 items-center w-full shadow p-4 ${styles.background} rounded-br-lg rounded-bl-lg`}
                   >
                     <FormField
                       control={form.control}
@@ -580,9 +583,9 @@ const RightSection = ({ permission, period }: RightSectionProps) => {
                 </Form>
               </div>
               {/* ปุ่มเปิดแท็บ */}
-              <div className="relative bg-white">
+              <div className={`relative bg-transparent`}>
                 <Button
-                  className="w-full mt-3"
+                  className="w-full"
                   onClick={() => setShow(!show)}
                   variant={"outline"}
                 >
@@ -601,9 +604,7 @@ const RightSection = ({ permission, period }: RightSectionProps) => {
         </motion.div>
       ) : (
         // ส่วนของ user เท่าไป
-        <div className={`${
-          theme === "light" ? "text-black" : "text-white"
-        }`}>
+        <div className={`${styles.text}`}>
           {period && (
             <motion.div
               initial={{ opacity: 0, scale: 0.5 }}

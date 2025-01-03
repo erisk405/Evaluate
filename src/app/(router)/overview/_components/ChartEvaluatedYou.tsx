@@ -27,12 +27,12 @@ import {
 import { useMemo } from "react";
 import useStore from "@/app/store/store";
 import { formatThaiDateTime } from "./RightSection";
-import { useTheme } from "next-themes";
+import { useThemeStyles } from "@/hooks/useTheme";
 
 const ChartEvaluatedYou = () => {
   const { resultEvaluate, currentlyEvaluationPeriod } = useStore();
 
-  const { theme } = useTheme()
+  const styles = useThemeStyles();
   const chartData = resultEvaluate?.formResults?.map((item) => ({
     form: item.formName,
     result: item.evaluatedPerForm,
@@ -70,9 +70,7 @@ const ChartEvaluatedYou = () => {
   }, [currentlyEvaluationPeriod]);
 
   return (
-    <div className={`${
-      theme === "light" ? "text-neutral-800" : "text-white"
-    }`}>
+    <div className={`${styles.text}`}>
       <div className="@container flex w-full justify-center items-center">
         <motion.div
           initial={{ opacity: 0, x: -100 }}

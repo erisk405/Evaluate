@@ -13,6 +13,7 @@ import EvaluateSection from "./EvaluateSection";
 import { PeriodType, User, userHaveBeenEvaluatedType } from "@/types/interface";
 import useStore from "@/app/store/store";
 import { useTheme } from "next-themes";
+import { useThemeStyles } from "@/hooks/useTheme";
 
 type EvaluateSheetProp = {
   userHaveBeenEvaluated: userHaveBeenEvaluatedType[];
@@ -26,7 +27,7 @@ const EvaluateSheet = ({
 }: EvaluateSheetProp) => {
   const [open, setOpen] = useState(false);
   const { currentlyEvaluationPeriod, ProfileDetail } = useStore();
-  const { theme } = useTheme()
+  const styles = useThemeStyles();
   const defaultScoreOfUserHasEval = useMemo(() => {
     return userHaveBeenEvaluated?.find((f) => f.evaluator.id === item.id);
   }, [item, userHaveBeenEvaluated]);
@@ -70,9 +71,7 @@ text-green-500 px-2 py-1 rounded-xl transition-all active:scale-95"
           >
             <SheetHeader>
               <SheetTitle
-                className={`text-3xl text-center ${
-                  theme === "light" ? "text-neutral-800" : "text-white"
-                }`}
+                className={`text-3xl text-center ${styles.text}`}
               >
                 แบบฟอร์มการประเมิน
               </SheetTitle>

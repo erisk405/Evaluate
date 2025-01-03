@@ -14,6 +14,7 @@ import GlobalApi, { handleErrorOnAxios } from "@/app/_util/GlobalApi";
 import useStore from "@/app/store/store";
 import { PeriodType, User } from "@/types/interface";
 import { useTheme } from "next-themes";
+import { useThemeStyles } from "@/hooks/useTheme";
 
 interface IndividualType {
   headData: headDataIndividuaType;
@@ -41,72 +42,54 @@ interface resultUserType {
 
 const IndividualOverview = ({ period }: { period: PeriodType }) => {
   const { ProfileDetail } = useStore();
-  const { theme } = useTheme();
+    const styles = useThemeStyles();
   const [individual, setIndividual] = useState<IndividualType>();
   const renderTableHeaders = () => (
     <>
       <TableRow
-        className={`text-lg ${
-          theme === "light" ? "bg-blue-300" : "bg-blue-400"
-        }`}
+        className={`text-lg ${styles.background_head_table}`}
       >
         <TableHead
           rowSpan={2}
-          className={`text-center ${
-            theme === "light" ? "text-neutral-800" : "text-white "
-          }`}
+          className={`text-center ${styles.text}`}
         >
           ลำดับ
         </TableHead>
         <TableHead
           rowSpan={2}
-          className={`text-center border ${
-            theme === "light" ? "text-neutral-800" : "text-white "
-          }`}
+          className={`text-center border ${styles.text}`}
         >
           รายชื่อผู้รับการประเมิน
         </TableHead>
         <TableHead
           rowSpan={2}
-          className={`text-center border ${
-            theme === "light" ? "text-neutral-800" : "text-white "
-          }`}
+          className={`text-center border ${styles.text}`}
         >
           สังกัดหน่วยงาน
         </TableHead>
         <TableHead
           colSpan={2}
-          className={`text-center border ${
-            theme === "light" ? "text-neutral-800" : "text-white "
-          }`}
+          className={`text-center border ${styles.text}`}
         >
           ผลการประเมินการปฏิบัติงาน
         </TableHead>
         <TableHead
           rowSpan={2}
-          className={`text-center border ${
-            theme === "light" ? "text-neutral-800" : "text-white "
-          }`}
+          className={`text-center border ${styles.text}`}
         >
           ผลคะแนน
         </TableHead>
       </TableRow>
       <TableRow
-        className={`text-lg ${
-          theme === "light" ? "bg-blue-300" : "bg-blue-400"
-        }`}
+        className={`text-lg ${styles.background_head_table}`}
       >
         <TableHead
-          className={`text-center border ${
-            theme === "light" ? "text-neutral-800" : "text-white "
-          }`}
+          className={`text-center border ${styles.text}`}
         >
           ค่าเฉลี่ย
         </TableHead>
         <TableHead
-          className={`text-center border ${
-            theme === "light" ? "text-neutral-800" : "text-white "
-          }`}
+          className={`text-center border ${styles.text}`}
         >
           ค่า SD
         </TableHead>

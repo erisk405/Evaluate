@@ -26,6 +26,7 @@ import axios from "axios";
 import { formatThaiDateTime } from "../../../_components/RightSection";
 import { Loader } from "lucide-react";
 import { useTheme } from "next-themes";
+import { useThemeStyles } from "@/hooks/useTheme";
 
 type PayloadQuestion = {
   questionId: string;
@@ -69,7 +70,7 @@ const EvaluateSection: React.FC<EvaluateSection> = ({
     Array<{ question_id: string; score: string }>
   >([]);
   const { ProfileDetail, currentlyEvaluationPeriod } = useStore();
-  const { theme } = useTheme()
+  const styles = useThemeStyles();
 
   const handleScoreChange = (
     formName: string,
@@ -274,11 +275,7 @@ const EvaluateSection: React.FC<EvaluateSection> = ({
   return (
     <div className="mt-3">
       <div className="flex items-center w-full flex-col">
-        <h2
-          className={`text-xl ${
-            theme === "light" ? "text-neutral-800" : "text-white"
-          } font-bold`}
-        >
+        <h2 className={`text-xl ${styles.text} font-bold`}>
           {evaluatorUserTarget.name} ({evaluatorUserTarget.role.role_name})
         </h2>
         <h2 className="text-sm text-gray-500">
@@ -289,39 +286,27 @@ const EvaluateSection: React.FC<EvaluateSection> = ({
         </h2>
       </div>
       <div
-        className={` ${
-          theme === "light"
-            ? "text-neutral-800 bg-white"
-            : "text-white bg-background_secondary"
-        } my-4`}
+        className={` ${styles.text+" "+styles.background_secondary} my-4`}
       >
         <div className="rounded-lg border">
           <Table>
             <TableCaption>A list of your recent invoices.</TableCaption>
             <TableHeader>
               <TableRow
-                className={`text-lg  ${
-                  theme === "light" ? "bg-blue-300" : "bg-blue-400"
-                } w-full`}
+                className={`text-lg ${styles.background_head_table} w-full`}
               >
                 <TableHead
-                  className={`text-lg w-[100px]  ${
-                    theme === "light" ? "text-stone-800" : "text-white"
-                  }`}
+                  className={`text-lg w-[100px]  ${styles.text}`}
                 >
                   ลำดับ
                 </TableHead>
                 <TableHead
-                  className={`text-lg  ${
-                    theme === "light" ? "text-stone-800" : "text-white"
-                  }`}
+                  className={`text-lg ${styles.text }`}
                 >
                   ข้อคำถาม
                 </TableHead>
                 <TableHead
-                  className={`text-lg text-center  ${
-                    theme === "light" ? "text-stone-800" : "text-white"
-                  }`}
+                  className={`text-lg text-center ${styles.text}`}
                 >
                   ลงคะแนน
                 </TableHead>
@@ -331,9 +316,7 @@ const EvaluateSection: React.FC<EvaluateSection> = ({
               {formEvaluation?.map(({ form }) => (
                 <React.Fragment key={form.id}>
                   <TableRow
-                    className={`text-[16px] bg-blue-100 text-stone-800 ${
-                      theme === "light" ? "hover:text-stone-800" : "hover:text-white"
-                    }`}
+                    className={`text-[16px] ${styles.background_secondary_head_table} `}
                   >
                     <TableCell colSpan={3} className={`font-bold  `}>
                       {form.name}

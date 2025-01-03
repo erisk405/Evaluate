@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import { formResultHistoryType, formResultsType } from "@/types/interface";
 import useStore from "@/app/store/store";
+import { useThemeStyles } from "@/hooks/useTheme";
 
 const SCORE_TYPE_LABELS: Record<string, string> = {
   Executive: "ผู้บริหาร",
@@ -25,43 +26,33 @@ const CategorizedHistoryTable = ({
   formHistoryResultsItem,
 }: categorizedTableProp) => {
   const [scoreTypes, setScoreTypes] = useState<string[]>([]);
-  const { theme } = useStore();
+  const styles = useThemeStyles();
   const renderTableHeaders = (scoreTypes: string[]) => (
     <>
       <TableRow
-        className={`text-lg bg-blue-300  ${
-          theme === "light" ? "bg-blue-300" : "bg-blue-400"
-        }`}
+        className={`text-lg ${styles.background_head_table}`}
       >
         <TableHead
           rowSpan={2}
-          className={`text-center  ${
-            theme === "light" ? "text-neutral-800" : "text-white "
-          }`}
+          className={`text-center  ${styles.text}`}
         >
           ลำดับ
         </TableHead>
         <TableHead
           rowSpan={2}
-          className={`text-center border  ${
-            theme === "light" ? "text-neutral-800" : "text-white "
-          }`}
+          className={`text-center border ${styles.text}`}
         >
           หัวข้อคำถาม
         </TableHead>
         <TableHead
           rowSpan={2}
-          className={`text-center border  ${
-            theme === "light" ? "text-neutral-800" : "text-white "
-          }`}
+          className={`text-center border ${styles.text}`}
         >
           ข้อคำถาม
         </TableHead>
         <TableHead
           colSpan={2}
-          className={`text-center border  ${
-            theme === "light" ? "text-neutral-800" : "text-white "
-          }`}
+          className={`text-center border ${styles.text}`}
         >
           ผลรวมเฉลี่ย
         </TableHead>
@@ -69,46 +60,34 @@ const CategorizedHistoryTable = ({
           <TableHead
             key={type}
             colSpan={2}
-            className={`text-center border  ${
-              theme === "light" ? "text-neutral-800" : "text-white "
-            }`}
+            className={`text-center border ${styles.text}`}
           >
             {SCORE_TYPE_LABELS[type] || type}
           </TableHead>
         ))}
       </TableRow>
       <TableRow
-        className={`text-lg ${
-          theme === "light" ? "bg-blue-300" : "bg-blue-400"
-        }`}
+        className={`text-lg ${styles.background_head_table}`}
       >
         <TableHead
-          className={`text-center border  ${
-            theme === "light" ? "text-neutral-800" : "text-white "
-          }`}
+          className={`text-center border ${styles.text}`}
         >
           ค่าเฉลี่ย
         </TableHead>
         <TableHead
-          className={`text-center border  ${
-            theme === "light" ? "text-neutral-800" : "text-white "
-          }`}
+          className={`text-center border  ${styles.text}`}
         >
           ค่า SD
         </TableHead>
         {scoreTypes.map((type) => (
           <React.Fragment key={type}>
             <TableHead
-              className={`text-center border  ${
-                theme === "light" ? "text-neutral-800" : "text-white "
-              }`}
+              className={`text-center border  ${styles.text}`}
             >
               ค่าเฉลี่ย
             </TableHead>
             <TableHead
-              className={`text-center border  ${
-                theme === "light" ? "text-neutral-800" : "text-white "
-              }`}
+              className={`text-center border  ${styles.text}`}
             >
               ค่า SD
             </TableHead>
@@ -147,11 +126,7 @@ const CategorizedHistoryTable = ({
 
           <TableBody>
             <TableRow
-              className={`text-[16px] bg-blue-100 ${
-                theme === "light"
-                  ? "text-neutral-800"
-                  : "text-neutral-800 hover:text-white"
-              }`}
+              className={`text-[16px] ${styles.background_secondary_head_table}`}
             >
               <TableCell colSpan={3} className="font-bold">
                 {formHistoryResultsItem?.formName}

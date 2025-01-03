@@ -59,6 +59,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import GlobalApi from "@/app/_util/GlobalApi";
 import { useTheme } from "next-themes";
+import { useThemeStyles } from "@/hooks/useTheme";
 
 export const columns: ColumnDef<PeriodType>[] = [
   {
@@ -163,7 +164,7 @@ export const columns: ColumnDef<PeriodType>[] = [
 ];
 const page = () => {
   const { fetchCurrentPeriod, allPeriod} = useStore();
-  const { theme } = useTheme();
+  const styles = useThemeStyles()
   const [globalFilter, setGlobalFilter] = useState("");
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -257,9 +258,7 @@ const page = () => {
     }
   }, []);
   return (
-    <div className={`m-5 w-full gap-3 ${
-      theme === "light" ? "text-neutral-700" : "text-white"
-    }`}>
+    <div className={`m-5 w-full gap-3 ${styles.text }`}>
       <h2 className="text-3xl font-bold ">
         รายละเอียดผลงานประเมิน
       </h2>

@@ -28,6 +28,7 @@ import { calculateCharacteristics } from "@/app/lib/utils/result-calculations";
 import { adaptCategorizeFormResultsByVisionLevel } from "@/app/lib/adapters/results/categorize-vision-results";
 import useStore from "@/app/store/store";
 import { useTheme } from "next-themes";
+import { useThemeStyles } from "@/hooks/useTheme";
 
 const SCORE_TYPE_LABELS: Record<string, string> = {
   Executive: "ผู้บริหาร",
@@ -43,7 +44,7 @@ const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
   const [formResultsByVisionLevel, SetFormResultsByVisionLevel] =
     useState<CategorizedFormResults>();
 
-  const { theme } = useTheme();
+  const styles = useThemeStyles()
   const [adaptedData, setAdaptedData] = useState<CommonResultFormat>();
   const renderTableHeaders = (
     scoreTypes: string[],
@@ -51,39 +52,29 @@ const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
   ) => (
     <>
       <TableRow
-        className={`text-lg ${
-          theme === "light" ? "bg-blue-300" : "bg-blue-400"
-        }`}
+        className={`text-lg ${styles.background_head_table}`}
       >
         <TableHead
           rowSpan={2}
-          className={`text-center border  ${
-            theme === "light" ? "text-neutral-800" : "text-white "
-          }`}
+          className={`text-center border  ${styles.text}`}
         >
           ลำดับ
         </TableHead>
         <TableHead
           rowSpan={2}
-          className={`text-center border ${
-            theme === "light" ? "text-neutral-800" : "text-white"
-          }`}
+          className={`text-center border ${styles.text}`}
         >
           หัวข้อคำถาม
         </TableHead>
         <TableHead
           rowSpan={2}
-          className={`text-center border  ${
-            theme === "light" ? "text-neutral-800" : "text-white"
-          }`}
+          className={`text-center border  ${styles.text}`}
         >
           ข้อคำถาม
         </TableHead>
         <TableHead
           colSpan={2}
-          className={`text-center border  ${
-            theme === "light" ? "text-neutral-800" : "text-white"
-          }`}
+          className={`text-center border  ${styles.text}`}
         >
           ผลรวมเฉลี่ย
         </TableHead>
@@ -92,30 +83,22 @@ const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
             <TableHead
               key={type}
               colSpan={2}
-              className={`text-center border  ${
-                theme === "light" ? "text-neutral-800" : "text-white "
-              }`}
+              className={`text-center border  ${styles.text}`}
             >
               {SCORE_TYPE_LABELS[type] || type}
             </TableHead>
           ))}
       </TableRow>
       <TableRow
-        className={`text-lg ${
-          theme === "light" ? "bg-blue-300" : "bg-blue-400"
-        }`}
+        className={`text-lg ${styles.background_head_table}`}
       >
         <TableHead
-          className={`text-center border ${
-            theme === "light" ? "text-neutral-800" : "text-white "
-          }`}
+          className={`text-center border ${styles.text}`}
         >
           ค่าเฉลี่ย
         </TableHead>
         <TableHead
-          className={`text-center border ${
-            theme === "light" ? "text-neutral-800" : "text-white "
-          }`}
+          className={`text-center border ${styles.text}`}
         >
           ค่า SD.
         </TableHead>
@@ -123,16 +106,12 @@ const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
           scoreTypes.map((type) => (
             <React.Fragment key={type}>
               <TableHead
-                className={`text-center border  ${
-                  theme === "light" ? "text-neutral-800" : "text-white "
-                }`}
+                className={`text-center border ${styles.text}`}
               >
                 ค่าเฉลี่ย
               </TableHead>
               <TableHead
-                className={`text-center border  ${
-                  theme === "light" ? "text-neutral-800" : "text-white "
-                }`}
+                className={`text-center border  ${styles.text}`}
               >
                 ค่า SD.
               </TableHead>
@@ -202,11 +181,7 @@ const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
                         {/* Form Level Summary Row */}
                         {/* ผลรวมในแต่ละด้าน */}
                         <TableRow
-                          className={`text-[16px] bg-blue-100 ${
-                            theme === "light"
-                              ? "text-neutral-700"
-                              : "text-neutral-700 hover:text-white"
-                          }`}
+                          className={`text-[16px] ${styles.background_secondary_head_table} ${styles.text}`}
                         >
                           <TableCell colSpan={3} className={`font-bold `}>
                             {form.formName}
@@ -302,39 +277,29 @@ const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
               <TableCaption>ผลการประเมินรายละเอียด</TableCaption>
               <TableHeader className={`text-lg`}>
                 <TableRow
-                  className={`text-lg ${
-                    theme === "light" ? "bg-blue-300" : "bg-blue-400"
-                  } `}
+                  className={`text-lg ${styles.background_head_table} `}
                 >
                   <TableHead
                     colSpan={1}
-                    className={`text-center ${
-                      theme === "light" ? "text-neutral-800" : "text-white "
-                    }`}
+                    className={`text-center ${styles.text}`}
                   >
                     ลำดับ
                   </TableHead>
                   <TableHead
                     colSpan={4}
-                    className={`text-center border ${
-                      theme === "light" ? "text-neutral-800" : "text-white "
-                    }`}
+                    className={`text-center border ${styles.text}`}
                   >
                     ผลรวมในแต่ละด้าน
                   </TableHead>
                   <TableHead
                     colSpan={1}
-                    className={`text-center border ${
-                      theme === "light" ? "text-neutral-800" : "text-white "
-                    }`}
+                    className={`text-center border ${styles.text}`}
                   >
                     ค่าเฉลี่ย
                   </TableHead>
                   <TableHead
                     colSpan={1}
-                    className={`text-center border ${
-                      theme === "light" ? "text-neutral-800" : "text-white "
-                    }`}
+                    className={`text-center border ${styles.text}`}
                   >
                     ค่า SD.
                   </TableHead>

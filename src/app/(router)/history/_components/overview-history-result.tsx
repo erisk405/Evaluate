@@ -36,6 +36,7 @@ import { calculateCharacteristics } from "@/app/lib/utils/result-calculations";
 import { adaptCategorizeFormResultsByVisionLevel } from "@/app/lib/adapters/results/categorize-vision-results";
 import Loading from "@/app/_components/Loading";
 import useStore from "@/app/store/store";
+import { useThemeClass, useThemeStyles } from "@/hooks/useTheme";
 
 const SCORE_TYPE_LABELS: Record<string, string> = {
   Executive: "ผู้บริหาร",
@@ -55,47 +56,24 @@ const OverviewHistoryResult = ({
   const [adaptedData, setAdaptedData] = useState<CommonResultFormat>();
   const [formResultsByVisionLevel, SetFormResultsByVisionLevel] =
     useState<CategorizedFormResults>();
-  const { theme } = useStore();
+  const styles = useThemeStyles();
+  const { getThemeClass } = useThemeClass();
   const renderTableHeaders = (
     scoreTypes: string[],
     vesion_level: LevelFormVision
   ) => (
     <>
-      <TableRow
-        className={`text-lg ${
-          theme === "light" ? "bg-blue-300" : "bg-blue-400"
-        }`}
-      >
-        <TableHead
-          rowSpan={2}
-          className={`text-center border  ${
-            theme === "light" ? "text-neutral-800" : "text-white "
-          }`}
-        >
+      <TableRow className={`text-lg ${styles.background_head_table}`}>
+        <TableHead rowSpan={2} className={`text-center border  ${styles.text}`}>
           ลำดับ
         </TableHead>
-        <TableHead
-          rowSpan={2}
-          className={`text-center border ${
-            theme === "light" ? "text-neutral-800" : "text-white"
-          }`}
-        >
+        <TableHead rowSpan={2} className={`text-center border ${styles.text}`}>
           หัวข้อคำถาม
         </TableHead>
-        <TableHead
-          rowSpan={2}
-          className={`text-center border  ${
-            theme === "light" ? "text-neutral-800" : "text-white"
-          }`}
-        >
+        <TableHead rowSpan={2} className={`text-center border ${styles.text}`}>
           ข้อคำถาม
         </TableHead>
-        <TableHead
-          colSpan={2}
-          className={`text-center border  ${
-            theme === "light" ? "text-neutral-800" : "text-white"
-          }`}
-        >
+        <TableHead colSpan={2} className={`text-center border ${styles.text}`}>
           ผลรวมเฉลี่ย
         </TableHead>
         {VISION_LEVEL_CONFIGS[vesion_level as LevelFormVision].showScoreTypes &&
@@ -103,48 +81,26 @@ const OverviewHistoryResult = ({
             <TableHead
               key={type}
               colSpan={2}
-              className={`text-center border  ${
-                theme === "light" ? "text-neutral-800" : "text-white "
-              }`}
+              className={`text-center border ${styles.text}`}
             >
               {SCORE_TYPE_LABELS[type] || type}
             </TableHead>
           ))}
       </TableRow>
-      <TableRow
-        className={`text-lg ${
-          theme === "light" ? "bg-blue-300" : "bg-blue-400"
-        }`}
-      >
-        <TableHead
-          className={`text-center border ${
-            theme === "light" ? "text-neutral-800" : "text-white "
-          }`}
-        >
+      <TableRow className={`text-lg ${styles.background_head_table}`}>
+        <TableHead className={`text-center border ${styles.text}`}>
           ค่าเฉลี่ย
         </TableHead>
-        <TableHead
-          className={`text-center border ${
-            theme === "light" ? "text-neutral-800" : "text-white "
-          }`}
-        >
+        <TableHead className={`text-center border ${styles.text}`}>
           ค่า SD.
         </TableHead>
         {VISION_LEVEL_CONFIGS[vesion_level].showScoreTypes &&
           scoreTypes.map((type) => (
             <React.Fragment key={type}>
-              <TableHead
-                className={`text-center border  ${
-                  theme === "light" ? "text-neutral-800" : "text-white "
-                }`}
-              >
+              <TableHead className={`text-center border ${styles.text}`}>
                 ค่าเฉลี่ย
               </TableHead>
-              <TableHead
-                className={`text-center border  ${
-                  theme === "light" ? "text-neutral-800" : "text-white "
-                }`}
-              >
+              <TableHead className={`text-center border ${styles.text}`}>
                 ค่า SD.
               </TableHead>
             </React.Fragment>
@@ -211,11 +167,7 @@ const OverviewHistoryResult = ({
                         {/* Form Level Summary Row */}
                         {/* ผลรวมในแต่ละด้าน */}
                         <TableRow
-                          className={`text-[16px] bg-blue-100 ${
-                            theme === "light"
-                              ? "text-neutral-700"
-                              : "text-neutral-700 hover:text-white"
-                          }`}
+                          className={`text-[16px] ${styles.background_secondary_head_table}`}
                         >
                           <TableCell colSpan={3} className="font-bold">
                             {form.formName}
@@ -311,39 +263,29 @@ const OverviewHistoryResult = ({
               <TableCaption>ผลการประเมินรายละเอียด</TableCaption>
               <TableHeader className={`text-lg`}>
                 <TableRow
-                  className={`text-lg ${
-                    theme === "light" ? "bg-blue-300" : "bg-blue-400"
-                  } `}
+                  className={`text-lg ${styles.background_head_table} `}
                 >
                   <TableHead
                     colSpan={1}
-                    className={`text-center ${
-                      theme === "light" ? "text-neutral-800" : "text-white "
-                    }`}
+                    className={`text-center ${styles.text}`}
                   >
                     ลำดับ
                   </TableHead>
                   <TableHead
                     colSpan={4}
-                    className={`text-center border ${
-                      theme === "light" ? "text-neutral-800" : "text-white "
-                    }`}
+                    className={`text-center border ${styles.text}`}
                   >
                     ผลรวมในแต่ละด้าน
                   </TableHead>
                   <TableHead
                     colSpan={1}
-                    className={`text-center border ${
-                      theme === "light" ? "text-neutral-800" : "text-white "
-                    }`}
+                    className={`text-center border ${styles.text}`}
                   >
                     ค่าเฉลี่ย
                   </TableHead>
                   <TableHead
                     colSpan={1}
-                    className={`text-center border ${
-                      theme === "light" ? "text-neutral-800" : "text-white "
-                    }`}
+                    className={`text-center border ${styles.text}`}
                   >
                     ค่า SD.
                   </TableHead>
@@ -373,11 +315,7 @@ const OverviewHistoryResult = ({
                 {/* Total Summary Row */}
                 {adaptedData?.headData && (
                   <TableRow
-                    className={`text-[16px] bg-yellow-200 ${
-                      theme === "light"
-                        ? "text-white"
-                        : "text-neutral-800 hover:text-white"
-                    }`}
+                    className={`text-[16px] bg-yellow-200 text-zinc-800`}
                   >
                     <TableCell colSpan={1} className="font-bold text-right">
                       ผลรวมทั้งหมดของ

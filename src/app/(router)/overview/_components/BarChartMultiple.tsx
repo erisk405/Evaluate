@@ -16,6 +16,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import useStore from "@/app/store/store";
+import { useThemeStyles } from "@/hooks/useTheme";
 export const description = "A multiple bar chart";
 
 const chartConfig = {
@@ -31,6 +32,7 @@ const chartConfig = {
 
 const BarChartMultiple = () => {
   const { resultEvalEachDepartment } = useStore();
+  const styles = useThemeStyles();
   const chartData = resultEvalEachDepartment?.map((result) => ({
     depart: result.department,
     evaluated: result.totalFinished,
@@ -44,11 +46,11 @@ const BarChartMultiple = () => {
     }
   };
   return (
-    <Card className="rounded-2xl">
+    <Card
+      className={`rounded-2xl ${styles.text}`}
+    >
       <CardHeader>
-        <CardTitle className="text-stone-700">
-          จำนวนผู้ประเมินในแต่ละวัน
-        </CardTitle>
+        <CardTitle>จำนวนผู้ประเมินในแต่ละวัน</CardTitle>
         <CardDescription>January - June 2024</CardDescription>
       </CardHeader>
       <CardContent>

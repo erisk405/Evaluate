@@ -5,7 +5,6 @@ import RightSection from "./_components/RightSection";
 import GlobalApi from "@/app/_util/GlobalApi";
 import ReportOverview from "./_components/ReportOverview";
 import Loading from "@/app/_components/Loading";
-import { PeriodType } from "@/types/interface";
 import useStore from "@/app/store/store";
 const page = () => {
   const [checkPermission, setCheckPermission] = useState(null); // ใช้ในการcheckว่า คนนี้เป็น admin หรือ user เพื่อใช้ในการแสดงInterface ต่างๆ

@@ -40,6 +40,7 @@ import SetPrefixSelection from "@/app/_components/SetPrefixSelection";
 import SetStatusSection from "@/app/_components/SetStatusSection";
 import Loading from "@/app/_components/Loading";
 import { useTheme } from "next-themes";
+import { useThemeClass, useThemeStyles } from "@/hooks/useTheme";
 
 const formSchema = z.object({
   image: z
@@ -74,7 +75,8 @@ export default function page() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { theme } = useTheme();
+  const styles = useThemeStyles();
+  const { getThemeClass } = useThemeClass();
   //  image
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
@@ -232,12 +234,20 @@ export default function page() {
   }
 
   return (
-    <div className={`mx-auto max-w-[600px] ${theme === "light" ? 'text-zinc-900' :'text-zinc-50'} `}>
+    <div className={`mx-auto max-w-[600px] ${styles.text} `}>
       <div className="flex gap-3 items-center my-3">
         <Bolt size={30} strokeWidth={1.2} />
         <h2 className="text-xl ">ประวัติส่วนตัว</h2>
       </div>
-      <div className={`flex items-center gap-3 ${theme === "light" ? 'bg-white' :'bg-blue-700 '}  p-3 rounded-3xl shadow`}>
+      <div
+        className={getThemeClass(
+          {
+            light: `bg-white`,
+            dark: `bg-blue-700 `,
+          },
+          `flex items-center gap-3  p-3 rounded-3xl shadow`
+        )}
+      >
         <div className=" px-4 cursor-pointer" onClick={handleImageClick}>
           {selectedImage ? (
             <Image
@@ -267,7 +277,9 @@ export default function page() {
         </div>
         <div className="my-3">
           <h2 className="">{ProfileDetail?.name}</h2>
-          <h2 className={`text-sm  ${theme === "light" ? 'text-gray-500' :'text-blue-200'}`}>{ProfileDetail?.email}</h2>
+          <h2 className={`text-sm  ${styles.text_description}`}>
+            {ProfileDetail?.email}
+          </h2>
         </div>
       </div>
       <div className="p-4">

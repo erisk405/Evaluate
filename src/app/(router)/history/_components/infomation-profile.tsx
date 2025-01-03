@@ -1,14 +1,14 @@
 "use client";
 import useStore from "@/app/store/store";
 import { Separator } from "@/components/ui/separator";
-import { useTheme } from "next-themes";
+import { useThemeClass, useThemeStyles } from "@/hooks/useTheme";
 import Image from "next/image";
 import React from "react";
 
 const InfomationProfile = () => {
   const { ProfileDetail } = useStore();
-  
-  const { theme } = useTheme();
+
+  const { getThemeClass } = useThemeClass();
   return (
     <div className={`p-3 `}>
       <div className="relative h-32 shadow rounded-xl">
@@ -33,9 +33,15 @@ const InfomationProfile = () => {
           {ProfileDetail.name}
         </h2>
         <p className="text-sm text-gray-500">{ProfileDetail.role?.role_name}</p>
-        <div className={` rounded-xl p-3 ${
-            theme === "light" ? "bg-neutral-100" : "bg-neutral-950"
-          }`}>
+        <div
+          className={getThemeClass(
+            {
+              light: "bg-neutral-100",
+              dark: "bg-neutral-950",
+            },
+            `rounded-xl p-3`
+          )}
+        >
           <div className="flex items-center gap-2">
             <span className="p-1 bg-neutral-300  text-xl rounded-full">🏬</span>
             <div className="grid grid-cols-1 leading-4">

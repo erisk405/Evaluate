@@ -18,6 +18,7 @@ import { toast } from "@/components/ui/use-toast";
 import { PeriodType, TimeRange } from "@/types/interface";
 import { Switch } from "@/components/ui/switch";
 import useStore from "@/app/store/store";
+import { useThemeStyles } from "@/hooks/useTheme";
 
 interface EditPeriodProps {
   defaultPeriod: PeriodType;
@@ -91,7 +92,7 @@ const EditPariod = ({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onUpdate)}
-        className="flex flex-col gap-3 items-center w-full bg-white rounded-br-lg rounded-bl-lg"
+        className={`flex flex-col gap-3 items-center w-full rounded-br-lg rounded-bl-lg`}
       >
         <FormField
           control={form.control}

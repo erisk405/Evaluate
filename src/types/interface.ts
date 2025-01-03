@@ -1,6 +1,13 @@
 type RoleLevel = "LEVEL_1" | "LEVEL_2" | "LEVEL_3" | "LEVEL_4";
 type PageNumber = number | 'ellipsis' | 'ellipsis1' | 'ellipsis2';
 type LevelFormVision = "VISION_1" | "VISION_2" | "UNSET";
+// types/theme.ts
+type Theme = 'light' | 'dark'
+
+interface ThemeStyles {
+  light: string
+  dark: string
+}
 interface ImageType {
   id: string;
   url: string; // Add any additional fields that may be part of the image object
@@ -123,7 +130,7 @@ interface PeriodType {
   start: string,
   end: string
   isAction: boolean;
-  backUp: boolean;
+  backUp?: boolean;
 }
 interface FormQuestion {
   id: string;
@@ -350,5 +357,7 @@ export type {
   questionsHistoryType,
   inSideScores,
   inSideTotal,
-  headDataHistoryType
+  headDataHistoryType,
+  ThemeStyles,
+  Theme
 };

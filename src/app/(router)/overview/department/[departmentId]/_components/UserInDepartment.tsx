@@ -68,7 +68,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import React, { useMemo, useState } from "react";
 import useStore from "@/app/store/store";
-import { useTheme } from "next-themes";
+import { useThemeStyles } from "@/hooks/useTheme";
 
 export function UserInDepartment({
   member,
@@ -85,7 +85,7 @@ export function UserInDepartment({
   const [rowSelection, setRowSelection] = useState({});
   const [globalFilter, setGlobalFilter] = useState("");
   const { ProfileDetail } = useStore();
-  const { theme } = useTheme();
+    const styles = useThemeStyles();
   const columns: ColumnDef<User>[] = [
     {
       accessorKey: "index",
@@ -136,9 +136,7 @@ export function UserInDepartment({
         const role_name = row.original.role.role_name;
         return (
           <div
-            className={`capitalize inline-flex items-center  ${
-              theme === "light" ? "text-black" : "text-white"
-            }`}
+            className={`capitalize inline-flex items-center  ${styles.text}`}
           >
             {role_name}
           </div>
@@ -157,7 +155,7 @@ export function UserInDepartment({
           justify-start gap-2 border-gray-200 py-1"
           >
             <h2
-              className={`${theme === "light" ? "text-black" : "text-white"}`}
+              className={`${styles.text}`}
             >
               {NameOfDepartment
                 ? NameOfDepartment.department_name
@@ -222,9 +220,7 @@ export function UserInDepartment({
                   >
                     <SheetHeader>
                       <SheetTitle
-                        className={`text-3xl text-center ${
-                          theme === "light" ? "text-neutral-800" : "text-white"
-                        }`}
+                        className={`text-3xl text-center ${styles.text}`}
                       >
                         แบบฟอร์มการประเมิน
                       </SheetTitle>
@@ -364,9 +360,7 @@ export function UserInDepartment({
         </DropdownMenu>
       </div>
       <div
-        className={`rounded-xl border ${
-          theme === "light" ? "bg-white" : "text-white"
-        } overflow-hidden`}
+        className={`rounded-xl border ${styles.text} overflow-hidden`}
       >
         <Table>
           <TableHeader>
@@ -380,7 +374,7 @@ export function UserInDepartment({
                         header.id === "actions" || header.id === "index"
                           ? "text-center"
                           : ""
-                      }  ${theme === "light" ? "" : "bg-background_secondary"} `}
+                      }  ${styles.background_secondary} `}
                     >
                       {header.isPlaceholder
                         ? null

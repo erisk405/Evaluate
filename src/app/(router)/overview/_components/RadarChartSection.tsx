@@ -14,6 +14,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import useStore from "@/app/store/store";
+import { useTheme } from "next-themes";
 export const description = "A radar chart with a custom label";
 
 const chartConfig = {
@@ -30,6 +31,7 @@ const chartConfig = {
 const RadarChartSection = () => {
   const { resultEvalEachDepartment } = useStore();
 
+  const { theme } = useTheme();
   const chartData = resultEvalEachDepartment?.map((result) => ({
     depart: result.department,
     evaluated: result.totalFinished,
@@ -44,9 +46,11 @@ const RadarChartSection = () => {
     }
   };
   return (
-    <Card className="rounded-2xl">
+    <Card
+      className={`rounded-2xl ${theme === "light" ? "text-zinc-900" : "text-zinc-50"}`}
+    >
       <CardHeader className="items-center pb-4">
-        <CardTitle className="text-stone-700">Radar Chart</CardTitle>
+        <CardTitle className="">Radar Chart</CardTitle>
         <CardDescription>
           Showing total visitors for the last 6 months
         </CardDescription>
