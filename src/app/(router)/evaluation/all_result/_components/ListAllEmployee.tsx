@@ -327,7 +327,7 @@ export function ListAllEmployee({ filterDataArea }: ListAllEmployeeProp) {
           </div>
         </div>
         <div className="flex items-center gap-3">
-          {/* เมนูเมือต้องการจะ export */}
+          {/* เมนูเมือต้องการจะ Clear ผลการประเมิน */}
           <ClearScoreSection table={table} selectPeriod={selectPeriod!!} />
           {/* for filter attribute from table  */}
           {/* แสดงข้อมูลตามที่กำหนด */}

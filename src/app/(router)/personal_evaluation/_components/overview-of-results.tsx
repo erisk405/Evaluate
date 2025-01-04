@@ -28,7 +28,7 @@ import { calculateCharacteristics } from "@/app/lib/utils/result-calculations";
 import { adaptCategorizeFormResultsByVisionLevel } from "@/app/lib/adapters/results/categorize-vision-results";
 import useStore from "@/app/store/store";
 import { useTheme } from "next-themes";
-import { useThemeStyles } from "@/hooks/useTheme";
+import { useThemeClass, useThemeStyles } from "@/hooks/useTheme";
 
 const SCORE_TYPE_LABELS: Record<string, string> = {
   Executive: "ผู้บริหาร",
@@ -43,39 +43,25 @@ const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
   const [characteristics, setCharacteristics] = useState<string>();
   const [formResultsByVisionLevel, SetFormResultsByVisionLevel] =
     useState<CategorizedFormResults>();
-
-  const styles = useThemeStyles()
+  const styles = useThemeStyles();
+  const { getThemeClass } = useThemeClass();
   const [adaptedData, setAdaptedData] = useState<CommonResultFormat>();
   const renderTableHeaders = (
     scoreTypes: string[],
     vesion_level: LevelFormVision
   ) => (
     <>
-      <TableRow
-        className={`text-lg ${styles.background_head_table}`}
-      >
-        <TableHead
-          rowSpan={2}
-          className={`text-center border  ${styles.text}`}
-        >
+      <TableRow className={`text-lg ${styles.background_head_table}`}>
+        <TableHead rowSpan={2} className={`text-center border  ${styles.text}`}>
           ลำดับ
         </TableHead>
-        <TableHead
-          rowSpan={2}
-          className={`text-center border ${styles.text}`}
-        >
+        <TableHead rowSpan={2} className={`text-center border ${styles.text}`}>
           หัวข้อคำถาม
         </TableHead>
-        <TableHead
-          rowSpan={2}
-          className={`text-center border  ${styles.text}`}
-        >
+        <TableHead rowSpan={2} className={`text-center border  ${styles.text}`}>
           ข้อคำถาม
         </TableHead>
-        <TableHead
-          colSpan={2}
-          className={`text-center border  ${styles.text}`}
-        >
+        <TableHead colSpan={2} className={`text-center border  ${styles.text}`}>
           ผลรวมเฉลี่ย
         </TableHead>
         {VISION_LEVEL_CONFIGS[vesion_level as LevelFormVision].showScoreTypes &&
@@ -89,30 +75,20 @@ const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
             </TableHead>
           ))}
       </TableRow>
-      <TableRow
-        className={`text-lg ${styles.background_head_table}`}
-      >
-        <TableHead
-          className={`text-center border ${styles.text}`}
-        >
+      <TableRow className={`text-lg ${styles.background_head_table}`}>
+        <TableHead className={`text-center border ${styles.text}`}>
           ค่าเฉลี่ย
         </TableHead>
-        <TableHead
-          className={`text-center border ${styles.text}`}
-        >
+        <TableHead className={`text-center border ${styles.text}`}>
           ค่า SD.
         </TableHead>
         {VISION_LEVEL_CONFIGS[vesion_level].showScoreTypes &&
           scoreTypes.map((type) => (
             <React.Fragment key={type}>
-              <TableHead
-                className={`text-center border ${styles.text}`}
-              >
+              <TableHead className={`text-center border ${styles.text}`}>
                 ค่าเฉลี่ย
               </TableHead>
-              <TableHead
-                className={`text-center border  ${styles.text}`}
-              >
+              <TableHead className={`text-center border  ${styles.text}`}>
                 ค่า SD.
               </TableHead>
             </React.Fragment>
@@ -329,7 +305,14 @@ const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
                 {/* Total Summary Row */}
                 {adaptedData?.headData && (
                   <TableRow
-                    className={`text-[16px] bg-yellow-200 text-neutral-800`}>
+                    className={getThemeClass(
+                      {
+                        light: "bg-yellow-200 ",
+                        dark: "bg-yellow-200 hover:text-white",
+                      },
+                      `text-[16px] text-zinc-800`
+                    )}
+                  >
                     <TableCell colSpan={1} className="font-bold text-right">
                       ผลรวมทั้งหมดของ
                     </TableCell>
@@ -347,10 +330,7 @@ const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
               </TableBody>
               <TableFooter>
                 <TableRow className="text-right">
-                  <TableCell
-                    colSpan={5 + scoreTypes.length * 2}
-                    className="text-center"
-                  >
+                  <TableCell colSpan={7} className="text-center">
                     <h2>
                       ผลการประเมินการปฎิบัติงานตามคุณลักษณะและพฤติกรรมในการปฎิบัติงาน
                     </h2>

@@ -35,6 +35,10 @@ export const themeClasses = {
         light: 'bg-white',
         dark: 'bg-zinc-800'
     },
+    background_icon: {
+        light: 'bg-zinc-100',
+        dark: 'bg-zinc-800'
+    },
     border: {
         light: 'border border-zinc-500',
         dark: 'border border-zinc-200'

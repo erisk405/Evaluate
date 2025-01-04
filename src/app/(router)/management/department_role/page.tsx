@@ -50,7 +50,7 @@ const page = () => {
   const [departmentData, setDepartmentData] = useState<Department[]>([]);
   // for load button
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const styles = useThemeStyles()
+  const styles = useThemeStyles();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];

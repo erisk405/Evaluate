@@ -663,17 +663,44 @@ const getResultEvaluateDetailForAdmin = (period_id: string, userId: string) => {
   }
 };
 
-const getAllResultIndividualOverview = (period_id:string,userId:string) => {
+const getAllResultIndividualOverview = async (
+  period_id: string,
+  userId?: string
+) => {
+  if (!period_id) {
+    throw new Error("period_id is required");
+  }
   try {
-    return axios.get(`${apiUrl}/allResultEvaluateOverview/${period_id}/${userId}`, {
+    const url = `${apiUrl}/allResultEvaluateOverview/${period_id}${
+      userId ? `/${userId}` : ""
+    }`;
+
+    const response = await axios.get(url, {
       withCredentials: true,
     });
+
+    return response;
   } catch (error) {
     console.error("API getAllResultIndividualOverview", { message: error });
     return handleErrorOnAxios(error);
   }
 };
 
+type deleteUserEvaluationProp = {
+  allUserId: string[];
+  periodId: string;
+};
+const deleteUserEvaluation = (payload: deleteUserEvaluationProp) => {
+  try {
+    return axios.delete(`${apiUrl}/evaluate`, {
+      data: payload, // Send the payload directly
+      withCredentials: true,
+    });
+  } catch (error) {
+    console.error("API deleteUserEvaluation", { message: error });
+    return handleErrorOnAxios(error);
+  }
+};
 // -----------------------------------------------
 //               History API
 // ----------------------------------------------
@@ -792,5 +819,6 @@ export default {
   saveEvaluationToHistory,
   getResultEvaluateFormHistoryForAdmin,
   getExportEvaluationByUserId,
-  getAllResultIndividualOverview
+  getAllResultIndividualOverview,
+  deleteUserEvaluation,
 };

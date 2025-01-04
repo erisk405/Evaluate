@@ -57,7 +57,6 @@ const OverviewHistoryResult = ({
   const [formResultsByVisionLevel, SetFormResultsByVisionLevel] =
     useState<CategorizedFormResults>();
   const styles = useThemeStyles();
-  const { getThemeClass } = useThemeClass();
   const renderTableHeaders = (
     scoreTypes: string[],
     vesion_level: LevelFormVision
@@ -335,7 +334,7 @@ const OverviewHistoryResult = ({
               <TableFooter>
                 <TableRow className="text-right">
                   <TableCell
-                    colSpan={5 + scoreTypes.length * 2}
+                    colSpan={7}
                     className="text-center"
                   >
                     <h2>

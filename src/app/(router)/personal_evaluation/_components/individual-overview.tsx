@@ -40,57 +40,33 @@ interface resultUserType {
   };
 }
 
-const IndividualOverview = ({ period }: { period: PeriodType }) => {
-  const { ProfileDetail } = useStore();
-    const styles = useThemeStyles();
+const IndividualOverview = ({ period,userId }: { period: PeriodType ,userId?:string }) => {
+  const styles = useThemeStyles();
   const [individual, setIndividual] = useState<IndividualType>();
   const renderTableHeaders = () => (
     <>
-      <TableRow
-        className={`text-lg ${styles.background_head_table}`}
-      >
-        <TableHead
-          rowSpan={2}
-          className={`text-center ${styles.text}`}
-        >
+      <TableRow className={`text-lg ${styles.background_head_table}`}>
+        <TableHead rowSpan={2} className={`text-center ${styles.text}`}>
           ลำดับ
         </TableHead>
-        <TableHead
-          rowSpan={2}
-          className={`text-center border ${styles.text}`}
-        >
+        <TableHead rowSpan={2} className={`text-center border ${styles.text}`}>
           รายชื่อผู้รับการประเมิน
         </TableHead>
-        <TableHead
-          rowSpan={2}
-          className={`text-center border ${styles.text}`}
-        >
+        <TableHead rowSpan={2} className={`text-center border ${styles.text}`}>
           สังกัดหน่วยงาน
         </TableHead>
-        <TableHead
-          colSpan={2}
-          className={`text-center border ${styles.text}`}
-        >
+        <TableHead colSpan={2} className={`text-center border ${styles.text}`}>
           ผลการประเมินการปฏิบัติงาน
         </TableHead>
-        <TableHead
-          rowSpan={2}
-          className={`text-center border ${styles.text}`}
-        >
+        <TableHead rowSpan={2} className={`text-center border ${styles.text}`}>
           ผลคะแนน
         </TableHead>
       </TableRow>
-      <TableRow
-        className={`text-lg ${styles.background_head_table}`}
-      >
-        <TableHead
-          className={`text-center border ${styles.text}`}
-        >
+      <TableRow className={`text-lg ${styles.background_head_table}`}>
+        <TableHead className={`text-center border ${styles.text}`}>
           ค่าเฉลี่ย
         </TableHead>
-        <TableHead
-          className={`text-center border ${styles.text}`}
-        >
+        <TableHead className={`text-center border ${styles.text}`}>
           ค่า SD
         </TableHead>
       </TableRow>
@@ -99,20 +75,14 @@ const IndividualOverview = ({ period }: { period: PeriodType }) => {
   useEffect(() => {
     const fetchIndividualOverview = async () => {
       try {
-        if (ProfileDetail.id) {
-          const response = await GlobalApi.getAllResultIndividualOverview(
-            period.period_id,
-            ProfileDetail.id
-          );
-          setIndividual(response?.data);
-          //   console.log("Individual",response?.data);
-        }
+        const response = await GlobalApi.getAllResultIndividualOverview(period.period_id,userId);
+        setIndividual(response?.data);
       } catch (error) {
         handleErrorOnAxios(error);
       }
     };
     fetchIndividualOverview();
-  }, [ProfileDetail]);
+  }, []);
   return (
     <div className="mx-auto w-full max-w-screen-2xl">
       <div className="border rounded-lg">

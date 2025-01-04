@@ -6,21 +6,30 @@ import { Button } from "@/components/ui/button";
 import GlobalApi, { handleErrorOnAxios } from "@/app/_util/GlobalApi";
 import { Loader } from "lucide-react";
 import { useThemeStyles } from "@/hooks/useTheme";
+import { toast } from "sonner";
 
 const UpComingPeriod = () => {
   const [loading, setLoading] = useState(false);
   const { allPeriod } = useStore();
   const styles = useThemeStyles();
+  const showToast = (title: string, description: string) => {
+    toast(title, { description });
+  };
   const savePeriod = async (period_id: string) => {
+    setLoading(true);
     try {
       const payload = {
         period_id,
       };
       const response = await GlobalApi.saveEvaluationToHistory(payload);
       console.log("Save", response?.data);
+      showToast("ทำรายการสำเร็จ","บันทึกผลการประเมินเรียบร้อยแล้ว")
+      setLoading(false);
     } catch (error) {
       console.error("API saveEvaluationToHistory", { message: error });
       return handleErrorOnAxios(error);
+    }finally{
+      setLoading(false);
     }
   };
   return (

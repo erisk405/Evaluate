@@ -40,6 +40,7 @@ import { toast } from "@/components/ui/use-toast";
 import SetSuperviseOfDepartmentSection from "./SetSuperviseOfDepartmentSection";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useThemeStyles } from "@/hooks/useTheme";
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
@@ -62,6 +63,7 @@ export default function SettingSection({
     },
   });
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const styles = useThemeStyles();
   // for change when select file image
   const [selectedImage, setSelectImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -284,7 +286,7 @@ export default function SettingSection({
                   </div>
                 </div>
                 <div className="col-span-4 @[628px]:col-span-1">
-                  <div className="bg-white shadow rounded-xl overflow-hidden">
+                  <div className={`${styles.background} shadow rounded-xl overflow-hidden`}>
                     <div className="relative bg-blue-200 h-12 mb-7">
                       <Avatar
                         className="absolute top- w-[50px] h-[50px] border-2  
@@ -315,14 +317,14 @@ export default function SettingSection({
                         <p className="text-sm text-gray-500">
                           {department?.supervise?.user?.role.role_name}
                         </p>
-                        <div className="bg-neutral-100 p-2 rounded-lg">
+                        <div className={` ${styles.background_third_head_table} p-2 rounded-lg`}>
                           <div className="grid grid-cols-4 gap-3 p-1 rounded-lg">
-                            <div className="col-span-1 bg-neutral-300 w-[40px] h-[40px] rounded-full flex justify-center items-center">
+                            <div className={`col-span-1 ${styles.background_card} w-[40px] h-[40px] rounded-full flex justify-center items-center`}>
                               <h2 className="text-xl m-auto">🏢</h2>
                             </div>
                             <div className="grid grid-cols-1 col-span-3 ">
-                              <p className="text-sm text-gray-500">สังกัดที่</p>
-                              <h2 className="text-sm text-stone-700 truncate">
+                              <p className={`text-sm ${styles.text_description}`}>สังกัดที่</p>
+                              <h2 className={`text-sm ${styles.text_description} truncate`}>
                                 {
                                   department?.supervise?.user?.department
                                     ?.department_name

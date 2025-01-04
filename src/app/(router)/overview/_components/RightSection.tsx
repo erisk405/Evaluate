@@ -115,7 +115,6 @@ const RightSection = ({ permission, period }: RightSectionProps) => {
       title: "",
     },
   });
-
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       const data = {
@@ -186,6 +185,16 @@ const RightSection = ({ permission, period }: RightSectionProps) => {
       };
       const response = await GlobalApi.saveEvaluationToHistory(payload);
       console.log("Save", response?.data);
+      toast({
+        title: "ทำรายการสำเร็จ",
+        description: (
+          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-x-auto">
+            <code className="text-white whitespace-pre-wrap break-words">
+              บันทึกผลการประเมินเรียบร้อยแล้ว
+            </code>
+          </pre>
+        ),
+      });
     } catch (error) {
       console.error("API saveEvaluationToHistory", { message: error });
       return handleErrorOnAxios(error);
@@ -292,7 +301,9 @@ const RightSection = ({ permission, period }: RightSectionProps) => {
                 : "pb-5 transition-all ease-in-out duration-300"
             }  overflow-hidden`}
           >
-            <div className={`font-bold ${styles.background} text-xl flex items-center gap-3 py-5 relative z-30`}>
+            <div
+              className={`font-bold ${styles.background} text-xl flex items-center gap-3 py-5 relative z-30`}
+            >
               <TextEffect preset="slide">กำหนด วัน-เวลา การประเมิน</TextEffect>
               <AlarmClockPlus className="text-blue-500" />
             </div>

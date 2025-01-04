@@ -43,6 +43,8 @@ import { PeriodType, User } from "@/types/interface";
 import useStore from "@/app/store/store";
 import { formatThaiDateTime } from "@/app/(router)/overview/_components/RightSection";
 import { Item } from "@radix-ui/react-select";
+import { useThemeStyles } from "@/hooks/useTheme";
+import GlobalApi from "@/app/_util/GlobalApi";
 
 // Define the props interface for the ClearScoreSection component
 interface ClearScoreSectionProps {
@@ -50,18 +52,26 @@ interface ClearScoreSectionProps {
   selectPeriod: PeriodType;
 }
 const ClearScoreSection = ({ table, selectPeriod }: ClearScoreSectionProps) => {
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     try {
       const selectData = table
         .getSelectedRowModel()
-        .rows.map((row) => row.original);
-      console.log("filter",selectData.map(item => item.id));
+        .rows.map((row) => row.original).map((item) => item.id)
+        // console.log("selectData",selectData);
+        
+      const payload = {
+        allUserId: selectData,
+        periodId: selectPeriod.period_id,
+      };
+      const response = await GlobalApi.deleteUserEvaluation(payload)
+      console.log("response",response?.data);
       
     } catch (error) {
       console.error("Error filtering employees:", error);
     }
   };
   const { roles } = useStore();
+  const styles = useThemeStyles();
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -93,8 +103,8 @@ const ClearScoreSection = ({ table, selectPeriod }: ClearScoreSectionProps) => {
             <div className="grid grid-cols-1 w-full">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="p-2 bg-gray-200 rounded-full">
-                    <CalendarX size={18} />
+                  <div className={`p-2 ${styles.background_icon} rounded-full`}>
+                    <CalendarX size={18} className={`${styles.text}`} />
                   </div>
                   <h2>รอบการประเมิน</h2>
                 </div>

@@ -1,26 +1,18 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
   DrawerDescription,
-  DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-  DrawerTrigger,
 } from "@/components/ui/drawer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import GlobalApi from "@/app/_util/GlobalApi";
-import {
-  formResultsType,
-  getResultEvaluateType,
-  PeriodType,
-} from "@/types/interface";
+import { getResultEvaluateType, PeriodType } from "@/types/interface";
 import CategorizedTable from "./categorizedTable";
 import OverviewOfResults from "./overview-of-results";
 import Loading from "@/app/_components/Loading";
 import IndividualOverview from "./individual-overview";
+import useStore from "@/app/store/store";
 
 type Personal_resultProp = {
   period: PeriodType;
@@ -31,6 +23,7 @@ const Personal_result = ({ period, userId }: Personal_resultProp) => {
   const [loading, setLoading] = useState(false);
   const [resultEvaluateDetail, setResultEvaluateDetail] =
     useState<getResultEvaluateType>();
+  const { ProfileDetail } = useStore();
 
   const fetchResultEvaluateDetail = async () => {
     setLoading(true);
@@ -95,9 +88,14 @@ const Personal_result = ({ period, userId }: Personal_resultProp) => {
                 {item.formName}
               </TabsTrigger>
             ))}
-            <TabsTrigger value="individual-overview">
-              ภาพรวมของแต่ละบุคคล
-            </TabsTrigger>
+            {(["LEVEL_2", "LEVEL_3", "LEVEL_4"].includes(
+              ProfileDetail.role?.role_level || ""
+            ) ||
+              ProfileDetail.role?.role_name === "admin") && (
+              <TabsTrigger value="individual-overview">
+                ภาพรวมของแต่ละบุคคล
+              </TabsTrigger>
+            )}
           </TabsList>
         </div>
         <TabsContent value="all-result">
@@ -108,9 +106,14 @@ const Personal_result = ({ period, userId }: Personal_resultProp) => {
             <CategorizedTable formResultsItem={item} />
           </TabsContent>
         ))}
-        <TabsContent value="individual-overview">
-          <IndividualOverview period={period} />
-        </TabsContent>
+        {(["LEVEL_2", "LEVEL_3", "LEVEL_4"].includes(
+          ProfileDetail.role?.role_level || ""
+        ) ||
+          ProfileDetail.role?.role_name === "admin") && (
+          <TabsContent value="individual-overview">
+            <IndividualOverview period={period} userId={userId} />
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   ) : (

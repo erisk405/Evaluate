@@ -82,6 +82,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Separator } from "@/components/ui/separator";
+import { useThemeStyles } from "@/hooks/useTheme";
 
 export const columns: ColumnDef<User>[] = [
   {
@@ -201,6 +202,7 @@ export function ListEmployeeOfDepartment({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [globalFilter, setGlobalFilter] = useState("");
+  const styles = useThemeStyles();
 
   // select ตัวนี้ใช้กับ การที่ต้องการ select ข้อมูลทั้งตารางมาใช้ได้ในส่วนของ employee ในdepartment นั้นๆ
   const [rowSelection, setRowSelection] = useState({});
@@ -355,7 +357,7 @@ export function ListEmployeeOfDepartment({
     return pageNumbers;
   };
   return (
-    <div className="w-full ">
+    <div className={`w-full ${styles.text}`}>
       <div className="flex items-center justify-between py-4">
         <Input
           placeholder="ค้นหา: ชื่อ / ตำแหน่ง / หน่วยงาน"
@@ -530,14 +532,14 @@ export function ListEmployeeOfDepartment({
         </div>
       </div>
       {/* table employee on department  */}
-      <div className="rounded-2xl border bg-white">
+      <div className={`rounded-2xl border ${styles.background}`}>
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow key={headerGroup.id} className={`${styles.background_third_head_table}`}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id} className=" text-neutral-800">
+                    <TableHead key={header.id} >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
