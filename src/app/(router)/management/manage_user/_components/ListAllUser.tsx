@@ -64,6 +64,7 @@ import { PageNumber, User } from "@/types/interface";
 import React, { useEffect, useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useThemeClass, useThemeStyles } from "@/hooks/useTheme";
+import EditPageUser from "./edit-page-user";
 
 type ListEmployeeProp = {
   allUser: User[];
@@ -262,41 +263,7 @@ export function ListEmployee({ allUser, fetchUserList }: ListEmployeeProp) {
       enableHiding: false,
       header: "Action",
       cell: ({ row }) => {
-        return (
-          <Dialog>
-            <DialogTrigger asChild>
-              <div className="active:scale-90  transition-all">
-                <Button variant="outline" className="flex gap-1">
-                  <div className="bg-blue-100 p-1 rounded-full items-center justify-center text-blue-500">
-                    <Pencil size={16} />
-                  </div>
-                  Edit
-                </Button>
-              </div>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[565px]">
-              <DialogHeader>
-                <DialogTitle>
-                  <div className="flex items-center gap-2">
-                    <div className="bg-blue-50 p-2 rounded-full">
-                      <UserRoundCog size={30} className="text-blue-500" />
-                    </div>
-                    <h2 className="text-xl text-stone-800">Edit user</h2>
-                  </div>
-                </DialogTitle>
-                <DialogDescription>
-                  Make changes to your profile here. Click save when you're
-                  done.
-                </DialogDescription>
-              </DialogHeader>
-              {/* User Profile */}
-              <UserProfile
-                userDetail={row.original}
-                refreshData={fetchUserList}
-              />
-            </DialogContent>
-          </Dialog>
-        );
+        return <EditPageUser  userDetail={row.original} refreshData={fetchUserList} />;
       },
     },
   ];

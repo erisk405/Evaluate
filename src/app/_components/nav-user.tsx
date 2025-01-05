@@ -48,8 +48,7 @@ export function NavUser() {
   const fetchUser = async () => {
     try {
       const response = await GlobalApi.fetchUserProfile();
-      const { id, name, image, email, prefix, role, roleRequests, department } =
-        response.data;
+      const { id, name, image, email, prefix, role, roleRequests, department ,phone } =response.data;
       // console.log("responseNev-User", response.data);
 
       updateProfileDetail({
@@ -60,6 +59,7 @@ export function NavUser() {
         image: image ? image.url : "/profiletest.jpg",
         role,
         roleRequests,
+        phone,
         department: department || null,
       });
     } catch (error) {

@@ -16,9 +16,10 @@ import { Input } from "@/components/ui/input";
 import { Fingerprint, Loader, RectangleEllipsis } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useThemeStyles } from "@/hooks/useTheme";
+import GlobalApi from "@/app/_util/GlobalApi";
 const formSchema = z
   .object({
-    currPassword: z
+    oldPassword: z
       .string()
       .min(8, {
         message: "Password must be at least 8 characters long.",
@@ -32,7 +33,7 @@ const formSchema = z
       .regex(/[0-9]/, {
         message: "Password must contain at least one number.",
       }),
-    password: z
+      newPassword: z
       .string()
       .min(8, {
         message: "Password must be at least 8 characters long.",
@@ -48,7 +49,7 @@ const formSchema = z
       }),
     confirmPassword: z.string(),
   })
-  .refine((data) => data.password === data.confirmPassword, {
+  .refine((data) => data.newPassword === data.confirmPassword, {
     message: "Passwords don't match.",
     path: ["confirmPassword"], // Error message will be displayed under confirmPassword field
   });
@@ -58,8 +59,8 @@ const page = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      currPassword: "",
-      password: "",
+      oldPassword: "",
+      newPassword: "",
       confirmPassword: "",
     },
   });
@@ -67,8 +68,13 @@ const page = () => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       setLoading(true);
-
       console.log(values);
+      const payload = {
+        old_pass:values.oldPassword,
+        new_pass:values.newPassword
+      }
+      const response = await GlobalApi.changePassword(payload);
+      console.log(response);
       toast({
         description: "Server is updated your password success.",
       });
@@ -100,7 +106,7 @@ const page = () => {
               <div>
                 <FormField
                   control={form.control}
-                  name="currPassword"
+                  name="oldPassword"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Current Password</FormLabel>
@@ -119,7 +125,7 @@ const page = () => {
               <div>
                 <FormField
                   control={form.control}
-                  name="password"
+                  name="newPassword"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Password</FormLabel>

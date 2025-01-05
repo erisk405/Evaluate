@@ -81,6 +81,7 @@ const fetchUserProfile = async (): Promise<AxiosResponse<UserProfile>> => {
 const updateProfileName = async (payload: {
   name: string;
   prefixId: string;
+  phone: string;
 }) => {
   try {
     return await axios.put(`${apiUrl}/myProfile`, payload, {
@@ -187,8 +188,18 @@ const addUsersToDepartment = async (payload: any) => {
     console.error("Error usersToDepartment:", error);
   }
 };
-
-const updateUserProfileByAdmin = async (payload: any) => {
+type updateUserProfileByAdminProp = {
+  userId: string;
+  name: string;
+  department: string;
+  email: string;
+  role: string;
+  prefixId: string;
+  phone: string;
+};
+const updateUserProfileByAdmin = async (
+  payload: updateUserProfileByAdminProp
+) => {
   try {
     return await axios.put(`${apiUrl}/userProfile`, payload, {
       withCredentials: true,
@@ -201,6 +212,27 @@ const updateUserProfileByAdmin = async (payload: any) => {
   }
 };
 
+const changePassword = async (
+  payload: { old_pass?: string; new_pass: string },
+  userId?: string
+) => {
+  try {
+    const response = await axios.put(
+      `${apiUrl}/password${userId ? `/${userId}` : ""}`,
+      payload,
+      {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "application/json", // Set content type to JSON
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    console.error("Error changePassword:", error);
+    return handleErrorOnAxios(error);
+  }
+};
 // -----------------------------------------------------------
 //                       Role Table
 // -----------------------------------------------------------
@@ -821,4 +853,5 @@ export default {
   getExportEvaluationByUserId,
   getAllResultIndividualOverview,
   deleteUserEvaluation,
+  changePassword,
 };

@@ -26,13 +26,20 @@ import {
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import SetStatusSection from "./SetStatusSection";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import useStore from "../store/store";
 import GlobalApi from "../_util/GlobalApi";
 import { toast } from "@/components/ui/use-toast";
 import socket from "@/lib/socket";
-import { Role } from "@/types/interface";
+import {
+  Department,
+  PrefixType,
+  Role,
+  RoleRequest,
+  User,
+} from "@/types/interface";
 import SetPrefixSelection from "./SetPrefixSelection";
+import { useProfileComparison } from "../lib/adapters/user-profile/useProfileComparison";
 
 const formSchema = z.object({
   image: z
@@ -59,6 +66,9 @@ const formSchema = z.object({
   prefix: z.string().min(1, {
     message: "prefix is required",
   }),
+  phoneNumber: z.string().regex(/^(\+\d{1,3}[- ]?)?\d{10}$/, {
+    message: "Phone number must be a valid format.",
+  }),
 });
 
 export default function Myprofile() {
@@ -67,6 +77,7 @@ export default function Myprofile() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+
   //  image
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
@@ -95,6 +106,7 @@ export default function Myprofile() {
         ? ProfileDetail.department.department_name
         : "no department",
       role: ProfileDetail?.role?.id,
+      phoneNumber: ProfileDetail.phone ? ProfileDetail.phone : "ไม่พบเบอร์โทร",
     },
   });
   // 2. Define a submit handler.
@@ -110,12 +122,13 @@ export default function Myprofile() {
 
         const response = await GlobalApi.updateUserImage(formData);
         if (response?.data) {
-          const { id, name, image, prefix, email, role } = response.data;
+          const { id, name, image, prefix, email, role, phone } = response.data;
           updateProfileDetail({
             id,
             prefix,
             name,
             email,
+            phone,
             image: image?.url ?? "/profiletest.jpg",
             role,
           });
@@ -126,14 +139,15 @@ export default function Myprofile() {
       const payload = {
         name: nameCombi,
         prefixId: values.prefix,
+        phone: values.phoneNumber,
       };
 
       const response = await GlobalApi.updateProfileName(payload);
       console.log("nameResponse", response);
 
       if (response?.data) {
-        const { name, prefix } = response.data;
-        updateProfileDetail({ name, prefix });
+        const { name, prefix, phone } = response.data;
+        updateProfileDetail({ name, prefix, phone });
       }
 
       // Role request logic
@@ -179,7 +193,6 @@ export default function Myprofile() {
       );
       // หาว่ามีการร้องขอมามั้ย ถ้ามีก็ให้ updateProfileDetailไว้ เพื่อคงสถานะ แล้วนำไปใช้ในการ disable button
       // console.log("response:", response);
-
       const { id, role_name, description, role_level } =
         response?.data.data.role;
       const roleRequests: { role: Role; status: string }[] = [
@@ -208,7 +221,10 @@ export default function Myprofile() {
       console.error("Failed to request role:", error);
     }
   };
-
+  const isProfileUnchanged = useProfileComparison(
+    form.getValues(),
+    ProfileDetail
+  );
   return (
     <div className="">
       <div className="relative bg-gray-100 w-full h-[120px]">
@@ -355,6 +371,22 @@ export default function Myprofile() {
               )}
             />
             <Separator />
+            <FormField
+              control={form.control}
+              name="phoneNumber"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="grid grid-cols-11 items-center gap-3">
+                    <h2 className="col-span-3 text-sm">Phone</h2>
+                    <FormControl className="col-span-8">
+                      <Input placeholder="097-xxx-xxxx" {...field} />
+                    </FormControl>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Separator />
             {/* department */}
             <FormField
               control={form.control}
@@ -468,7 +500,7 @@ export default function Myprofile() {
             />
             <div className="w-full text-right">
               {isLoading ? (
-                <Button className="w-32" type="submit">
+                <Button className="w-32" type="submit" disabled={isProfileUnchanged}>
                   Save Change
                 </Button>
               ) : (

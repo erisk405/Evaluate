@@ -22,10 +22,14 @@ import useStore from "../store/store";
 import GlobalApi from "../_util/GlobalApi";
 import { PrefixType } from "@/types/interface";
 
+type SetPrefixSelectionProp = {
+  onPrefixChange: (prefix_id: string) => void;
+  userPrefix?: PrefixType;
+};
 export default function SetPrefixSelection({
   onPrefixChange,
   userPrefix,
-}: any) {
+}: SetPrefixSelectionProp) {
   const { ProfileDetail } = useStore();
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState<string | null>("");
@@ -43,10 +47,13 @@ export default function SetPrefixSelection({
     fetchPrefix();
   }, []);
   useEffect(() => {
-    setValue(ProfileDetail.prefix ? ProfileDetail.prefix.prefix_id : null);
+    if (userPrefix) {
+      setValue(userPrefix.prefix_id);
+    } else {
+      setValue(ProfileDetail.prefix ? ProfileDetail.prefix.prefix_id : null);
+    }
     // console.log("prefix",ProfileDetail.prefix.prefix_id );
-    
-  }, [ProfileDetail]);
+  }, [ProfileDetail, userPrefix]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

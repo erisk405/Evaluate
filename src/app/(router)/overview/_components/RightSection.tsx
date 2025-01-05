@@ -222,10 +222,10 @@ const RightSection = ({ permission, period }: RightSectionProps) => {
               ease: [0, 0.71, 0.2, 1.01],
             }}
             className={`rounded-2xl flex @[23rem]:flex-row @[23rem]:items-start 
-              flex-col justify-center items-center shadow-sm border w-auto ${styles.text}`}
+              flex-col justify-center items-center shadow-sm border-none w-auto ${styles.text} ${styles.background}`}
           >
             <Calendar
-              className="border-b @[23rem]:border-r"
+              className={`border-b @[23rem]:border-r `}
               classNames={{
                 day_selected:
                   "w-full bg-green-500 rounded-md text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
@@ -252,7 +252,7 @@ const RightSection = ({ permission, period }: RightSectionProps) => {
               }
               numberOfMonths={1}
             />
-            <div className="py-4 px-1">
+            <div className={`py-4 px-1 `}>
               <div className="grid gap-3 items-center">
                 <div className="flex items-center">
                   <div className="relative">
@@ -614,8 +614,7 @@ const RightSection = ({ permission, period }: RightSectionProps) => {
           </div>
         </motion.div>
       ) : (
-        // ส่วนของ user เท่าไป
-        <div className={`${styles.text}`}>
+        <>
           {period && (
             <motion.div
               initial={{ opacity: 0, scale: 0.5 }}
@@ -628,7 +627,7 @@ const RightSection = ({ permission, period }: RightSectionProps) => {
                   damping: 12,
                 },
               }}
-              className="py-8 px-2 rounded-lg shadow "
+              className={`my-10 p-2 rounded-lg shadow ${styles.background}`}
             >
               <CarouselSection
                 period={period}
@@ -636,25 +635,27 @@ const RightSection = ({ permission, period }: RightSectionProps) => {
               />
             </motion.div>
           )}
-          <motion.div
-            className=" p-5 h-auto shadow rounded-2xl mt-3"
-            initial={{ opacity: 0, x: 100 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{
-              duration: 1.2,
-              ease: [0, 0.71, 0.2, 1.01],
-              delay: 0.1,
-            }}
-          >
-            <h2 className="font-bold text-xl flex gap-3">
-              <Atom className=" text-sky-400" />
-              <TextEffect preset="slide">รายการแต่ละหน่วยงาน</TextEffect>
-            </h2>
-            <div className="mt-5 border rounded-xl shadow-inner">
-              <DepartmentSection />
-            </div>
-          </motion.div>
-        </div>
+          <div className={`${styles.text}`}>
+            <motion.div
+              className={`p-5 h-auto shadow rounded-2xl ${styles.background}`}
+              initial={{ opacity: 0, x: 100 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{
+                duration: 1.2,
+                ease: [0, 0.71, 0.2, 1.01],
+                delay: 0.1,
+              }}
+            >
+              <h2 className="font-bold text-xl flex gap-3">
+                <Atom className=" text-sky-400" />
+                <TextEffect preset="slide">รายการแต่ละหน่วยงาน</TextEffect>
+              </h2>
+              <div className={`mt-5 border rounded-xl shadow-inner  `}>
+                <DepartmentSection />
+              </div>
+            </motion.div>
+          </div>
+        </>
       )}
     </div>
   );

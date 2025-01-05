@@ -33,6 +33,7 @@ interface StoreState {
     email: string | null;
     image: string | null;
     role: Role | null;
+    phone: string | null,
     department: Department | null;
     roleRequests: RoleRequest[] | null;
   };
@@ -44,6 +45,7 @@ interface StoreState {
     email?: string;
     image?: string;
     role?: Role;
+    phone?:string;
     roleRequests?: RoleRequest[];
     department?: Department;
   }) => void;
@@ -86,6 +88,7 @@ const useStore = create<StoreState>((set) => ({
     email: null,
     image: null,
     role: null,
+    phone:null,
     roleRequests: null,
     department: null
   },

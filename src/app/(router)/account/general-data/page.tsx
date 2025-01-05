@@ -41,6 +41,7 @@ import SetStatusSection from "@/app/_components/SetStatusSection";
 import Loading from "@/app/_components/Loading";
 import { useTheme } from "next-themes";
 import { useThemeClass, useThemeStyles } from "@/hooks/useTheme";
+import { useProfileComparison } from "@/app/lib/adapters/user-profile/useProfileComparison";
 
 const formSchema = z.object({
   image: z
@@ -66,6 +67,9 @@ const formSchema = z.object({
   }),
   prefix: z.string().min(1, {
     message: "prefix is required",
+  }),
+  phoneNumber: z.string().regex(/^(\+\d{1,3}[- ]?)?\d{10}$/, {
+    message: "Phone number must be a valid format.",
   }),
 });
 
@@ -125,14 +129,15 @@ export default function page() {
       const payload = {
         name: nameCombi,
         prefixId: values.prefix,
+        phone: values.phoneNumber,
       };
 
       const response = await GlobalApi.updateProfileName(payload);
       console.log("nameResponse", response);
 
       if (response?.data) {
-        const { name, prefix } = response.data;
-        updateProfileDetail({ name, prefix });
+        const { name, prefix, phone } = response.data;
+        updateProfileDetail({ name, prefix, phone });
       }
 
       // Role request logic
@@ -178,7 +183,6 @@ export default function page() {
       );
       // หาว่ามีการร้องขอมามั้ย ถ้ามีก็ให้ updateProfileDetailไว้ เพื่อคงสถานะ แล้วนำไปใช้ในการ disable button
       // console.log("response:", response);
-
       const { id, role_name, description, role_level } =
         response?.data.data.role;
       const roleRequests: { role: Role; status: string }[] = [
@@ -193,7 +197,6 @@ export default function page() {
           status: "PENDING",
         },
       ];
-
       updateProfileDetail({
         roleRequests: roleRequests,
       });
@@ -208,6 +211,10 @@ export default function page() {
     }
   };
   // ใช้ useEffect เพื่อรอให้ ProfileDetail มีข้อมูลก่อน
+  const isProfileUnchanged = useProfileComparison(
+    form.getValues(),
+    ProfileDetail
+  );
   useEffect(() => {
     if (ProfileDetail) {
       form.reset({
@@ -219,6 +226,9 @@ export default function page() {
         Department:
           ProfileDetail?.department?.department_name || "no department",
         role: ProfileDetail?.role?.id || "",
+        phoneNumber: ProfileDetail.phone
+          ? ProfileDetail.phone
+          : "ไม่พบเบอร์โทร",
       });
     }
 
@@ -348,7 +358,6 @@ export default function page() {
                 )}
               />
             </div>
-
             <Separator />
             {/* email */}
             <FormField
@@ -372,6 +381,22 @@ export default function page() {
                           {...field}
                         />
                       </div>
+                    </FormControl>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />{" "}
+            <Separator />
+            <FormField
+              control={form.control}
+              name="phoneNumber"
+              render={({ field }) => (
+                <FormItem>
+                  <h2 className="col-span-3 text-sm">Phone</h2>
+                  <div className="grid grid-cols-11 items-center gap-3">
+                    <FormControl className="col-span-11">
+                      <Input placeholder="097-xxx-xxxx" {...field} />
                     </FormControl>
                   </div>
                   <FormMessage />
@@ -492,7 +517,7 @@ export default function page() {
             />
             <div className="w-full text-right">
               {isLoading ? (
-                <Button className="w-32" type="submit">
+                <Button className="w-32" type="submit" disabled={isProfileUnchanged}>
                   Save Change
                 </Button>
               ) : (

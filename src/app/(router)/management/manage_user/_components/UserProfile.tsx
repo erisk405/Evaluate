@@ -11,20 +11,21 @@ import {
   FormDescription,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import { Check, Loader, Mail } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "@/components/ui/use-toast";
 import { Role, User } from "@/types/interface";
-import useStore from "@/app/store/store";
 import GlobalApi from "@/app/_util/GlobalApi";
 import SetRoleUserOptions from "./SetRoleUserOptions";
 import SetDepartmentUserOptions from "./SetDepartmentUserOptions";
 import SetPrefixSelection from "@/app/_components/SetPrefixSelection";
+import { useProfileComparison } from "@/app/lib/adapters/user-profile/useProfileComparison";
 
 const formSchema = z.object({
   image: z
@@ -50,6 +51,9 @@ const formSchema = z.object({
   }),
   prefix: z.string().min(1, {
     message: "prefix is required",
+  }),
+  phoneNumber: z.string().regex(/^(\+\d{1,3}[- ]?)?\d{10}$/, {
+    message: "Phone number must be a valid format.",
   }),
 });
 
@@ -77,7 +81,6 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
   const handleImageClick = () => {
     fileInputRef.current?.click();
   };
-
   //   useForm
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -88,10 +91,10 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
       email: userDetail?.email ? userDetail?.email : "",
       Department: userDetail?.department?.id || "", // Ensure a string is provided
       role: userDetail?.role?.id,
-      prefix: userDetail?.prefix?.prefix_id
+      prefix: userDetail?.prefix?.prefix_id,
+      phoneNumber: userDetail.phone,
     },
   });
-
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
@@ -114,13 +117,14 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
           });
         }
       }
-
       const data = {
         userId: userDetail.id,
         name: values.firstName + " " + values.lastName,
         department: values.Department,
         email: values.email,
         role: values.role,
+        prefixId: values.prefix,
+        phone: values.phoneNumber,
       };
       const response = await GlobalApi.updateUserProfileByAdmin(data);
       console.log(response);
@@ -130,7 +134,6 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
       console.log("error", { message: error });
     }
   }
-
   // function เอาไว้ใชักับ SetStatusSection เพื่อให้สามารถนำ valueจาก component ด้านนอกมาใช้ได้
   const { setValue } = form;
   const handleRoleChange: any = (newRole: any) => {
@@ -143,9 +146,16 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
     console.log("handlePrefixChange", newPrefix);
     setValue("prefix", newPrefix);
   };
+  const isProfileUnchanged = useProfileComparison(
+    form.getValues(),
+    userDetail
+  );
+  useEffect(() => {
+    console.log("userDetail", userDetail);
+  }, [userDetail]);
   return (
     <div className="">
-      <div className="relative w-full h-[100px]">
+      <div className="relative w-full h-[60px]">
         <div
           className="absolute flex gap-3 items-center top-1/2 -translate-y-1/2  px-4 cursor-pointer"
           onClick={handleImageClick}
@@ -155,10 +165,10 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
               <div className="relative">
                 <Image
                   src={selectedImage}
-                  width={500}
-                  height={500}
+                  width={100}
+                  height={100}
                   alt={"profile"}
-                  className="w-[85px] h-[85px] rounded-full object-cover border border-neutral-50 p-[2px] shadow-lg bg-white"
+                  className="w-[60px] h-[60px] rounded-full object-cover border border-neutral-50 p-[2px] shadow-lg bg-white"
                   loading="lazy"
                 />
               </div>
@@ -166,10 +176,10 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
               <div className="relative">
                 <Image
                   src={userDetail?.image.url}
-                  width={500}
-                  height={500}
+                  width={100}
+                  height={100}
                   alt={"profile"}
-                  className="w-[85px] h-[85px] rounded-full object-cover border border-neutral-50 p-[2px] shadow-lg bg-white"
+                  className="w-[60px] h-[60px] rounded-full object-cover border border-neutral-50 p-[2px] shadow-lg bg-white"
                   loading="lazy"
                 />
               </div>
@@ -177,10 +187,10 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
               <div className="relative">
                 <Image
                   src={"/profiletest.jpg"}
-                  width={500}
-                  height={500}
+                  width={100}
+                  height={100}
                   alt={"profile"}
-                  className="w-[85px] h-[85px] rounded-full object-cover border border-neutral-50 p-[2px] shadow-lg bg-white"
+                  className="w-[60px] h-[60px] rounded-full object-cover border border-neutral-50 p-[2px] shadow-lg bg-white"
                   loading="lazy"
                 />
               </div>
@@ -190,7 +200,7 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
             </div>
           </div>
           <div className="my-3">
-            <h2 className="text-xl font-bold">{userDetail?.name}</h2>
+            <h2 className="text-lg font-bold">{userDetail?.name}</h2>
             <h2 className="text-sm text-gray-500">{userDetail?.email}</h2>
           </div>
         </div>
@@ -288,6 +298,23 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
               )}
             />
             <Separator />
+            {/* phoneNumber */}
+            <FormField
+              control={form.control}
+              name="phoneNumber"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="grid grid-cols-11 items-center gap-3">
+                    <h2 className="col-span-3 text-sm">Phone</h2>
+                    <FormControl className="col-span-8">
+                      <Input placeholder="097-xxx-xxxx" {...field} />
+                    </FormControl>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Separator />
             {/* department */}
             <FormField
               control={form.control}
@@ -364,22 +391,9 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
                 </FormItem>
               )}
             />
-            <Separator />
-            <FormItem>
-              <div className="grid grid-cols-11 items-center gap-3">
-                <h2 className="col-span-3 text-sm">Reset Password</h2>
-                <Button variant={"outline"} className="px-16 active:scale-95">
-                  Reset
-                </Button>
-              </div>
-              <FormDescription>
-                You can reset password for member
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
             <div className="w-full text-right">
               {isLoading ? (
-                <Button className="w-32" type="submit">
+                <Button className="w-32" type="submit" disabled={isProfileUnchanged}>
                   Save Change
                 </Button>
               ) : (

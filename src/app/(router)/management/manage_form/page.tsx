@@ -43,17 +43,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form";
-
 import { QuestionList } from "./_components/QuestionList";
 import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
@@ -228,7 +217,7 @@ const page = () => {
                         className={`absolute top-0 ${
                           slideStates[item.id]
                             ? "transition-all -translate-x-full -left-1/2 "
-                            : "transition-all translate-x-full left-full top-1/2 -translate-y-1/2" 
+                            : "transition-all translate-x-full left-full top-1/2 -translate-y-1/2"
                         }`}
                       >
                         <div className="flex items-center gap-3">
@@ -256,10 +245,21 @@ const page = () => {
                                 {Object.values(SideBarEditSection).map(
                                   (section) => (
                                     <div
-                                      key={section}
-                                      className={`p-2 ${
-                                        sideBarEdit === section && "bg-gray-100"
-                                      } rounded-lg cursor-pointer`}
+                                      className={getThemeClass(
+                                        // จัดการสีพื้นหลังตาม theme
+                                        {
+                                          light: `${
+                                            sideBarEdit === section &&
+                                            "bg-zinc-100"
+                                          }`,
+                                          dark: `${
+                                            sideBarEdit === section &&
+                                            "bg-zinc-700"
+                                          }`,
+                                        },
+                                        // classes อื่นๆ ที่ใช้ร่วมกัน
+                                        `rounded-lg cursor-pointer p-2`
+                                      )}
                                       onClick={() => setSideBarEdit(section)}
                                     >
                                       <h2 className="text-sm">{section}</h2>
