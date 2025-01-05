@@ -42,7 +42,7 @@ export const CursorContent = ({
     >
       <div className="flex items-center gap-2 ">
         <Image
-          src={item.image.url || "/test.png"}
+          src={item.image  && item.image.url || "/test.png"}
           width={50}
           height={50}
           alt="hover profile"
@@ -143,7 +143,7 @@ const InfoOfDepartmentEval = () => {
             width={300}
             height={300}
             alt="bannerDepartment"
-            src={item?.image.url ? item?.image.url : "/test.png"}
+            src={item?.image ? item?.image.url : "/test.png"}
             className="w-full h-full object-cover"
           />
         </div>
