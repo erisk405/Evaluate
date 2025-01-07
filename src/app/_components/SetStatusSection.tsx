@@ -20,24 +20,27 @@ import { CommandList } from "cmdk";
 import { useEffect, useState } from "react";
 import useStore from "../store/store";
 import GlobalApi from "../_util/GlobalApi";
+import { Role } from "@/types/interface";
 
-export default function SetStatusSection({ onRoleChange , defaultValue ,isPending} : any) {
+type SetStatusSectionType = {
+  onChange: (value: string) => void;
+  value: string;
+  isPending: boolean;
+  defaultValue?: string;
+};
+export default function SetStatusSection({
+  onChange,
+  defaultValue,
+  value,
+  isPending,
+}: SetStatusSectionType) {
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("");
-  const { roles, setRole,ProfileDetail } = useStore();
+  const { roles, setRole, ProfileDetail } = useStore();
   const fetchRole = async () => {
     try {
       const response = await GlobalApi.getRole();
       // console.log("role:", response);
       setRole(response?.data);
-
-      // Set default value based on fetched roles
-      const defaultRole = response?.data.find(
-        (role: any) => role.role_name === defaultValue
-      );
-      if (defaultRole) {
-        setValue(defaultRole.role_name);
-      }
     } catch (error) {
       console.log(error);
     }
@@ -45,6 +48,13 @@ export default function SetStatusSection({ onRoleChange , defaultValue ,isPendin
   // ให้ เรียกใช้ function ใหม่หากเกิดการเปลี่ยนแปลงที่ rolRequest
   useEffect(() => {
     fetchRole();
+    if (defaultValue) {
+      // Set default value based on fetched roles
+      const defaultRole = roles?.find((role: Role) => role.id === defaultValue);
+      if (defaultRole) {
+        onChange(defaultRole.id);
+      }
+    }
   }, [ProfileDetail]);
 
   return (
@@ -55,10 +65,10 @@ export default function SetStatusSection({ onRoleChange , defaultValue ,isPendin
           role="combobox"
           aria-expanded={open}
           className="justify-between w-auto"
-          disabled = {isPending}
+          disabled={isPending}
         >
           {value
-            ? roles.find((Role) => Role.role_name === value)?.role_name
+            ? roles.find((Role) => Role.id === value)?.role_name
             : "Select Role"}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -74,16 +84,14 @@ export default function SetStatusSection({ onRoleChange , defaultValue ,isPendin
                   key={Role.id}
                   value={Role.role_name}
                   onSelect={(currentValue) => {
-                    const newValue = currentValue === value ? "" : currentValue;
-                    setValue(newValue);
-                    if (onRoleChange) onRoleChange(Role.id);
+                    onChange(Role.id);
                     setOpen(false);
                   }}
                 >
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      value === Role.role_name ? "opacity-100" : "opacity-0"
+                      value === Role.id ? "opacity-100" : "opacity-0"
                     )}
                   />
                   <div className="flex flex-col w-[240px]">

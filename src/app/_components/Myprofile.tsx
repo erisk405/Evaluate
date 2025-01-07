@@ -57,7 +57,7 @@ const formSchema = z.object({
   email: z.string().email({
     message: "Please enter a valid email address.",
   }),
-  Department: z.string().min(10, {
+  department: z.string().min(10, {
     message: "Department must be at least 10 characters",
   }),
   role: z.string().min(1, {
@@ -102,9 +102,9 @@ export default function Myprofile() {
       prefix: ProfileDetail.prefix?.prefix_id,
       image: undefined,
       email: ProfileDetail?.email ? ProfileDetail?.email : "",
-      Department: ProfileDetail?.department
+      department: ProfileDetail?.department
         ? ProfileDetail.department.department_name
-        : "no department",
+        : "Don't have department",
       role: ProfileDetail?.role?.id,
       phoneNumber: ProfileDetail.phone ? ProfileDetail.phone : "ไม่พบเบอร์โทร",
     },
@@ -129,7 +129,7 @@ export default function Myprofile() {
             name,
             email,
             phone,
-            image: image?.url ?? "/profiletest.jpg",
+            image,
             role,
           });
         }
@@ -173,17 +173,6 @@ export default function Myprofile() {
       setIsLoading(true);
     }
   }
-  // function เอาไว้ใชักับ SetStatusSection เพื่อให้สามารถนำ valueจาก component ด้านนอกมาใช้ได้
-  const { setValue } = form;
-
-  const handleRoleChange = (newRole: string) => {
-    setValue("role", newRole);
-  };
-  const handlePrefixChange = (newPrefix: string) => {
-    // console.log("handlePrefixChange", newPrefix);
-
-    setValue("prefix", newPrefix);
-  };
   //use Socket io for sendRoleRequest to admin
   const requestRole = async (roleId: string) => {
     try {
@@ -235,27 +224,24 @@ export default function Myprofile() {
           {selectedImage ? (
             <Image
               src={selectedImage}
-              width={500}
-              height={500}
-              alt={"profile"}
-              className="w-[85px] h-[85px] rounded-full object-cover border border-neutral-50 p-[2px] shadow-lg bg-white"
-              loading="lazy"
-            />
-          ) : ProfileDetail.image ? (
-            <Image
-              src={ProfileDetail?.image}
-              width={500}
-              height={500}
+              width={300}
+              height={300}
               alt={"profile"}
               className="w-[85px] h-[85px] rounded-full object-cover border border-neutral-50 p-[2px] shadow-lg bg-white"
               loading="lazy"
             />
           ) : (
-            <div className="w-[85px] h-[85px] rounded-full object-cover border border-neutral-50 p-[2px] shadow-lg bg-neutral-600 animate-pulse">
-              <div className="flex text-white h-full justify-center items-center animate-spin">
-                <Loader size={30} />
-              </div>
-            </div>
+            <Image
+              src={
+                ProfileDetail?.image && ProfileDetail?.image.url ||
+                "/profiletest.jpg"
+              }
+              width={300}
+              height={300}
+              alt={"profile"}
+              className="w-[85px] h-[85px] rounded-full object-cover border border-neutral-50 p-[2px] shadow-lg bg-white"
+              loading="lazy"
+            />
           )}
 
           <div className="absolute button-0 right-0 -translate-x-full -translate-y-full bg-blue-500 text-white rounded-full p-1">
@@ -291,7 +277,8 @@ export default function Myprofile() {
                     <FormItem>
                       <FormControl>
                         <SetPrefixSelection
-                          onPrefixChange={handlePrefixChange}
+                          value={field.value}
+                          onChange={field.onChange}
                         />
                       </FormControl>
                       <FormMessage />
@@ -390,7 +377,7 @@ export default function Myprofile() {
             {/* department */}
             <FormField
               control={form.control}
-              name="Department"
+              name="department"
               render={({ field }) => (
                 <FormItem>
                   <div className="grid grid-cols-11 items-center gap-3">
@@ -398,7 +385,7 @@ export default function Myprofile() {
                     <FormControl className="col-span-8">
                       <div className="relative">
                         <Input
-                          id="Department"
+                          id="department"
                           type="text"
                           disabled
                           className="focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1"
@@ -416,7 +403,7 @@ export default function Myprofile() {
             <FormField
               control={form.control}
               name="role"
-              render={() => (
+              render={({field}) => (
                 <FormItem>
                   <div className="grid grid-cols-11 items-center gap-3">
                     <h2 className="col-span-3 text-sm">Role</h2>
@@ -424,12 +411,13 @@ export default function Myprofile() {
                       <div className="relative">
                         <div className="flex items-center gap-3">
                           <SetStatusSection
-                            onRoleChange={handleRoleChange}
+                            value={field.value}
+                            onChange={field.onChange}
                             defaultValue={
                               ProfileDetail.roleRequests?.length &&
                               ProfileDetail.roleRequests.length > 0
-                                ? ProfileDetail.roleRequests[0].role.role_name
-                                : ProfileDetail?.role?.role_name
+                                ? ProfileDetail.roleRequests[0].role.id
+                                : ProfileDetail?.role?.id
                             }
                             isPending={
                               ProfileDetail.roleRequests?.length &&
@@ -500,7 +488,11 @@ export default function Myprofile() {
             />
             <div className="w-full text-right">
               {isLoading ? (
-                <Button className="w-32" type="submit" disabled={isProfileUnchanged}>
+                <Button
+                  className="w-32"
+                  type="submit"
+                  disabled={isProfileUnchanged}
+                >
                   Save Change
                 </Button>
               ) : (

@@ -1,5 +1,5 @@
 // store.ts
-import { Department, getCountUserAsEvaluatedType, getResultEvalEachDepartmentType, getResultEvaluateType, PeriodType, PrefixType, Role, RoleRequest } from '@/types/interface';
+import { Department, getCountUserAsEvaluatedType, getResultEvalEachDepartmentType, getResultEvaluateType, ImageType, PeriodType, PrefixType, Role, RoleRequest } from '@/types/interface';
 import { create } from 'zustand';
 import GlobalApi from '../_util/GlobalApi';
 
@@ -31,7 +31,7 @@ interface StoreState {
     prefix: PrefixType | null;
     name: string | null;
     email: string | null;
-    image: string | null;
+    image: ImageType | null;
     role: Role | null;
     phone: string | null,
     department: Department | null;
@@ -43,7 +43,7 @@ interface StoreState {
     prefix?: PrefixType;
     name?: string;
     email?: string;
-    image?: string;
+    image?: ImageType;
     role?: Role;
     phone?:string;
     roleRequests?: RoleRequest[];
@@ -140,7 +140,7 @@ const useStore = create<StoreState>((set) => ({
     prefix?: PrefixType;
     name?: string;
     email?: string;
-    image?: string;
+    image?: ImageType;
     role?: Role;
     roleRequests?: RoleRequest[];
     department?: Department;

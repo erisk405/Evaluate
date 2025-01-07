@@ -34,22 +34,17 @@ interface dataDepartmentByAdmin {
   user?: User[];
   // เพิ่มข้อมูลที่จำเป็นตามโครงสร้างข้อมูลจริง
 }
-interface UserImage {
-  id: string,
-  url: string,
-  public_id: string
-}
-
 interface User {
   id: string,
-  name: string,
   prefix?: PrefixType,
+  name: string,
   email: string,
-  image: UserImage,
+  image: ImageType,
   role: Role
   phone: string,
   department?: Department
   supervise?: Supervise[]
+  roleRequests?: RoleRequest[] | null;
 }
 
 interface Role {

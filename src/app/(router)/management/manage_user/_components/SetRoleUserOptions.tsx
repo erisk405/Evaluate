@@ -19,29 +19,28 @@ import {
 import { CommandList } from "cmdk";
 import { useEffect, useState } from "react";
 import useStore from "@/app/store/store";
+import { Role } from "@/types/interface";
 
+type SetRoleUserOptionsType = {
+  onChange: (value: string) => void;
+  defaultValue: Role | null;
+  value: string;
+};
 export default function SetRoleUserOptions({
-  onRoleChange,
+  onChange,
   defaultValue,
-}: any) {
+  value,
+}: SetRoleUserOptionsType) {
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("");
   const { roles } = useStore();
 
   // ให้ เรียกใช้ function ใหม่หากเกิดการเปลี่ยนแปลงที่ rolRequest
   useEffect(() => {
-    console.log("roles", roles);
-
     // Set default value based on fetched roles
-    const defaultRole = roles.find(
-      (role: any) => role.id === defaultValue.id
-    );
-    console.log("defaultRole",defaultRole);
-    
+    const defaultRole = roles.find((role: any) => role.id === defaultValue?.id);
     if (defaultRole) {
-      setValue(defaultRole.role_name);
+      onChange(defaultRole.id);
     }
-
   }, []);
 
   return (
@@ -54,7 +53,7 @@ export default function SetRoleUserOptions({
           className="justify-between w-auto"
         >
           {value
-            ? roles.find((Role) => Role.role_name === value)?.role_name
+            ? roles.find((Role) => Role.id === value)?.role_name
             : "Select Role"}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -70,16 +69,14 @@ export default function SetRoleUserOptions({
                   key={Role.id}
                   value={Role.role_name}
                   onSelect={(currentValue) => {
-                    const newValue = currentValue === value ? "" : currentValue;
-                    setValue(newValue);
-                    if (onRoleChange) onRoleChange(Role.id);
+                    onChange(Role.id);
                     setOpen(false);
                   }}
                 >
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      value === Role.role_name ? "opacity-100" : "opacity-0"
+                      value === Role.id ? "opacity-100" : "opacity-0"
                     )}
                   />
                   <div className="flex flex-col w-[240px]">

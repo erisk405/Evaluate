@@ -23,16 +23,17 @@ import GlobalApi from "../_util/GlobalApi";
 import { PrefixType } from "@/types/interface";
 
 type SetPrefixSelectionProp = {
-  onPrefixChange: (prefix_id: string) => void;
-  userPrefix?: PrefixType;
+  userPrefix?: PrefixType | null;
+  value:string
+  onChange: (value: string) => void;
 };
 export default function SetPrefixSelection({
-  onPrefixChange,
   userPrefix,
+  onChange,
+  value
 }: SetPrefixSelectionProp) {
   const { ProfileDetail } = useStore();
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState<string | null>("");
   const [prefix, setPrefix] = useState<PrefixType[]>([]);
   const fetchPrefix = async () => {
     try {
@@ -48,9 +49,9 @@ export default function SetPrefixSelection({
   }, []);
   useEffect(() => {
     if (userPrefix) {
-      setValue(userPrefix.prefix_id);
+      onChange(userPrefix.prefix_id);
     } else {
-      setValue(ProfileDetail.prefix ? ProfileDetail.prefix.prefix_id : null);
+      onChange(ProfileDetail.prefix ? ProfileDetail.prefix.prefix_id : '');
     }
     // console.log("prefix",ProfileDetail.prefix.prefix_id );
   }, [ProfileDetail, userPrefix]);
@@ -81,9 +82,7 @@ export default function SetPrefixSelection({
                   key={item.prefix_id}
                   value={item.prefix_id}
                   onSelect={(currentValue) => {
-                    const newValue = currentValue === value ? "" : currentValue;
-                    setValue(newValue);
-                    if (onPrefixChange) onPrefixChange(item.prefix_id);
+                    onChange(item.prefix_id);
                     setOpen(false);
                   }}
                 >

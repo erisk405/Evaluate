@@ -26,6 +26,7 @@ import SetRoleUserOptions from "./SetRoleUserOptions";
 import SetDepartmentUserOptions from "./SetDepartmentUserOptions";
 import SetPrefixSelection from "@/app/_components/SetPrefixSelection";
 import { useProfileComparison } from "@/app/lib/adapters/user-profile/useProfileComparison";
+import { ProfileDetailType } from "@/app/lib/adapters/user-profile/types";
 
 const formSchema = z.object({
   image: z
@@ -43,7 +44,7 @@ const formSchema = z.object({
   email: z.string().email({
     message: "Please enter a valid email address.",
   }),
-  Department: z.string().min(1, {
+  department: z.string().min(1, {
     message: "Department is required",
   }),
   role: z.string().min(1, {
@@ -58,7 +59,7 @@ const formSchema = z.object({
 });
 
 interface UserProfileProps {
-  userDetail: User;
+  userDetail: ProfileDetailType;
   refreshData: () => void;
 }
 const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
@@ -89,10 +90,10 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
       lastName: userDetail?.name?.split(" ")[1],
       image: undefined,
       email: userDetail?.email ? userDetail?.email : "",
-      Department: userDetail?.department?.id || "", // Ensure a string is provided
+      department: userDetail?.department?.id || "", // Ensure a string is provided
       role: userDetail?.role?.id,
       prefix: userDetail?.prefix?.prefix_id,
-      phoneNumber: userDetail.phone,
+      phoneNumber: userDetail.phone || "ไม่พบเบอร์โทร",
     },
   });
   // 2. Define a submit handler.
@@ -107,7 +108,7 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
         try {
           const response = await GlobalApi.updateUserImage(formData);
           console.log(response);
-          const { id, name, image, email, role } = response.data;
+          // const { id, name, image, email, role } = response.data;
         } catch (error) {
           console.error("Error updating user image:", error);
         } finally {
@@ -118,9 +119,9 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
         }
       }
       const data = {
-        userId: userDetail.id,
+        userId: userDetail.id!,
         name: values.firstName + " " + values.lastName,
-        department: values.Department,
+        department: values.department,
         email: values.email,
         role: values.role,
         prefixId: values.prefix,
@@ -134,25 +135,7 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
       console.log("error", { message: error });
     }
   }
-  // function เอาไว้ใชักับ SetStatusSection เพื่อให้สามารถนำ valueจาก component ด้านนอกมาใช้ได้
-  const { setValue } = form;
-  const handleRoleChange: any = (newRole: any) => {
-    setValue("role", newRole);
-  };
-  const handleDepertmentChange: any = (newData: any) => {
-    setValue("Department", newData);
-  };
-  const handlePrefixChange: any = (newPrefix: any) => {
-    console.log("handlePrefixChange", newPrefix);
-    setValue("prefix", newPrefix);
-  };
-  const isProfileUnchanged = useProfileComparison(
-    form.getValues(),
-    userDetail
-  );
-  useEffect(() => {
-    console.log("userDetail", userDetail);
-  }, [userDetail]);
+  const isProfileUnchanged = useProfileComparison(form.getValues(), userDetail);
   return (
     <div className="">
       <div className="relative w-full h-[60px]">
@@ -175,7 +158,10 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
             ) : userDetail.image ? (
               <div className="relative">
                 <Image
-                  src={userDetail?.image.url}
+                  src={
+                    (userDetail?.image && userDetail?.image.url) ||
+                    "profiletest.jpg"
+                  }
                   width={100}
                   height={100}
                   alt={"profile"}
@@ -218,8 +204,9 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
                     <FormItem>
                       <FormControl>
                         <SetPrefixSelection
-                          onPrefixChange={handlePrefixChange}
                           userPrefix={userDetail.prefix}
+                          value={field.value}
+                          onChange={field.onChange}
                         />
                       </FormControl>
                       <FormMessage />
@@ -318,7 +305,7 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
             {/* department */}
             <FormField
               control={form.control}
-              name="Department"
+              name="department"
               render={({ field }) => (
                 <FormItem>
                   <div className="grid grid-cols-11 items-center gap-3">
@@ -327,8 +314,9 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
                       <div className="relative">
                         <div className="flex items-center gap-3">
                           <SetDepartmentUserOptions
-                            onDepartmentChange={handleDepertmentChange}
                             defaultValue={userDetail.department}
+                            value={field.value}
+                            onChange={field.onChange}
                           />
                         </div>
                       </div>
@@ -343,7 +331,7 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
             <FormField
               control={form.control}
               name="role"
-              render={() => (
+              render={({ field }) => (
                 <FormItem>
                   <div className="grid grid-cols-11 items-center gap-3">
                     <h2 className="col-span-3 text-sm">Role</h2>
@@ -351,8 +339,9 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
                       <div className="relative">
                         <div className="flex items-center gap-3">
                           <SetRoleUserOptions
-                            onRoleChange={handleRoleChange}
                             defaultValue={userDetail.role}
+                            value={field.value}
+                            onChange={field.onChange}
                           />
                         </div>
                       </div>
@@ -393,7 +382,11 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
             />
             <div className="w-full text-right">
               {isLoading ? (
-                <Button className="w-32" type="submit" disabled={isProfileUnchanged}>
+                <Button
+                  className="w-32"
+                  type="submit"
+                  disabled={isProfileUnchanged}
+                >
                   Save Change
                 </Button>
               ) : (

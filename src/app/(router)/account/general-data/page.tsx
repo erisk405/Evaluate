@@ -59,7 +59,7 @@ const formSchema = z.object({
   email: z.string().email({
     message: "Please enter a valid email address.",
   }),
-  Department: z.string().min(10, {
+  department: z.string().min(10, {
     message: "Department must be at least 10 characters",
   }),
   role: z.string().min(1, {
@@ -163,17 +163,6 @@ export default function page() {
       setIsLoading(true);
     }
   }
-  // function เอาไว้ใชักับ SetStatusSection เพื่อให้สามารถนำ valueจาก component ด้านนอกมาใช้ได้
-  const { setValue } = form;
-
-  const handleRoleChange = (newRole: string) => {
-    setValue("role", newRole);
-  };
-  const handlePrefixChange = (newPrefix: string) => {
-    // console.log("handlePrefixChange", newPrefix);
-
-    setValue("prefix", newPrefix);
-  };
   //use Socket io for sendRoleRequest to admin
   const requestRole = async (roleId: string) => {
     try {
@@ -223,8 +212,8 @@ export default function page() {
         prefix: ProfileDetail.prefix?.prefix_id || "",
         image: undefined,
         email: ProfileDetail?.email || "",
-        Department:
-          ProfileDetail?.department?.department_name || "no department",
+        department:
+          ProfileDetail?.department?.department_name || "Don't have department",
         role: ProfileDetail?.role?.id || "",
         phoneNumber: ProfileDetail.phone
           ? ProfileDetail.phone
@@ -268,21 +257,18 @@ export default function page() {
               className="w-[70px] h-[70px] rounded-full object-cover border border-neutral-50 p-[2px] shadow bg-white"
               loading="lazy"
             />
-          ) : ProfileDetail.image ? (
+          ) : (
             <Image
-              src={ProfileDetail?.image}
+              src={
+                (ProfileDetail?.image && ProfileDetail?.image.url) ||
+                "/profiletest.jpg"
+              }
               width={100}
               height={100}
               alt={"profile"}
               className="w-[70px] h-[70px] rounded-full object-cover border border-neutral-50 p-[2px] shadow bg-white"
               loading="lazy"
             />
-          ) : (
-            <div className="w-[70px] h-[70px] rounded-full object-cover border border-neutral-50 p-[2px] shadow-lg bg-neutral-600 animate-pulse">
-              <div className="flex text-white h-full justify-center items-center animate-spin">
-                <Loader size={30} />
-              </div>
-            </div>
           )}
         </div>
         <div className="my-3">
@@ -304,7 +290,10 @@ export default function page() {
                   <div className="flex items-center gap-3 rounded-lg">
                     <h2 className="">คำนำหน้า</h2>
                     <FormControl className="col-span-8 w-full">
-                      <SetPrefixSelection onPrefixChange={handlePrefixChange} />
+                      <SetPrefixSelection
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
                     </FormControl>
                   </div>
                   <FormMessage />
@@ -407,7 +396,7 @@ export default function page() {
             {/* department */}
             <FormField
               control={form.control}
-              name="Department"
+              name="department"
               render={({ field }) => (
                 <FormItem>
                   <h2 className="col-span-3 text-sm">หน่วยงานที่สังกัด</h2>
@@ -415,7 +404,7 @@ export default function page() {
                     <FormControl className="col-span-11">
                       <div className="relative">
                         <Input
-                          id="Department"
+                          id="department"
                           type="text"
                           disabled
                           className="focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1"
@@ -433,7 +422,7 @@ export default function page() {
             <FormField
               control={form.control}
               name="role"
-              render={() => (
+              render={({ field }) => (
                 <FormItem>
                   <h2 className="col-span-3 text-sm">ตำแหน่ง</h2>
                   <div className="grid grid-cols-11 items-center gap-3">
@@ -441,7 +430,8 @@ export default function page() {
                       <div className="relative">
                         <div className="flex items-center gap-3">
                           <SetStatusSection
-                            onRoleChange={handleRoleChange}
+                            value={field.value}
+                            onChange={field.onChange}
                             defaultValue={
                               ProfileDetail.roleRequests?.length &&
                               ProfileDetail.roleRequests.length > 0
@@ -517,7 +507,11 @@ export default function page() {
             />
             <div className="w-full text-right">
               {isLoading ? (
-                <Button className="w-32" type="submit" disabled={isProfileUnchanged}>
+                <Button
+                  className="w-32"
+                  type="submit"
+                  disabled={isProfileUnchanged}
+                >
                   Save Change
                 </Button>
               ) : (

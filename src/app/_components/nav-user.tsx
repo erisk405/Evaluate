@@ -30,11 +30,11 @@ import { useEffect, useState } from "react";
 import GlobalApi from "../_util/GlobalApi";
 import socket from "@/lib/socket";
 import Link from "next/link";
+import { ImageType } from "@/types/interface";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
-  const { showProfile, ProfileDetail, updateProfileDetail, setShowProfile } =
-    useStore();
+  const { showProfile, ProfileDetail, updateProfileDetail, setShowProfile } =  useStore();
   const handleLogout = async () => {
     try {
       await GlobalApi.Logout();
@@ -43,20 +43,30 @@ export function NavUser() {
       console.error("Error logging out:", error);
     }
   };
-
+  // Transform the image object to match the ImageType structure
   // Fetch user data
   const fetchUser = async () => {
     try {
       const response = await GlobalApi.fetchUserProfile();
-      const { id, name, image, email, prefix, role, roleRequests, department ,phone } =response.data;
-      // console.log("responseNev-User", response.data);
+      const {
+        id,
+        name,
+        image,
+        email,
+        prefix,
+        role,
+        roleRequests,
+        department,
+        phone,
+      } = response.data;
+      console.log("responseNev-User", response.data);
 
       updateProfileDetail({
         id,
         prefix,
         name,
         email,
-        image: image ? image.url : "/profiletest.jpg",
+        image,
         role,
         roleRequests,
         phone,
@@ -75,7 +85,6 @@ export function NavUser() {
   useEffect(() => {
     // Fetch user data on component mount
     fetchUser();
-
   }, []);
 
   return (
@@ -90,7 +99,7 @@ export function NavUser() {
               >
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarImage
-                    src={getImageSrc(ProfileDetail.image)}
+                    src={getImageSrc(ProfileDetail.image?.url)}
                     alt={ProfileDetail.name || "profile"}
                     className="object-cover"
                   />
@@ -121,7 +130,7 @@ export function NavUser() {
                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                   <Avatar className="h-8 w-8 rounded-lg">
                     <AvatarImage
-                      src={getImageSrc(ProfileDetail.image)}
+                      src={getImageSrc(ProfileDetail.image?.url)}
                       alt={ProfileDetail.name || "profile"}
                       className="object-cover"
                     />

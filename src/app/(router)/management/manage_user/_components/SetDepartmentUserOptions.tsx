@@ -23,25 +23,24 @@ import GlobalApi from "@/app/_util/GlobalApi";
 import { Department } from "@/types/interface";
 
 export default function SetDepartmentUserOptions({
-  onDepartmentChange,
   defaultValue,
+  onChange,
+  value
 }: any) {
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("");
   const { departments } = useStore();
   // ให้ เรียกใช้ function ใหม่หากเกิดการเปลี่ยนแปลงที่ rolRequest
   useEffect(() => {
     if (defaultValue) {
       const defaultDepartment = departments?.find(
-        (department: any) => department.id === defaultValue.id
+        (department: Department) => department.id === defaultValue.id
       );
       if (defaultDepartment) {
-        setValue(defaultDepartment.department_name);
-        // Ensure the initial department is set
-        onDepartmentChange(defaultDepartment.id);
+        onChange(defaultDepartment.id); // ใช้ onChange แทน onDepartmentChange
       }
     }
-  }, [defaultValue, departments, onDepartmentChange]);
+    
+  }, [defaultValue, departments]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -54,7 +53,7 @@ export default function SetDepartmentUserOptions({
         >
           {value
             ? departments.find(
-                (item: Department) => item.department_name === value
+                (item: Department) => item.id === value
               )?.department_name
             : "Select Department"}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -71,13 +70,11 @@ export default function SetDepartmentUserOptions({
                   key={item.id}
                   value={item.department_name}
                   onSelect={(currentValue) => {
-                    // Ensure a department is always selected
                     const selectedDepartment = departments.find(
                       (dept) => dept.department_name === currentValue
                     );
-                    if (selectedDepartment) {
-                      setValue(currentValue);
-                      onDepartmentChange(selectedDepartment.id);
+                    if (selectedDepartment) { 
+                      onChange(selectedDepartment.id); // ใช้ onChange โดยตรง
                       setOpen(false);
                     }
                   }}
@@ -85,7 +82,7 @@ export default function SetDepartmentUserOptions({
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      value === item.department_name
+                      value === item.id
                         ? "opacity-100"
                         : "opacity-0"
                     )}

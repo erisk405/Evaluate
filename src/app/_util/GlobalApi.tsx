@@ -8,6 +8,8 @@ interface UserProfile {
   name: string;
   email: string;
   image?: {
+    id: string;
+    public_id: string;
     url: string;
   };
 }
