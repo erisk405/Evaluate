@@ -27,6 +27,7 @@ import { formatThaiDateTime } from "../../../_components/RightSection";
 import { Loader } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useThemeStyles } from "@/hooks/useTheme";
+import socket from "@/lib/socket";
 
 type PayloadQuestion = {
   questionId: string;
@@ -198,6 +199,9 @@ const EvaluateSection: React.FC<EvaluateSection> = ({
       // รอให้แอนิเมชันของ Sheet ปิดสำเร็จก่อน
       await new Promise((resolve) => setTimeout(resolve, 300)); // รอ 300ms (ระยะเวลาแอนิเมชัน)
       // เรียก fetchUserHaveBeenEvaluated หลังจากแอนิเมชันเสร็จสมบูรณ์
+      socket.emit("evaluatedHandled", {
+        evaluatorUserTarget,
+      });
       fetchUserHaveBeenEvaluated();
     } catch (error) {
       const errorMessage = axios.isAxiosError(error)
@@ -268,10 +272,6 @@ const EvaluateSection: React.FC<EvaluateSection> = ({
     setInitialPayload(initialPayload);
   }, [formEvaluation, defaultScoreOfUserHasEval]);
 
-  // useEffect(() => {
-  //   console.log("evaluatorUserTarget", evaluatorUserTarget);
-  //   console.log("defaultScoreOfUserHasEval", defaultScoreOfUserHasEval);
-  // }, [evaluatorUserTarget]);
   return (
     <div className="mt-3">
       <div className="flex items-center w-full flex-col">

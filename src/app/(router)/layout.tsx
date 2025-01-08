@@ -23,17 +23,20 @@ import {
 import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
 import Loading from "../_components/Loading";
+import { useThemeStyles } from "@/hooks/useTheme";
 const layout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
-  const { showNotifications, setShowNotifications, notificationCounts } = useStore();
+  const { showNotifications, setShowNotifications, notificationCounts } =
+    useStore();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const styles = useThemeStyles();
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // การแก้ไขนี้จะช่วยป้องกัน hydration mismatch และทำให้การสลับ theme ทำงานได้อย่างถูกต้องทั้ง light และ dark mode 
+  // การแก้ไขนี้จะช่วยป้องกัน hydration mismatch และทำให้การสลับ theme ทำงานได้อย่างถูกต้องทั้ง light และ dark mode
   if (!mounted) {
-    return <Loading/>; // หรือแสดง loading placeholder
+    return <Loading />; // หรือแสดง loading placeholder
   }
 
   return (
@@ -63,15 +66,15 @@ const layout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
             {/* icon for notificate */}
             <div className="flex items-center gap-3 mr-14">
               <div
-                className="flex gap-2 items-center cursor-pointer hover:bg-neutral-200 p-2 rounded-lg "
+                className={`flex gap-2 items-center cursor-pointer ${styles.hover} p-2 rounded-lg `}
                 onClick={() => setShowNotifications(!showNotifications)}
               >
                 <div className="relative">
                   {notificationCounts > 0 && (
                     <div
-                      className={`absolute -top-2 -right-2  text-white rounded-full bg-red-500 w-4 h-4 flex items-center justify-center`}
+                      className={`absolute -top-2 -right-2  rounded-full bg-red-500 w-4 h-4 flex items-center justify-center`}
                     >
-                      <h2 className="text-sm">{notificationCounts}</h2>
+                      <h2 className={`text-sm text-zinc-50`}>{notificationCounts}</h2>
                     </div>
                   )}
 

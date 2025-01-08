@@ -44,7 +44,7 @@ export default function SetDepartmentUserOptions({
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
+      <PopoverTrigger asChild >
         <Button
           variant="outline"
           role="combobox"
@@ -60,7 +60,7 @@ export default function SetDepartmentUserOptions({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[250px] p-0 relative -left-14">
-        <Command>
+        <Command >
           <CommandInput placeholder="Search Role..." />
           <CommandEmpty>No Role found.</CommandEmpty>
           <CommandGroup>

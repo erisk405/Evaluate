@@ -52,15 +52,16 @@ const page = () => {
   >([]);
 
   const joinDepartment = async () => {
-    const response = await axios.put(`${apiUrl}/usersDepartment`, params, {
-      withCredentials: true,
-    });
-    const { department } = response.data;
-    // console.log("department",department);
-
-    updateProfileDetail({
-      department: department ? department : null,
-    });
+    try {
+      const response = await GlobalApi.joinDepartment(params.departmentId);
+      const {department} = response?.data
+      updateProfileDetail({
+        department: department ? department : null,
+      });
+    } catch (error) {
+      console.error({message:error});
+      
+    }
   };
 
   const fetchUserHaveBeenEvaluated = async () => {
@@ -211,7 +212,8 @@ const page = () => {
                     <div
                       className={getThemeClass(
                         {
-                          light:"from-neutral-800 from-20% to-neutral-900 to-50%",
+                          light:
+                            "from-neutral-800 from-20% to-neutral-900 to-50%",
                           dark: "from-blue-950 from-10% to-background_secondary to-50%",
                         },
                         `flex rounded-2xl gap-3 relative overflow-hidden items-center px-8 py-4 shadow-xl 

@@ -90,7 +90,7 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
       lastName: userDetail?.name?.split(" ")[1],
       image: undefined,
       email: userDetail?.email ? userDetail?.email : "",
-      department: userDetail?.department?.id || "", // Ensure a string is provided
+      department: userDetail?.department?.id, // Ensure a string is provided
       role: userDetail?.role?.id,
       prefix: userDetail?.prefix?.prefix_id,
       phoneNumber: userDetail.phone || "ไม่พบเบอร์โทร",

@@ -373,7 +373,22 @@ const updateDepartment = async (data: any) => {
     throw error;
   }
 };
-
+const joinDepartment = async (departmentId: string) => {
+  try {
+    return await axios.put(
+      `${apiUrl}/usersDepartment`,
+      { departmentId },
+      {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "application/json", // Set content type to JSON
+        },
+      }
+    );
+  } catch (error) {
+    handleErrorOnAxios(error);
+  }
+};
 // -----------------------------------------------------------
 //                       Form Table
 // -----------------------------------------------------------
@@ -779,6 +794,19 @@ const getResultEvaluateFormHistoryForAdmin = (
   }
 };
 
+const deleteHistory = (period_id: string) => {
+  try {
+    return axios.delete(`${apiUrl}/history/${period_id}`, {
+      withCredentials: true,
+    });
+  } catch (error) {
+    console.error("API deletedHistory", {
+      message: error,
+    });
+    return handleErrorOnAxios(error);
+  }
+};
+
 // -----------------------------------------------
 //               Export API
 // ----------------------------------------------
@@ -793,6 +821,7 @@ const getExportEvaluationByUserId = (period_id: string, userId: string) => {
     return handleErrorOnAxios(error);
   }
 };
+
 export default {
   fetchUserProfile,
   Logout,
@@ -856,4 +885,6 @@ export default {
   getAllResultIndividualOverview,
   deleteUserEvaluation,
   changePassword,
+  deleteHistory,
+  joinDepartment,
 };

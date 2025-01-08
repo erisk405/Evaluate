@@ -15,6 +15,7 @@ import useStore from "@/app/store/store";
 import { PeriodType, User } from "@/types/interface";
 import { useTheme } from "next-themes";
 import { useThemeStyles } from "@/hooks/useTheme";
+import { ChevronDown, ChevronsUpDown, ChevronUp } from "lucide-react";
 
 interface IndividualType {
   headData: headDataIndividuaType;
@@ -40,9 +41,23 @@ interface resultUserType {
   };
 }
 
-const IndividualOverview = ({ period,userId }: { period: PeriodType ,userId?:string }) => {
+interface SortConfig {
+  key: "score" | "mean";
+  direction: "asc" | "desc";
+}
+const IndividualOverview = ({
+  period,
+  userId,
+}: {
+  period: PeriodType;
+  userId?: string;
+}) => {
   const styles = useThemeStyles();
   const [individual, setIndividual] = useState<IndividualType>();
+  const [sortConfig, setSortConfig] = useState<SortConfig>({
+    key: "score",
+    direction: "desc",
+  });
   const renderTableHeaders = () => (
     <>
       <TableRow className={`text-lg ${styles.background_head_table}`}>
@@ -58,13 +73,24 @@ const IndividualOverview = ({ period,userId }: { period: PeriodType ,userId?:str
         <TableHead colSpan={2} className={`text-center border ${styles.text}`}>
           ผลการประเมินการปฏิบัติงาน
         </TableHead>
-        <TableHead rowSpan={2} className={`text-center border ${styles.text}`}>
-          ผลคะแนน
+        <TableHead
+          rowSpan={2}
+          className={`text-center border  ${styles.text}`}
+          onClick={() => handleSort("score")}
+        >
+          <div className="flex items-center justify-center gap-2">
+            ผลคะแนน
+            <SortIndicator column="score" />
+          </div>
         </TableHead>
       </TableRow>
       <TableRow className={`text-lg ${styles.background_head_table}`}>
-        <TableHead className={`text-center border ${styles.text}`}>
+        <TableHead
+          className={`border flex items-center gap-2 justify-center ${styles.text}`}
+          onClick={() => handleSort("mean")}
+        >
           ค่าเฉลี่ย
+          <SortIndicator column="mean" />
         </TableHead>
         <TableHead className={`text-center border ${styles.text}`}>
           ค่า SD
@@ -72,10 +98,48 @@ const IndividualOverview = ({ period,userId }: { period: PeriodType ,userId?:str
       </TableRow>
     </>
   );
+  // Sorting function
+  const sortData = (data: resultUserType[]) => {
+    return [...data].sort((a, b) => {
+      const sortValue = sortConfig.direction === "asc" ? 1 : -1;
+      return (a[sortConfig.key] - b[sortConfig.key]) * sortValue;
+    });
+  };
+  // Handle sort click
+  const handleSort = (key: "score" | "mean") => {
+    setSortConfig((prevConfig) => ({
+      key,
+      direction:
+        prevConfig.key === key && prevConfig.direction === "desc"
+          ? "asc"
+          : "desc",
+    }));
+  };
+
+  // Sort indicator component
+  const SortIndicator = ({ column }: { column: "score" | "mean" }) => {
+    if (column === "mean" && sortConfig.key !== "mean") {
+      return <ChevronsUpDown size={20} className="inline-block ml-1" />;
+    }
+    if (sortConfig.key !== column) return null;
+    return (
+      <span className={`ml-1 text-white text-sm`}>
+        {sortConfig.direction === "asc" ? (
+          <ChevronDown size={20} />
+        ) : (
+          <ChevronUp size={20} />
+        )}
+      </span>
+    );
+  };
   useEffect(() => {
     const fetchIndividualOverview = async () => {
       try {
-        const response = await GlobalApi.getAllResultIndividualOverview(period.period_id,userId);
+        const response = await GlobalApi.getAllResultIndividualOverview(
+          period.period_id,
+          userId
+        );
+
         setIndividual(response?.data);
       } catch (error) {
         handleErrorOnAxios(error);
@@ -93,20 +157,23 @@ const IndividualOverview = ({ period,userId }: { period: PeriodType ,userId?:str
 
           <TableBody>
             {/* Questions Rows */}
-            {individual?.resultUser.map((item, index) => (
-              <TableRow className="text-[16px]" key={item.user.id}>
-                <TableCell className="font-medium text-center">
-                  {index + 1}
-                </TableCell>
-                <TableCell>{item.user.name}</TableCell>
-                <TableCell>{item.user.departmentName}</TableCell>
-                <TableCell className="text-center">{item.mean}</TableCell>
-                <TableCell className="text-center">
-                  {item.standardDeviation}
-                </TableCell>
-                <TableCell className="text-center">{item.score}</TableCell>
-              </TableRow>
-            ))}
+            {individual?.resultUser &&
+              sortData(individual.resultUser).map((item, index) => (
+                <TableRow className="text-[16px]" key={item.user.id}>
+                  <TableCell className="font-medium text-center">
+                    {index + 1}
+                  </TableCell>
+                  <TableCell>{item.user.name}</TableCell>
+                  <TableCell>{item.user.departmentName}</TableCell>
+                  <TableCell className="text-center">
+                    {item.mean.toFixed(2)}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    {item.standardDeviation.toFixed(2)}
+                  </TableCell>
+                  <TableCell className="text-center">{item.score}</TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </div>

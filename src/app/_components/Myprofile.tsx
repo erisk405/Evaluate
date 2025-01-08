@@ -32,14 +32,11 @@ import GlobalApi from "../_util/GlobalApi";
 import { toast } from "@/components/ui/use-toast";
 import socket from "@/lib/socket";
 import {
-  Department,
-  PrefixType,
   Role,
-  RoleRequest,
-  User,
 } from "@/types/interface";
 import SetPrefixSelection from "./SetPrefixSelection";
 import { useProfileComparison } from "../lib/adapters/user-profile/useProfileComparison";
+import SetDepartmentUserOptions from "../(router)/management/manage_user/_components/SetDepartmentUserOptions";
 
 const formSchema = z.object({
   image: z
@@ -103,7 +100,7 @@ export default function Myprofile() {
       image: undefined,
       email: ProfileDetail?.email ? ProfileDetail?.email : "",
       department: ProfileDetail?.department
-        ? ProfileDetail.department.department_name
+        ? ProfileDetail.department.id
         : "Don't have department",
       role: ProfileDetail?.role?.id,
       phoneNumber: ProfileDetail.phone ? ProfileDetail.phone : "ไม่พบเบอร์โทร",
@@ -158,7 +155,13 @@ export default function Myprofile() {
           console.log("Don't request role, pending request exists!");
         }
       }
-
+      const updateDepartment = await GlobalApi.joinDepartment(
+        values.department
+      );
+      const { department } = updateDepartment?.data;
+      updateProfileDetail({
+        department,
+      });
       // Success toast
       toast({
         description: "✅ Your changes were saved successfully",
@@ -202,7 +205,7 @@ export default function Myprofile() {
       });
       // Emit an event to notify admins ขนข้อูลทั้งหมดที่ได้จาก response ไปให้ admin
       const data = response?.data;
-      // console.log("requestRole:", data);
+      console.log("requestRole:", data);
       socket.emit("newRoleRequest", {
         data,
       });
@@ -233,7 +236,7 @@ export default function Myprofile() {
           ) : (
             <Image
               src={
-                ProfileDetail?.image && ProfileDetail?.image.url ||
+                (ProfileDetail?.image && ProfileDetail?.image.url) ||
                 "/profiletest.jpg"
               }
               width={300}
@@ -384,12 +387,11 @@ export default function Myprofile() {
                     <h2 className="col-span-3 text-sm">Department</h2>
                     <FormControl className="col-span-8">
                       <div className="relative">
-                        <Input
-                          id="department"
-                          type="text"
-                          disabled
-                          className="focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1"
-                          {...field}
+                        <SetDepartmentUserOptions
+                          defaultValue={field.value}
+                          value={field.value}
+                          onChange={field.onChange}
+                          disable
                         />
                       </div>
                     </FormControl>
@@ -403,7 +405,7 @@ export default function Myprofile() {
             <FormField
               control={form.control}
               name="role"
-              render={({field}) => (
+              render={({ field }) => (
                 <FormItem>
                   <div className="grid grid-cols-11 items-center gap-3">
                     <h2 className="col-span-3 text-sm">Role</h2>

@@ -184,7 +184,7 @@ const RightSection = ({ permission, period }: RightSectionProps) => {
         period_id,
       };
       const response = await GlobalApi.saveEvaluationToHistory(payload);
-      console.log("Save", response?.data);
+      // console.log("Save", response?.data);
       toast({
         title: "ทำรายการสำเร็จ",
         description: (

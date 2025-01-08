@@ -108,6 +108,7 @@ interface Notification {
     image?: { url: string };
     name: string;
     email?: string;
+    prefix?:PrefixType;
     id?: string;
   };
   role: {

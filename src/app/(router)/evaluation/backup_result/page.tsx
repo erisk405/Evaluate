@@ -15,7 +15,6 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import useStore from "@/app/store/store";
 import BackUpPeriodList from "./_components/backUp-period-list";
-import { formatThaiDateTime } from "../../overview/_components/RightSection";
 import UpComingPeriod from "../_components/upcoming-period";
 import { useThemeStyles } from "@/hooks/useTheme";
 

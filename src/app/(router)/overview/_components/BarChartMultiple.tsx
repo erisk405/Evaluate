@@ -1,4 +1,4 @@
-"use client";
+
 import { TrendingUp } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 import {
@@ -17,6 +17,10 @@ import {
 } from "@/components/ui/chart";
 import useStore from "@/app/store/store";
 import { useThemeStyles } from "@/hooks/useTheme";
+import { useEffect } from "react";
+import { toast } from "@/components/ui/use-toast";
+import socket from "@/lib/socket";
+import { User } from "@/types/interface";
 export const description = "A multiple bar chart";
 
 const chartConfig = {
@@ -31,7 +35,7 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 const BarChartMultiple = () => {
-  const { resultEvalEachDepartment } = useStore();
+  const { resultEvalEachDepartment, ProfileDetail } = useStore();
   const styles = useThemeStyles();
   const chartData = resultEvalEachDepartment?.map((result) => ({
     depart: result.department,
@@ -45,6 +49,7 @@ const BarChartMultiple = () => {
       return `${departName.slice(0, 10)}...`;
     }
   };
+
   return (
     <Card
       className={`rounded-2xl ${styles.text} ${styles.background} shadow border-none`}

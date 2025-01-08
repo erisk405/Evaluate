@@ -48,6 +48,19 @@ import { formatThaiDateTime } from "@/app/(router)/overview/_components/RightSec
 import ResultUserList from "./result-userList";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useThemeStyles } from "@/hooks/useTheme";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { toast } from "sonner";
+import GlobalApi, { handleErrorOnAxios } from "@/app/_util/GlobalApi";
 export const columns: ColumnDef<PeriodType>[] = [
   {
     id: "select",
@@ -122,17 +135,50 @@ export const columns: ColumnDef<PeriodType>[] = [
 ];
 const BackUpPeriodList = () => {
   const { fetchCurrentPeriod, allPeriod } = useStore();
+  const [showBackupOnly, setShowBackupOnly] = React.useState(true);
   const styles = useThemeStyles();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
+
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const handleDeleteHistory = async () => {
+    try {
+      const selectData = table
+        .getSelectedRowModel()
+        .rows.map((row) => row.original);
+      console.log("payload", selectData);
+
+      const responses = await Promise.all(
+        selectData.map((item) => GlobalApi.deleteHistory(item.period_id))
+      );
+      // ตรวจสอบว่ามีการลบสำเร็จทั้งหมด
+      if (responses.some((response) => !response)) {
+        throw new Error("Some items failed to delete");
+      }
+      // แสดง toast เมื่อสำเร็จ
+      fetchCurrentPeriod()
+      toast("Events have been deleted", {
+        description: "All selected items were successfully deleted",
+      });
+    } catch (error: unknown) {
+      // จัดการ error
+      console.error({ message: error });
+
+      handleErrorOnAxios(error);
+    }
+  };
+  // กรองข้อมูลก่อนส่งให้ table
+  const filteredData = React.useMemo(() => {
+    if (!allPeriod) return [];
+    return showBackupOnly ? allPeriod.filter((item) => item.backUp) : allPeriod;
+  }, [allPeriod, showBackupOnly]);
 
   const table = useReactTable({
-    data: allPeriod ?? [],
+    data: filteredData,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -160,32 +206,79 @@ const BackUpPeriodList = () => {
           }
           className="max-w-sm"
         />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Columns <ChevronDown />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+
+        <div className="ml-auto flex items-center gap-2">
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                className={`hover:bg-red-50 border-none text-red-500 ${styles.background}`}
+                disabled={
+                  table.getFilteredSelectedRowModel().rows.length > 0
+                    ? false
+                    : true
+                }
+              >
+                Delete
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription className="text-red-500">
+                  This action cannot be undone. This will permanently delete.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <h2 className={`${styles.text}`}>รายละเอียดข้อมูลที่จะลบ </h2>
+              <ScrollArea className="h-52 w-full">
+                <div className="inline-flex flex-wrap gap-3 ">
+                  {table
+                    .getFilteredSelectedRowModel()
+                    .rows.map((row) => row.original)
+                    .map((item) => (
+                      <div
+                        key={item.period_id}
+                        className="rounded-full border py-1 text-sm px-2"
+                      >
+                        {item.title}
+                      </div>
+                    ))}
+                </div>
+              </ScrollArea>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={() => handleDeleteHistory()}>
+                  Continue
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="ml-auto">
+                Columns <ChevronDown />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {table
+                .getAllColumns()
+                .filter((column) => column.getCanHide())
+                .map((column) => {
+                  return (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(!!value)
+                      }
+                    >
+                      {column.id}
+                    </DropdownMenuCheckboxItem>
+                  );
+                })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
       <div className={`rounded-md border `}>
         <Table>

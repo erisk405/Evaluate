@@ -34,7 +34,7 @@ const CarouselSection = ({
         {period?.map((item, index) => (
           <CarouselItem key={index} className="pt-1 md:basis-1/2">
             <div className="p-1">
-              <Card className={` ${styles.background} border-none shadow`}>
+              <Card className={` ${styles.background_card} border-none shadow`}>
                 <CardContent className="flex items-center justify-center p-3">
                   <div
                     key={item.period_id}
@@ -132,8 +132,8 @@ const CarouselSection = ({
           </CarouselItem>
         ))}
       </CarouselContent>
-      <CarouselPrevious />
-      <CarouselNext />
+      <CarouselPrevious className={`${styles.border} ${styles.text}`} />
+      <CarouselNext className={`${styles.border} ${styles.text}`} />
     </Carousel>
   );
 };

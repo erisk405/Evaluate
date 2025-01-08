@@ -20,7 +20,7 @@ const InfomationProfile = () => {
           alt="BannerInfo"
         />
         <Image
-          src={ProfileDetail.image ? ProfileDetail.image : "/profiletest.jpg"}
+          src={ProfileDetail.image ? ProfileDetail.image.url : "/profiletest.jpg"}
           width={100}
           height={100}
           className="absolute left-3 -bottom-1/2 -translate-y-1/2 rounded-full w-[60px] h-[60px] object-cover z-50 border-2"

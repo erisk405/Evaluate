@@ -9,6 +9,7 @@ import Myprofile from "./Myprofile";
 import NotificationSection from "./NotificationSection";
 import useStore from "../store/store";
 import { useEffect } from "react";
+import { useThemeStyles } from "@/hooks/useTheme";
 export function ProfilePopup() {
   const { showProfile, setShowProfile } = useStore();
 
@@ -35,20 +36,20 @@ export function ProfilePopup() {
   );
 }
 export function NotificationPopup() {
-  const { showNotifications, setShowNotifications} = useStore();
-  
+  const { showNotifications } = useStore();
+
+  const styles = useThemeStyles();
   return (
     <div
-      className={`fixed opacity-1 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 overflow-hidden bg-white shadow-lg sm:max-w-[600px] w-full p-1 sm:rounded-lg ${
+      className={`fixed opacity-1 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 overflow-hidden ${
+        styles.background
+      } shadow-lg sm:max-w-[600px] w-full p-1 sm:rounded-lg ${
         showNotifications
           ? " opacity-1 visible scale-100 z-50"
           : "scale-90 invisible opacity-0"
       } z-50 transition-all`}
     >
-      <NotificationSection
-        showNotifications={showNotifications}
-        setShowNotifications={setShowNotifications}
-      />
+      <NotificationSection />
     </div>
   );
 }

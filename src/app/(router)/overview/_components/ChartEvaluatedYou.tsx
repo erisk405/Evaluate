@@ -24,13 +24,17 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import useStore from "@/app/store/store";
 import { formatThaiDateTime } from "./RightSection";
 import { useThemeStyles } from "@/hooks/useTheme";
+import socket from "@/lib/socket";
+import { User } from "@/types/interface";
+import { toast } from "sonner";
 
 const ChartEvaluatedYou = () => {
-  const { resultEvaluate, currentlyEvaluationPeriod } = useStore();
+  const { resultEvaluate, currentlyEvaluationPeriod, ProfileDetail } =
+    useStore();
 
   const styles = useThemeStyles();
   const chartData = resultEvaluate?.formResults?.map((item) => ({
@@ -68,7 +72,9 @@ const ChartEvaluatedYou = () => {
       endTime: formattedEnd.time,
     };
   }, [currentlyEvaluationPeriod]);
+  useEffect(() => {
 
+  }, [ProfileDetail]);
   return (
     <div className={`${styles.text}`}>
       <div className="@container flex w-full justify-center items-center">
@@ -82,10 +88,8 @@ const ChartEvaluatedYou = () => {
           }}
           className="cursor-pointer "
         >
-          <div
-            className={`hidden @[700px]:flex text-xl  items-center gap-3`}
-          >
-            <h2 >สำเร็จแล้ว</h2>
+          <div className={`hidden @[700px]:flex text-xl  items-center gap-3`}>
+            <h2>สำเร็จแล้ว</h2>
             <div className="text-3xl">
               {resultEvaluate?.headData
                 ? resultEvaluate?.headData?.totalEvaluated
@@ -94,7 +98,9 @@ const ChartEvaluatedYou = () => {
             <h2>คน</h2>
           </div>
         </motion.div>
-        <Card className={`flex flex-col border-none shadow-none ${styles.background}`}>
+        <Card
+          className={`flex flex-col border-none shadow-none ${styles.background}`}
+        >
           <CardHeader className="items-center pb-0">
             <CardTitle>คุณถูกประเมินไปแล้วทั้งหมด</CardTitle>
             <CardDescription>

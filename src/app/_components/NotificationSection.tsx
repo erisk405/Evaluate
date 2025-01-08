@@ -8,25 +8,20 @@ import { Button } from "@/components/ui/button";
 import useStore from "../store/store";
 import { toast } from "sonner";
 import moment from "moment-timezone";
-import { Notification } from "@/types/interface";
+import { Notification, User } from "@/types/interface";
 import GlobalApi from "../_util/GlobalApi";
+import { useThemeStyles } from "@/hooks/useTheme";
 
 const TIMEZONE = "Asia/Bangkok";
 const PAGE_LIMIT = 4;
-type notificationSectionProp = {
-  showNotifications: boolean;
-  setShowNotifications: (data: boolean) => void;
-};
-const NotificationSection = ({
-  showNotifications,
-  setShowNotifications,
-}: notificationSectionProp) => {
+const NotificationSection = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [slideOut, setSlideOut] = useState<string | null>(null);
   const { notificationCounts, setNotificationCount } = useStore();
   const { ProfileDetail, updateProfileDetail } = useStore();
   const [page, setPage] = useState(1);
   const loaderRef = useRef<HTMLDivElement>(null);
+  const styles = useThemeStyles();
 
   const handleRequest = async (
     requestId: string,
@@ -62,6 +57,7 @@ const NotificationSection = ({
 
   const playNotificationSound = () => {
     const audio = new Audio("/sounds/notification.wav");
+    audio.volume = 0.7; // ตั้งความดังที่ 80%
     audio.play();
   };
 
@@ -166,7 +162,7 @@ const NotificationSection = ({
           const dataSender = {
             id: receive.SendRes.id,
             user: {
-              image: { url: SenderImage },
+              image: SenderImage,
               name: SenderName,
             },
             role: {
@@ -194,7 +190,7 @@ const NotificationSection = ({
             <div className="w-full">
               <div className="flex gap-3 justify-start items-start">
                 <Image
-                  src={SenderImage ? SenderImage : "/profiletest.jpg"}
+                  src={SenderImage ? SenderImage.url : "/profiletest.jpg"}
                   width={100}
                   height={100}
                   alt="Notification"
@@ -262,7 +258,7 @@ const NotificationSection = ({
 
   return (
     <div className="relative p-5">
-      <h1 className="text-xl font-bold text-stone-700 mb-3">Notifications</h1>
+      <h1 className={`text-xl font-bold ${styles.text} mb-3`}>Notifications</h1>
       <hr />
       <div className="scrollbar-gemini overflow-y-scroll overflow-x-hidden max-h-[500px]">
         {notifications.length > 0 ? (
@@ -289,36 +285,35 @@ const NotificationSection = ({
                     <h1 className="text-sm">{item.user.email}</h1>
                     <h1 className="text-md ">
                       {ProfileDetail.role?.role_name === "admin" ? (
-                        <>
-                          <span className="">{item.user.name}</span>{" "}
-                          <span className="font-bold">Request Role </span>
-                          <span className="text-blue-500">{item.role.role_name}</span>
-                          
-                        </>
+                        <div className="flex flex-wrap gap-2">
+                          <span className="">
+                            {item.user.prefix && item.user.prefix.prefix_name}
+                            {item.user.name}
+                          </span>
+                          <span className="font-bold">ร้องขอตำแหน่ง </span>
+                          <span className="text-blue-500">
+                            {item.role.role_name}
+                          </span>
+                        </div>
                       ) : (
-                        <>
-                          <span className="bg-clip-text bg-gradient-to-r from-red-500 via-rose-500 to-fuchsia-800 inline-block text-transparent">
+                        <div className="flex flex-wrap gap-2">
+                          <span className="text-blue-500 inline-block">
                             Admin
-                          </span>{" "}
-                          {item.user.name}{" "}
-                          <span className="font-medium">
-                            {" "}
-                            active Role {item.role.role_name}{" "}
                           </span>
-                          <span
-                            className={`${
-                              item.role.requestRole === "APPROVED"
-                                ? "text-blue-500"
-                                : "text-red-500"
-                            }`}
-                          >
-                            {" "}
-                            to {item.role.requestRole}
+                          {item.user.prefix && item.user.prefix.prefix_name}
+                          {item.user.name}
+                          <span className={``}>
+                            {item.role.requestRole === "APPROVED"
+                              ? "ได้ยืนยันการร้องขอตำแหน่ง"
+                              : "ปฏิเสธการร้องขอตำแหน่ง"}
                           </span>
-                        </>
+                          <span className={`font-medium text-blue-500`}>
+                            {item.role.role_name}
+                          </span>
+                        </div>
                       )}
                     </h1>
-                    <h1 className="text-sm text-gray-600">
+                    <h1 className={`text-sm ${styles.text_description}`}>
                       {moment
                         .utc(item.createdAt)
                         .tz(TIMEZONE)
@@ -328,6 +323,7 @@ const NotificationSection = ({
                     {ProfileDetail.role?.role_name === "admin" ? (
                       <div className="flex gap-2 mt-2">
                         <Button
+                          variant={"outline"}
                           onClick={() =>
                             handleRequest(
                               item.id,
@@ -336,9 +332,10 @@ const NotificationSection = ({
                             )
                           }
                         >
-                          Approve
+                          ยืนยันสิทธิ์
                         </Button>
                         <Button
+                          variant={"outline"}
                           onClick={() =>
                             handleRequest(
                               item.id,
@@ -347,7 +344,7 @@ const NotificationSection = ({
                             )
                           }
                         >
-                          Reject
+                          ไม่ยืนยัน
                         </Button>
                       </div>
                     ) : (
