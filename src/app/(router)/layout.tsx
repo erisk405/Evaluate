@@ -80,7 +80,7 @@ const layout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
 
                   <Bell size={18} />
                 </div>
-                Notifications
+                การแจ้งเตือน
               </div>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

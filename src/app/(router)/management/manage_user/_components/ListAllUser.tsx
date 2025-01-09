@@ -59,12 +59,25 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import UserProfile from "./UserProfile";
-import GlobalApi from "@/app/_util/GlobalApi";
+import GlobalApi, { handleErrorOnAxios } from "@/app/_util/GlobalApi";
 import { PageNumber, User } from "@/types/interface";
 import React, { useEffect, useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useThemeClass, useThemeStyles } from "@/hooks/useTheme";
 import EditPageUser from "./edit-page-user";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { toast } from "sonner";
 
 type ListEmployeeProp = {
   allUser: User[];
@@ -263,7 +276,9 @@ export function ListEmployee({ allUser, fetchUserList }: ListEmployeeProp) {
       enableHiding: false,
       header: "Action",
       cell: ({ row }) => {
-        return <EditPageUser  userDetail={row.original} refreshData={fetchUserList} />;
+        return (
+          <EditPageUser userDetail={row.original} refreshData={fetchUserList} />
+        );
       },
     },
   ];
@@ -350,42 +365,106 @@ export function ListEmployee({ allUser, fetchUserList }: ListEmployeeProp) {
     }
     return pageNumbers;
   };
-
+  const handleDeleteUser = async () => {
+    try {
+      const selectData = table
+        .getSelectedRowModel()
+        .rows.map((row) => row.original);
+      const userID = selectData.map(item=> item.id)
+      const response = await GlobalApi.deleteUserByAdmin(userID)
+      console.log("response",response?.data);
+      
+      toast("ลบผู้ใช้งานเสร็จสิ้นแล้ว", {
+        description: `${response?.data.message}`,
+      });
+      fetchUserList()
+    } catch (error: unknown) {
+      // จัดการ error
+      console.error({ message: error });
+      handleErrorOnAxios(error);
+    }
+  };
   return (
     <div className="w-full ">
       <div className="flex items-center mb-3">
         <Input
-          placeholder="Filter by name or email..."
+          placeholder="ค้นหา: ชื่อ-นามสกุล,เบอร์โทร,email"
           value={globalFilter}
           onChange={(event) => setGlobalFilter(event.target.value)}
           className="max-w-sm rounded-xl"
         />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Columns <ChevronDown className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="ml-auto flex items-center gap-2">
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                className={`hover:bg-red-50 border-none text-red-500 ${styles.background}`}
+                disabled={
+                  table.getFilteredSelectedRowModel().rows.length > 0
+                    ? false
+                    : true
+                }
+              >
+                Delete
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription className="text-red-500">
+                  This action cannot be undone. This will permanently delete.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <h2 className={`${styles.text}`}>รายละเอียดข้อมูลที่จะลบ </h2>
+              <ScrollArea className="h-52 w-full">
+                <div className="inline-flex flex-wrap gap-3 ">
+                  {table
+                    .getFilteredSelectedRowModel()
+                    .rows.map((row) => row.original)
+                    .map((item) => (
+                      <div
+                        key={item.id}
+                        className="rounded-full border py-1 text-sm px-2"
+                      >
+                        {item.name}
+                      </div>
+                    ))}
+                </div>
+              </ScrollArea>
+              <AlertDialogFooter>
+                <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
+                <AlertDialogAction onClick={() => handleDeleteUser()}>
+                  ยืนยัน
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="ml-auto">
+                Columns <ChevronDown className="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {table
+                .getAllColumns()
+                .filter((column) => column.getCanHide())
+                .map((column) => {
+                  return (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(!!value)
+                      }
+                    >
+                      {column.id}
+                    </DropdownMenuCheckboxItem>
+                  );
+                })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
       <div className="rounded-lg border ">
         <Table>

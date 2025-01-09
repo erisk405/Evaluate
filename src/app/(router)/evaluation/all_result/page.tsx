@@ -128,9 +128,9 @@ const page = () => {
       <div className="col-span-4 xl:col-span-1">
         <Card>
           <CardHeader>
-            <CardTitle >Filter area</CardTitle>
+            <CardTitle >พื้นที่กรองข้อมูล</CardTitle>
             <CardDescription>
-              Deploy your new project in one-click.
+              สามารถเลือกแสดงผลตามที่ Check ไว้ได้
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -270,16 +270,13 @@ const page = () => {
                   )}
                 />
                 <CardFooter className="flex justify-end">
-                  <Button type="submit">Submit</Button>
+                  <Button type="submit">กรองข้อมูล</Button>
                 </CardFooter>
               </form>
             </Form>
           </CardContent>
         </Card>
         <div className="my-5 w-full">
-          <h2 className="text-xl my-3 font-bold">
-            รอบการประเมินที่ยังไม่บันทึก
-          </h2>
           <UpComingPeriod/>
         </div>
       </div>

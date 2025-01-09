@@ -163,8 +163,8 @@ export const columns: ColumnDef<PeriodType>[] = [
   },
 ];
 const page = () => {
-  const { fetchCurrentPeriod, allPeriod} = useStore();
-  const styles = useThemeStyles()
+  const { fetchCurrentPeriod, allPeriod } = useStore();
+  const styles = useThemeStyles();
   const [globalFilter, setGlobalFilter] = useState("");
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -258,11 +258,12 @@ const page = () => {
     }
   }, []);
   return (
-    <div className={`m-5 w-full gap-3 ${styles.text }`}>
-      <h2 className="text-3xl font-bold ">
-        รายละเอียดผลงานประเมิน
-      </h2>
+    <div
+      className={`m-5 p-5 w-full shadow rounded-lg gap-3 ${styles.text} ${styles.background} overflow-hidden`}
+    >
+      <h2 className="text-3xl font-bold ">รายละเอียดผลงานประเมิน</h2>
       <div className="flex flex-col flex-wrap items-center justify-around my-10 gap-3">
+        <p className="text-6xl animate-wiggle-float-blue">🐋</p>
         <h1 className="text-3xl">
           <span className="text-blue-500">สถานะการประเมิน</span>{" "}
           ตรวจสอบผลลัพธ์และความคืบหน้าของผลการประเมิน
@@ -271,26 +272,17 @@ const page = () => {
           "<span className="">ติดตามผลการประเมิน</span>{" "}
           แสดงสถานะรอบการประเมินในทุกมิติ"
         </h1>
-        <p className="w-[600px] text-center mt-3">
-          ข้อความเหล่านี้จะให้ความรู้สึกเป็นทางการและสื่อถึงความโปร่งใสในกระบวนการตรวจสอบผลการประเมินได้อย่างชัดเจน
-          หากคุณต้องการเพิ่มเติมสามารถแจ้งรายละเอียดเพิ่มเติมได้นะครับ{" "}
-          <span className="text-3xl animate-bounce">😊</span>
-        </p>
       </div>
-      <div className="p-5 rounded-xl shadow">
+      <div className="">
         <div className="flex items-center py-4">
           <Input
-            placeholder="รอบที่ x ประจำปี พ.ศ. xxxx"
+            placeholder="ค้นหา: รอบที่ x ประจำปี พ.ศ. xxxx"
             value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
             onChange={(event) =>
               table.getColumn("title")?.setFilterValue(event.target.value)
             }
             className="max-w-sm"
           />
-          <div className="flex items-center space-x-2 ml-3 ">
-            <Switch id="airplane-mode" />
-            <Label htmlFor="airplane-mode">Complate</Label>
-          </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto">
@@ -318,7 +310,7 @@ const page = () => {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className="rounded-md border">
+        <div className="border">
           <Table>
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (

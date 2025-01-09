@@ -258,7 +258,7 @@ const NotificationSection = () => {
 
   return (
     <div className="relative p-5">
-      <h1 className={`text-xl font-bold ${styles.text} mb-3`}>Notifications</h1>
+      <h1 className={`text-xl ${styles.text} mb-3`}>การแจ้งเตือน</h1>
       <hr />
       <div className="scrollbar-gemini overflow-y-scroll overflow-x-hidden max-h-[500px]">
         {notifications.length > 0 ? (

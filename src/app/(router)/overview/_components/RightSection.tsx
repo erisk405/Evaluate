@@ -646,8 +646,8 @@ const RightSection = ({ permission, period }: RightSectionProps) => {
                 delay: 0.1,
               }}
             >
-              <h2 className="font-bold text-xl flex gap-3">
-                <Atom className=" text-sky-400" />
+              <h2 className="text-xl flex items-center gap-1">
+                <span className="text-2xl">💼</span>
                 <TextEffect preset="slide">รายการแต่ละหน่วยงาน</TextEffect>
               </h2>
               <div className={`mt-5 border rounded-xl shadow-inner  `}>

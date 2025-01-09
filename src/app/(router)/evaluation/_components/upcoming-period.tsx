@@ -36,7 +36,7 @@ const UpComingPeriod = () => {
   return (
     <div className={`${styles.background} rounded-lg max-h-[800px] shadow`}>
       <div className="p-4">
-        <h2>Upcoming period</h2>
+        <h2>รอบการประเมินที่ยังไม่บันทึก</h2>
       </div>
       <hr />
       {allPeriod?.map(

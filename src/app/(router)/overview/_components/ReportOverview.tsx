@@ -84,19 +84,19 @@ const ReportOverview = () => {
     {
       id: "FN01",
       title: "เสร็จสิ้นแล้ว",
-      icon: <Combine size={25} strokeWidth={1.2} />,
+      icon: "🏅",
       quantity: AllFinished,
     },
     {
       id: "FN02",
       title: "ยังไม่เสร็จสิ้น",
-      icon: <Package size={25} strokeWidth={1.2} />,
+      icon: "⚡",
       quantity: AllUnfinished,
     },
     {
       id: "FN03",
       title: "ทั้งหมด",
-      icon: <Container size={25} strokeWidth={1.2} />,
+      icon: "👔",
       quantity: AllUser,
     },
   ];
@@ -131,17 +131,16 @@ const ReportOverview = () => {
                 className={`flex gap-3 w-full justify-center ${styles.background} p-2 shadow rounded-2xl items-center`}
               >
                 <div
-                  className={`${styles.border } rounded-full p-4 animate-wiggle`}
+                  className={`${styles.border} shadow rounded-full w-[60px] h-[60px] animate-wiggle flex justify-center items-center`}
                 >
-                  {item.icon}
+                  <h2 className="text-2xl">
+                    {item.icon}
+                  </h2>
                 </div>
                 <div className="grid gap-1 grid-cols-1">
-                  <div className="flex gap-2 items-end">
-                    <h2 className="text-xl ">{item.quantity}</h2>
-                    <div className="flex items-center">
-                      <h2 className="text-green-500 text-sm ">+1.92%</h2>
-                      <TrendingUp size={18} className="text-green-500" />
-                    </div>
+                  <div className="flex gap-1 items-end">
+                    <div className="text-lg">🎗️</div>
+                    <h2 className="text-xl ">{item.quantity} คน</h2>
                   </div>
                   <h2 className="text-sm">{item.title}</h2>
                 </div>
@@ -166,9 +165,13 @@ const ReportOverview = () => {
           >
             <h2>ทั้งหมดประเมินไปแล้ว</h2>
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold">182/250 คน</h2>
+              <h2 className="text-xl font-bold">
+                {AllFinished}/{AllUser} คน
+              </h2>
             </div>
-            <h2>เฉลี่ยต่อวัน 10 คน</h2>
+            <h2>
+              จากหน่วยงานทั้งหมด {resultEvalEachDepartment?.length} หน่วยงาน
+            </h2>
             <Image
               width={80}
               height={80}
@@ -214,9 +217,7 @@ const ReportOverview = () => {
             บุคคลที่กำกับดูแลในแต่ละหน่วยงาน
           </h2>
           {supervise.length ? (
-            <Table
-              className={`shadow ${styles.background} rounded-lg my-3`}
-            >
+            <Table className={`shadow ${styles.background} rounded-lg my-3`}>
               <TableCaption>A list of your recent invoices.</TableCaption>
               <TableHeader>
                 <TableRow>

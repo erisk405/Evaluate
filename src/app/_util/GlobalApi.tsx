@@ -235,6 +235,17 @@ const changePassword = async (
     return handleErrorOnAxios(error);
   }
 };
+
+const deleteUserByAdmin = async (payload:{})=>{
+  try {
+    return await axios.delete(`${apiUrl}/user`, {
+      data: payload, 
+      withCredentials: true,
+    });
+  } catch (error) {
+    handleErrorOnAxios(error)
+  }
+}
 // -----------------------------------------------------------
 //                       Role Table
 // -----------------------------------------------------------
@@ -887,4 +898,5 @@ export default {
   changePassword,
   deleteHistory,
   joinDepartment,
+  deleteUserByAdmin,
 };

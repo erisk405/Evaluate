@@ -18,27 +18,28 @@ import BackUpPeriodList from "./_components/backUp-period-list";
 import UpComingPeriod from "../_components/upcoming-period";
 import { useThemeStyles } from "@/hooks/useTheme";
 
-const displayBackUp = [
-  {
-    id: "DBB01",
-    title: "จากรอบการประเมิน 🗓️",
-    quantity: "8 รอบ ",
-  },
-  {
-    id: "DBB02",
-    title: "เก็บข้อมูลไปทั้งหมด 🌐",
-    quantity: "10,120คน",
-  },
-  {
-    id: "DBB03",
-    title: "พื้นที่ใช้งาน 🗄️",
-    quantity: "400Mb",
-  },
-];
+
 
 const page = () => {
   const styles = useThemeStyles();
-  const { fetchCurrentPeriod, allPeriod } = useStore();
+  const { fetchCurrentPeriod, allPeriod ,currentlyEvaluationPeriod} = useStore();
+  const displayBackUp = [
+    {
+      id: "DBB01",
+      title: "จากรอบการประเมิน 🗓️",
+      quantity: `${allPeriod?.length} รอบ`,
+    },
+    {
+      id: "DBB02",
+      title: "เก็บข้อมูลไปทั้งหมด 📇",
+      quantity: `${allPeriod?.filter(item => item.backUp === true).length} รอบ`,
+    },
+    {
+      id: "DBB03",
+      title: "รอบปัจจุบันขณะนี้ ⏰",
+      quantity: `${currentlyEvaluationPeriod ? currentlyEvaluationPeriod?.title : 'ยังไม่อยู่ในช่วงเวลา'}`,
+    },
+  ];
   useEffect(() => {
     if (!allPeriod) {
       const fetchInitailData = async () => {
@@ -77,7 +78,7 @@ const page = () => {
               key={item.id}
             >
               <h2 className="">{item.title}</h2>
-              <p className="text-lg font-semibold">{item.quantity}</p>
+              <p className="text-lg text-right">{item.quantity}</p>
             </div>
           ))}
         </div>
@@ -85,16 +86,16 @@ const page = () => {
 
       <div className="grid grid-cols-3 gap-3 @container">
         <Tabs
-          defaultValue="account"
+          defaultValue="history"
           className="w-full col-span-3 @[998px]:col-span-2 my-5"
         >
           <div className="flex justify-start items-center">
             <TabsList className="w-auto">
-              <TabsTrigger value="account">รอบการประเมิน</TabsTrigger>
-              <TabsTrigger value="password">รายละเอียด</TabsTrigger>
+              <TabsTrigger value="history">รอบการประเมิน</TabsTrigger>
+              <TabsTrigger value="detail">รายละเอียด</TabsTrigger>
             </TabsList>
           </div>
-          <TabsContent value="account">
+          <TabsContent value="history">
             <Card>
               <CardHeader>
                 <CardTitle>ผลที่เก็บในแต่ละรอบ</CardTitle>
@@ -108,7 +109,7 @@ const page = () => {
               </CardContent>
             </Card>
           </TabsContent>
-          <TabsContent value="password">
+          <TabsContent value="detail">
             <Card>
               <CardHeader>
                 <CardTitle>Password</CardTitle>

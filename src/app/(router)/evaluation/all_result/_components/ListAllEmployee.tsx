@@ -306,24 +306,19 @@ export function ListAllEmployee({ filterDataArea }: ListAllEmployeeProp) {
   }, [filterDataArea]); // Run when filterDataArea changes
   return (
     <div className={`w-full ${styles.text}`}>
-      <div className="flex items-center w-full gap-3 justify-between py-4">
+      <div className="flex flex-col lg:flex-row items-center w-full gap-3 justify-between py-4">
         <div className="grid grid-cols-2 xl:grid-cols-4 items-center gap-3 w-full">
           {/* ปุ่มค้นหาชื่อหรือ email */}
-          <div className="col-span-2 w-full">
+          <div className="col-span-2 xl:col-span-2 w-full">
             <Input
-              placeholder="Filter by name or email..."
+              placeholder="ค้นหา: ชื่อ-นามสกุล,ตำแหน่ง,email"
               value={globalFilter}
               onChange={(event) => setGlobalFilter(event.target.value)}
               className=" rounded-lg "
             />
           </div>
-          <div className="col-span-1 w-full">
+          <div className="col-span-2 xl:col-span-1 w-full">
             <FilterPeriod onPeriodChange={onPeriodChange} />
-          </div>
-          {/* ปุ้ม switch ที่ใช้ในเลือกเฉพาะที่ดำเนินการเสร็จแล้ว */}
-          <div className="flex items-center space-x-2 w-full col-span-1">
-            <Switch id="airplane-mode" />
-            <Label htmlFor="airplane-mode">success</Label>
           </div>
         </div>
         <div className="flex items-center gap-3">

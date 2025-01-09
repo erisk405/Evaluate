@@ -1,14 +1,41 @@
 "use client";
+import GlobalApi from "@/app/_util/GlobalApi";
 import useStore from "@/app/store/store";
 import { Separator } from "@/components/ui/separator";
 import { useThemeClass, useThemeStyles } from "@/hooks/useTheme";
 import Image from "next/image";
-import React from "react";
+import React, { useEffect } from "react";
 
 const InfomationProfile = () => {
-  const { ProfileDetail } = useStore();
-
+  const {
+    ProfileDetail,
+    resultEvaluate,
+    currentlyEvaluationPeriod,
+    setResultEvaluate,
+  } = useStore();
+  const fetchResultEvaluate = async () => {
+    try {
+      if (!ProfileDetail?.id || !currentlyEvaluationPeriod?.period_id) {
+        console.log("Missing required data for fetching result evaluation");
+        return;
+      }
+      const payload = {
+        period_id: currentlyEvaluationPeriod.period_id,
+      };
+      const response = await GlobalApi.getResultEvaluate(payload);
+      console.log("response",response?.data);
+      
+      setResultEvaluate(response?.data);
+    } catch (error) {
+      console.error({ message: error });
+    }
+  };
   const { getThemeClass } = useThemeClass();
+  useEffect(()=>{
+    if(!resultEvaluate){
+      fetchResultEvaluate();
+    }
+  },[ProfileDetail?.id, currentlyEvaluationPeriod?.period_id])
   return (
     <div className={`p-3 `}>
       <div className="relative h-32 shadow rounded-xl">
@@ -20,7 +47,9 @@ const InfomationProfile = () => {
           alt="BannerInfo"
         />
         <Image
-          src={ProfileDetail.image ? ProfileDetail.image.url : "/profiletest.jpg"}
+          src={
+            ProfileDetail.image ? ProfileDetail.image.url : "/profiletest.jpg"
+          }
           width={100}
           height={100}
           className="absolute left-3 -bottom-1/2 -translate-y-1/2 rounded-full w-[60px] h-[60px] object-cover z-50 border-2"
@@ -69,18 +98,12 @@ const InfomationProfile = () => {
           </div>
         </div>
         <div className="grid grid-cols-3 gap-3 my-3">
-          <div className="shadow rounded-lg px-2 py-1">
-            <p className="text-sm text-gray-500">จิตพิสัย</p>
-            <h2 className="text-md text-end">4.20</h2>
-          </div>
-          <div className="shadow rounded-lg px-2 py-1">
-            <p className="text-sm text-gray-500">ทักษะ</p>
-            <h2 className="text-md text-end">4.20</h2>
-          </div>
-          <div className="shadow rounded-lg px-2 py-1">
-            <p className="text-sm text-gray-500">ความรู้</p>
-            <h2 className="text-md text-end">4.20</h2>
-          </div>
+          {resultEvaluate?.formResults.map((item) => (
+            <div className="shadow rounded-lg px-2 py-1" key={item.formId}>
+              <p className="text-sm text-gray-500 truncate">{item.formName}</p>
+              <h2 className="text-md text-end mt-auto">{item.totalAVGPerForm}</h2>
+            </div>
+          ))}
         </div>
       </div>
     </div>

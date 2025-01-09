@@ -48,10 +48,16 @@ const page = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const { setRole } = useStore();
   const [departmentData, setDepartmentData] = useState<Department[]>([]);
+  const [searchDept, setSearchDept] = useState<string>("");
   // for load button
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const styles = useThemeStyles();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  // Filter department data based on search input
+  const filteredDepartments = departmentData.filter((dept) =>
+    dept.department_name.toLowerCase().includes(searchDept.toLowerCase())
+  );
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
     if (file) {
@@ -118,10 +124,13 @@ const page = () => {
   return (
     <div className={`m-5 w-full grid grid-cols-6 gap-5 ${styles.text}`}>
       <div className="col-span-6 xl:col-span-4 ">
-        <div className={`${styles.background} w-full h-full shadow rounded-xl p-5`}>
+        <div
+          className={`${styles.background} w-full h-full shadow rounded-xl p-5`}
+        >
           <div className="flex justify-between items-center">
             <h2 className="text-3xl">
-            <span>🛡️</span>การจัดการ<span className="text-blue-500">หน่วยงาน</span>
+              <span>🛡️</span>การจัดการ
+              <span className="text-blue-500">หน่วยงาน</span>
             </h2>
             <div
               className="hover:bg-blue-100 p-2 hover:text-blue-500 
@@ -142,8 +151,9 @@ const page = () => {
               />
               <Input
                 type="text"
-                placeholder="Department"
+                placeholder="ค้นหา: ชื่อของหน่วยงาน"
                 className="rounded-lg pl-8"
+                onChange={(e) => setSearchDept(e.target.value)}
               />
             </div>
             <div className="flex items-center gap-5">
@@ -284,11 +294,16 @@ const page = () => {
             </div>
           </div>
           {/* All list departmemt */}
-          <AllListDepartment department={departmentData} fetchDepart={getDepartment} />
+          <AllListDepartment
+            department={filteredDepartments}
+            fetchDepart={getDepartment}
+          />
         </div>
       </div>
       <div className="col-span-6 xl:col-span-2 ">
-        <div className={`${styles.background} w-full h-full shadow rounded-xl p-5`}>
+        <div
+          className={`${styles.background} w-full h-full shadow rounded-xl p-5`}
+        >
           <ManageRole />
         </div>
       </div>

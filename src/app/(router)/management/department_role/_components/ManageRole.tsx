@@ -273,16 +273,17 @@ const ManageRole = () => {
   // }, [permissions]);
   return (
     <div className={`@container ${styles.text}`}>
-      <h2 className="text-3xl">
-        <span>🎓</span>การจัดการ<span className="text-blue-400">ตำแหน่ง</span>
-      </h2>
       <div className="flex justify-between items-center my-3">
-        <div className="flex items-center space-x-2">
-          <Switch id="airplane-mode" />
-          <Label htmlFor="airplane-mode">Assigned role</Label>
-        </div>
+        <h2 className="text-3xl">
+          <span>🎓</span>การจัดการ<span className="text-blue-400">ตำแหน่ง</span>
+        </h2>
+      </div>
+      {/* ส่วนของการสร้างRole */}
+      <div className="grid grid-cols-3 gap-3">
+        <p className={`${styles.text_description} col-span-2`}>
+          ใช้ในจัดการสิทธิ์และรูปแบบฟอร์มที่จะใช้ในการประเมินต่างๆ
+        </p>
 
-        {/* ส่วนของการสร้างRole */}
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button variant="outline" className="p-2 active:scale-95">
@@ -463,7 +464,9 @@ const ManageRole = () => {
               item.role_name !== "member" && (
                 <AccordionItem value={item.id} key={item.id}>
                   <AccordionTrigger>
-                    <div className={`px-3 w-full h-14 rounded-xl flex justify-between items-center ${styles.text}`}>
+                    <div
+                      className={`px-3 w-full h-14 rounded-xl flex justify-between items-center ${styles.text}`}
+                    >
                       <div className="flex items-center gap-1">
                         <BadgeCheck className="text-white bg-blue-500 overflow-hidden rounded-full" />
                         <h2 className="text-lg ">{item.role_name}</h2>

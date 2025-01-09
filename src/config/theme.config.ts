@@ -40,7 +40,7 @@ export const themeClasses = {
         dark: 'bg-zinc-800'
     },
     border: {
-        light: 'border border-zinc-500',
+        light: 'border border-zinc-300',
         dark: 'border border-zinc-200'
     },
     hover: {

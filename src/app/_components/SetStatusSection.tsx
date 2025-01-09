@@ -75,8 +75,8 @@ export default function SetStatusSection({
       </PopoverTrigger>
       <PopoverContent className="w-[250px] p-0 relative -left-14">
         <Command>
-          <CommandInput placeholder="Search Role..." />
-          <CommandEmpty>No Role found.</CommandEmpty>
+          <CommandInput placeholder="ค้นหา: ตำแหน่ง..." />
+          <CommandEmpty>ไม่พบตำแหน่ง</CommandEmpty>
           <CommandGroup>
             <CommandList>
               {roles.map((Role) => (

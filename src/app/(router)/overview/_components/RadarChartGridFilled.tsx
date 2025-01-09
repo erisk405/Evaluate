@@ -145,7 +145,7 @@ const RadarChartGridFilled = () => {
               <TableCell className="text-center text-blue-500 text-[16px]">
                 {resultEvaluate?.headData.totalSD.toFixed(2)}
               </TableCell>
-              <TableCell className="text-center text-green-500 text-[16px]">
+              <TableCell className="text-center text-fuchsia-700 text-[16px]">
                 {resultEvaluate?.headData.totalAVG.toFixed(2)}
               </TableCell>
             </TableRow>

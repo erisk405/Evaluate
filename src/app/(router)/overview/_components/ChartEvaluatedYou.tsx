@@ -269,7 +269,7 @@ const ChartEvaluatedYou = () => {
             </div>
             <div className="mt-3">
               <hr />
-              <h2 className="text-[12px]  mt-3">1.3% Performance up</h2>
+              <h2 className="text-[12px]  mt-3">เป็นการสรุปผลในแต่ละด้าน</h2>
             </div>
           </motion.div>
         ))}

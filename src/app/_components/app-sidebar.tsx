@@ -36,7 +36,7 @@ import Image from "next/image";
 const data = {
   navMain: [
     {
-      title: "Management",
+      title: "การจัดการ",
       session:"admin",
       url: "#",
       icon: ShieldCheck,
@@ -61,7 +61,7 @@ const data = {
       ],
     },
     {
-      title: "Evaluation",
+      title: "การประเมินผล",
       url: "#",
       session:"admin",
       icon: Bot,
@@ -74,56 +74,28 @@ const data = {
           title: "คลังเก็บข้อมูล",
           url: "/evaluation/backup_result",
         },
-        {
-          title: "Export",
-          url: "/evaluation/export",
-        },
       ],
     },
     {
-      title: "Documentation",
+      title: "คู่มือและเอกสาร",
       url: "#",
       session:"user",
       icon: BookOpen,
       items: [
         {
-          title: "Introduction",
+          title: "การใช้งานเบื้องต้น(ยังไม่พร้อมใช้งาน)",
           url: "#",
         },
         {
-          title: "Get Started",
+          title: "หากลืมรหัสผ่าน(ยังไม่พร้อมใช้งาน)",
           url: "#",
         },
         {
-          title: "Tutorials",
+          title: "การตั้งค่าในส่วนแอดมิน(ยังไม่พร้อมใช้งาน)",
           url: "#",
         },
         {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "#",
-      session:"user",
-      icon: Settings2,
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
+          title: "การจัดการปัญหาต่างๆ(ยังไม่พร้อมใช้งาน)",
           url: "#",
         },
       ],

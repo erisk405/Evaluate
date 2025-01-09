@@ -75,7 +75,7 @@ const IndividualOverview = ({
         </TableHead>
         <TableHead
           rowSpan={2}
-          className={`text-center border  ${styles.text}`}
+          className={`text-center border ${styles.text}`}
           onClick={() => handleSort("score")}
         >
           <div className="flex items-center justify-center gap-2">
@@ -119,11 +119,11 @@ const IndividualOverview = ({
   // Sort indicator component
   const SortIndicator = ({ column }: { column: "score" | "mean" }) => {
     if (column === "mean" && sortConfig.key !== "mean") {
-      return <ChevronsUpDown size={20} className="inline-block ml-1" />;
+      return <ChevronsUpDown size={20} className={`inline-block ml-1 ${styles.text}`} />;
     }
     if (sortConfig.key !== column) return null;
     return (
-      <span className={`ml-1 text-white text-sm`}>
+      <span className={`ml-1 ${styles.text} text-sm`}>
         {sortConfig.direction === "asc" ? (
           <ChevronDown size={20} />
         ) : (

@@ -31,9 +31,7 @@ import useStore from "../store/store";
 import GlobalApi from "../_util/GlobalApi";
 import { toast } from "@/components/ui/use-toast";
 import socket from "@/lib/socket";
-import {
-  Role,
-} from "@/types/interface";
+import { Role } from "@/types/interface";
 import SetPrefixSelection from "./SetPrefixSelection";
 import { useProfileComparison } from "../lib/adapters/user-profile/useProfileComparison";
 import SetDepartmentUserOptions from "../(router)/management/manage_user/_components/SetDepartmentUserOptions";
@@ -99,9 +97,7 @@ export default function Myprofile() {
       prefix: ProfileDetail.prefix?.prefix_id,
       image: undefined,
       email: ProfileDetail?.email ? ProfileDetail?.email : "",
-      department: ProfileDetail?.department
-        ? ProfileDetail.department.id
-        : "Don't have department",
+      department: ProfileDetail.department?.id && ProfileDetail?.department.id,
       role: ProfileDetail?.role?.id,
       phoneNumber: ProfileDetail.phone ? ProfileDetail.phone : "ไม่พบเบอร์โทร",
     },
