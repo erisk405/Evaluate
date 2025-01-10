@@ -12,6 +12,7 @@ import { useEffect } from "react";
 import { useThemeStyles } from "@/hooks/useTheme";
 export function ProfilePopup() {
   const { showProfile, setShowProfile } = useStore();
+  const styles = useThemeStyles()
 
   useEffect(() => {
     // ที่ทำแบบนี้เพราะมันไม่รู้เป็นไรของมัน พอใช้กับ Dialog ร่วมกับ sidebar นี้มันแล้วกดปิด dialog ลงมันไม่clear pointer-eventsออกให้ แล้วที่นี้กูก็คลิกไรไม่ได้ แม่ง
@@ -29,7 +30,7 @@ export function ProfilePopup() {
     >
       <DialogTitle></DialogTitle>
       <DialogDescription></DialogDescription>
-      <DialogContent className="sm:max-w-[550px] p-1 sm:rounded-lg overflow-hidden">
+      <DialogContent className={`sm:max-w-[550px] p-1 sm:rounded-lg overflow-hidden border-zinc-700 ${styles.background_popup}`}>
         <Myprofile />
       </DialogContent>
     </Dialog>

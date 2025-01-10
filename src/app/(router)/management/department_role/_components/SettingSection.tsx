@@ -213,7 +213,7 @@ export default function SettingSection({
                             <FormControl>
                               <div className="grid grid-cols-4 items-center gap-2">
                                 <Label htmlFor="name" className="text-left">
-                                  Name
+                                  ชื่อหน่วยงาน
                                 </Label>
                                 <Input
                                   id="name"
@@ -234,7 +234,7 @@ export default function SettingSection({
                             <FormControl>
                               <div className="grid grid-cols-4 items-center gap-2">
                                 <Label htmlFor="image" className="text-left">
-                                  image
+                                  รูปภาพ
                                 </Label>
                                 <Input
                                   id="image"
@@ -286,7 +286,9 @@ export default function SettingSection({
                   </div>
                 </div>
                 <div className="col-span-4 @[628px]:col-span-1">
-                  <div className={`${styles.background} shadow rounded-xl overflow-hidden`}>
+                  <div
+                    className={`${styles.background} shadow rounded-xl overflow-hidden`}
+                  >
                     <div className="relative bg-blue-200 h-12 mb-7">
                       <Avatar
                         className="absolute top- w-[50px] h-[50px] border-2  
@@ -317,14 +319,24 @@ export default function SettingSection({
                         <p className="text-sm text-gray-500">
                           {department?.supervise?.user?.role.role_name}
                         </p>
-                        <div className={` ${styles.background_third_head_table} p-2 rounded-lg`}>
+                        <div
+                          className={` ${styles.background_third_head_table} p-2 rounded-lg`}
+                        >
                           <div className="grid grid-cols-4 gap-3 p-1 rounded-lg">
-                            <div className={`col-span-1 ${styles.background_card} w-[40px] h-[40px] rounded-full flex justify-center items-center`}>
+                            <div
+                              className={`col-span-1 ${styles.background_card} w-[40px] h-[40px] rounded-full flex justify-center items-center`}
+                            >
                               <h2 className="text-xl m-auto">🏢</h2>
                             </div>
                             <div className="grid grid-cols-1 col-span-3 ">
-                              <p className={`text-sm ${styles.text_description}`}>สังกัดที่</p>
-                              <h2 className={`text-sm ${styles.text_description} truncate`}>
+                              <p
+                                className={`text-sm ${styles.text_description}`}
+                              >
+                                สังกัดที่
+                              </p>
+                              <h2
+                                className={`text-sm ${styles.text_description} truncate`}
+                              >
                                 {
                                   department?.supervise?.user?.department
                                     ?.department_name
@@ -354,7 +366,7 @@ export default function SettingSection({
                   <div>
                     <h2 className="font-semibold ">สมาชิกภายในหน่วยงาน</h2>
                     <p className="text-sm text-neutral-500">
-                      Invite your team members to collaborate.
+                      สามารถ เพิ่ม-ลบ สมาชิกที่ยังไม่มีสังกัดเข้ามาได้
                     </p>
                   </div>
                 </div>

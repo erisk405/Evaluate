@@ -307,9 +307,9 @@ export function ListAllEmployee({ filterDataArea }: ListAllEmployeeProp) {
   return (
     <div className={`w-full ${styles.text}`}>
       <div className="flex flex-col lg:flex-row items-center w-full gap-3 justify-between py-4">
-        <div className="grid grid-cols-2 xl:grid-cols-4 items-center gap-3 w-full">
+        <div className="grid grid-cols-2 xl:grid-cols-5 items-center gap-3 w-full">
           {/* ปุ่มค้นหาชื่อหรือ email */}
-          <div className="col-span-2 xl:col-span-2 w-full">
+          <div className="col-span-5 xl:col-span-3 w-full">
             <Input
               placeholder="ค้นหา: ชื่อ-นามสกุล,ตำแหน่ง,email"
               value={globalFilter}
@@ -317,7 +317,7 @@ export function ListAllEmployee({ filterDataArea }: ListAllEmployeeProp) {
               className=" rounded-lg "
             />
           </div>
-          <div className="col-span-2 xl:col-span-1 w-full">
+          <div className="col-span-5 xl:col-span-2 w-full">
             <FilterPeriod onPeriodChange={onPeriodChange} />
           </div>
         </div>

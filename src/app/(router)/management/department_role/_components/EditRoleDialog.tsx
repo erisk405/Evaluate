@@ -28,14 +28,14 @@ import { Permission, Role } from "@/types/interface";
 const formSchema = z.object({
   roleName: z
     .string()
-    .min(5, { message: "Role name must be at least 5 characters." })
-    .max(50, { message: "Role name must not exceed 50 characters." }),
+    .min(5, { message: "ชื่อตำแหน่งต้องมีขั้นต่ำ 5 ตัวอักษร" })
+    .max(50, { message: "ชื่อตำแหน่งมีสูงสุดได้ 50 ตัวอักษร" }),
   description: z
     .string()
-    .min(10, { message: "Description must be at least 10 characters." })
-    .max(100, { message: "Description must not exceed 100 characters." }),
+    .min(10, { message: "คำอธิบายต้องมีขั้นต่ำ 10 ตัวอักษร" })
+    .max(100, { message: "คำอธิบายไม่สามารถมีได้เกิน 100 ตัวอักษร" }),
   roleLevel: z.enum(["LEVEL_1", "LEVEL_2", "LEVEL_3", "LEVEL_4"], {
-    required_error: "Please select a role level.",
+    required_error: "กรุณากำหนดระดับของตำแหน่งนี้",
   }),
 });
 
@@ -89,7 +89,7 @@ const EditRoleDialog = ({
             name="roleName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Role name</FormLabel>
+                <FormLabel>ชื่อตำแหน่ง</FormLabel>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -103,7 +103,7 @@ const EditRoleDialog = ({
             name="roleLevel"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Role level</FormLabel>
+                <FormLabel>ระดับ</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
@@ -114,10 +114,18 @@ const EditRoleDialog = ({
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="LEVEL_1">Level 1</SelectItem>
-                    <SelectItem value="LEVEL_2">Level 2</SelectItem>
-                    <SelectItem value="LEVEL_3">Level 3</SelectItem>
-                    <SelectItem value="LEVEL_4">Level 4</SelectItem>
+                    <SelectItem value="LEVEL_1">
+                      Level 1 {"(ผู้ใช้งานทั่วไป)"}
+                    </SelectItem>
+                    <SelectItem value="LEVEL_2">
+                      Level 2 {"(ดูผลของผู้ใช้งานอื่นที่ตนเองสังกัดอยู่ได้)"}
+                    </SelectItem>
+                    <SelectItem value="LEVEL_3">
+                      Level 3 {"(กำกับดูแลหน่วยงานอื่นได้)"}
+                    </SelectItem>
+                    <SelectItem value="LEVEL_4">
+                      Level 4 {"(ดูผลภาพรวมได้)"}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -128,7 +136,7 @@ const EditRoleDialog = ({
         <hr />
         <div className="flex items-center gap-2 font-semibold">
           <BadgeAlert className="text-blue-500 bg-white rounded-full" />
-          <h2>Set role permission form evaluate</h2>
+          <h2>กำหนดแบบฟอร์มในแต่ละตำแหน่งเพื่อใช้งานการประเมินผล</h2>
         </div>
         {/* ------------------------------------- */}
         {/*           edit permission             */}
@@ -209,10 +217,10 @@ const EditRoleDialog = ({
             <FormItem>
               <FormLabel>Your Description</FormLabel>
               <FormControl>
-                <Textarea {...field} placeholder="Type your message here." />
+                <Textarea {...field} placeholder="พิมพ์ข้อความที่นี่อย่างน้อย 10 ตัวอักษร" />
               </FormControl>
               <p className="text-sm text-muted-foreground">
-                Your message will be copied to the description role.
+                สามารถอธิบายที่มาหรือขอบเขตของตำแหน่งนี้ได้
               </p>
               <FormMessage />
             </FormItem>

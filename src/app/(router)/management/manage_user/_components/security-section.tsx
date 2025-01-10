@@ -24,16 +24,16 @@ const formSchema = z
     newPassword: z
       .string()
       .min(8, {
-        message: "Password must be at least 8 characters long.",
+        message: "รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร",
       })
       .regex(/[a-z]/, {
-        message: "Password must contain at least one lowercase letter.",
+        message: "รหัสผ่านต้องมีตัวพิมพ์เล็กอย่างน้อย 1 ตัว",
       })
       .regex(/[A-Z]/, {
-        message: "Password must contain at least one uppercase letter.",
+        message: "รหัสผ่านต้องมีตัวพิมพ์ใหญ่อย่างน้อย 1 ตัว",
       })
       .regex(/[0-9]/, {
-        message: "Password must contain at least one number.",
+        message: "รหัสผ่านต้องมีตัวเลขอย่างน้อย 1 ตัว",
       }),
     confirmPassword: z.string(),
   })
@@ -76,8 +76,8 @@ const SecuritySection = ({ userDetail }: { userDetail: User }) => {
   };
   return (
     <div>
-      <h2 className="text-lg font-semibold ">Change password?</h2>
-      <h2 className="text-sm text-gray-500">Must be at least 8 charector</h2>
+      <h2 className="text-lg font-semibold ">เปลี่ยนรหัสผ่าน?</h2>
+      <h2 className="text-sm text-gray-500">ต้องมีอย่างน้อย 8 ตัวอักษร</h2>
       <Separator />
       <div
         className={`px-4 flex flex-col items-start  rounded-lg h-full ${styles.text}`}

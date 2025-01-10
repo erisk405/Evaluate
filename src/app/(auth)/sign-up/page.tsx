@@ -42,40 +42,48 @@ import {
 } from "@/components/ui/select";
 import GlobalApi from "@/app/_util/GlobalApi";
 import { Department } from "@/types/interface";
+import { useThemeStyles } from "@/hooks/useTheme";
 
-const formSchema = z.object({
-  FirstName: z.string().min(2, {
-    message: "First name must be at least 2 characters.",
-  }),
-  LastName: z.string().min(2, {
-    message: "Last name must be at least 2 characters.",
-  }),
-  email: z.string().email({
-    message: "Email must be a valid email address.",
-  }),
-  phoneNumber: z.string().regex(/^(\+\d{1,3}[- ]?)?\d{10}$/, {
-    message: "Phone number must be a valid format.",
-  }),
-  password: z
-    .string()
-    .min(8, {
-      message: "Password must be at least 8 characters long.",
-    })
-    .regex(/[a-z]/, {
-      message: "Password must contain at least one lowercase letter.",
-    })
-    .regex(/[A-Z]/, {
-      message: "Password must contain at least one uppercase letter.",
-    })
-    .regex(/[0-9]/, {
-      message: "Password must contain at least one number.",
+const formSchema = z
+  .object({
+    FirstName: z.string().min(2, {
+      message: "First name must be at least 2 characters.",
     }),
-  prefix: z.string().min(1, { message: "กรุณาใส่คำนำหน้าชื่อ" }),
-  department: z.string().min(1, { message: "กรุณาใส่หน่วยงานที่ประจำอยู่" }),
-});
+    LastName: z.string().min(2, {
+      message: "Last name must be at least 2 characters.",
+    }),
+    email: z.string().email({
+      message: "Email must be a valid email address.",
+    }),
+    phoneNumber: z.string().regex(/^(\+\d{1,3}[- ]?)?\d{10}$/, {
+      message: "Phone number must be a valid format.",
+    }),
+    password: z
+      .string()
+      .min(8, {
+        message: "Password must be at least 8 characters long.",
+      })
+      .regex(/[a-z]/, {
+        message: "Password must contain at least one lowercase letter.",
+      })
+      .regex(/[A-Z]/, {
+        message: "Password must contain at least one uppercase letter.",
+      })
+      .regex(/[0-9]/, {
+        message: "Password must contain at least one number.",
+      }),
+    confirmPassword: z.string(),
+    prefix: z.string().min(1, { message: "กรุณาใส่คำนำหน้าชื่อ" }),
+    department: z.string().min(1, { message: "กรุณาใส่หน่วยงานที่ประจำอยู่" }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "รหัสผ่านไม่ตรงกัน",
+    path: ["confirmPassword"], // Error message will be displayed under confirmPassword field
+  });
 
 const page = () => {
   const [loading, setLoading] = useState(false);
+  const styles = useThemeStyles()
   const [prefix, setPrefix] = useState<
     { prefix_id: string; prefix_name: string }[] | null
   >(null);
@@ -131,22 +139,22 @@ const page = () => {
     }
   }
   return (
-    <div className="relative w-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px] h-screen">
+    <div className={` relative w-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px] h-screen`}>
       <div className="hidden bg-muted lg:block overflow-hidden">
         <Image
           src="/profiletest.jpg"
           alt="Image"
           width="1920"
           height="1080"
-          className="h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+          className="h-full w-full object-cover"
         />
       </div>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex items-center"
+          className={`flex items-center `}
         >
-          <Card className="mx-auto max-w-max shadow-none border-none">
+          <Card className={`mx-auto max-w-max shadow-none border-none bg-transparent`}>
             <CardHeader>
               <CardTitle className="text-4xl my-5">Sign Up</CardTitle>
               <CardDescription>
@@ -162,7 +170,7 @@ const page = () => {
                     name="prefix"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Select a prefix</FormLabel>
+                        <FormLabel>คำนำหน้า</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
@@ -195,7 +203,7 @@ const page = () => {
                     name="department"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Select a department</FormLabel>
+                        <FormLabel>หน่วยงานที่สังกัด</FormLabel>
                         <Select
                           onValueChange={field.onChange} // อัพเดตค่าเมื่อเลือก
                           defaultValue={field.value}
@@ -223,7 +231,7 @@ const page = () => {
                     name="FirstName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>First name</FormLabel>
+                        <FormLabel>ชื่อ</FormLabel>
                         <FormControl>
                           <Input placeholder="First name" {...field} />
                         </FormControl>
@@ -240,7 +248,7 @@ const page = () => {
                     name="LastName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Last name</FormLabel>
+                        <FormLabel>นามสกุล</FormLabel>
                         <FormControl>
                           <Input placeholder="Last name" {...field} />
                         </FormControl>
@@ -258,7 +266,7 @@ const page = () => {
                   name="phoneNumber"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Phone</FormLabel>
+                      <FormLabel>เบอร์โทรศัพท์</FormLabel>
                       <FormControl>
                         <Input placeholder="097-xxx-xxxx" {...field} />
                       </FormControl>
@@ -286,10 +294,27 @@ const page = () => {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Password</FormLabel>
+                      <FormLabel>รหัสผ่าน</FormLabel>
                       <FormControl>
                         <Input
                           placeholder="*******"
+                          {...field}
+                          type="password"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="confirmPassword"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>ยืนยันรหัสผ่าน</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="********"
                           {...field}
                           type="password"
                         />
@@ -305,12 +330,9 @@ const page = () => {
                     "Create an account"
                   )}
                 </Button>
-                <Button variant="outline" className="w-full">
-                  Sign up with GitHub
-                </Button>
               </div>
               <div className="mt-4 text-center text-sm">
-                Already have an account?{" "}
+                หากคุณมีบัญชีที่พร้อมใช้งานแล้ว{" "}
                 <Link href="/sign-in" className="underline">
                   Sign in
                 </Link>

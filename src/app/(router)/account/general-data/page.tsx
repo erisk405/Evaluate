@@ -382,7 +382,7 @@ export default function page() {
               name="phoneNumber"
               render={({ field }) => (
                 <FormItem>
-                  <h2 className="col-span-3 text-sm">Phone</h2>
+                  <h2 className="col-span-3 text-sm">เบอร์โทรศัพท์</h2>
                   <div className="grid grid-cols-11 items-center gap-3">
                     <FormControl className="col-span-11">
                       <Input placeholder="097-xxx-xxxx" {...field} />

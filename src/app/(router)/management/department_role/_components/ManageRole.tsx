@@ -67,14 +67,14 @@ import { useThemeStyles } from "@/hooks/useTheme";
 const formSchema = z.object({
   roleName: z
     .string()
-    .min(5, { message: "Role name must be at least 5 characters." }) // ขั้นต่ำ 5 ตัวอักษร
-    .max(50, { message: "Role name must not exceed 50 characters." }), // สูงสุด 50 ตัวอักษร
+    .min(5, { message: "ชื่อตำแหน่งต้องมีขั้นต่ำ 5 ตัวอักษร" }) // ขั้นต่ำ 5 ตัวอักษร
+    .max(50, { message: "ชื่อตำแหน่งมีสูงสุดได้ 50 ตัวอักษร" }), // สูงสุด 50 ตัวอักษร
   description: z
     .string()
-    .min(10, { message: "Description must be at least 10 characters." }) // ขั้นต่ำ 10 ตัวอักษร
-    .max(100, { message: "Description must not exceed 100 characters." }), // สูงสุด 100 ตัวอักษร
+    .min(10, { message: "คำอธิบายต้องมีขั้นต่ำ 10 ตัวอักษร" }) // ขั้นต่ำ 10 ตัวอักษร
+    .max(100, { message: "คำอธิบายไม่สามารถมีได้เกิน 100 ตัวอักษร" }), // สูงสุด 100 ตัวอักษร
   roleLevel: z.enum(["LEVEL_1", "LEVEL_2", "LEVEL_3", "LEVEL_4"], {
-    required_error: "Please select a role level.",
+    required_error: "กรุณากำหนดระดับของตำแหน่งนี้",
   }),
 });
 
@@ -299,7 +299,7 @@ const ManageRole = () => {
                   <div className="block p-1 bg-blue-100 rounded-full">
                     <ShieldPlus size={40} className="text-blue-500 " />{" "}
                   </div>
-                  <h2 className="text-xl">Create role</h2>
+                  <h2 className="text-xl">สร้างตำแหน่ง</h2>
                 </div>
               </DialogTitle>
               <DialogDescription>
@@ -319,9 +319,9 @@ const ManageRole = () => {
                       name="roleName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Role name</FormLabel>
+                          <FormLabel>ชื่อตำแหน่ง</FormLabel>
                           <FormControl>
-                            <Input placeholder="Enter name" {...field} />
+                            <Input placeholder="บุคลากรทั่วไป..." {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -336,7 +336,7 @@ const ManageRole = () => {
                         name="roleLevel"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Role level</FormLabel>
+                            <FormLabel>ระดับ</FormLabel>
                             <Select
                               onValueChange={field.onChange}
                               defaultValue={field.value}
@@ -347,10 +347,10 @@ const ManageRole = () => {
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                <SelectItem value="LEVEL_1">Level 1</SelectItem>
-                                <SelectItem value="LEVEL_2">Level 2</SelectItem>
-                                <SelectItem value="LEVEL_3">Level 3</SelectItem>
-                                <SelectItem value="LEVEL_4">Level 4</SelectItem>
+                                <SelectItem value="LEVEL_1">Level 1 {"(ผู้ใช้งานทั่วไป)"}</SelectItem>
+                                <SelectItem value="LEVEL_2">Level 2 {"(ดูผลของผู้ใช้งานอื่นที่ตนเองสังกัดอยู่ได้)"}</SelectItem>
+                                <SelectItem value="LEVEL_3">Level 3 {"(กำกับดูแลหน่วยงานอื่นได้)"}</SelectItem>
+                                <SelectItem value="LEVEL_4">Level 4 {"(ดูผลภาพรวมได้)"}</SelectItem>
                               </SelectContent>
                             </Select>
                           </FormItem>
@@ -363,7 +363,7 @@ const ManageRole = () => {
                 {/* body header */}
                 <div className="flex items-center gap-2 font-semibold">
                   <BadgeAlert className="text-blue-500 bg-white rounded-full " />{" "}
-                  <h2>Set role permission form evaluate</h2>
+                  <h2>กำหนดแบบฟอร์มในแต่ละตำแหน่งเพื่อใช้งานการประเมินผล</h2>
                 </div>
                 {/* Set role permission form evaluate */}
                 <div className="grid grid-cols-4 items-center shadow-inner p-2 gap-4 overflow-scroll h-[35dvh] scrollbar-gemini rounded-lg">
@@ -423,15 +423,15 @@ const ManageRole = () => {
                     name="description"
                     render={({ field }) => (
                       <FormItem>
-                        <Label>Your Describtion</Label>
+                        <Label>คำอธิบายของตำแหน่งนี้</Label>
                         <FormControl>
                           <Textarea
-                            placeholder="Type your message here."
+                            placeholder="พิมพ์ข้อความที่นี่อย่างน้อย 10 ตัวอักษร"
                             {...field}
                           />
                         </FormControl>
                         <p className="text-sm text-muted-foreground">
-                          Your message will be copied to the describtion role.
+                          สามารถอธิบายที่มาหรือขอบเขตของตำแหน่งนี้ได้
                         </p>
                         <FormMessage />
                       </FormItem>

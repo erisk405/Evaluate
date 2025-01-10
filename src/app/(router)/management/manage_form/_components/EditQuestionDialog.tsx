@@ -24,8 +24,8 @@ import { FormQuestion } from "@/types/interface";
 const formSchema = z.object({
   content: z
     .string()
-    .min(10, { message: "massage must be at least 10 characters." }) // ขั้นต่ำ 10 ตัวอักษร
-    .max(100, { message: "massage must not exceed 100 characters." }),
+    .min(10, { message: "ข้อคำถามต้องมีตัวอักษรขั้นต่ำ 10 ตัวอักษร" }) // ขั้นต่ำ 10 ตัวอักษร
+    .max(100, { message: "ข้อคำถามมีตัวอักษรสูงสุดได้เพียง 100 ตัวอักษร" }),
 });
 // 2. กำหนด type จาก schema
 type FormValues = z.infer<typeof formSchema>;
@@ -65,9 +65,9 @@ const EditQuestionDialog = ({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="sm:max-w-[625px]">
         <DialogHeader>
-          <DialogTitle>Edit Question</DialogTitle>
+          <DialogTitle>ตั้งค่าคำถาม</DialogTitle>
           <DialogDescription>
-            Make changes to your question here. Click save when you're done.
+            คุณสามารถเปลี่ยนข้อคำถามได้ด้วยการพิมพ์ที่ข้างล่างนี้
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -78,16 +78,16 @@ const EditQuestionDialog = ({
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <div className="grid gap-4 py-4">
+                    <div className="grid gap-4">
                       <div className="grid w-full gap-1.5">
-                        <Label htmlFor="message-2">Your Content</Label>
+                        <Label htmlFor="message-2">พิมพ์ข้อคำถามของคุณ</Label>
                         <Textarea
                           placeholder="Type your content here."
                           id="message-2"
                           {...field}
                         />
                         <p className="text-sm text-muted-foreground">
-                          Your message will be copied to the support team.
+                          ข้อคำถามนี้จะถูกนำไปแสดงในแต่ละแบบฟอร์ม
                         </p>
                       </div>
                     </div>
@@ -97,7 +97,7 @@ const EditQuestionDialog = ({
               )}
             />
             <DialogFooter>
-              <Button type="submit">Save Changes</Button>
+              <Button type="submit">บันทึกข้อมูล</Button>
             </DialogFooter>
           </form>
         </Form>

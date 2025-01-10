@@ -32,16 +32,16 @@ const formSchema = z.object({
   password: z
     .string()
     .min(8, {
-      message: "Password must be at least 8 characters long.",
+      message: "รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร",
     })
     .regex(/[a-z]/, {
-      message: "Password must contain at least one lowercase letter.",
+      message: "รหัสผ่านต้องมีตัวพิมพ์เล็กอย่างน้อย 1 ตัว",
     })
     .regex(/[A-Z]/, {
-      message: "Password must contain at least one uppercase letter.",
+      message: "รหัสผ่านต้องมีตัวพิมพ์ใหญ่อย่างน้อย 1 ตัว",
     })
     .regex(/[0-9]/, {
-      message: "Password must contain at least one number.",
+      message: "รหัสผ่านต้องมีตัวเลขอย่างน้อย 1 ตัว",
     }),
 });
 
@@ -103,12 +103,12 @@ const page = () => {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>email</FormLabel>
+                      <FormLabel>Email Address</FormLabel>
                       <FormControl>
                         <Input placeholder="Email" {...field} />
                       </FormControl>
                       <FormDescription>
-                        This is your public display name.
+                        โปรดกรอก Email address ในการเข้าสู่ระบบ
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -146,7 +146,7 @@ const page = () => {
                         </div>
                       </FormControl>
                       <FormDescription>
-                        This is your public display password.
+                        โปรดกรอกรหัสผ่านในการเข้าสู่ระบบ
                       </FormDescription>
                       {errors.password?.message && (
                         <FormMessage>
@@ -161,20 +161,17 @@ const page = () => {
                 <Button type="submit" className="w-full">
                   {loading ? <Loader className="animate-spin" /> : "Login"}
                 </Button>
-                <Button variant="outline" className="w-full">
-                  Login with Google
-                </Button>
               </div>
             </form>
           </Form>
           <div className="mt-4 text-center text-sm">
-            Don&apos;t have an account?{" "}
+            {"สมัครสมาชิกได้เลยที่นี่ "}
             <Link href="/sign-up" className="underline">
               Sign up
             </Link>
           </div>
           <div className="text-center text-sm">
-            if you forgot an account?{" "}
+            ถ้าหากคุณลืมรหัสผ่านคลิกที่นี่{" "}
             <Link href="/forgot-password" className="underline">
               forgot password
             </Link>
@@ -187,7 +184,7 @@ const page = () => {
           alt="Image"
           width="1920"
           height="1080"
-          className="h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+          className="h-full w-full object-cover "
         />
       </div>
     </div>

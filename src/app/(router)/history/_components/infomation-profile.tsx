@@ -3,6 +3,7 @@ import GlobalApi from "@/app/_util/GlobalApi";
 import useStore from "@/app/store/store";
 import { Separator } from "@/components/ui/separator";
 import { useThemeClass, useThemeStyles } from "@/hooks/useTheme";
+import { Dot } from "lucide-react";
 import Image from "next/image";
 import React, { useEffect } from "react";
 
@@ -13,6 +14,7 @@ const InfomationProfile = () => {
     currentlyEvaluationPeriod,
     setResultEvaluate,
   } = useStore();
+  const styles = useThemeStyles();
   const fetchResultEvaluate = async () => {
     try {
       if (!ProfileDetail?.id || !currentlyEvaluationPeriod?.period_id) {
@@ -23,19 +25,19 @@ const InfomationProfile = () => {
         period_id: currentlyEvaluationPeriod.period_id,
       };
       const response = await GlobalApi.getResultEvaluate(payload);
-      console.log("response",response?.data);
-      
+      console.log("response", response?.data);
+
       setResultEvaluate(response?.data);
     } catch (error) {
       console.error({ message: error });
     }
   };
   const { getThemeClass } = useThemeClass();
-  useEffect(()=>{
-    if(!resultEvaluate){
+  useEffect(() => {
+    if (!resultEvaluate) {
       fetchResultEvaluate();
     }
-  },[ProfileDetail?.id, currentlyEvaluationPeriod?.period_id])
+  }, [ProfileDetail?.id, currentlyEvaluationPeriod?.period_id]);
   return (
     <div className={`p-3 `}>
       <div className="relative h-32 shadow rounded-xl">
@@ -92,18 +94,45 @@ const InfomationProfile = () => {
           <div className="flex items-center gap-2">
             <span className="p-1 bg-neutral-300  text-xl rounded-full">📱</span>
             <div className="grid grid-cols-1 leading-4">
-              <p className="text-sm text-gray-500">สังกัดอยู่ที่</p>
+              <p className="text-sm text-gray-500">เบอร์โทรศัพท์</p>
               <h2 className="text-sm">0906652652</h2>
             </div>
           </div>
         </div>
-        <div className="grid grid-cols-3 gap-3 my-3">
-          {resultEvaluate?.formResults.map((item) => (
-            <div className="shadow rounded-lg px-2 py-1" key={item.formId}>
-              <p className="text-sm text-gray-500 truncate">{item.formName}</p>
-              <h2 className="text-md text-end mt-auto">{item.totalAVGPerForm}</h2>
+        <div className="relative mt-3">
+          <h2 className={`${styles.text_description} text-sm`}>
+            ภาพรวม ณ ช่วงเวลาปัจจุบัน
+          </h2>
+          {currentlyEvaluationPeriod ? (
+            <div className="flex items-center">
+              <Dot
+                strokeWidth={6}
+                className="absolute text-emerald-500 animate-ping"
+              />
+              <Dot strokeWidth={6} className="text-emerald-500" />
+              <h2 className="text-sm">{currentlyEvaluationPeriod?.title}</h2>
             </div>
-          ))}
+          ) : (
+            <h2 className="text-sm text-yellow-500">
+              ยังไม่ได้อยู่ในช่วงเวลาประเมินผล
+            </h2>
+          )}
+        </div>
+        <div className="grid grid-cols-3 gap-3 my-3">
+          {resultEvaluate &&
+            resultEvaluate?.formResults.map((item) => (
+              <div
+                className={`${styles.background_card} shadow rounded-lg px-2 py-1`}
+                key={item.formId}
+              >
+                <p className={`text-sm ${styles.text_description} truncate`}>
+                  {item.formName}
+                </p>
+                <h2 className="text-md text-end mt-auto">
+                  {item.totalAVGPerForm}
+                </h2>
+              </div>
+            ))}
         </div>
       </div>
     </div>

@@ -137,7 +137,7 @@ export function ListEmployee({ allUser, fetchUserList }: ListEmployeeProp) {
     },
     {
       accessorKey: "name",
-      header: "Name",
+      header: "ชื่อ-นามสกุล",
       cell: ({ row }) => {
         const image = row.original.image;
         // console.log("image :", image);
@@ -161,14 +161,14 @@ export function ListEmployee({ allUser, fetchUserList }: ListEmployeeProp) {
                 className="w-[40px] h-[40px] rounded-full object-cover"
               />
             )}
-            <h2 className="truncate">{row.getValue("name")}</h2>
+            <h2 className="truncate">{row.original.prefix?.prefix_name}{row.getValue("name")}</h2>
           </div>
         );
       },
     },
     {
       accessorKey: "role",
-      header: "Role",
+      header: "ตำแหน่ง",
       cell: ({ row }) => {
         const role_name = row.original.role.role_name;
         return (
@@ -220,7 +220,7 @@ export function ListEmployee({ allUser, fetchUserList }: ListEmployeeProp) {
     },
     {
       accessorKey: "phone",
-      header: "Phone",
+      header: "เบอร์โทรศัพท์",
       cell: ({ row }) => {
         return (
           <div className="capitalize flex items-center gap-3">
@@ -231,7 +231,7 @@ export function ListEmployee({ allUser, fetchUserList }: ListEmployeeProp) {
     },
     {
       accessorKey: "department",
-      header: "Department",
+      header: "หน่วยงานที่สังกัด",
       cell: ({ row }) => {
         const NameOfDepartment = row.original.department;
         return (
@@ -274,7 +274,7 @@ export function ListEmployee({ allUser, fetchUserList }: ListEmployeeProp) {
     {
       id: "actions",
       enableHiding: false,
-      header: "Action",
+      // header: "Action",
       cell: ({ row }) => {
         return (
           <EditPageUser userDetail={row.original} refreshData={fetchUserList} />
@@ -404,7 +404,7 @@ export function ListEmployee({ allUser, fetchUserList }: ListEmployeeProp) {
                     : true
                 }
               >
-                Delete
+                ลบผู้ใช้งาน
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>

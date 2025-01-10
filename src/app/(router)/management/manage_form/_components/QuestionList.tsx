@@ -80,8 +80,8 @@ export type questionProp = {
 const formSchema = z.object({
   content: z
     .string()
-    .min(10, { message: "massage must be at least 10 characters." }) // ขั้นต่ำ 10 ตัวอักษร
-    .max(100, { message: "massage must not exceed 100 characters." }),
+    .min(10, { message: "ข้อคำถามต้องมีตัวอักษรขั้นต่ำ 10 ตัวอักษร" }) // ขั้นต่ำ 10 ตัวอักษร
+    .max(100, { message: "ข้อคำถามมีตัวอักษรสูงสุดได้เพียง 100 ตัวอักษร" }),
 });
 
 type QuestionListProp = {
@@ -227,8 +227,8 @@ export function QuestionList({ formId }: QuestionListProp) {
             if (!response) {
               throw new Error("Question update fail");
             }
-            console.log("response",response?.data);
-            
+            console.log("response", response?.data);
+
             fetchQuestion();
             toast("Event has been updated", {
               description: `แก้ชื่อคำถามเป็น : "${response?.data.datail.content}" เรียบร้อยแล้ว`,
@@ -262,12 +262,12 @@ export function QuestionList({ formId }: QuestionListProp) {
                     navigator.clipboard.writeText(question.content)
                   }
                 >
-                  Copy question
+                  คัดลอกคำถาม
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 {/* Edit section  */}
                 <DropdownMenuItem onSelect={() => setOpen(true)}>
-                  Edit
+                  ตั้งค่า
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -306,7 +306,7 @@ export function QuestionList({ formId }: QuestionListProp) {
     <div className="w-full">
       <div className="flex items-center py-4">
         <Input
-          placeholder="Filter question..."
+          placeholder="ค้นหา: ชื่อคำถาม"
           value={(table.getColumn("content")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
             table.getColumn("content")?.setFilterValue(event.target.value)
@@ -324,17 +324,20 @@ export function QuestionList({ formId }: QuestionListProp) {
                     : true
                 }
               >
-                Delete
+                ลบคำถาม
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogTitle>
+                  คุณมั่นใจในการตัดสินใจนี้ใช่ไหม?
+                </AlertDialogTitle>
                 <AlertDialogDescription className="text-red-500">
-                  This action cannot be undone. This will permanently delete.
+                  การดำเนินการนี้ไม่สามารถย้อนกลับได้
+                  การดำเนินการนี้จะถูกลบออกอย่างถาวร
                 </AlertDialogDescription>
               </AlertDialogHeader>
-              <h2 className={`${styles.text}`}>รายละเอียดข้อมูลที่จะลบ </h2>
+              <h2 className={`${styles.text}`}>รายละเอียดข้อมูลที่จะลบ</h2>
               <ScrollArea className="h-52 w-full">
                 <div className="inline-flex flex-wrap gap-3 ">
                   {table
@@ -365,15 +368,15 @@ export function QuestionList({ formId }: QuestionListProp) {
                 className="active:scale-95 transition-all select-none gap-2"
               >
                 <Plus />
-                Add question
+                สร้างคำถาม
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[625px]">
               <DialogHeader>
-                <DialogTitle>Craete Question</DialogTitle>
+                <DialogTitle>สร้างคำถาม</DialogTitle>
                 <DialogDescription>
-                  Make changes to your profile here. Click save when you're
-                  done.
+                  เมื่อคุณทำการสร้างคำถามนี้เสร็จสิ้น
+                  คำถามนี้จะอยู่ภายในแบบฟอร์มเพื่อนำไปประเมินผล
                 </DialogDescription>
               </DialogHeader>
               <Form {...form}>
@@ -384,16 +387,18 @@ export function QuestionList({ formId }: QuestionListProp) {
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
-                          <div className="grid gap-4 py-4">
+                          <div className="grid gap-4">
                             <div className="grid w-full gap-1.5">
-                              <Label htmlFor="message-2">Your Content</Label>
+                              <Label htmlFor="message-2">
+                                พิมพ์ข้อคำถามของคุณ
+                              </Label>
                               <Textarea
                                 placeholder="Type your content here."
                                 id="message-2"
                                 {...field}
                               />
                               <p className="text-sm text-muted-foreground">
-                                Your message will be copied to the support team.
+                                ข้อคำถามนี้จะถูกนำไปแสดงในแต่ละแบบฟอร์ม
                               </p>
                             </div>
                           </div>
@@ -403,7 +408,7 @@ export function QuestionList({ formId }: QuestionListProp) {
                     )}
                   />
                   <DialogFooter>
-                    <Button type="submit">Save Change</Button>
+                    <Button type="submit">บันทึกข้อมูล</Button>
                   </DialogFooter>
                 </form>
               </Form>

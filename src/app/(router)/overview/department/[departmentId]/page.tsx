@@ -214,10 +214,10 @@ const page = () => {
                         {
                           light:
                             "from-neutral-800 from-20% to-neutral-900 to-50%",
-                          dark: "from-blue-950 from-10% to-background_secondary to-50%",
+                          dark: "from-neutral-900 from-2% to-zinc-900 to-50%",
                         },
                         `flex rounded-2xl gap-3 relative overflow-hidden items-center px-8 py-4 shadow-xl 
-                        bg-gradient-to-tl group 
+                        bg-gradient-to-t group 
                         transition-all `
                       )}
                     >
@@ -238,8 +238,8 @@ const page = () => {
                               {item.prefix?.prefix_name + item?.name}
                             </h2>
                             <div
-                              className="inline-flex items-center gap-2 bg-neutral-800 
-              px-4 py-1 rounded-full text-neutral-400"
+                              className={`inline-flex items-center gap-2 bg-neutral-800 
+              px-4 py-1 rounded-full text-neutral-400`}
                             >
                               <GraduationCap size={20} />
                               <h2 className="text-sm">

@@ -57,6 +57,7 @@ import EditPariod from "./EditPariod";
 import axios from "axios";
 import useStore from "@/app/store/store";
 import { useThemeStyles } from "@/hooks/useTheme";
+import { Separator } from "@/components/ui/separator";
 
 type RightSectionProps = {
   permission?: string; // ใส่ ? เพื่อบอกว่าอาจเป็น undefined ได้
@@ -225,7 +226,7 @@ const RightSection = ({ permission, period }: RightSectionProps) => {
               flex-col justify-center items-center shadow-sm border-none w-auto ${styles.text} ${styles.background}`}
           >
             <Calendar
-              className={`border-b @[23rem]:border-r `}
+              className={`@[23rem]:border-r`}
               classNames={{
                 day_selected:
                   "w-full bg-green-500 rounded-md text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
@@ -252,6 +253,7 @@ const RightSection = ({ permission, period }: RightSectionProps) => {
               }
               numberOfMonths={1}
             />
+            <Separator className="@[23rem]:hidden" />
             <div className={`py-4 px-1 `}>
               <div className="grid gap-3 items-center">
                 <div className="flex items-center">

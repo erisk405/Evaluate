@@ -5,8 +5,13 @@ import {
   Bell,
   ChevronsUpDown,
   CreditCard,
+  FolderClock,
   LogOut,
   Sparkles,
+  PieChart,
+  ReplaceAll,
+  History,
+  BetweenHorizontalEnd,
 } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -31,10 +36,13 @@ import GlobalApi from "../_util/GlobalApi";
 import socket from "@/lib/socket";
 import Link from "next/link";
 import { ImageType } from "@/types/interface";
+import { useAuthState } from "@/hooks/useAuthState";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
-  const { showProfile, ProfileDetail, updateProfileDetail, setShowProfile } =  useStore();
+  const { showProfile, ProfileDetail, updateProfileDetail, setShowProfile } =
+    useStore();
+  const { isAdmin } = useAuthState();
   const handleLogout = async () => {
     try {
       await GlobalApi.Logout();
@@ -152,10 +160,21 @@ export function NavUser() {
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
-                <DropdownMenuItem className="flex gap-2 items-center">
-                  <Sparkles size={18} />
-                  Upgrade to Pro
-                </DropdownMenuItem>
+                {isAdmin ? (
+                  <Link href="/evaluation/all_result">
+                    <DropdownMenuItem className="flex gap-2 items-center">
+                      <ReplaceAll size={18} />
+                      ผลการประเมินทั้งหมด
+                    </DropdownMenuItem>
+                  </Link>
+                ) : (
+                  <Link href="/personal_evaluation">
+                    <DropdownMenuItem className="flex gap-2 items-center">
+                      <PieChart size={18} />
+                      ผลการประเมิน
+                    </DropdownMenuItem>
+                  </Link>
+                )}
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
@@ -164,18 +183,30 @@ export function NavUser() {
                   className="flex gap-2 items-center"
                 >
                   <BadgeCheck size={18} />
-                  Account
+                  บัญชีของฉัน
                 </DropdownMenuItem>
-                <DropdownMenuItem className="flex gap-2 items-center">
-                  <CreditCard size={18} />
-                  Billing
-                </DropdownMenuItem>
+
+                {isAdmin ? (
+                  <Link href="/evaluation/backup_result">
+                    <DropdownMenuItem className="flex gap-2 items-center">
+                      <BetweenHorizontalEnd size={18} />
+                      คลังเก็บข้อมูล
+                    </DropdownMenuItem>
+                  </Link>
+                ) : (
+                  <Link href="/history">
+                    <DropdownMenuItem className="flex gap-2 items-center">
+                      <FolderClock size={18} />
+                      ประวัติผลการประเมิน
+                    </DropdownMenuItem>
+                  </Link>
+                )}
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <Link href={"/sign-in"} onClick={handleLogout}>
                 <DropdownMenuItem className="flex gap-2 items-center">
                   <LogOut size={18} />
-                  Log out
+                  ออกจากระบบ
                 </DropdownMenuItem>
               </Link>
             </DropdownMenuContent>

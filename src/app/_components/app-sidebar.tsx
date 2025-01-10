@@ -13,7 +13,7 @@ import {
   Settings2,
   ShieldCheck,
   Vault,
-  Blend
+  Blend,
 } from "lucide-react";
 
 import { NavMain } from "@/app/_components/nav-main";
@@ -32,12 +32,14 @@ import {
 import { usePathname } from "next/navigation";
 import GlobalApi from "../_util/GlobalApi";
 import Image from "next/image";
+import { Permission, Role } from "../(auth)/type/auth";
+import { useAuthState } from "@/hooks/useAuthState";
 
 const data = {
   navMain: [
     {
       title: "การจัดการ",
-      session:"admin",
+      session: "admin",
       url: "#",
       icon: ShieldCheck,
       isActive: true,
@@ -63,7 +65,7 @@ const data = {
     {
       title: "การประเมินผล",
       url: "#",
-      session:"admin",
+      session: "admin",
       icon: Bot,
       items: [
         {
@@ -79,7 +81,7 @@ const data = {
     {
       title: "คู่มือและเอกสาร",
       url: "#",
-      session:"user",
+      session: "user",
       icon: BookOpen,
       items: [
         {
@@ -118,41 +120,31 @@ const data = {
       name: "หน้าหลัก",
       url: "/overview",
       icon: Frame,
+      requiredPermission: "view:projects" as Permission,
     },
     {
       name: "ผลการประเมิน",
       url: "/personal_evaluation",
       icon: PieChart,
+      requiredPermission: "view:projects_users" as Permission,
     },
     {
       name: "ประวัติผลการประเมิน",
       url: "/history",
       icon: FolderClock,
+      requiredPermission: "view:projects_users" as Permission,
     },
     {
       name: "บัญชีของฉัน",
       url: "/account/general-data",
       icon: Blend,
+      requiredPermission: "view:projects" as Permission,
     },
   ],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const [isAdmin, setIsAdmin] = React.useState(false); // สถานะของ admin
-  const Protected = async () => {
-    try {
-      const response = await GlobalApi.fetchProtected();
-      if (response.data.role === "admin") {
-        setIsAdmin(true); // ถ้า role เป็น admin ให้ตั้งค่าเป็น true
-      }
-    } catch (error) {
-      // console.error("Error fetching admin role:", error);
-      setIsAdmin(false); // ในกรณีที่ดึงข้อมูลไม่สำเร็จ หรือตรวจสอบ role ไม่ผ่าน
-    }
-  };
-  React.useEffect(() => {
-    Protected();
-  }, []);
+  const { isAdmin, user, isLoading } = useAuthState();
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
@@ -162,14 +154,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <a href="#">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg  text-sidebar-primary-foreground">
                   <Image
-                    src={'/logo.png'}
+                    src={"/logo.png"}
                     width={40}
                     height={40}
                     alt="icon logo"
                   />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">Evaluation 360 degree</span>
+                  <span className="truncate font-semibold">
+                    Evaluation 360 degree
+                  </span>
                   <span className="truncate text-xs">Enterprise</span>
                 </div>
               </a>
@@ -178,8 +172,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={isAdmin ? data.navMain : data.navMain.filter(item => item.session !== 'admin')} />
-        <NavProjects projects={data.projects} />
+        <NavMain
+          items={
+            isAdmin
+              ? data.navMain
+              : data.navMain.filter((item) => item.session !== "admin")
+          }
+        />
+        <NavProjects projects={data.projects} user={user} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>

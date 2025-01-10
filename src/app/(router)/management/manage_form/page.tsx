@@ -167,12 +167,12 @@ const page = () => {
           <div className="bg-blue-100 p-2 rounded-full">
             <ShieldAlert size={40} className="text-blue-500" />
           </div>
-          <h2 className="text-2xl font-bold">Form setting</h2>
+          <h2 className="text-3xl">การจัดการแบบฟอร์ม</h2>
         </div>
         <div className="grid @container grid-cols-5 h-full ">
           <div className="col-span-5 @[65rem]:col-span-2 @[65rem]:border-r p-5 ">
             <div className="flex justify-between my-2">
-              <h2 className="text-xl font-semibold">แบบฟอร์มทั้งหมด</h2>
+              <h2 className="text-xl">แบบฟอร์มทั้งหมด</h2>
               <CircleHelp className="text-blue-500" strokeWidth={1.5} />
             </div>
             {formState &&
@@ -233,7 +233,7 @@ const page = () => {
                             <DialogContent className="sm:max-w-[825px]  grid-cols-4">
                               <DialogHeader className="col-span-4">
                                 <DialogTitle className="text-xl">
-                                  Edit From
+                                  ตั้งค่าแบบฟอร์ม
                                 </DialogTitle>
                                 <DialogDescription className="text-red-500">
                                   ชื่อของแบบฟอร์มจะส่งผลกับการ Export เอกสารด้วย
@@ -245,6 +245,7 @@ const page = () => {
                                 {Object.values(SideBarEditSection).map(
                                   (section) => (
                                     <div
+                                      key={section}
                                       className={getThemeClass(
                                         // จัดการสีพื้นหลังตาม theme
                                         {
@@ -339,7 +340,7 @@ const page = () => {
               onClick={() => addForm("untitle_" + (formState.length + 1))}
             >
               <Plus />
-              Add form
+              เพิ่มแบบฟอร์ม
             </Button>
           </div>
           <div className="col-span-5 @[65rem]:col-span-3 p-5 grid ">
@@ -358,11 +359,11 @@ const page = () => {
                     className="absolute top-0 text-blue-500 opacity-10 animate-ping"
                   />
                 </div>
-                <h2 className="text-lg">Click any form your created.</h2>
+                <h2 className="text-lg">โปรดเลือกแบบฟอร์มเพื่อกำหนดคำถาม</h2>
               </div>
             ) : (
               <div className={`${styles.text}`}>
-                <h2 className="text-xl my-3 font-bold">
+                <h2 className="text-xl my-3">
                   คำถามของ{" "}
                   {formState.find((item) => item.id === openForm.id)?.name ||
                     "Unknow"}

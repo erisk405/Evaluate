@@ -40,5 +40,8 @@ export const useThemeStyles = () => {
     background_third_head_table:getStyle('background_third_head_table'),
     background_card:getStyle('background_card'),
     background_icon:getStyle('background_icon'),
+    background_popup:getStyle('background_popup'),
+    background_body_table:getStyle('background_body_table'),
+
   }
 }

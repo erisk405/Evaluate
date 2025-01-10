@@ -18,11 +18,10 @@ import BackUpPeriodList from "./_components/backUp-period-list";
 import UpComingPeriod from "../_components/upcoming-period";
 import { useThemeStyles } from "@/hooks/useTheme";
 
-
-
 const page = () => {
   const styles = useThemeStyles();
-  const { fetchCurrentPeriod, allPeriod ,currentlyEvaluationPeriod} = useStore();
+  const { fetchCurrentPeriod, allPeriod, currentlyEvaluationPeriod } =
+    useStore();
   const displayBackUp = [
     {
       id: "DBB01",
@@ -32,12 +31,18 @@ const page = () => {
     {
       id: "DBB02",
       title: "เก็บข้อมูลไปทั้งหมด 📇",
-      quantity: `${allPeriod?.filter(item => item.backUp === true).length} รอบ`,
+      quantity: `${
+        allPeriod?.filter((item) => item.backUp === true).length
+      } รอบ`,
     },
     {
       id: "DBB03",
       title: "รอบปัจจุบันขณะนี้ ⏰",
-      quantity: `${currentlyEvaluationPeriod ? currentlyEvaluationPeriod?.title : 'ยังไม่อยู่ในช่วงเวลา'}`,
+      quantity: `${
+        currentlyEvaluationPeriod
+          ? currentlyEvaluationPeriod?.title
+          : "ยังไม่อยู่ในช่วงเวลา"
+      }`,
     },
   ];
   useEffect(() => {
@@ -56,7 +61,9 @@ const page = () => {
   return (
     <div className={`p-3 w-full ${styles.text}`}>
       <h2 className="text-3xl">คลังเก็บข้อมูล</h2>
-      <div className={`@container grid grid-cols-2 ${styles.background} shadow rounded-xl overflow-hidden w-full p-3 gap-3`}>
+      <div
+        className={`@container grid grid-cols-2 ${styles.background} shadow rounded-xl overflow-hidden w-full p-3 gap-3`}
+      >
         <div className="flex gap-3 items-center @[998px]:col-span-1 col-span-2">
           <div className="flex justify-center items-center w-[248px] p-5 rounded-lg ">
             <div className="text-6xl animate-wiggle-float-blue">☃️</div>
@@ -112,24 +119,18 @@ const page = () => {
           <TabsContent value="detail">
             <Card>
               <CardHeader>
-                <CardTitle>Password</CardTitle>
+                <CardTitle>รายละเอียดประวัติในแต่ละรอบ</CardTitle>
                 <CardDescription>
-                  Change your password here. After saving, you'll be logged out.
+                  ดูสรุปข้อมูลประวัติผลการประเมินในแต่ละรอบ
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
-                <div className="space-y-1">
-                  <Label htmlFor="current">Current password</Label>
-                  <Input id="current" type="password" />
-                </div>
-                <div className="space-y-1">
-                  <Label htmlFor="new">New password</Label>
-                  <Input id="new" type="password" />
+                <div className="space-y-1 flex flex-col justify-center items-center">
+                  <p className="text-6xl animate-wiggle-float">😾</p>
+                  <p className="text-xl">อยู่ในระหว่างพัฒนาระบบ</p>
                 </div>
               </CardContent>
-              <CardFooter>
-                <Button>Save password</Button>
-              </CardFooter>
+              <CardFooter></CardFooter>
             </Card>
           </TabsContent>
         </Tabs>

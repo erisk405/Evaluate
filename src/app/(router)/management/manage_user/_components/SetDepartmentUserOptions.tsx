@@ -25,10 +25,19 @@ import { Department } from "@/types/interface";
 export default function SetDepartmentUserOptions({
   defaultValue,
   onChange,
-  value
+  value,
 }: any) {
   const [open, setOpen] = useState(false);
-  const { departments } = useStore();
+  const { departments, setDepartments } = useStore();
+  const getDepartment = async () => {
+    try {
+      const response = await GlobalApi.getDepartment();
+      setDepartments(response?.data); // ตั้งค่าเป็นอาเรย์ว่างถ้าไม่มีข้อมูล
+      // console.log("departments", departments);
+    } catch (error) {
+      console.error("Error fetching department data:", error);
+    }
+  };
   // ให้ เรียกใช้ function ใหม่หากเกิดการเปลี่ยนแปลงที่ rolRequest
   useEffect(() => {
     if (defaultValue) {
@@ -39,12 +48,16 @@ export default function SetDepartmentUserOptions({
         onChange(defaultDepartment.id); // ใช้ onChange แทน onDepartmentChange
       }
     }
-    
   }, [defaultValue, departments]);
+  useEffect(() => {
+    if (departments.length === 0) {
+      getDepartment();
+    }
+  }, []);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild >
+      <PopoverTrigger asChild>
         <Button
           variant="outline"
           role="combobox"
@@ -52,15 +65,14 @@ export default function SetDepartmentUserOptions({
           className="justify-between w-auto"
         >
           {value
-            ? departments.find(
-                (item: Department) => item.id === value
-              )?.department_name
+            ? departments.find((item: Department) => item.id === value)
+                ?.department_name
             : "Select Department"}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[250px] p-0 relative">
-        <Command >
+        <Command>
           <CommandInput placeholder="ค้นหา: ชื่อหน่วยงาน..." />
           <CommandEmpty>ไม่พบหน่วยงาน</CommandEmpty>
           <CommandGroup>
@@ -73,7 +85,7 @@ export default function SetDepartmentUserOptions({
                     const selectedDepartment = departments.find(
                       (dept) => dept.department_name === currentValue
                     );
-                    if (selectedDepartment) { 
+                    if (selectedDepartment) {
                       onChange(selectedDepartment.id); // ใช้ onChange โดยตรง
                       setOpen(false);
                     }
@@ -82,9 +94,7 @@ export default function SetDepartmentUserOptions({
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      value === item.id
-                        ? "opacity-100"
-                        : "opacity-0"
+                      value === item.id ? "opacity-100" : "opacity-0"
                     )}
                   />
                   <div className="flex flex-col w-[240px]">

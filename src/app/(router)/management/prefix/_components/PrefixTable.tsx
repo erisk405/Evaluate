@@ -291,7 +291,7 @@ const PrefixTable = () => {
     <div className={`w-full ${styles.text}`}>
       <div className="flex items-center py-4">
         <Input
-          placeholder="Filter prefix..."
+          placeholder="ค้นหา: คำนำหน้าชื่อ"
           value={
             (table.getColumn("prefix_name")?.getFilterValue() as string) ?? ""
           }
@@ -312,14 +312,17 @@ const PrefixTable = () => {
                       : true
                   }
                 >
-                  Delete
+                  ลบคำนำหน้า
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogTitle>
+                    คุณแน่ใจในการตัดสินใจนี้ใช่ไหม?
+                  </AlertDialogTitle>
                   <AlertDialogDescription className="text-red-500">
-                    This action cannot be undone. This will permanently delete.
+                    การดำเนินการนี้ไม่สามารถย้อนกลับได้
+                    การดำเนินการนี้จะถูกลบออกอย่างถาวร
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <h2 className="">รายละเอียดข้อมูลที่จะลบ </h2>
@@ -339,9 +342,9 @@ const PrefixTable = () => {
                   </div>
                 </ScrollArea>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
                   <AlertDialogAction onClick={() => deletePrefix()}>
-                    Continue
+                    ลบคำนำหน้า
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
@@ -353,15 +356,14 @@ const PrefixTable = () => {
                   className="active:scale-95 transition-all select-none gap-2"
                 >
                   <Plus />
-                  Add prefix name
+                  สร้างคำนำหน้า
                 </Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                  <DialogTitle>Craete Prefix</DialogTitle>
+                  <DialogTitle>สร้างคำนำหน้า</DialogTitle>
                   <DialogDescription>
-                    Make changes to your profile here. Click save when you're
-                    done.
+                    สามารถสร้างคำนำหน้าต่างๆเพื่อนำไปใช้ในระบบได้
                   </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
@@ -374,15 +376,16 @@ const PrefixTable = () => {
                           <FormControl>
                             <div className="grid gap-4 py-4">
                               <div className="grid w-full gap-1.5">
-                                <Label htmlFor="message-2">Your prefix</Label>
+                                <Label htmlFor="message-2">
+                                  คำนำหน้าชื่อที่จะสร้าง
+                                </Label>
                                 <Input
                                   placeholder="Type your prefix here."
                                   id="message-2"
                                   {...field}
                                 />
                                 <p className="text-sm text-muted-foreground">
-                                  Your message will be copied to the support
-                                  team.
+                                  สามารถสร้างคำนำหน้าต่างๆเพื่อนำไปใช้ในระบบได้
                                 </p>
                               </div>
                             </div>

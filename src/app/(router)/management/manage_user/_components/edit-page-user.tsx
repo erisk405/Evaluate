@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { useThemeClass, useThemeStyles } from "@/hooks/useTheme";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -41,7 +41,6 @@ const EditPageUser = ({ userDetail, refreshData }: UserProfileProps) => {
         return <div className="col-span-3 h-[400px] pl-7">Not found page</div>;
     }
   };
-
   return (
     <div className={`w-full rounded-lg h-full ${styles.text}`}>
       <div className="flex items-center gap-3">

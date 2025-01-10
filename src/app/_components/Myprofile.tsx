@@ -35,6 +35,8 @@ import { Role } from "@/types/interface";
 import SetPrefixSelection from "./SetPrefixSelection";
 import { useProfileComparison } from "../lib/adapters/user-profile/useProfileComparison";
 import SetDepartmentUserOptions from "../(router)/management/manage_user/_components/SetDepartmentUserOptions";
+import { useThemeStyles } from "@/hooks/useTheme";
+import { useAuthState } from "@/hooks/useAuthState";
 
 const formSchema = z.object({
   image: z
@@ -68,10 +70,12 @@ const formSchema = z.object({
 
 export default function Myprofile() {
   // for image changing
+  const { isAdmin } = useAuthState();
   const { ProfileDetail, updateProfileDetail } = useStore();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const styles = useThemeStyles();
 
   //  image
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -214,8 +218,15 @@ export default function Myprofile() {
     ProfileDetail
   );
   return (
-    <div className="">
-      <div className="relative bg-gray-100 w-full h-[120px]">
+    <div className={` ${styles.text}`}>
+      <div className="relative bg-gray-100 w-full h-[120px] rounded-xl ">
+        <Image
+          src={"/bannerInfo.jpg"}
+          width={800}
+          height={800}
+          className="absolute top-0 bottom-0 left-0 right-0 w-full h-full object-cover rounded-lg"
+          alt="BannerInfo"
+        />
         <div
           className="absolute bottom-0 translate-y-1/2 px-4 cursor-pointer"
           onClick={handleImageClick}
@@ -251,13 +262,27 @@ export default function Myprofile() {
       <div className="p-4">
         <div className="relative flex justify-end text-sm">
           <div className="flex gap-3 items-center">
-            <div className="flex items-center border gap-1 border-gray-300 py-2 px-3 rounded-xl hover:bg-neutral-100 transition-all active:scale-95">
-              <LinkIcon size={16} />
-              <Link href={"#"}>Copy link</Link>
-            </div>
-            <div className="border border-gray-300 py-2 px-3 rounded-xl hover:bg-neutral-100 transition-all active:scale-95">
-              <Link href={"#"}>View profile</Link>
-            </div>
+            {isAdmin ? (
+              <a
+                href="/evaluation/backup_result"
+                className={`flex items-center border gap-1 border-gray-300 py-2 px-3 rounded-xl ${styles.hover} transition-all active:scale-95`}
+              >
+                <h2>คลังเก็บข้อมูล</h2>
+              </a>
+            ) : (
+              <a
+                href="/history"
+                className={`flex items-center border gap-1 border-gray-300 py-2 px-3 rounded-xl ${styles.hover} transition-all active:scale-95`}
+              >
+                <h2>ประวัติผลการประเมิน</h2>
+              </a>
+            )}
+            <a
+              href="/account/security"
+              className={`border border-gray-300 py-2 px-3 rounded-xl ${styles.hover} transition-all active:scale-95`}
+            >
+              <h2>เปลี่ยนรหัสผ่าน</h2>
+            </a>
           </div>
         </div>
         <div className="my-3">
@@ -357,13 +382,14 @@ export default function Myprofile() {
               )}
             />
             <Separator />
+            {/* เบอร์โทรศัพท์ */}
             <FormField
               control={form.control}
               name="phoneNumber"
               render={({ field }) => (
                 <FormItem>
                   <div className="grid grid-cols-11 items-center gap-3">
-                    <h2 className="col-span-3 text-sm">Phone</h2>
+                    <h2 className="col-span-3 text-sm">เบอร์โทรศัพท์</h2>
                     <FormControl className="col-span-8">
                       <Input placeholder="097-xxx-xxxx" {...field} />
                     </FormControl>
@@ -380,7 +406,7 @@ export default function Myprofile() {
               render={({ field }) => (
                 <FormItem>
                   <div className="grid grid-cols-11 items-center gap-3">
-                    <h2 className="col-span-3 text-sm">Department</h2>
+                    <h2 className="col-span-3 text-sm">หน่วยงานที่สังกัด</h2>
                     <FormControl className="col-span-8">
                       <div className="relative">
                         <SetDepartmentUserOptions
@@ -404,7 +430,7 @@ export default function Myprofile() {
               render={({ field }) => (
                 <FormItem>
                   <div className="grid grid-cols-11 items-center gap-3">
-                    <h2 className="col-span-3 text-sm">Role</h2>
+                    <h2 className="col-span-3 text-sm">ตำแหน่ง</h2>
                     <FormControl className="col-span-8">
                       <div className="relative">
                         <div className="flex items-center gap-3">
@@ -463,7 +489,7 @@ export default function Myprofile() {
               render={({ field }) => (
                 <FormItem>
                   <div className="grid grid-cols-11 items-center gap-3">
-                    <h2 className="col-span-3 text-sm">Picture</h2>
+                    <h2 className="col-span-3 text-sm">รูปภาพโปรไฟล์</h2>
                     <FormControl>
                       <Input
                         id="picture"

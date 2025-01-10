@@ -19,9 +19,17 @@ export const themeClasses = {
         light: 'bg-white',
         dark: 'bg-gradient-to-tl from-blue-950 from-10% to-background_secondary to-50% text-zinc-50'
     },
+    background_popup: {
+        light: 'bg-gradient-to-t from-zinc-100 from-10% to-background_secondary to-50%',
+        dark: 'bg-zinc-900'
+    },
     background_head_table: {
         light: 'bg-blue-300',
         dark: 'bg-blue-600'
+    },
+    background_body_table: {
+        light: 'bg-white',
+        dark: 'bg-zinc-950'
     },
     background_secondary_head_table: {
         light: 'bg-blue-100',

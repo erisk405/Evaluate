@@ -85,7 +85,7 @@ export function UserInDepartment({
   const [rowSelection, setRowSelection] = useState({});
   const [globalFilter, setGlobalFilter] = useState("");
   const { ProfileDetail } = useStore();
-    const styles = useThemeStyles();
+  const styles = useThemeStyles();
   const columns: ColumnDef<User>[] = [
     {
       accessorKey: "index",
@@ -154,9 +154,7 @@ export function UserInDepartment({
             className="inline-flex items-center
           justify-start gap-2 border-gray-200 py-1"
           >
-            <h2
-              className={`${styles.text}`}
-            >
+            <h2 className={`${styles.text}`}>
               {NameOfDepartment
                 ? NameOfDepartment.department_name
                 : "No Department"}
@@ -359,9 +357,7 @@ export function UserInDepartment({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div
-        className={`rounded-xl border ${styles.text} overflow-hidden`}
-      >
+      <div className={`rounded-xl border ${styles.text} overflow-hidden`}>
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -388,7 +384,7 @@ export function UserInDepartment({
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody>
+          <TableBody className={`${styles.background_body_table}`}>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow

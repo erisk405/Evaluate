@@ -292,7 +292,7 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
               render={({ field }) => (
                 <FormItem>
                   <div className="grid grid-cols-11 items-center gap-3">
-                    <h2 className="col-span-3 text-sm">Phone</h2>
+                    <h2 className="col-span-3 text-sm">เบอร์โทรศัพท์</h2>
                     <FormControl className="col-span-8">
                       <Input placeholder="097-xxx-xxxx" {...field} />
                     </FormControl>
@@ -309,7 +309,7 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
               render={({ field }) => (
                 <FormItem>
                   <div className="grid grid-cols-11 items-center gap-3">
-                    <h2 className="col-span-3 text-sm">Department</h2>
+                    <h2 className="col-span-3 text-sm">หน่วยงานที่สังกัด</h2>
                     <FormControl className="col-span-8">
                       <div className="relative">
                         <div className="flex items-center gap-3">
@@ -334,7 +334,7 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
               render={({ field }) => (
                 <FormItem>
                   <div className="grid grid-cols-11 items-center gap-3">
-                    <h2 className="col-span-3 text-sm">Role</h2>
+                    <h2 className="col-span-3 text-sm">ตำแหน่ง</h2>
                     <FormControl className="col-span-8">
                       <div className="relative">
                         <div className="flex items-center gap-3">
@@ -359,7 +359,7 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
               render={({ field }) => (
                 <FormItem>
                   <div className="grid grid-cols-11 items-center gap-3">
-                    <h2 className="col-span-3 text-sm">Picture</h2>
+                    <h2 className="col-span-3 text-sm">รูปภาพโปรไฟล์</h2>
                     <FormControl>
                       <Input
                         id="picture"

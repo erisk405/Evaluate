@@ -160,7 +160,7 @@ const BackUpPeriodList = () => {
         throw new Error("Some items failed to delete");
       }
       // แสดง toast เมื่อสำเร็จ
-      fetchCurrentPeriod()
+      fetchCurrentPeriod();
       toast("Events have been deleted", {
         description: "All selected items were successfully deleted",
       });
@@ -218,14 +218,17 @@ const BackUpPeriodList = () => {
                     : true
                 }
               >
-                Delete
+                ลบประวิติผลการประเมิน
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogTitle>
+                  คุณแน่ใจในการตัดสินใจนี้ใช่ไหม?
+                </AlertDialogTitle>
                 <AlertDialogDescription className="text-red-500">
-                  This action cannot be undone. This will permanently delete.
+                  การดำเนินการนี้ไม่สามารถย้อนกลับได้
+                  การดำเนินการนี้จะถูกลบออกอย่างถาวร
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <h2 className={`${styles.text}`}>รายละเอียดข้อมูลที่จะลบ </h2>
