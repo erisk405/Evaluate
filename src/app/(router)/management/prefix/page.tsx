@@ -7,7 +7,7 @@ const page = () => {
   const styles = useThemeStyles();
   return (
     <div className="p-4 w-full ">
-      <h2 className={`text-2xl font-bold ${styles.text}`}>การจัดการคำนำหน้า</h2>
+      <h2 className={`text-3xl font-bold ${styles.text}`}>⚙️ การจัดการคำนำหน้า</h2>
       <div className={`p-2 rounded-xl`}>
         <div className=" rounded-xl">
           <PrefixTable />

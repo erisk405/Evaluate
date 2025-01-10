@@ -74,7 +74,8 @@ const page = () => {
     <div className={`p-4 w-full grid grid-cols-1 ${styles.text}`}>
       <div className="">
         <h2 className="text-3xl font-bold">
-          รายชื่อผู้ใช้งานทั้งหมด <span className="animate-wiggle-float"></span>
+          🛠️ รายชื่อผู้ใช้งานทั้งหมด{" "}
+          <span className="animate-wiggle-float"></span>
         </h2>
         <div className="flex justify-between flex-wrap gap-3 my-5 rounded-3xl">
           {OptionEmployee.map((item) => (

@@ -34,6 +34,7 @@ import GlobalApi from "../_util/GlobalApi";
 import Image from "next/image";
 import { Permission, Role } from "../(auth)/type/auth";
 import { useAuthState } from "@/hooks/useAuthState";
+import Link from "next/link";
 
 const data = {
   navMain: [
@@ -151,7 +152,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href="#">
+              <Link href="/overview">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg  text-sidebar-primary-foreground">
                   <Image
                     src={"/logo.png"}
@@ -166,7 +167,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   </span>
                   <span className="truncate text-xs">Enterprise</span>
                 </div>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

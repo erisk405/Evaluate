@@ -122,7 +122,7 @@ const page = () => {
   return (
     <div className={`m-5 grid grid-cols-4 w-full gap-3 ${styles.text}`}>
       <div className="w-full col-span-4 xl:col-span-3">
-        <h2 className="text-3xl font-bold">รายชื่อทั้งหมด</h2>
+        <h2 className="text-3xl font-bold">🏰 รายชื่อทั้งหมด</h2>
         <ListAllEmployee filterDataArea={filterDataArea} />
       </div>
       <div className="col-span-4 xl:col-span-1">

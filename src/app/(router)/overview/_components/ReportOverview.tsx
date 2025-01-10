@@ -218,7 +218,7 @@ const ReportOverview = () => {
           </h2>
           {supervise.length ? (
             <Table className={`shadow ${styles.background} rounded-lg my-3`}>
-              <TableCaption>A list of your recent invoices.</TableCaption>
+              <TableCaption>ข้อมูลลำดับบุคคลกำกับดูแลในแต่ละหน่วยงาน</TableCaption>
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-[100px]">ลำดับ</TableHead>

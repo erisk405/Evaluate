@@ -50,9 +50,9 @@ const RadarChartSection = () => {
       className={`rounded-2xl ${styles.text} ${styles.background} border-none shadow`}
     >
       <CardHeader className="items-center pb-4">
-        <CardTitle className="">Radar Chart</CardTitle>
+        <CardTitle className="">แผนภูมิเรดาร์</CardTitle>
         <CardDescription>
-          Showing total visitors for the last 6 months
+          แสดงจำนวนผู้ประเมินในแต่ละวัน
         </CardDescription>
       </CardHeader>
       <CardContent className="pb-0">

@@ -1,4 +1,3 @@
-
 import { TrendingUp } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 import {
@@ -21,6 +20,7 @@ import { useEffect } from "react";
 import { toast } from "@/components/ui/use-toast";
 import socket from "@/lib/socket";
 import { User } from "@/types/interface";
+import { formatThaiDateTime } from "./RightSection";
 export const description = "A multiple bar chart";
 
 const chartConfig = {
@@ -35,7 +35,8 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 const BarChartMultiple = () => {
-  const { resultEvalEachDepartment, ProfileDetail } = useStore();
+  const { resultEvalEachDepartment, ProfileDetail, currentlyEvaluationPeriod } =
+    useStore();
   const styles = useThemeStyles();
   const chartData = resultEvalEachDepartment?.map((result) => ({
     depart: result.department,
@@ -56,7 +57,14 @@ const BarChartMultiple = () => {
     >
       <CardHeader>
         <CardTitle>จำนวนผู้ประเมินในแต่ละวัน</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+        <CardDescription>
+          {currentlyEvaluationPeriod?.title}
+          {" ตั้งแต่วันที่ "}
+          {currentlyEvaluationPeriod &&
+            formatThaiDateTime(currentlyEvaluationPeriod?.start).date +
+              " ไปจนถึง " +
+              formatThaiDateTime(currentlyEvaluationPeriod.end).date}
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="max-h-[400px] mx-auto">

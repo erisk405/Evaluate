@@ -161,8 +161,8 @@ const BackUpPeriodList = () => {
       }
       // แสดง toast เมื่อสำเร็จ
       fetchCurrentPeriod();
-      toast("Events have been deleted", {
-        description: "All selected items were successfully deleted",
+      toast("ลบประวัติผลการประเมินเสร็จสิ้นแล้ว", {
+        description: "ระบบได้ลบข้อมูลภายในรอบผลการประเมินออกจากประวัติแล้ว",
       });
     } catch (error: unknown) {
       // จัดการ error

@@ -157,15 +157,12 @@ const page = () => {
   useEffect(() => {
     fetchForm();
   }, []);
-  // useEffect(() => {
-  //   console.log("openForm", openForm);
-  // }, [openForm]);
   return (
     <div className={`m-5 w-full rounded-lg h-full ${styles.text}`}>
       <div className={`${styles.background} shadow p-6`}>
         <div className="flex items-center gap-3">
-          <div className="bg-blue-100 p-2 rounded-full">
-            <ShieldAlert size={40} className="text-blue-500" />
+          <div className="bg-blue-100 rounded-full text-4xl flex justify-center items-center w-[60px] h-[60px] ">
+            <div className="animate-wiggle-float-blue">🧊</div>
           </div>
           <h2 className="text-3xl">การจัดการแบบฟอร์ม</h2>
         </div>
@@ -187,9 +184,9 @@ const page = () => {
                       dark:
                         openForm.id === item.id
                           ? "bg-zinc-700"
-                          : "bg-white hover:bg-zinc-500",
+                          : "bg-zinc-900 hover:bg-zinc-700",
                     },
-                    `relative overflow-hidden px-3 ${styles.background}`
+                    `relative overflow-hidden px-3`
                   )}
                   key={item.id + "main"}
                 >
@@ -273,7 +270,7 @@ const page = () => {
                           </Dialog>
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
-                              <div className="hover:bg-neutral-300 rounded-full">
+                              <div className="hover:bg-red-100 hover:text-red-500 rounded-full">
                                 <div className="w-[60px] flex gap-2 justify-center cursor-pointer items-center">
                                   <Trash2 strokeWidth={1.25} size={20} />
                                   <h2>ลบ</h2>
