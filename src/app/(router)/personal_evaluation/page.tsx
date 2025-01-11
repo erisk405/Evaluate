@@ -61,7 +61,7 @@ import GlobalApi from "@/app/_util/GlobalApi";
 import { useTheme } from "next-themes";
 import { useThemeStyles } from "@/hooks/useTheme";
 
-export const columns: ColumnDef<PeriodType>[] = [
+const columns: ColumnDef<PeriodType>[] = [
   {
     accessorKey: "index",
     header: "ลำดับ",
