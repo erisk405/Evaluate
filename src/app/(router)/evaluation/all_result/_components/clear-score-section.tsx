@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -18,6 +18,7 @@ import {
   Download,
   FileText,
   ListCollapse,
+  Loader,
   Search,
   SeparatorHorizontal,
   Shapes,
@@ -45,6 +46,7 @@ import { formatThaiDateTime } from "@/app/(router)/overview/_components/RightSec
 import { Item } from "@radix-ui/react-select";
 import { useThemeStyles } from "@/hooks/useTheme";
 import GlobalApi from "@/app/_util/GlobalApi";
+import { toast } from "sonner";
 
 // Define the props interface for the ClearScoreSection component
 interface ClearScoreSectionProps {
@@ -52,22 +54,30 @@ interface ClearScoreSectionProps {
   selectPeriod: PeriodType;
 }
 const ClearScoreSection = ({ table, selectPeriod }: ClearScoreSectionProps) => {
+  const [loading, setLoading] = useState(false);
   const handleSubmit = async () => {
+    setLoading(true);
     try {
       const selectData = table
         .getSelectedRowModel()
-        .rows.map((row) => row.original).map((item) => item.id)
-        // console.log("selectData",selectData);
-        
+        .rows.map((row) => row.original)
+        .map((item) => item.id);
+      // console.log("selectData",selectData);
+
       const payload = {
         allUserId: selectData,
         periodId: selectPeriod.period_id,
       };
-      const response = await GlobalApi.deleteUserEvaluation(payload)
-      console.log("response",response?.data);
-      
+      const response = await GlobalApi.deleteUserEvaluation(payload);
+      console.log("response", response?.data);
+      toast("ลบผลการประเมินเสร็จสิ้น", {
+        description: `ระบบได้ลบผลการประเมินของ ${selectPeriod.title} เสร็จสิ้นแล้ว`,
+      });
+      setLoading(false);
     } catch (error) {
       console.error("Error filtering employees:", error);
+    } finally {
+      setLoading(false);
     }
   };
   const { roles } = useStore();
@@ -234,8 +244,13 @@ const ClearScoreSection = ({ table, selectPeriod }: ClearScoreSectionProps) => {
           </TabsContent>
         </Tabs>
         <DialogFooter>
-          <Button type="submit" onClick={() => handleSubmit()}>
-            Crear score
+          <Button
+            type="submit"
+            className="w-full"
+            onClick={() => handleSubmit()}
+            disabled={loading}
+          >
+            {loading ? <Loader className="animate-spin" /> : "Login"}
           </Button>
         </DialogFooter>
       </DialogContent>

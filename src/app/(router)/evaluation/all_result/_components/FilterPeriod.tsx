@@ -37,6 +37,9 @@ const FilterPeriod = ({ onPeriodChange, defaultValue }: FilterPeriodProps) => {
     const initialfetch = async () => {
       try {
         const data = await fetchCurrentPeriod();
+        if(data.length === 0){
+          throw new Error("Don't have period in database")
+        }
         setPeriods(data);
         setSelectedId(data[0].period_id);
         setSelectedTitle(data[0].period_id);

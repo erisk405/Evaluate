@@ -55,113 +55,8 @@ import useStore from "@/app/store/store";
 import { PageNumber, PeriodType } from "@/types/interface";
 import { Button } from "@/components/ui/button";
 import Personal_result from "./_components/Personal-result";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import GlobalApi from "@/app/_util/GlobalApi";
-import { useTheme } from "next-themes";
 import { useThemeStyles } from "@/hooks/useTheme";
 
-const columns: ColumnDef<PeriodType>[] = [
-  {
-    accessorKey: "index",
-    header: "ลำดับ",
-    cell: ({ row }) => {
-      return <div className="font-medium text-center">{row.index + 1}</div>;
-    },
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => {
-      const item = row.original;
-      return (
-        <div className="text-center w-[150px]">
-          <div className="cursor-pointer inline-flex border p-2 rounded-xl items-center gap-1">
-            <div className="relative">
-              {new Date(item.start) <= new Date() &&
-              new Date() <= new Date(item.end) ? (
-                // Currently active period
-                <div className="flex items-center">
-                  <Dot
-                    strokeWidth={6}
-                    className="absolute text-yellow-500 animate-ping"
-                  />
-                  <Dot strokeWidth={6} className="text-yellow-500" />
-
-                  <h2>กำลังดำเนินการ</h2>
-                </div>
-              ) : new Date() > new Date(item.end) ? (
-                // past period
-                <div className="flex items-center">
-                  <Dot
-                    strokeWidth={6}
-                    className="absolute text-emerald-500 animate-ping"
-                  />
-                  <Dot strokeWidth={6} className="text-emerald-500" />
-                  <h2>เสร็จสิ้น</h2>
-                </div>
-              ) : (
-                // Future period
-                <div className="flex items-center">
-                  <Dot
-                    strokeWidth={6}
-                    className="absolute text-blue-500 animate-ping"
-                  />
-                  <Dot strokeWidth={6} className="text-blue-500" />
-                  <h2>รอดำเนินการ</h2>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "title",
-    header: "ชื่อ/รอบการประเมิน",
-    cell: ({ row }) => {
-      return <div className="font-medium ">{row.original.title}</div>;
-    },
-  },
-  {
-    id: "actions",
-    header: "Action",
-    cell: ({ row }) => {
-      return (
-        <Drawer>
-          <DrawerTrigger asChild>
-            {new Date(row.original.start) > new Date() ? (
-              <div className="text-center">
-                <Button
-                  variant={"outline"}
-                  className="active:scale-95 transition-all"
-                  disabled // Instead of forcing it closed
-                >
-                  ไม่สามารถตรวจสอบได้
-                </Button>
-              </div>
-            ) : (
-              <div className="text-center">
-                <Button
-                  variant={"outline"}
-                  className="active:scale-95 transition-all"
-                >
-                  ตรวจสอบรายละเอียด
-                </Button>
-              </div>
-            )}
-          </DrawerTrigger>
-          {new Date(row.original.start) < new Date() && (
-            <DrawerContent className="h-[calc(100dvh-10%)] ">
-              <Personal_result period={row.original} />
-            </DrawerContent>
-          )}
-        </Drawer>
-      );
-    },
-  },
-];
 const page = () => {
   const { fetchCurrentPeriod, allPeriod } = useStore();
   const styles = useThemeStyles();
@@ -174,7 +69,107 @@ const page = () => {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const columns: ColumnDef<PeriodType>[] = [
+    {
+      accessorKey: "index",
+      header: "ลำดับ",
+      cell: ({ row }) => {
+        return <div className="font-medium text-center">{row.index + 1}</div>;
+      },
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => {
+        const item = row.original;
+        return (
+          <div className="text-center w-[150px]">
+            <div className="cursor-pointer inline-flex border p-2 rounded-xl items-center gap-1">
+              <div className="relative">
+                {new Date(item.start) <= new Date() &&
+                new Date() <= new Date(item.end) ? (
+                  // Currently active period
+                  <div className="flex items-center">
+                    <Dot
+                      strokeWidth={6}
+                      className="absolute text-yellow-500 animate-ping"
+                    />
+                    <Dot strokeWidth={6} className="text-yellow-500" />
 
+                    <h2>กำลังดำเนินการ</h2>
+                  </div>
+                ) : new Date() > new Date(item.end) ? (
+                  // past period
+                  <div className="flex items-center">
+                    <Dot
+                      strokeWidth={6}
+                      className="absolute text-emerald-500 animate-ping"
+                    />
+                    <Dot strokeWidth={6} className="text-emerald-500" />
+                    <h2>เสร็จสิ้น</h2>
+                  </div>
+                ) : (
+                  // Future period
+                  <div className="flex items-center">
+                    <Dot
+                      strokeWidth={6}
+                      className="absolute text-blue-500 animate-ping"
+                    />
+                    <Dot strokeWidth={6} className="text-blue-500" />
+                    <h2>รอดำเนินการ</h2>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "title",
+      header: "ชื่อ/รอบการประเมิน",
+      cell: ({ row }) => {
+        return <div className="font-medium ">{row.original.title}</div>;
+      },
+    },
+    {
+      id: "actions",
+      header: "Action",
+      cell: ({ row }) => {
+        return (
+          <Drawer>
+            <DrawerTrigger asChild>
+              {new Date(row.original.start) > new Date() ? (
+                <div className="text-center">
+                  <Button
+                    variant={"outline"}
+                    className="active:scale-95 transition-all"
+                    disabled // Instead of forcing it closed
+                  >
+                    ไม่สามารถตรวจสอบได้
+                  </Button>
+                </div>
+              ) : (
+                <div className="text-center">
+                  <Button
+                    variant={"outline"}
+                    className="active:scale-95 transition-all"
+                  >
+                    ตรวจสอบรายละเอียด
+                  </Button>
+                </div>
+              )}
+            </DrawerTrigger>
+            {new Date(row.original.start) < new Date() && (
+              <DrawerContent className="h-[calc(100dvh-10%)] ">
+                <Personal_result period={row.original} />
+              </DrawerContent>
+            )}
+          </Drawer>
+        );
+      },
+    },
+  ];
   const table = useReactTable({
     data: allPeriod ?? [],
     columns,

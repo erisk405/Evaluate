@@ -185,6 +185,9 @@ const useStore = create<StoreState>((set) => ({
   fetchCurrentPeriod: async () => {
     try {
       const response = await GlobalApi.getPeriod();
+      if(!response){
+        throw new Error("Don't have period")
+      }
       const now = new Date();
 
       const sortedPeriods = response?.data.sort((a: PeriodType, b: PeriodType) => {

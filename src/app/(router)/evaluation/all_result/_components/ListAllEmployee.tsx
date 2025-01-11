@@ -164,7 +164,7 @@ export function ListAllEmployee({ filterDataArea }: ListAllEmployeeProp) {
       cell: ({ row }) => {
         return (
           <div className="capitalize flex items-center gap-3 ">
-            <h2>{selectPeriod?.title}</h2>
+            <h2>{selectPeriod ? selectPeriod?.title : 'ไม่พบรอบการประเมิน'}</h2>
           </div>
         );
       },
