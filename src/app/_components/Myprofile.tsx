@@ -54,9 +54,12 @@ const formSchema = z.object({
   email: z.string().email({
     message: "Please enter a valid email address.",
   }),
-  department: z.string().min(10, {
-    message: "Department must be at least 10 characters",
-  }),
+  department: z
+    .string()
+    .min(10, {
+      message: "Department must be at least 10 characters",
+    })
+    .optional(),
   role: z.string().min(1, {
     message: "Role is required",
   }),
@@ -155,13 +158,15 @@ export default function Myprofile() {
           console.log("Don't request role, pending request exists!");
         }
       }
-      const updateDepartment = await GlobalApi.joinDepartment(
-        values.department
-      );
-      const { department } = updateDepartment?.data;
-      updateProfileDetail({
-        department,
-      });
+      if (values.department) {
+        const updateDepartment = await GlobalApi.joinDepartment(
+          values.department
+        );
+        const { department } = updateDepartment?.data;
+        updateProfileDetail({
+          department,
+        });
+      }
       // Success toast
       toast({
         description: "✅ Your changes were saved successfully",

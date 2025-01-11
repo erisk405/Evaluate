@@ -24,6 +24,8 @@ import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
 import Loading from "../_components/Loading";
 import { useThemeStyles } from "@/hooks/useTheme";
+
+
 const layout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
   const { showNotifications, setShowNotifications, notificationCounts } =
     useStore();

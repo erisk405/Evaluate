@@ -61,7 +61,7 @@ const formSchema = z.object({
   }),
   department: z.string().min(10, {
     message: "Department must be at least 10 characters",
-  }),
+  }).optional(),
   role: z.string().min(1, {
     message: "Role is required",
   }),

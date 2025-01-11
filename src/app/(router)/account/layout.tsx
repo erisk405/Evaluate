@@ -7,6 +7,10 @@ import { useTheme } from "next-themes";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useEffect } from "react";
+type ImageType = {
+  url: string;
+  alt?: string;
+};
 const option = [
   {
     id: "ED1",
@@ -41,7 +45,7 @@ const layout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
         prefix,
         name,
         email,
-        image: image ? image.url : "/profiletest.jpg",
+        image,
         role,
         roleRequests,
         department: department || null,

@@ -250,7 +250,7 @@ const ClearScoreSection = ({ table, selectPeriod }: ClearScoreSectionProps) => {
             onClick={() => handleSubmit()}
             disabled={loading}
           >
-            {loading ? <Loader className="animate-spin" /> : "Login"}
+            {loading ? <Loader className="animate-spin" /> : "ลบข้อมูลผลการประเมิน"}
           </Button>
         </DialogFooter>
       </DialogContent>
