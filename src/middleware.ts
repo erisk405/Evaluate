@@ -48,10 +48,13 @@ export async function middleware(request: NextRequest) {
   }
   if (isProtecedRouteUser) {
     try {
+      const cookieHeader = request.headers.get('cookie');
+      console.log('Raw cookie header:', cookieHeader);
       const response = await axios.get(`${apiUrl}/protected`, {
         withCredentials: true,
         headers: {
-          Cookie: request.headers.get('cookie') || '', // Forward cookies จาก client request
+          Cookie: cookieHeader,
+          credentials: 'include',
         },
       });
       const userRole = response.data.role;
