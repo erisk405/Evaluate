@@ -28,8 +28,8 @@ export async function middleware(request: NextRequest) {
 
       const userRole = response.data.role; // สมมุติว่า role มาจาก API response
       // console.log("Protected:",currentPath.startsWith(protectedPaths));
-      // console.log("Protected_currentPath:",currentPath);
-      // console.log("Role:",userRole);
+      console.log("Protected_currentPath:",currentPath);
+      console.log("Role:",userRole);
 
       // ตรวจสอบ role
       if (userRole !== 'admin') {
