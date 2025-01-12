@@ -1,13 +1,12 @@
 import axios from 'axios';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { apiUrl } from './app/data/data-option';
-
 export async function middleware(request: NextRequest) {
   const protectedPathsAdmin = ['/management', '/evaluation'];  // paths ที่จะต้องการให้ admin เข้าได้เท่านั้น
-  const protectedPathsUser = ['/overview/department', '/personal_evaluation','/history'];  // paths ที่จะต้องการให้ user เข้าได้เท่านั้น
+  const protectedPathsUser = ['/overview/department', '/personal_evaluation', '/history'];  // paths ที่จะต้องการให้ user เข้าได้เท่านั้น
   const currentPath = request.nextUrl.pathname;
 
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || `http://localhost:8000/api`;
   // ถ้า path คือ root "/" redirect ไปยัง "/overview"
   if (currentPath === '/') {
     return NextResponse.redirect(new URL('/overview', request.url));
@@ -19,12 +18,12 @@ export async function middleware(request: NextRequest) {
   // เช็ค token จาก API
   if (isProtecedRouteAdmin) {
     try {
-      const response = await axios.get(`${apiUrl}/protected`, {withCredentials: true});
+      const response = await axios.get(`${apiUrl}/protected`, { withCredentials: true });
 
       const userRole = response.data.role; // สมมุติว่า role มาจาก API response
       // console.log("Protected:",currentPath.startsWith(protectedPaths));
-      console.log("Protected_currentPath:",currentPath);
-      console.log("Role:",userRole);
+      console.log("Protected_currentPath:", currentPath);
+      console.log("Role:", userRole);
 
       // ตรวจสอบ role
       if (userRole !== 'admin') {
@@ -40,7 +39,7 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/sign-in', request.url));
     }
   }
-  if(isProtecedRouteUser){
+  if (isProtecedRouteUser) {
     try {
       const response = await axios.get(`${apiUrl}/protected`, {
         withCredentials: true,
@@ -48,7 +47,7 @@ export async function middleware(request: NextRequest) {
           Cookie: request.headers.get('cookie') || '', // Forward cookies จาก client request
         },
       });
-      const userRole = response.data.role; 
+      const userRole = response.data.role;
       if (userRole === 'admin') {
         // ถ้าไม่ใช่ admin แต่พยายามเข้าไปที่ /management
         return NextResponse.redirect(new URL('/overview', request.url));
