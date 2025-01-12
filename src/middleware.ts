@@ -1,78 +1,53 @@
-import axios from 'axios';
+import { jwtVerify } from 'jose';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { apiUrl } from './app/data/data-option';
 
 export async function middleware(request: NextRequest) {
-  console.log("request",request);
-  
-  const protectedPathsAdmin = ['/management', '/evaluation'];  // paths ที่จะต้องการให้ admin เข้าได้เท่านั้น
-  const protectedPathsUser = ['/overview/department', '/personal_evaluation', '/history'];  // paths ที่จะต้องการให้ user เข้าได้เท่านั้น
+  const protectedPathsAdmin = ['/management', '/evaluation'];
+  const protectedPathsUser = ['/overview/department', '/personal_evaluation', '/history'];
   const currentPath = request.nextUrl.pathname;
 
-  // ถ้า path คือ root "/" redirect ไปยัง "/overview"
+  // Redirect root to overview
   if (currentPath === '/') {
     return NextResponse.redirect(new URL('/overview', request.url));
   }
 
-  const isProtecedRouteAdmin = protectedPathsAdmin.some(path => currentPath.startsWith(path))
-  const isProtecedRouteUser = protectedPathsUser.some(path => currentPath.startsWith(path))
+  const isProtectedRouteAdmin = protectedPathsAdmin.some(path => currentPath.startsWith(path));
+  const isProtectedRouteUser = protectedPathsUser.some(path => currentPath.startsWith(path));
 
-  // เช็ค token จาก API
-  if (isProtecedRouteAdmin) {
-    try {
-      const response = await axios.get(`${apiUrl}/protected`, {
-        withCredentials: true,
-        headers: {
-          Cookie: request.headers.get('cookie') || '', // Forward cookies จาก client request
-        },
-      });
+  // Read token from cookies
+  const token = request.cookies.get('token')?.value;
 
-      const userRole = response.data.role; // สมมุติว่า role มาจาก API response
-      // console.log("Protected:",currentPath.startsWith(protectedPaths));
-      console.log("Protected_currentPath:", currentPath);
-      console.log("Role:", userRole);
-
-      // ตรวจสอบ role
-      if (userRole !== 'admin') {
-        // ถ้าไม่ใช่ admin แต่พยายามเข้าไปที่ /management
-        return NextResponse.redirect(new URL('/overview', request.url));
-      }
-    } catch (error: any) {
-      if (error?.response) {
-        console.error('Response status:', error?.response.status);
-        console.error('Response data:', error?.response.data);
-      }
-      // หาก token หรือ API request มีปัญหา redirect ไปหน้า sign-in
-      return NextResponse.redirect(new URL('/sign-in', request.url));
-    }
+  if (!token) {
+    // Redirect to sign-in if no token
+    return NextResponse.redirect(new URL('/sign-in', request.url));
   }
-  if (isProtecedRouteUser) {
-    try {
-      const response = await axios.get(`${apiUrl}/protected`, {
-        withCredentials: true,
-        headers: {
-          Cookie: request.headers.get('cookie') || '', // Forward cookies จาก client request
-        },
-      });
-      const userRole = response.data.role;
-      if (userRole === 'admin') {
-        // ถ้าไม่ใช่ admin แต่พยายามเข้าไปที่ /management
-        return NextResponse.redirect(new URL('/overview', request.url));
-      }
-    } catch (error: any) {
-      if (error?.response) {
-        console.error('Response status:', error?.response.status);
-        console.error('Response data:', error?.response.data);
-      }
-      // หาก token หรือ API request มีปัญหา redirect ไปหน้า sign-in
-      return NextResponse.redirect(new URL('/sign-in', request.url));
-    }
+
+  // Decode or validate token (e.g., with a library like jose or jwt-decode)
+  const userRole = (await decodeToken(token))?.role;
+
+  if (isProtectedRouteAdmin && userRole !== 'admin') {
+    return NextResponse.redirect(new URL('/overview', request.url));
   }
-  return NextResponse.next(); // อนุญาตให้ผ่านสำหรับ paths อื่น ๆ
+
+  if (isProtectedRouteUser && userRole === 'admin') {
+    return NextResponse.redirect(new URL('/overview', request.url));
+  }
+
+  return NextResponse.next();
 }
 
-// กำหนด paths ที่จะเรียกใช้ middleware
+async function decodeToken(token: string) {
+  try {
+    const { payload } = await jwtVerify(token, new TextEncoder().encode(process.env.jwtSecret!));
+    console.log("payload",payload);
+    
+    return payload;
+  } catch (error) {
+    console.error('Invalid token:', error);
+    return null;
+  }
+}
 export const config = {
   matcher: [
     '/overview/:path*',
@@ -81,6 +56,6 @@ export const config = {
     '/overview/department/:path*',
     '/personal_evaluation/:path*',
     '/history/:path*',
-    '/'
-  ], // matcher ที่ต้องการตรวจสอบ
+    '/',
+  ],
 };
