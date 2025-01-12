@@ -73,8 +73,8 @@ const formSchema = z
         message: "Password must contain at least one number.",
       }),
     confirmPassword: z.string(),
-    prefix: z.string().min(1, { message: "กรุณาใส่คำนำหน้าชื่อ" }),
-    department: z.string().min(1, { message: "กรุณาใส่หน่วยงานที่ประจำอยู่" }),
+    prefix: z.string().min(1, { message: "กรุณาใส่คำนำหน้าชื่อ" }).optional(),
+    department: z.string().min(1, { message: "กรุณาใส่หน่วยงานที่ประจำอยู่" }).optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "รหัสผ่านไม่ตรงกัน",
