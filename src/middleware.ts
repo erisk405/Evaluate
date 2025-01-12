@@ -4,73 +4,61 @@ import type { NextRequest } from 'next/server';
 import { apiUrl } from './app/data/data-option';
 
 export async function middleware(request: NextRequest) {
-  console.log('All cookies:', request.cookies.getAll());
-  const token = request.cookies.get('token')?.value;  // หรือชื่อ cookie ที่ใช้เก็บ token
-  const protectedPathsAdmin = ['/management', '/evaluation'];  // paths ที่จะต้องการให้ admin เข้าได้เท่านั้น
-  const protectedPathsUser = ['/overview/department', '/personal_evaluation', '/history'];  // paths ที่จะต้องการให้ user เข้าได้เท่านั้น
+  const protectedPathsAdmin = ['/management', '/evaluation'];
+  const protectedPathsUser = ['/overview/department', '/personal_evaluation', '/history'];
   const currentPath = request.nextUrl.pathname;
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-  // ถ้า path คือ root "/" redirect ไปยัง "/overview"
   if (currentPath === '/') {
     return NextResponse.redirect(new URL('/overview', request.url));
   }
 
-  const isProtecedRouteAdmin = protectedPathsAdmin.some(path => currentPath.startsWith(path))
-  const isProtecedRouteUser = protectedPathsUser.some(path => currentPath.startsWith(path))
+  // สร้าง custom request headers
+  const requestHeaders = new Headers(request.headers);
+  
+  // ดึง token จาก localStorage แทน (ถ้าคุณเก็บ token ไว้ที่ localStorage)
+  // หรือถ้าใช้ cookie ก็ดึงจาก cookie
+  const authHeader = request.headers.get('authorization');
+  console.log('Auth header:', authHeader);
 
-  // เช็ค token จาก API
-  if (isProtecedRouteAdmin) {
+  const isProtecedRouteAdmin = protectedPathsAdmin.some(path => currentPath.startsWith(path));
+  const isProtecedRouteUser = protectedPathsUser.some(path => currentPath.startsWith(path));
+
+  if (isProtecedRouteAdmin || isProtecedRouteUser) {
     try {
-      const response = await axios.get(`${apiUrl}/protected`, {
+      // ใช้ fetch แทน axios
+      const response = await fetch(`${apiUrl}/protected`, {
+        method: 'GET',
         headers: {
-          'X-Auth-Token': token,
-          'Origin': 'https://evaluation-360.vercel.app',
-        }
+          'Authorization': authHeader || '',
+          'Origin': request.headers.get('origin') || '',
+        },
+        credentials: 'include'
       });
 
+      if (!response.ok) {
+        console.error('Protected route check failed:', await response.text());
+        return NextResponse.redirect(new URL('/sign-in', request.url));
+      }
 
-      const userRole = response.data.role; // สมมุติว่า role มาจาก API response
-      // console.log("Protected:",currentPath.startsWith(protectedPaths));
-      console.log("Protected_currentPath:", currentPath);
-      console.log("Role:", userRole);
+      const data = await response.json();
+      const userRole = data.role;
 
-      // ตรวจสอบ role
-      if (userRole !== 'admin') {
-        // ถ้าไม่ใช่ admin แต่พยายามเข้าไปที่ /management
+      if (isProtecedRouteAdmin && userRole !== 'admin') {
         return NextResponse.redirect(new URL('/overview', request.url));
       }
-    } catch (error: any) {
-      if (error?.response) {
-        console.error('Response status:', error?.response.status);
-        console.error('Response data:', error?.response.data);
+
+      if (isProtecedRouteUser && userRole === 'admin') {
+        return NextResponse.redirect(new URL('/overview', request.url));
       }
-      // หาก token หรือ API request มีปัญหา redirect ไปหน้า sign-in
+
+    } catch (error) {
+      console.error('Middleware error:', error);
       return NextResponse.redirect(new URL('/sign-in', request.url));
     }
   }
-  if (isProtecedRouteUser) {
-    try {
-      const response = await axios.get(`${apiUrl}/protected`, {
-        headers: {
-          'X-Auth-Token': token,
-          'Origin': 'https://evaluation-360.vercel.app',
-        }
-      });
-      const userRole = response.data.role;
-      if (userRole === 'admin') {
-        // ถ้าไม่ใช่ admin แต่พยายามเข้าไปที่ /management
-        return NextResponse.redirect(new URL('/overview', request.url));
-      }
-    } catch (error: any) {
-      if (error?.response) {
-        console.error('Response status:', error?.response.status);
-        console.error('Response data:', error?.response.data);
-      }
-      // หาก token หรือ API request มีปัญหา redirect ไปหน้า sign-in
-      return NextResponse.redirect(new URL('/sign-in', request.url));
-    }
-  }
-  return NextResponse.next(); // อนุญาตให้ผ่านสำหรับ paths อื่น ๆ
+
+  return NextResponse.next();
 }
 
 // กำหนด paths ที่จะเรียกใช้ middleware
