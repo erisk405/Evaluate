@@ -73,12 +73,12 @@ export async function middleware(request: NextRequest) {
 // กำหนด paths ที่จะเรียกใช้ middleware
 export const config = {
   matcher: [
-    '/overview/:path*',
-    '/management/:path*',
-    '/evaluation/:path*',
-    '/overview/department/:path*',
-    '/personal_evaluation/:path*',
-    '/history/:path*',
-    '/'
+    // '/overview/:path*',
+    // '/management/:path*',
+    // '/evaluation/:path*',
+    // '/overview/department/:path*',
+    // '/personal_evaluation/:path*',
+    // '/history/:path*',
+    // '/'
   ], // matcher ที่ต้องการตรวจสอบ
 };
