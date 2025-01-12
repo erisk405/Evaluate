@@ -7,55 +7,36 @@ export async function middleware(request: NextRequest) {
   const protectedPathsAdmin = ['/management', '/evaluation'];
   const protectedPathsUser = ['/overview/department', '/personal_evaluation', '/history'];
   const currentPath = request.nextUrl.pathname;
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-  if (currentPath === '/') {
-    return NextResponse.redirect(new URL('/overview', request.url));
-  }
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || `http://localhost:8000/api`;
 
-  // สร้าง custom request headers
-  const requestHeaders = new Headers(request.headers);
-  
-  // ดึง token จาก localStorage แทน (ถ้าคุณเก็บ token ไว้ที่ localStorage)
-  // หรือถ้าใช้ cookie ก็ดึงจาก cookie
-  const authHeader = request.headers.get('authorization');
-  console.log('Auth header:', authHeader);
+  const isProtectedRouteAdmin = protectedPathsAdmin.some((path) => currentPath.startsWith(path));
+  const isProtectedRouteUser = protectedPathsUser.some((path) => currentPath.startsWith(path));
 
-  const isProtecedRouteAdmin = protectedPathsAdmin.some(path => currentPath.startsWith(path));
-  const isProtecedRouteUser = protectedPathsUser.some(path => currentPath.startsWith(path));
+  try {
+    // Log cookies being forwarded
+    const cookies = request.headers.get('cookie') || '';
+    console.log("Middleware: Cookies being sent to API:", cookies);
 
-  if (isProtecedRouteAdmin || isProtecedRouteUser) {
-    try {
-      // ใช้ fetch แทน axios
-      const response = await fetch(`${apiUrl}/protected`, {
-        method: 'GET',
-        headers: {
-          'Authorization': authHeader || '',
-          'Origin': request.headers.get('origin') || '',
-        },
-        credentials: 'include'
-      });
+    const response = await axios.get(`${apiUrl}/protected`, {
+      withCredentials: true, // Ensure cookies are sent
+      headers: { Cookie: cookies },
+    });
 
-      if (!response.ok) {
-        console.error('Protected route check failed:', await response.text());
-        return NextResponse.redirect(new URL('/sign-in', request.url));
-      }
-
-      const data = await response.json();
-      const userRole = data.role;
-
-      if (isProtecedRouteAdmin && userRole !== 'admin') {
-        return NextResponse.redirect(new URL('/overview', request.url));
-      }
-
-      if (isProtecedRouteUser && userRole === 'admin') {
-        return NextResponse.redirect(new URL('/overview', request.url));
-      }
-
-    } catch (error) {
-      console.error('Middleware error:', error);
-      return NextResponse.redirect(new URL('/sign-in', request.url));
+    const userRole = response.data.role;
+    if (isProtectedRouteAdmin && userRole !== 'admin') {
+      return NextResponse.redirect(new URL('/overview', request.url));
     }
+    if (isProtectedRouteUser && userRole === 'admin') {
+      return NextResponse.redirect(new URL('/overview', request.url));
+    }
+  } catch (error: unknown) {
+    console.error('Error in middleware:', error.message);
+    if (error.response) {
+      console.error('Response status:', error.response.status);
+      console.error('Response data:', error.response.data);
+    }
+    return NextResponse.redirect(new URL('/sign-in', request.url));
   }
 
   return NextResponse.next();
