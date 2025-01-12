@@ -73,8 +73,8 @@ const formSchema = z
         message: "Password must contain at least one number.",
       }),
     confirmPassword: z.string(),
-    prefix: z.string().min(1, { message: "กรุณาใส่คำนำหน้าชื่อ" }).optional(),
-    department: z.string().min(1, { message: "กรุณาใส่หน่วยงานที่ประจำอยู่" }).optional(),
+    prefix: z.string().optional(),
+    department: z.string().optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "รหัสผ่านไม่ตรงกัน",
@@ -83,7 +83,6 @@ const formSchema = z
 
 const page = () => {
   const [loading, setLoading] = useState(false);
-  const styles = useThemeStyles()
   const [prefix, setPrefix] = useState<
     { prefix_id: string; prefix_name: string }[] | null
   >(null);
@@ -119,8 +118,8 @@ const page = () => {
       email: values.email,
       password: values.password,
       phone: values.phoneNumber,
-      prefix: values.prefix,
-      department: values.department,
+      prefix: values.prefix || null,  // Use null if prefix is not provided
+      department: values.department || null,  // Use null if department is not provided
     };
 
     try {
@@ -139,7 +138,9 @@ const page = () => {
     }
   }
   return (
-    <div className={` relative w-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px] h-screen`}>
+    <div
+      className={` relative w-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px] h-screen`}
+    >
       <div className="hidden bg-muted lg:block overflow-hidden">
         <Image
           src="/profiletest.jpg"
@@ -154,7 +155,9 @@ const page = () => {
           onSubmit={form.handleSubmit(onSubmit)}
           className={`flex items-center `}
         >
-          <Card className={`mx-auto max-w-max shadow-none border-none bg-transparent`}>
+          <Card
+            className={`mx-auto max-w-max shadow-none border-none bg-transparent`}
+          >
             <CardHeader>
               <CardTitle className="text-4xl my-5">Sign Up</CardTitle>
               <CardDescription>
@@ -197,7 +200,7 @@ const page = () => {
                       </FormItem>
                     )}
                   />
-
+                  {/* department */}
                   <FormField
                     control={form.control}
                     name="department"
