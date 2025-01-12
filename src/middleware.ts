@@ -19,12 +19,7 @@ export async function middleware(request: NextRequest) {
   // เช็ค token จาก API
   if (isProtecedRouteAdmin) {
     try {
-      const response = await axios.get(`${apiUrl}/protected`, {
-        withCredentials: true,
-        headers: {
-          Cookie: request.headers.get('cookie') || '', // Forward cookies จาก client request
-        },
-      });
+      const response = await axios.get(`${apiUrl}/protected`, {withCredentials: true});
 
       const userRole = response.data.role; // สมมุติว่า role มาจาก API response
       // console.log("Protected:",currentPath.startsWith(protectedPaths));
