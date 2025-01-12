@@ -1,5 +1,5 @@
+import { apiUrl } from '@/app/data/data-option';
 import { io } from 'socket.io-client';
-
-const socket = io('http://localhost:8000');
+const socket = io(apiUrl);
 
 export default socket
