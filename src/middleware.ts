@@ -4,6 +4,8 @@ import type { NextRequest } from 'next/server';
 import { apiUrl } from './app/data/data-option';
 
 export async function middleware(request: NextRequest) {
+  console.log('All cookies:', request.cookies.getAll());
+  const token = request.cookies.get('token')?.value;  // หรือชื่อ cookie ที่ใช้เก็บ token
   const protectedPathsAdmin = ['/management', '/evaluation'];  // paths ที่จะต้องการให้ admin เข้าได้เท่านั้น
   const protectedPathsUser = ['/overview/department', '/personal_evaluation', '/history'];  // paths ที่จะต้องการให้ user เข้าได้เท่านั้น
   const currentPath = request.nextUrl.pathname;
@@ -20,10 +22,10 @@ export async function middleware(request: NextRequest) {
   if (isProtecedRouteAdmin) {
     try {
       const response = await axios.get(`${apiUrl}/protected`, {
-        withCredentials: true,
         headers: {
-          Cookie: request.headers.get('cookie') || '', // Forward cookies
-        },
+          'X-Auth-Token': token,
+          'Origin': 'https://evaluation-360.vercel.app',
+        }
       });
 
 
@@ -48,14 +50,11 @@ export async function middleware(request: NextRequest) {
   }
   if (isProtecedRouteUser) {
     try {
-      const cookieHeader = request.headers.get('cookie');
-      console.log('Raw cookie header:', cookieHeader);
       const response = await axios.get(`${apiUrl}/protected`, {
-        withCredentials: true,
         headers: {
-          Cookie: cookieHeader,
-          credentials: 'include',
-        },
+          'X-Auth-Token': token,
+          'Origin': 'https://evaluation-360.vercel.app',
+        }
       });
       const userRole = response.data.role;
       if (userRole === 'admin') {
