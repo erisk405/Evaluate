@@ -69,6 +69,9 @@ const page = () => {
       const response = await axios.post(`${apiUrl}/sign-in`, values, {
         withCredentials: true,
       });
+      console.log("Sign-in response :", response.data);
+      sessionStorage.setItem("token", response.data.token);
+
       if (!response) {
         throw new Error("Invalid token");
       }
