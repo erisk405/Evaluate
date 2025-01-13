@@ -66,13 +66,12 @@ const page = () => {
     console.log(values);
     try {
       setLoading(true);
+      // ส่ง request พร้อมเปิดใช้งาน cookies
       const response = await axios.post(`${apiUrl}/sign-in`, values, {
         withCredentials: true,
       });
       console.log("Sign-in response :", response.data);
-      sessionStorage.setItem("token", response.data.token);
-      
-
+      // sessionStorage.setItem("token", response.data.token);
       if (!response) {
         throw new Error("Invalid token");
       }
@@ -81,6 +80,7 @@ const page = () => {
         description: `✅ Your are login success`,
         className: "bg-black text-white",
       });
+      // เปลี่ยนเส้นทางหลังจากล็อกอินสำเร็จ
       Router.push("/overview");
     } catch (error: any) {
       setLoading(false);

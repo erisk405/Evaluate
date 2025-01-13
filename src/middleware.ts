@@ -17,11 +17,9 @@ export async function middleware(request: NextRequest) {
   const isProtectedRouteAdmin = protectedPathsAdmin.some(path => currentPath.startsWith(path));
   const isProtectedRouteUser = protectedPathsUser.some(path => currentPath.startsWith(path));
   // Read token from Authorization header
-  const authHeader = request.headers.get('authorization');
-  const token = authHeader?.split(' ')[1]; // Extract token from "Bearer <token>"
 
   // Read token from cookies
-  // const token = request.cookies.get('token')?.value; // แบบเดิมมีปัญหาตรงที่ไม่เห็น token
+  const token = request.cookies.get('token')?.value; // แบบเดิมมีปัญหาตีร
 
   if (!token) {
     // Redirect to sign-in if no token
@@ -46,7 +44,6 @@ async function decodeToken(token: string) {
   try {
     const { payload } = await jwtVerify(token, new TextEncoder().encode(process.env.jwtSecret!));
     console.log("payload",payload);
-    
     return payload;
   } catch (error) {
     console.error('Invalid token:', error);
