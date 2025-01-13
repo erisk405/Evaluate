@@ -14,7 +14,7 @@ interface UserProfile {
   };
 }
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL || `http://localhost:8000/api`;
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 export const handleErrorOnAxios = (error: unknown) => {
   const errorMessage = axios.isAxiosError(error)
