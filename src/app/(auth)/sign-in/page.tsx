@@ -158,7 +158,7 @@ const page = () => {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="w-full">
+                <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? <Loader className="animate-spin" /> : "Login"}
                 </Button>
               </div>
