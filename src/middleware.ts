@@ -16,9 +16,12 @@ export async function middleware(request: NextRequest) {
 
   const isProtectedRouteAdmin = protectedPathsAdmin.some(path => currentPath.startsWith(path));
   const isProtectedRouteUser = protectedPathsUser.some(path => currentPath.startsWith(path));
+  // Read token from Authorization header
+  const authHeader = request.headers.get('authorization');
+  const token = authHeader?.split(' ')[1]; // Extract token from "Bearer <token>"
 
   // Read token from cookies
-  const token = request.cookies.get('token')?.value;
+  // const token = request.cookies.get('token')?.value; // แบบเดิมมีปัญหาตรงที่ไม่เห็น token
 
   if (!token) {
     // Redirect to sign-in if no token

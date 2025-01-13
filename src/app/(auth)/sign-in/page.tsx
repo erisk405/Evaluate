@@ -71,8 +71,7 @@ const page = () => {
       });
       console.log("Sign-in response :", response.data);
       sessionStorage.setItem("token", response.data.token);
-      document.cookie = `token=${response.data.token}; path=/; HttpOnly;`;
-
+      
 
       if (!response) {
         throw new Error("Invalid token");
