@@ -25,7 +25,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { apiUrl } from "@/app/data/data-option";
 import { useEffect, useState } from "react";
 import { Loader } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
@@ -40,7 +39,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import GlobalApi from "@/app/_util/GlobalApi";
+import GlobalApi, { apiUrl } from "@/app/_util/GlobalApi";
 import { Department } from "@/types/interface";
 import { useThemeStyles } from "@/hooks/useTheme";
 

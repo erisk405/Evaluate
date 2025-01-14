@@ -38,7 +38,7 @@ export function DynamicBreadcrumb() {
   if (pathSegments.length === 0) {
     return (
       <BreadcrumbItem>
-        <BreadcrumbLink href="/">Home</BreadcrumbLink>
+        <BreadcrumbLink href="/overview">Home</BreadcrumbLink>
       </BreadcrumbItem>
     );
   }
@@ -72,7 +72,7 @@ export function DynamicBreadcrumb() {
   return (
     <>
       <BreadcrumbItem key="home">
-        <BreadcrumbLink href="/">Home</BreadcrumbLink>
+        <BreadcrumbLink href="/overview">Home</BreadcrumbLink>
       </BreadcrumbItem>
       <BreadcrumbSeparator key="home-separator" />
       {breadcrumbItems}

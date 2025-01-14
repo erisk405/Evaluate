@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import socket from "@/lib/socket";
-import { apiUrl } from "../data/data-option";
 import axios from "axios";
 import { Bell } from "lucide-react";
 import Image from "next/image";
@@ -9,8 +8,9 @@ import useStore from "../store/store";
 import { toast } from "sonner";
 import moment from "moment-timezone";
 import { Notification, User } from "@/types/interface";
-import GlobalApi from "../_util/GlobalApi";
+import GlobalApi, { apiUrl } from "../_util/GlobalApi";
 import { useThemeStyles } from "@/hooks/useTheme";
+import apiClient from "../_util/intercaptor";
 
 const TIMEZONE = "Asia/Bangkok";
 const PAGE_LIMIT = 4;
@@ -75,9 +75,8 @@ const NotificationSection = () => {
   // function ที่นำRoleRequest มาSet ไว้ที่ notificate และ จำนวนของ notificate
   const fetchRoleRequest = async () => {
     try {
-      const response = await axios.get(`${apiUrl}/roleRequestPending`, {
-        params: { page, limit: PAGE_LIMIT },
-        withCredentials: true,
+      const response = await apiClient.get(`${apiUrl}/roleRequestPending`, {
+        params: { page, limit: PAGE_LIMIT }
       });
       console.log(response);
 

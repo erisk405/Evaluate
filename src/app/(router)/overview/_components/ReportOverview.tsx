@@ -27,6 +27,7 @@ import useStore from "@/app/store/store";
 import InfoOfDepartmentEval from "./InfoOfDepartmentEval";
 import { getAllSuperviseByAdminType } from "@/types/interface";
 import { useThemeStyles } from "@/hooks/useTheme";
+import Loading from "@/app/_components/Loading";
 
 export const description = "A radial chart with a grid";
 
@@ -107,10 +108,6 @@ const ReportOverview = () => {
     fetchSupervise();
   }, [currentlyEvaluationPeriod?.period_id]);
 
-  useEffect(() => {
-    console.log("resultEvalEachDepartment", resultEvalEachDepartment);
-  }, [resultEvalEachDepartment]);
-
   return (
     <div className={`h-full flex flex-col gap-3 ${styles.text}`}>
       <div className="@container w-full grid grid-cols-3 lg:grid-cols-3 gap-3">
@@ -133,9 +130,7 @@ const ReportOverview = () => {
                 <div
                   className={`${styles.border} shadow rounded-full w-[60px] h-[60px] animate-wiggle flex justify-center items-center`}
                 >
-                  <h2 className="text-2xl">
-                    {item.icon}
-                  </h2>
+                  <h2 className="text-2xl">{item.icon}</h2>
                 </div>
                 <div className="grid gap-1 grid-cols-1">
                   <div className="flex gap-1 items-end">
@@ -218,7 +213,9 @@ const ReportOverview = () => {
           </h2>
           {supervise.length ? (
             <Table className={`shadow ${styles.background} rounded-lg my-3`}>
-              <TableCaption>ข้อมูลลำดับบุคคลกำกับดูแลในแต่ละหน่วยงาน</TableCaption>
+              <TableCaption>
+                ข้อมูลลำดับบุคคลกำกับดูแลในแต่ละหน่วยงาน
+              </TableCaption>
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-[100px]">ลำดับ</TableHead>

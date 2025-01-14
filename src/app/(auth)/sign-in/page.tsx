@@ -19,11 +19,11 @@ import {
 
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { apiUrl } from "@/app/data/data-option";
 
 import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
 import { Eye, EyeOff, Loader } from "lucide-react";
+import GlobalApi, { apiUrl } from "@/app/_util/GlobalApi";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -63,31 +63,47 @@ const page = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(values);
     try {
       setLoading(true);
-      // ส่ง request พร้อมเปิดใช้งาน cookies
+
+      // ส่ง request เพื่อขอ JWT
       const response = await axios.post(`${apiUrl}/sign-in`, values, {
-        withCredentials: true,
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
-      console.log("Sign-in response :", response.data);
-      // sessionStorage.setItem("token", response.data.token);
-      if (!response) {
-        throw new Error("Invalid token");
+      console.log("response", response.data);
+
+      const token = response.data.token;
+      if (!token) {
+        throw new Error("No token received");
       }
+
+      // เก็บ JWT ใน localStorage
+      localStorage.setItem("token", token);
+      // ทดสอบ verifyToken (เรียก API ที่ต้องการ JWT)
+      const verifyToken = await GlobalApi.fetchProtected();
+      console.log("verifyToken", verifyToken);
+
+      // แสดง toast หลังจากล็อกอินสำเร็จ
       toast({
         title: "Login success",
-        description: `✅ Your are login success`,
+        description: `✅ You are logged in successfully`,
         className: "bg-black text-white",
       });
+
       // เปลี่ยนเส้นทางหลังจากล็อกอินสำเร็จ
       Router.push("/overview");
     } catch (error: any) {
       setLoading(false);
-      const errorMessage = error?.response?.data.message;
+      const errorMessage = error?.response?.data?.message || "Login failed";
+      console.error("Login error:", error);
+
+      // ตั้งค่า error บนฟอร์ม
       setError("password", { type: "manual", message: errorMessage });
     }
   };
+
   return (
     <div className="w-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px] h-screen">
       <div className="flex items-center justify-center py-12">

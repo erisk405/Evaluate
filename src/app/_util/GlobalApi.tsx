@@ -3,6 +3,8 @@
 import { toast } from "@/components/ui/use-toast";
 import { Department, PeriodType, PrefixType } from "@/types/interface";
 import axios, { AxiosResponse } from "axios";
+import apiClient from "./intercaptor";
+
 interface UserProfile {
   [x: string]: any;
   name: string;
@@ -14,7 +16,12 @@ interface UserProfile {
   };
 }
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+export const apiUrl =
+  process.env.NEXT_PUBLIC_BACKEND_API_URL || "https://localhost:8000/api";
+if (!process.env.NEXT_PUBLIC_BACKEND_API_URL) {
+  console.error("API URL is not defined");
+  // จัดการ error case
+}
 
 export const handleErrorOnAxios = (error: unknown) => {
   const errorMessage = axios.isAxiosError(error)
@@ -41,23 +48,22 @@ const getPrefix = () => {
 };
 const updatePrefix = (data: { prefix_id: string; prefix_name: string }) => {
   try {
-    return axios.put(`${apiUrl}/prefix`, data, { withCredentials: true });
+    return apiClient.put(`${apiUrl}/prefix`, data);
   } catch (error) {
     console.error("API updatePrefix", { message: error });
   }
 };
 const createPrefix = (data: { prefix_name: string }) => {
   try {
-    return axios.post(`${apiUrl}/prefix`, data, { withCredentials: true });
+    return apiClient.post(`${apiUrl}/prefix`, data);
   } catch (error) {
     console.error("Error prefix:", error);
   }
 };
 const deletePrefix = (payload: {}) => {
   try {
-    return axios.delete(`${apiUrl}/prefix`, {
+    return apiClient.delete(`${apiUrl}/prefix`, {
       data: payload, // Send the payload directly
-      withCredentials: true,
     });
   } catch (error) {
     console.error("API deletePrefix", { message: error });
@@ -68,16 +74,24 @@ const deletePrefix = (payload: {}) => {
 //                       untitle
 // -----------------------------------------------------------
 const fetchProtected = () => {
-  return axios.get(`${apiUrl}/protected`, {
-    withCredentials: true,
+  // ดึง token จาก sessionStorage
+  const token = localStorage.getItem("token");
+
+  // ตรวจสอบว่ามี token หรือไม่
+  if (!token) {
+    throw new Error("No token found in sessionStorage");
+  }
+  // ส่งคำขอพร้อม Authorization header
+  return apiClient.get(`${apiUrl}/protected`, {
+    headers: {
+      Authorization: `Bearer ${token}`, // เพิ่ม Bearer token
+    },
   });
 };
 
 const fetchUserProfile = async (): Promise<AxiosResponse<UserProfile>> => {
   // Return the axios.get promise with type
-  return await axios.get(`${apiUrl}/myProfile`, {
-    withCredentials: true, // ส่ง cookies ไปด้วย
-  });
+  return await apiClient.get(`${apiUrl}/myProfile`);
 };
 
 const updateProfileName = async (payload: {
@@ -86,9 +100,7 @@ const updateProfileName = async (payload: {
   phone: string;
 }) => {
   try {
-    return await axios.put(`${apiUrl}/myProfile`, payload, {
-      withCredentials: true, // ส่ง cookies ไปด้วย
-    });
+    return await apiClient.put(`${apiUrl}/myProfile`, payload);
   } catch (error) {
     console.error("Error updateProfileName:", error);
   }
@@ -96,13 +108,7 @@ const updateProfileName = async (payload: {
 
 const Logout = async () => {
   try {
-    return await axios.post(
-      `${apiUrl}/sign-out`,
-      {},
-      {
-        withCredentials: true,
-      }
-    );
+    return await apiClient.post(`${apiUrl}/sign-out`);
   } catch (error) {
     console.error("Error logging out:", error);
   }
@@ -132,8 +138,7 @@ const resetPassword = async (payload: {
 const updateUserImage = async (
   formData: FormData
 ): Promise<AxiosResponse<any>> => {
-  return await axios.put(`${apiUrl}/usersImage`, formData, {
-    withCredentials: true,
+  return await apiClient.put(`${apiUrl}/usersImage`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
@@ -142,8 +147,7 @@ const updateUserImage = async (
 
 const getAllUsers = async () => {
   try {
-    return await axios.get(`${apiUrl}/allUsers`, {
-      withCredentials: true,
+    return await apiClient.get(`${apiUrl}/allUsers`, {
       headers: {
         "Content-Type": "multipath/form-data",
       },
@@ -165,11 +169,10 @@ const updateDepartmentImage = async (
   formData: FormData,
   department: Department
 ): Promise<AxiosResponse<any>> => {
-  return await axios.put(
+  return await apiClient.put(
     `${apiUrl}/department-image/${department.id}`,
     formData,
     {
-      withCredentials: true,
       headers: {
         "Content-Type": "multipath/form-data",
       },
@@ -180,8 +183,7 @@ const updateDepartmentImage = async (
 //  ใช้ ที่หน้า department & role path menagement ตอนที่จะเลือกเข้าuser คนไหนเข้าหน่วยงาน
 const addUsersToDepartment = async (payload: any) => {
   try {
-    return await axios.put(`${apiUrl}/usersToDepartment`, payload, {
-      withCredentials: true,
+    return await apiClient.put(`${apiUrl}/usersToDepartment`, payload, {
       headers: {
         "Content-Type": "application/json", // Set content type to JSON
       },
@@ -203,8 +205,7 @@ const updateUserProfileByAdmin = async (
   payload: updateUserProfileByAdminProp
 ) => {
   try {
-    return await axios.put(`${apiUrl}/userProfile`, payload, {
-      withCredentials: true,
+    return await apiClient.put(`${apiUrl}/userProfile`, payload, {
       headers: {
         "Content-Type": "application/json", // Set content type to JSON
       },
@@ -219,11 +220,10 @@ const changePassword = async (
   userId?: string
 ) => {
   try {
-    const response = await axios.put(
+    const response = await apiClient.put(
       `${apiUrl}/password${userId ? `/${userId}` : ""}`,
       payload,
       {
-        withCredentials: true,
         headers: {
           "Content-Type": "application/json", // Set content type to JSON
         },
@@ -236,29 +236,28 @@ const changePassword = async (
   }
 };
 
-const deleteUserByAdmin = async (payload:{})=>{
+const deleteUserByAdmin = async (payload: {}) => {
   try {
-    return await axios.delete(`${apiUrl}/user`, {
-      data: payload, 
-      withCredentials: true,
+    return await apiClient.delete(`${apiUrl}/user`, {
+      data: payload,
     });
   } catch (error) {
-    handleErrorOnAxios(error)
+    handleErrorOnAxios(error);
   }
-}
+};
 // -----------------------------------------------------------
 //                       Role Table
 // -----------------------------------------------------------
 const createRole = (payload: any) => {
   try {
-    return axios.post(`${apiUrl}/role`, payload, { withCredentials: true });
+    return apiClient.post(`${apiUrl}/role`, payload);
   } catch (error) {
     console.error("Error role:", error);
   }
 };
 const updateRole = (payload: any) => {
   try {
-    return axios.put(`${apiUrl}/role`, payload, { withCredentials: true });
+    return apiClient.put(`${apiUrl}/role`, payload);
   } catch (error) {
     console.error("Error role:", error);
   }
@@ -266,16 +265,15 @@ const updateRole = (payload: any) => {
 
 const deleteRole = (id: string) => {
   try {
-    return axios.delete(`${apiUrl}/role`, {
+    return apiClient.delete(`${apiUrl}/role`, {
       data: { id },
-      withCredentials: true,
     });
   } catch (error) {}
 };
 
 const getRole = async () => {
   try {
-    return await axios.get(`${apiUrl}/role`, { withCredentials: true });
+    return await apiClient.get(`${apiUrl}/role`);
   } catch (error) {
     console.error("Error role:", error);
   }
@@ -283,16 +281,10 @@ const getRole = async () => {
 // function api สำหรับ user เมื่อต้องการร้องขอ role
 const sendRoleRequest = async (userId: any, roleId: any) => {
   try {
-    return await axios.post(
-      `${apiUrl}/sendRoleRequest`,
-      {
-        userId, // userId จะต้องเป็นค่าที่มาจากการล็อกอิน
-        roleId,
-      },
-      {
-        withCredentials: true,
-      }
-    );
+    return await apiClient.post(`${apiUrl}/sendRoleRequest`, {
+      userId, // userId จะต้องเป็นค่าที่มาจากการล็อกอิน
+      roleId,
+    });
   } catch (error) {}
 };
 
@@ -303,17 +295,11 @@ const resolveRole = async (
   userId: string
 ) => {
   try {
-    return await axios.patch(
-      `${apiUrl}/resolveRole`,
-      {
-        requestId,
-        status,
-        userId,
-      },
-      {
-        withCredentials: true,
-      }
-    );
+    return await apiClient.patch(`${apiUrl}/resolveRole`, {
+      requestId,
+      status,
+      userId,
+    });
   } catch (error) {
     console.error({ message: error });
   }
@@ -333,9 +319,7 @@ const getDepartment = async () => {
 
 const getDepartmentForAdmin = async () => {
   try {
-    return await axios.get(`${apiUrl}/department/admin`, {
-      withCredentials: true,
-    });
+    return await apiClient.get(`${apiUrl}/department/admin`);
   } catch (error) {
     console.error("Error Department:", error);
   }
@@ -344,7 +328,7 @@ const getDepartmentById = async (departmentId: string) => {
   // console.log(`page=${pageIndex}&size=${pageSize}`);
   try {
     const url = `${apiUrl}/department/${departmentId}`;
-    return await axios.get(url, { withCredentials: true });
+    return await apiClient.get(url);
   } catch (error) {
     console.error("Error Department:", error);
   }
@@ -353,7 +337,7 @@ const getDepartmentByIdForAdmin = async (departmentId: string) => {
   // console.log(`page=${pageIndex}&size=${pageSize}`);
   try {
     const url = `${apiUrl}/department/admin/${departmentId}`;
-    return await axios.get(url, { withCredentials: true });
+    return await apiClient.get(url);
   } catch (error) {
     console.error("Error Department:", error);
   }
@@ -361,8 +345,7 @@ const getDepartmentByIdForAdmin = async (departmentId: string) => {
 const CreateDepartment = async (
   formData: FormData
 ): Promise<AxiosResponse<any>> => {
-  return await axios.post(`${apiUrl}/department`, formData, {
-    withCredentials: true,
+  return await apiClient.post(`${apiUrl}/department`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
@@ -373,8 +356,7 @@ const updateDepartment = async (data: any) => {
   try {
     // console.log("formData",data);
 
-    return await axios.put(`${apiUrl}/department`, data, {
-      withCredentials: true,
+    return await apiClient.put(`${apiUrl}/department`, data, {
       headers: {
         "Content-Type": "application/json", // Set content type to JSON
       },
@@ -386,11 +368,10 @@ const updateDepartment = async (data: any) => {
 };
 const joinDepartment = async (departmentId: string) => {
   try {
-    return await axios.put(
+    return await apiClient.put(
       `${apiUrl}/usersDepartment`,
       { departmentId },
       {
-        withCredentials: true,
         headers: {
           "Content-Type": "application/json", // Set content type to JSON
         },
@@ -405,15 +386,9 @@ const joinDepartment = async (departmentId: string) => {
 // -----------------------------------------------------------
 const createForm = async (name: string) => {
   try {
-    return await axios.post(
-      `${apiUrl}/form`,
-      {
-        name,
-      },
-      {
-        withCredentials: true,
-      }
-    );
+    return await apiClient.post(`${apiUrl}/form`, {
+      name,
+    });
   } catch (error) {
     console.error("API create form", { message: error });
   }
@@ -429,15 +404,9 @@ const getForm = () => {
 
 const updateForm = async (data: { id: string; name: string }) => {
   try {
-    return axios.put(
-      `${apiUrl}/form`,
-      {
-        data,
-      },
-      {
-        withCredentials: true,
-      }
-    );
+    return apiClient.put(`${apiUrl}/form`, {
+      data,
+    });
   } catch (error) {
     console.error("API update form", { message: error });
   }
@@ -445,9 +414,8 @@ const updateForm = async (data: { id: string; name: string }) => {
 
 const deleteForm = async (id: string) => {
   try {
-    return axios.delete(`${apiUrl}/form`, {
+    return apiClient.delete(`${apiUrl}/form`, {
       data: { id },
-      withCredentials: true,
     });
   } catch (error) {
     console.error("API delete form", { message: error });
@@ -462,11 +430,7 @@ const createPermission = async (data: any, assessorID: string) => {
   console.log(data);
 
   try {
-    return axios.post(
-      `${apiUrl}/permission`,
-      { data, assessorID },
-      { withCredentials: true }
-    );
+    return apiClient.post(`${apiUrl}/permission`, { data, assessorID });
   } catch (error) {
     console.error("API delete form", { message: error });
   }
@@ -476,17 +440,14 @@ const updatePermission = (permissions: any) => {
   console.log(permissions);
 
   try {
-    return axios.put(`${apiUrl}/permissionRole`, permissions, {
-      withCredentials: true,
-    });
+    return apiClient.put(`${apiUrl}/permissionRole`, permissions);
   } catch (error) {}
 };
 
 const deletePermissionForm = (id: string) => {
   try {
-    return axios.delete(`${apiUrl}/permissionForm`, {
+    return apiClient.delete(`${apiUrl}/permissionForm`, {
       data: { id },
-      withCredentials: true,
     });
   } catch (error) {}
 };
@@ -496,25 +457,22 @@ const deletePermissionForm = (id: string) => {
 // -----------------------------------------------------------
 const createQuestion = (data: { content: string; formId: string }) => {
   try {
-    return axios.post(`${apiUrl}/question`, data, { withCredentials: true });
+    return apiClient.post(`${apiUrl}/question`, data);
   } catch (error) {
     console.error("API createQuestion", { message: error });
   }
 };
 const getQuestion = (formId: string) => {
   try {
-    return axios.get(`${apiUrl}/questions/${formId}`, {
-      withCredentials: true,
-    });
+    return apiClient.get(`${apiUrl}/questions/${formId}`);
   } catch (error) {
     console.error("API getQuestion", { message: error });
   }
 };
 const deleteQuestion = (payload: {}) => {
   try {
-    return axios.delete(`${apiUrl}/question`, {
-      data: payload, // Send the payload directly
-      withCredentials: true,
+    return apiClient.delete(`${apiUrl}/question`, {
+      data: payload,
     });
   } catch (error) {
     console.error("API deleteQuestion", { message: error });
@@ -523,7 +481,7 @@ const deleteQuestion = (payload: {}) => {
 
 const updateQuestion = (payload: {}) => {
   try {
-    return axios.put(`${apiUrl}/question`, payload, { withCredentials: true });
+    return apiClient.put(`${apiUrl}/question`, payload);
   } catch (error) {
     console.error("API updateQuestion", { message: error });
   }
@@ -538,28 +496,28 @@ const createPeriod = (payload: {
   end: string;
 }) => {
   try {
-    return axios.post(`${apiUrl}/period`, payload, { withCredentials: true });
+    return apiClient.post(`${apiUrl}/period`, payload);
   } catch (error) {
     // console.error("API createPeriod", { message: error });
   }
 };
 const getPeriod = () => {
   try {
-    return axios.get(`${apiUrl}/periods`, { withCredentials: true });
+    return apiClient.get(`${apiUrl}/periods`);
   } catch (error) {
     console.error("API createPeriod", { message: error });
   }
 };
 const deletePeriod = (id: string) => {
   try {
-    return axios.delete(`${apiUrl}/period/${id}`, { withCredentials: true });
+    return apiClient.delete(`${apiUrl}/period/${id}`);
   } catch (error) {
     console.error("API createPeriod", { message: error });
   }
 };
 const updatePeriod = (payload: PeriodType) => {
   try {
-    return axios.put(`${apiUrl}/period`, payload, { withCredentials: true });
+    return apiClient.put(`${apiUrl}/period`, payload);
   } catch (error) {
     console.error("API createPeriod", { message: error });
   }
@@ -570,7 +528,7 @@ const updatePeriod = (payload: PeriodType) => {
 // -----------------------------------------------------------
 const getSupervises = () => {
   try {
-    return axios.get(`${apiUrl}/supervises`, { withCredentials: true });
+    return apiClient.get(`${apiUrl}/supervises`);
   } catch (error) {
     console.error("API getSupervises", { message: error });
   }
@@ -578,9 +536,7 @@ const getSupervises = () => {
 
 const createSupervise = (payload: { userId: string; departmentId: string }) => {
   try {
-    return axios.post(`${apiUrl}/supervise`, payload, {
-      withCredentials: true,
-    });
+    return apiClient.post(`${apiUrl}/supervise`, payload);
   } catch (error) {
     // console.error("API createPeriod", { message: error });
   }
@@ -591,9 +547,7 @@ const updateSupervise = (payload: {
   departmentId: string;
 }) => {
   try {
-    return axios.put(`${apiUrl}/supervise`, payload, {
-      withCredentials: true,
-    });
+    return apiClient.put(`${apiUrl}/supervise`, payload);
   } catch (error) {
     // console.error("API createPeriod", { message: error });
   }
@@ -610,9 +564,7 @@ type createEvaluateType = {
 };
 const createEvaluate = (payload: createEvaluateType) => {
   try {
-    return axios.post(`${apiUrl}/evaluate`, payload, {
-      withCredentials: true,
-    });
+    return apiClient.post(`${apiUrl}/evaluate`, payload);
   } catch (error) {
     console.error("API evaluate", { message: error });
   }
@@ -627,9 +579,7 @@ type detailsType = {
 };
 const updateEvaluate = (payload: updateEvaluateType) => {
   try {
-    return axios.put(`${apiUrl}/evaluate`, payload, {
-      withCredentials: true,
-    });
+    return apiClient.put(`${apiUrl}/evaluate`, payload);
   } catch (error) {
     console.error({ message: error });
   }
@@ -640,9 +590,7 @@ type findUserEvaluatedType = {
 };
 const findUserEvaluated = (payload: findUserEvaluatedType) => {
   try {
-    return axios.get(`${apiUrl}/findUserEval/${payload.period_id}`, {
-      withCredentials: true,
-    });
+    return apiClient.get(`${apiUrl}/findUserEval/${payload.period_id}`);
   } catch (error) {
     console.error("API createPeriod", { message: error });
   }
@@ -655,9 +603,7 @@ const getResultEvaluate = (payload: getResultEvaluateProp) => {
     throw new Error("Missing evaluator_id or period_id");
   }
   try {
-    return axios.get(`${apiUrl}/resultEvaluate/${payload.period_id}`, {
-      withCredentials: true,
-    });
+    return apiClient.get(`${apiUrl}/resultEvaluate/${payload.period_id}`);
   } catch (error) {
     console.error("API resultEvaluate", { message: error });
   }
@@ -667,9 +613,7 @@ type getCountUserAsEvaluatedProp = {
 };
 const getCountUserAsEvaluated = (payload: getCountUserAsEvaluatedProp) => {
   try {
-    return axios.get(`${apiUrl}/countUserEvaluated/${payload.period_id}`, {
-      withCredentials: true,
-    });
+    return apiClient.get(`${apiUrl}/countUserEvaluated/${payload.period_id}`);
   } catch (error) {
     console.error("API getCountUserAsEvaluated", { message: error });
   }
@@ -677,9 +621,7 @@ const getCountUserAsEvaluated = (payload: getCountUserAsEvaluatedProp) => {
 
 const getResultEvaluatePerDepart = (period_id: string) => {
   try {
-    return axios.get(`${apiUrl}/resultEvaluatePerDepart/${period_id}`, {
-      withCredentials: true,
-    });
+    return apiClient.get(`${apiUrl}/resultEvaluatePerDepart/${period_id}`);
   } catch (error) {
     console.error("API getResultEvaluatePerDepart", { message: error });
   }
@@ -687,9 +629,7 @@ const getResultEvaluatePerDepart = (period_id: string) => {
 
 const getResultEvaluateDetail = (period_id: string) => {
   try {
-    return axios.get(`${apiUrl}/resultEvaluateDetail/${period_id}`, {
-      withCredentials: true,
-    });
+    return apiClient.get(`${apiUrl}/resultEvaluateDetail/${period_id}`);
   } catch (error) {
     console.error("API getResultEvaluateDetail", { message: error });
   }
@@ -704,9 +644,7 @@ type typeOfStach = {
 };
 const updateVisionOfForm = (payload: updateVisionOfFormProp) => {
   try {
-    return axios.put(`${apiUrl}/roleFormVision`, payload, {
-      withCredentials: true,
-    });
+    return apiClient.put(`${apiUrl}/roleFormVision`, payload);
   } catch (error) {
     console.error("API getResultEvaluateDetail", { message: error });
   }
@@ -714,9 +652,9 @@ const updateVisionOfForm = (payload: updateVisionOfFormProp) => {
 
 const getResultEvaluateDetailForAdmin = (period_id: string, userId: string) => {
   try {
-    return axios.get(`${apiUrl}/resultEvaluateDetail/${period_id}/${userId}`, {
-      withCredentials: true,
-    });
+    return apiClient.get(
+      `${apiUrl}/resultEvaluateDetail/${period_id}/${userId}`
+    );
   } catch (error) {
     console.error("API getResultEvaluateDetailForAdmin", { message: error });
     return handleErrorOnAxios(error);
@@ -735,9 +673,7 @@ const getAllResultIndividualOverview = async (
       userId ? `/${userId}` : ""
     }`;
 
-    const response = await axios.get(url, {
-      withCredentials: true,
-    });
+    const response = await apiClient.get(url);
 
     return response;
   } catch (error) {
@@ -752,9 +688,8 @@ type deleteUserEvaluationProp = {
 };
 const deleteUserEvaluation = (payload: deleteUserEvaluationProp) => {
   try {
-    return axios.delete(`${apiUrl}/evaluate`, {
+    return apiClient.delete(`${apiUrl}/evaluate`, {
       data: payload, // Send the payload directly
-      withCredentials: true,
     });
   } catch (error) {
     console.error("API deleteUserEvaluation", { message: error });
@@ -766,9 +701,7 @@ const deleteUserEvaluation = (payload: deleteUserEvaluationProp) => {
 // ----------------------------------------------
 const getResultEvaluateFormHistory = (period_id: string) => {
   try {
-    return axios.get(`${apiUrl}/resultEvaluateFormHistory/${period_id}`, {
-      withCredentials: true,
-    });
+    return apiClient.get(`${apiUrl}/resultEvaluateFormHistory/${period_id}`);
   } catch (error) {
     console.error("API getResultEvaluateFormHistory", { message: error });
     return handleErrorOnAxios(error);
@@ -777,9 +710,7 @@ const getResultEvaluateFormHistory = (period_id: string) => {
 
 const saveEvaluationToHistory = (payload: { period_id: string }) => {
   try {
-    return axios.post(`${apiUrl}/history`, payload, {
-      withCredentials: true,
-    });
+    return apiClient.post(`${apiUrl}/history`, payload);
   } catch (error) {
     console.error("API saveEvaluationToHistory", { message: error });
     return handleErrorOnAxios(error);
@@ -791,11 +722,8 @@ const getResultEvaluateFormHistoryForAdmin = (
   userId: string
 ) => {
   try {
-    return axios.get(
-      `${apiUrl}/resultEvaluateFormHistory/${period_id}/${userId}`,
-      {
-        withCredentials: true,
-      }
+    return apiClient.get(
+      `${apiUrl}/resultEvaluateFormHistory/${period_id}/${userId}`
     );
   } catch (error) {
     console.error("API getResultEvaluateFormHistoryForAdmin", {
@@ -807,9 +735,7 @@ const getResultEvaluateFormHistoryForAdmin = (
 
 const deleteHistory = (period_id: string) => {
   try {
-    return axios.delete(`${apiUrl}/history/${period_id}`, {
-      withCredentials: true,
-    });
+    return apiClient.delete(`${apiUrl}/history/${period_id}`);
   } catch (error) {
     console.error("API deletedHistory", {
       message: error,
@@ -823,8 +749,7 @@ const deleteHistory = (period_id: string) => {
 // ----------------------------------------------
 const getExportEvaluationByUserId = (period_id: string, userId: string) => {
   try {
-    return axios.get(`${apiUrl}/export/${period_id}/${userId}`, {
-      withCredentials: true,
+    return apiClient.get(`${apiUrl}/export/${period_id}/${userId}`, {
       responseType: "arraybuffer",
     });
   } catch (error) {

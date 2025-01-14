@@ -1,8 +1,5 @@
 import { BarChart3, Flame, FolderClock, LayoutDashboard, PersonStanding, Settings, ShieldCheck, UserRound } from "lucide-react";
 
-
-const apiUrl = process.env.NEXT_PUBLIC_API_URL || `http://localhost:8000/api`;
-
 const OptionSideBar = [
     {
         id: 'OSide01',
@@ -138,5 +135,4 @@ const Department = [
 export{
     OptionSideBar,
     Department,
-    apiUrl
 }

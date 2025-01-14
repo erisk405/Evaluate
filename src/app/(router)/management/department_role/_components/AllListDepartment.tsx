@@ -16,6 +16,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { useThemeStyles } from "@/hooks/useTheme";
 
 interface AllListDepartmentProps {
   department: Department[];
@@ -26,6 +27,7 @@ const AllListDepartment = ({
   fetchDepart,
 }: AllListDepartmentProps) => {
   const { roles } = useStore();
+  const styles = useThemeStyles()
   return (
     <div className="@container w-full flex flex-col gap-3 my-4 sm:max-h-[700px] overflow-scroll scrollbar-gemini">
       {department.length > 0
@@ -111,13 +113,13 @@ const AllListDepartment = ({
                 className="flex gap-3 justify-between items-center animate-pulse mt-3 mx-3"
               >
                 <div className="flex gap-3 items-center">
-                  <div className="w-[190px] h-[120px] bg-gray-300 rounded-lg"></div>
+                  <div className="w-[190px] h-[120px] bg-zinc-400 rounded-lg"></div>
                   <div className="flex flex-col gap-3">
-                    <div className="w-[200px] h-[10px] bg-gray-300 rounded-lg"></div>
-                    <div className="w-[300px] h-[10px] bg-gray-300 rounded-lg"></div>
+                    <div className="w-[200px] h-[10px] bg-zinc-400 rounded-lg"></div>
+                    <div className="w-[300px] h-[10px] bg-zinc-400 rounded-lg"></div>
                   </div>
                 </div>
-                <div className="w-[100px] h-[40px] bg-gray-300 rounded-xl"></div>
+                <div className="w-[100px] h-[40px] bg-zinc-400 rounded-xl"></div>
               </div>
             )
           )}
