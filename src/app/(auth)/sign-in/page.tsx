@@ -65,7 +65,6 @@ const page = () => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       setLoading(true);
-
       // ส่ง request เพื่อขอ JWT
       const response = await axios.post(`${apiUrl}/sign-in`, values, {
         headers: {
@@ -78,7 +77,6 @@ const page = () => {
       if (!token) {
         throw new Error("No token received");
       }
-
       // เก็บ JWT ใน localStorage
       localStorage.setItem("token", token);
       // ทดสอบ verifyToken (เรียก API ที่ต้องการ JWT)

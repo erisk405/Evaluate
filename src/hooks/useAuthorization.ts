@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { jwtVerify, JWTPayload } from "jose";
 
 const useAuthorization = () => {
     const router = useRouter();
@@ -16,6 +15,8 @@ const useAuthorization = () => {
                 router.push("/sign-in");
                 return;
             }
+            console.log("token",token);
+            
 
             try {
                 // ส่ง token และ current path ไปยัง server

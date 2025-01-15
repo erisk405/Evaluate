@@ -4,6 +4,7 @@ import { toast } from "@/components/ui/use-toast";
 import { Department, PeriodType, PrefixType } from "@/types/interface";
 import axios, { AxiosResponse } from "axios";
 import apiClient from "./intercaptor";
+const isProduction = process.env.NODE_ENV === "production"
 
 interface UserProfile {
   [x: string]: any;
@@ -16,8 +17,7 @@ interface UserProfile {
   };
 }
 
-export const apiUrl =
-  process.env.NEXT_PUBLIC_BACKEND_API_URL || "https://localhost:8000/api";
+export const apiUrl = isProduction ? process.env.NEXT_PUBLIC_BACKEND_API_URL : "https://localhost:8000/api";
 if (!process.env.NEXT_PUBLIC_BACKEND_API_URL) {
   console.error("API URL is not defined");
   // จัดการ error case
@@ -123,10 +123,15 @@ const forgotPassowrd = async (email: string) => {
 };
 const resetPassword = async (payload: {
   newPassword?: string;
-  token: string | string[];
+  token: string;
 }) => {
   try {
-    return await axios.put(`${apiUrl}/reset-password`, payload);
+    const { token, ...rest } = payload;
+    return await axios.put(`${apiUrl}/reset-password`, rest, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
   } catch (error) {
     console.error("Error resetPassword:", { message: error });
   }

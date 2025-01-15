@@ -22,8 +22,16 @@ const isPathAccessibleForUsers = (path: string): boolean => {
         path.startsWith(protectedPath)
     );
 };
+const isPathCustoms = (path: string): boolean => {
+    const protectedPathsCustom = [
+        "/reset-password",
+    ];
+    return protectedPathsCustom.some((protectedPath) =>
+        path.startsWith(protectedPath)
+    );
+};
 
-async function decodeToken(token: string): Promise<TokenPayload | null> {
+export async function decodeToken(token: string): Promise<TokenPayload | null> {
     const jwtSecret = process.env.jwtSecret;
 
     if (!jwtSecret) {
@@ -41,45 +49,60 @@ async function decodeToken(token: string): Promise<TokenPayload | null> {
         return null;
     }
 }
-
 export async function protectedRounterAction(token: string, currentPath: string) {
+    const isProduction = process.env.NODE_ENV === "production"
+    const BASE_URL = isProduction ? process.env.NEXT_PUBLIC_BASE_URL : 'http://localhost:3000';
+
     try {
-        // Basic token check
-        if (!token) {
-            return NextResponse.redirect(new URL('/sign-in'));
+        // ตรวจสอบว่าเป็น path ที่เป็น custom path หรือไม่ (เช่น reset-password)
+        const isPathCustom = isPathCustoms(currentPath);
+
+        // Basic token check - ยกเว้นกรณี custom paths
+        if (!token && !isPathCustom) {
+            return NextResponse.redirect(new URL('/sign-in', BASE_URL));
         }
 
         // Redirect root to overview
         if (currentPath === '/') {
-            return NextResponse.redirect(new URL('/overview'));
+            return NextResponse.redirect(new URL('/overview', BASE_URL));
+        }
+
+        // Decode token
+        const decodedToken = await decodeToken(token);
+
+        // สำหรับ custom paths (reset-password)
+        if (isPathCustom) {
+            // ถ้ามี uid ให้เข้าถึงหน้าได้
+            if (decodedToken?.uid) {
+                return NextResponse.next();
+            }
+            // ถ้าไม่มี uid ให้ redirect ไปที่ sign-in
+            return NextResponse.redirect(new URL('/sign-in', BASE_URL));
         }
 
         // Check if current path is protected
         const isProtectedRouteAdmin = isPathAccessibleForAdmin(currentPath);
         const isProtectedRouteUser = isPathAccessibleForUsers(currentPath);
 
-        // Decode token and get user role
-        const decodedToken = await decodeToken(token);
         const userRole = decodedToken?.role;
 
         if (!userRole) {
-            return NextResponse.redirect(new URL('/sign-in'));
+            return NextResponse.redirect(new URL('/sign-in', BASE_URL));
         }
 
         // Admin route protection
         if (isProtectedRouteAdmin && userRole !== 'admin') {
-            return NextResponse.redirect(new URL('/overview'));
+            return NextResponse.redirect(new URL('/overview', BASE_URL));
         }
 
         // User route protection
         if (isProtectedRouteUser && userRole === 'admin') {
-            return NextResponse.redirect(new URL('/overview'));
+            return NextResponse.redirect(new URL('/overview', BASE_URL));
         }
 
-        // If all checks pass, continue
         return NextResponse.next();
     } catch (error) {
         console.error('Authentication error:', error);
-        return NextResponse.redirect(new URL('/sign-in'));
+        return NextResponse.redirect(new URL('/sign-in', BASE_URL));
     }
 }
