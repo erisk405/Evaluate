@@ -22,7 +22,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useEffect, useMemo, useState } from "react";
-import GlobalApi from "@/app/_util/GlobalApi";
+import GlobalApi, { handleErrorOnAxios } from "@/app/_util/GlobalApi";
 import useStore from "@/app/store/store";
 import InfoOfDepartmentEval from "./InfoOfDepartmentEval";
 import { getAllSuperviseByAdminType } from "@/types/interface";
@@ -54,10 +54,10 @@ const ReportOverview = () => {
     try {
       const response = await GlobalApi.getSupervises();
       // console.log("supervise", response?.data?.data);
-
       setSupervise(response?.data?.data);
     } catch (error) {
       console.error({ message: error });
+      handleErrorOnAxios(error);
     }
   };
 

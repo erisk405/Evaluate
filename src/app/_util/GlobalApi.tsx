@@ -836,5 +836,5 @@ export default {
   deleteHistory,
   joinDepartment,
   deleteUserByAdmin,
-  deleteDepartment
+  deleteDepartment,
 };
