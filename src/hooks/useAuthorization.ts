@@ -15,9 +15,7 @@ const useAuthorization = () => {
                 router.push("/sign-in");
                 return;
             }
-            console.log("token",token);
-            
-
+            // console.log("token",token);
             try {
                 // ส่ง token และ current path ไปยัง server
                 const response = await fetch("/api/auth/check", {

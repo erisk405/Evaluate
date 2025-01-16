@@ -75,7 +75,7 @@ const page = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "กลุ่มวิชาการ",
+      name: "หน่วยงาน...",
       image: undefined,
     },
   });
@@ -173,16 +173,15 @@ const page = () => {
                         </DialogTrigger>
                       </TooltipTrigger>
                       <TooltipContent>
-                        <p>Create Department</p>
+                        <p>สร้างหน่วยงาน</p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
                   <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
-                      <DialogTitle>Create Department</DialogTitle>
+                      <DialogTitle>สร้างหน่วยงาน</DialogTitle>
                       <DialogDescription>
-                        Make changes to your profile here. Click save when
-                        you're done.
+                        โปรดตรวจสอบข้อมูลให้แน่ใจก่อนยืนยัน
                       </DialogDescription>
                     </DialogHeader>
                     <Form {...form}>
@@ -229,7 +228,7 @@ const page = () => {
                                 <FormControl>
                                   <div className="grid grid-cols-4 items-center gap-2">
                                     <Label htmlFor="name" className="text-left">
-                                      Name
+                                      ชื่อหน่วยงาน
                                     </Label>
                                     <Input
                                       id="name"
@@ -253,7 +252,7 @@ const page = () => {
                                       htmlFor="picture"
                                       className="text-left"
                                     >
-                                      Picture
+                                      รูปภาพ
                                     </Label>
                                     <Input
                                       id="picture"
@@ -278,10 +277,7 @@ const page = () => {
                               Save Change
                             </Button>
                           ) : (
-                            <Button
-                              className="w-32 animate-pulse"
-                              type="button"
-                            >
+                            <Button className="w-32 " type="button" disabled>
                               <Loader className="animate-spin" />
                             </Button>
                           )}

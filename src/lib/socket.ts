@@ -1,12 +1,21 @@
 
-import { apiUrl } from '@/app/_util/GlobalApi';
 import { io } from 'socket.io-client';
-const socket = io(`${apiUrl}`, {
-    transports: ["websocket"],
-    withCredentials: true,
-    // auth: {
-    //     token: localStorage.getItem("token"), // ดึง token จาก localStorage
-    // },
+// แก้ไขการสร้าง socket client ให้เป็นแบบนี้
+
+const apiUrl = process.env.NEXT_PUBLIC_SOCKET_API_URL || "https://localhost:8000";
+const socket = io(apiUrl, {
+    transports: ["websocket", "polling"], // เพิ่ม polling เป็น fallback
+    reconnection: true, // เพิ่มการ reconnect อัตโนมัติ
 });
+
+// เพิ่ม error handling
+socket.on("connect_error", (error) => {
+    console.error("Connection Error:", error);
+});
+
+socket.on("connect", () => {
+    console.log("Connected to server!");
+});
+
 
 export default socket

@@ -11,16 +11,14 @@ import {
   FormDescription,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import { Check, Loader, Mail } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "@/components/ui/use-toast";
-import { Role, User } from "@/types/interface";
 import GlobalApi from "@/app/_util/GlobalApi";
 import SetRoleUserOptions from "./SetRoleUserOptions";
 import SetDepartmentUserOptions from "./SetDepartmentUserOptions";
@@ -44,9 +42,12 @@ const formSchema = z.object({
   email: z.string().email({
     message: "Please enter a valid email address.",
   }),
-  department: z.string().min(1, {
-    message: "Department is required",
-  }),
+  department: z
+    .string()
+    .min(1, {
+      message: "Department is required",
+    })
+    .optional(),
   role: z.string().min(1, {
     message: "Role is required",
   }),
@@ -92,7 +93,7 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
       email: userDetail?.email ? userDetail?.email : "",
       department: userDetail?.department?.id, // Ensure a string is provided
       role: userDetail?.role?.id,
-      prefix: userDetail?.prefix?.prefix_id,
+      prefix: userDetail.prefix?.prefix_id ?? "",
       phoneNumber: userDetail.phone || "ไม่พบเบอร์โทร",
     },
   });
@@ -121,7 +122,7 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
       const data = {
         userId: userDetail.id!,
         name: values.firstName + " " + values.lastName,
-        department: values.department,
+        department: values?.department ?? null,
         email: values.email,
         role: values.role,
         prefixId: values.prefix,
@@ -204,9 +205,12 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
                     <FormItem>
                       <FormControl>
                         <SetPrefixSelection
-                          userPrefix={userDetail.prefix}
+                          userPrefix={
+                            userDetail?.prefix ? userDetail?.prefix : ""
+                          }
                           value={field.value}
                           onChange={field.onChange}
+                          isAdmin={true} // บอกว่าเรียกใช้งานจากหน้า Admin
                         />
                       </FormControl>
                       <FormMessage />
@@ -314,8 +318,9 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
                       <div className="relative">
                         <div className="flex items-center gap-3">
                           <SetDepartmentUserOptions
-                            defaultValue={userDetail.department}
-                            value={field.value}
+                            isAdmin={userDetail.role?.role_name === "admin"}
+                            defaultValue={userDetail.department || undefined}
+                            value={field.value ?? ""}
                             onChange={field.onChange}
                           />
                         </div>
@@ -339,6 +344,7 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
                       <div className="relative">
                         <div className="flex items-center gap-3">
                           <SetRoleUserOptions
+                            userIdForCheckAdmin={userDetail.id!}
                             defaultValue={userDetail.role}
                             value={field.value}
                             onChange={field.onChange}

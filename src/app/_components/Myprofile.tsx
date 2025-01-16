@@ -26,17 +26,17 @@ import {
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import SetStatusSection from "./SetStatusSection";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import useStore from "../store/store";
-import GlobalApi from "../_util/GlobalApi";
-import { toast } from "@/components/ui/use-toast";
+import GlobalApi, { handleErrorOnAxios } from "../_util/GlobalApi";
 import socket from "@/lib/socket";
-import { Role } from "@/types/interface";
+import { Department, Role } from "@/types/interface";
 import SetPrefixSelection from "./SetPrefixSelection";
 import { useProfileComparison } from "../lib/adapters/user-profile/useProfileComparison";
 import SetDepartmentUserOptions from "../(router)/management/manage_user/_components/SetDepartmentUserOptions";
 import { useThemeStyles } from "@/hooks/useTheme";
 import { useAuthState } from "@/hooks/useAuthState";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   image: z
@@ -74,12 +74,15 @@ const formSchema = z.object({
 export default function Myprofile() {
   // for image changing
   const { isAdmin } = useAuthState();
-  const { ProfileDetail, updateProfileDetail } = useStore();
+  const { ProfileDetail, updateProfileDetail, currentlyEvaluationPeriod } =
+    useStore();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const styles = useThemeStyles();
-
+  const showToast = (title: string, description: string) => {
+    toast(title, { description });
+  };
   //  image
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
@@ -101,7 +104,7 @@ export default function Myprofile() {
     defaultValues: {
       firstName: ProfileDetail?.name?.split(" ")[0],
       lastName: ProfileDetail?.name?.split(" ")[1],
-      prefix: ProfileDetail.prefix?.prefix_id,
+      prefix: ProfileDetail.prefix?.prefix_id ?? "",
       image: undefined,
       email: ProfileDetail?.email ? ProfileDetail?.email : "",
       department: ProfileDetail.department?.id && ProfileDetail?.department.id,
@@ -115,6 +118,17 @@ export default function Myprofile() {
     console.log(values);
 
     try {
+      if (
+        ProfileDetail?.role?.role_name !== "admin" &&
+        currentlyEvaluationPeriod?.isAction === true
+      ) {
+        showToast(
+          "ดำเนินการไม่สำเร็จ",
+          `⚠️ เนื่องจากตอนนี้อยู่ในช่วงเวลาประเมิน ${currentlyEvaluationPeriod.title} จึงไม่สามารถดำเนินการได้ โปรดติดต่อที่ Admin`
+        );
+
+        return null;
+      }
       // Image update
       if (values.image) {
         const formData = new FormData();
@@ -143,7 +157,7 @@ export default function Myprofile() {
       };
 
       const response = await GlobalApi.updateProfileName(payload);
-      console.log("nameResponse", response);
+      // console.log("nameResponse", response);
 
       if (response?.data) {
         const { name, prefix, phone } = response.data;
@@ -168,15 +182,13 @@ export default function Myprofile() {
         });
       }
       // Success toast
-      toast({
-        description: "✅ Your changes were saved successfully",
-      });
+      showToast(
+        "ดำเนินการสำเร็จแล้ว",
+        "✅ ระบบได้บันทึกข้อมูลใหม่ของคุณเรียบร้อยแล้ว"
+      );
     } catch (error) {
       console.error("Error updating profile:", error);
-      toast({
-        description: "❌ Failed to save changes",
-        variant: "destructive",
-      });
+      handleErrorOnAxios(error);
     } finally {
       setIsLoading(true);
     }
@@ -415,10 +427,10 @@ export default function Myprofile() {
                     <FormControl className="col-span-8">
                       <div className="relative">
                         <SetDepartmentUserOptions
-                          defaultValue={field.value}
-                          value={field.value}
+                          isAdmin={ProfileDetail.role?.role_name === "admin"}
+                          defaultValue={field.value as Department | undefined}
+                          value={field.value ?? ""}
                           onChange={field.onChange}
-                          disable
                         />
                       </div>
                     </FormControl>

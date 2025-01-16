@@ -65,7 +65,7 @@ export default function SetStatusSection({
           role="combobox"
           aria-expanded={open}
           className="justify-between w-auto"
-          disabled={isPending}
+          disabled={isPending || ProfileDetail?.role?.role_name === "admin"}
         >
           {value
             ? roles.find((Role) => Role.id === value)?.role_name
@@ -79,27 +79,33 @@ export default function SetStatusSection({
           <CommandEmpty>ไม่พบตำแหน่ง</CommandEmpty>
           <CommandGroup>
             <CommandList>
-              {roles.map((Role) => (
-                <CommandItem
-                  key={Role.id}
-                  value={Role.role_name}
-                  onSelect={(currentValue) => {
-                    onChange(Role.id);
-                    setOpen(false);
-                  }}
-                >
-                  <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      value === Role.id ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                  <div className="flex flex-col w-[240px]">
-                    {Role.role_name}
-                    <span className="text-neutral-500">{Role.description}</span>
-                  </div>
-                </CommandItem>
-              ))}
+              {roles.map(
+                (Role) =>
+                  Role.role_name !== "admin" &&
+                  Role.role_name !== "member" && (
+                    <CommandItem
+                      key={Role.id}
+                      value={Role.role_name}
+                      onSelect={(currentValue) => {
+                        onChange(Role.id);
+                        setOpen(false);
+                      }}
+                    >
+                      <Check
+                        className={cn(
+                          "mr-2 h-4 w-4",
+                          value === Role.id ? "opacity-100" : "opacity-0"
+                        )}
+                      />
+                      <div className="flex flex-col w-[240px]">
+                        {Role.role_name}
+                        <span className="text-neutral-500">
+                          {Role.description}
+                        </span>
+                      </div>
+                    </CommandItem>
+                  )
+              )}
             </CommandList>
           </CommandGroup>
         </Command>

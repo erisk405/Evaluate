@@ -24,13 +24,11 @@ import { handleErrorOnAxios } from "@/app/_util/GlobalApi";
 
 interface FilterPeriodProps {
   onPeriodChange?: (value: PeriodType) => void; // Changed from string to PeriodType
-  defaultValue?: string;
 }
 
-const FilterPeriod = ({ onPeriodChange, defaultValue }: FilterPeriodProps) => {
+const FilterPeriod = ({ onPeriodChange }: FilterPeriodProps) => {
   const [open, setOpen] = useState(false);
   const [selectedId, setSelectedId] = useState(""); // เพิ่ม state สำหรับเก็บ ID
-  const [selectedTitle, setSelectedTitle] = useState(""); // เพิ่ม state สำหรับเก็บ title
   const [periods, setPeriods] = useState<PeriodType[]>([]);
   const { fetchCurrentPeriod } = useStore();
   useEffect(() => {
@@ -42,7 +40,6 @@ const FilterPeriod = ({ onPeriodChange, defaultValue }: FilterPeriodProps) => {
         }
         setPeriods(data);
         setSelectedId(data[0].period_id);
-        setSelectedTitle(data[0].period_id);
         // ตรวจสอบว่า onPeriodChange มีค่าก่อนเรียกใช้
         if (onPeriodChange) {
           onPeriodChange(data[0] ?? []);
@@ -94,7 +91,6 @@ const FilterPeriod = ({ onPeriodChange, defaultValue }: FilterPeriodProps) => {
                         );
                         if (selectedPeriod) {
                           setSelectedId(selectedPeriod.period_id);
-                          setSelectedTitle(currentTitle);
                           if (onPeriodChange) {
                             onPeriodChange(selectedPeriod);
                           }

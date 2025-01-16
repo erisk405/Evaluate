@@ -12,8 +12,7 @@ import { toast } from "@/components/ui/use-toast";
 import socket from "@/lib/socket";
 
 const MyEvaluated = () => {
-  const { setResultEvaluate, ProfileDetail, currentlyEvaluationPeriod } =
-    useStore();
+  const { setResultEvaluate, ProfileDetail, currentlyEvaluationPeriod } = useStore();
   const styles = useThemeStyles();
   // สร้าง debounced version ของ fetchResultEval
   //ใช้ useCallback ป้องกันการสร้างฟังก์ชันใหม่ทุกครั้งที่ ช่วยให้ฟังก์ชันนั้นถูกสร้างขึ้นแค่ครั้งเดียวและจะถูกเก็บไว้ในหน่วยความจำจนกว่าค่าของ dependencies จะเปลี่ยนแปลง

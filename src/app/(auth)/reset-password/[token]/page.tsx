@@ -16,7 +16,7 @@ import {
 import { useState } from "react";
 import { Loader } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -30,16 +30,16 @@ const formSchema = z
     password: z
       .string()
       .min(8, {
-        message: "Password must be at least 8 characters long.",
+        message: "รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัวอักษร",
       })
       .regex(/[a-z]/, {
-        message: "Password must contain at least one lowercase letter.",
+        message: "รหัสผ่านต้องมีอักษรตัวพิมพ์เล็กอย่างน้อยหนึ่งตัว",
       })
       .regex(/[A-Z]/, {
-        message: "Password must contain at least one uppercase letter.",
+        message: "รหัสผ่านต้องมีอักษรตัวพิมพ์ใหญ่อย่างน้อยหนึ่งตัว",
       })
       .regex(/[0-9]/, {
-        message: "Password must contain at least one number.",
+        message: "รหัสผ่านต้องมีตัวเลขอย่างน้อยหนึ่งตัว",
       }),
     confirmPassword: z.string(),
   })
@@ -47,12 +47,17 @@ const formSchema = z
     message: "Passwords don't match.",
     path: ["confirmPassword"], // Error message will be displayed under confirmPassword field
   });
-
+type ResetPasswordFormValues = z.infer<typeof formSchema>;
+type AuthCheckResponse = {
+  redirect?: string;
+};
 const page = () => {
   const [status, setStatus] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const Router = useRouter();
-  const param = useParams();
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
+  const { token } = useParams();
   const {
     setError,
     formState: { errors },
@@ -65,183 +70,208 @@ const page = () => {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: ResetPasswordFormValues) => {
     try {
-      setLoading(true);
+      setIsLoading(true);
 
-      console.log(values);
-      const payload = {
+      const response = await GlobalApi.resetPassword({
         newPassword: values.password,
-        token: param.token as string,
-      };
-      const response = await GlobalApi.resetPassword(payload);
-      console.log("reponse", response?.data);
-      toast({
-        description: "Server is updated your password success.",
+        token: token as string,
       });
-      setLoading(false);
-      setStatus(true);
+
+      toast({
+        description: "Password updated successfully.",
+      });
+      setIsSuccess(true);
     } catch (error) {
-      setLoading(false);
       toast({
         variant: "destructive",
-        title: "Uh oh! Something went wrong.",
-        description: `${{ message: error }}`,
+        title: "Error",
+        description:
+          error instanceof Error ? error.message : "An unknown error occurred",
       });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const checkAuthorization = async (token: string) => {
+    if (!token) {
+      router.push("/sign-in");
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/auth/check", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ token, currentPath: pathname }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Authorization failed");
+      }
+
+      const data: AuthCheckResponse = await response.json();
+      if (data.redirect) {
+        router.push(data.redirect);
+      }
+    } catch (error) {
+      console.error("Authorization error:", error);
+      router.push("/sign-in");
     }
   };
   useEffect(() => {
-    console.log(" param.token,", param.token);
+    const verifyToken = async () => {
+      if (!token) {
+        router.push("/sign-in");
+        return;
+      }
 
-    const initialFetch = async () => {
+      setIsLoading(true);
       try {
-        const token = param.token;
-        // Handle successful fetch
-        if (!token) {
-          Router.push("/sign-in");
-        }
-        localStorage.setItem("token", token as string);
+        await checkAuthorization(token as string);
       } catch (error) {
-        // Handle error
         toast({
           variant: "destructive",
-          title: "Failed to fetch protected data",
+          title: "Authentication Failed",
           description:
             error instanceof Error
               ? error.message
               : "An unknown error occurred",
         });
+        router.push("/sign-in");
+      } finally {
+        setIsLoading(false);
       }
     };
-    initialFetch();
-  }, []);
+
+    verifyToken();
+  }, [token, router, pathname]);
+
   return (
-    <ProtectedLayout>
-      <div className="flex justify-center h-screen ">
-        <div className="w-[980px] h-screen bg-white  p-10">
-          <div className="flex flex-col h-full justify-between">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Image src={"/logo.png"} width={50} height={50} alt="logo" />
-                <h2 className="text-xl font-bold">Evaluate 360</h2>
+    <div className="flex justify-center h-screen ">
+      <div className="w-[980px] h-screen p-10">
+        <div className="flex flex-col h-full justify-between">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Image src={"/logo.png"} width={50} height={50} alt="logo" />
+              <h2 className="text-xl font-bold">Evaluate 360</h2>
+            </div>
+            <Link
+              href={"/sign-up"}
+              className="text-blue-500 underline font-bold"
+            >
+              สร้างบัญชีใหม่
+            </Link>
+          </div>
+
+          {!status ? (
+            <div className="flex flex-col gap-6 items-center">
+              <div className="flex flex-col gap-6 items-center">
+                <div className="border-2 px-4 py-2 rounded-xl">
+                  <RectangleEllipsis size={40} />
+                </div>
+                <h2 className="text-3xl font-semibold">ตั้งรหัสผ่านใหม่?</h2>
+                <h2 className="text-gray-500">รหัสผ่านจะต้องมีอย่างน้อย8ตัวอักษร</h2>
+              </div>
+              <div className="flex justify-center w-full ">
+                <Form {...form}>
+                  <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="flex-1 max-w-[400px] "
+                  >
+                    <div className="grid grid-cols-1 gap-3">
+                      <div>
+                        <FormField
+                          control={form.control}
+                          name="password"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>รหัสผ่านใหม่</FormLabel>
+                              <FormControl>
+                                <Input
+                                  placeholder="********"
+                                  {...field}
+                                  type="password"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      <div>
+                        <FormField
+                          control={form.control}
+                          name="confirmPassword"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>ยืนยันรหัสผ่าน</FormLabel>
+                              <FormControl>
+                                <Input
+                                  placeholder="********"
+                                  {...field}
+                                  type="password"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
+                    <Button
+                      className="w-full mt-10 h-[50px] active:scale-95 transition-all"
+                      type="submit"
+                    >
+                      {isLoading ? (
+                        <Loader className="animate-spin" />
+                      ) : (
+                        "Reset password"
+                      )}
+                    </Button>
+                  </form>
+                </Form>
               </div>
               <Link
-                href={"/sign-up"}
-                className="text-blue-500 underline font-bold"
+                href={"/sign-in"}
+                className="flex items-center gap-3 hover:text-blue-500"
               >
-                Create an account
+                <ChevronLeft />
+                กลับไปยังหน้าล็อกอิน
               </Link>
             </div>
-
-            {!status ? (
+          ) : (
+            <div className="flex flex-col gap-6 items-center">
               <div className="flex flex-col gap-6 items-center">
-                <div className="flex flex-col gap-6 items-center">
-                  <div className="border-2 px-4 py-2 rounded-xl">
-                    <RectangleEllipsis size={40} />
-                  </div>
-                  <h2 className="text-3xl font-semibold">Set new password?</h2>
-                  <h2 className="text-gray-500">
-                    Must be at least 8 charector
-                  </h2>
+                <div className="px-4 py-2 rounded-xl">
+                  <KeyRound className="text-blue-500" size={80} />
                 </div>
-                <div className="flex justify-center w-full ">
-                  <Form {...form}>
-                    <form
-                      onSubmit={form.handleSubmit(onSubmit)}
-                      className="flex-1 max-w-[400px] "
-                    >
-                      <div className="grid grid-cols-1 gap-3">
-                        <div>
-                          <FormField
-                            control={form.control}
-                            name="password"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Password</FormLabel>
-                                <FormControl>
-                                  <Input
-                                    placeholder="********"
-                                    {...field}
-                                    type="password"
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                        <div>
-                          <FormField
-                            control={form.control}
-                            name="confirmPassword"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Confirm password</FormLabel>
-                                <FormControl>
-                                  <Input
-                                    placeholder="********"
-                                    {...field}
-                                    type="password"
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                      </div>
-                      <Button
-                        className="w-full mt-10 h-[50px] active:scale-95 transition-all"
-                        type="submit"
-                      >
-                        {loading ? (
-                          <Loader className="animate-spin" />
-                        ) : (
-                          "Reset password"
-                        )}
-                      </Button>
-                    </form>
-                  </Form>
-                </div>
+                <h2 className="text-3xl font-semibold">
+                  ระบบได้ตั้งรหัสผ่านใหม่เรียบร้อยแล้ว!!
+                </h2>{" "}
                 <Link
                   href={"/sign-in"}
                   className="flex items-center gap-3 hover:text-blue-500"
                 >
-                  <ChevronLeft />
-                  Back to log in
+                  <Button variant={"outline"} className="text-lg">
+                    กลับไปยังหน้าล็อกอิน
+                  </Button>
                 </Link>
               </div>
-            ) : (
-              <div className="flex flex-col gap-6 items-center">
-                <div className="flex flex-col gap-6 items-center">
-                  <div className="px-4 py-2 rounded-xl">
-                    <KeyRound className="text-blue-500" size={80} />
-                  </div>
-                  <h2 className="text-3xl font-semibold">
-                    Set your password is success!!
-                  </h2>{" "}
-                  <Link
-                    href={"/sign-in"}
-                    className="flex items-center gap-3 hover:text-blue-500"
-                  >
-                    <Button variant={"outline"} className="text-lg">
-                      Back to log in
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            )}
-
-            <div>
-              Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-              Explicabo beatae sequi dicta aperiam repellendus, qui, consequatur
-              expedita quasi dolor, dolores sit ad cupiditate itaque. Excepturi
-              repudiandae minima quidem natus officiis!
             </div>
+          )}
+
+          <div>
+            หมายเหตุ: เพื่อความปลอดภัย ลิงก์รีเซ็ตรหัสผ่านจะมีอายุการใช้งานจำกัด
+            เช่น 15 นาที หากลิงก์หมดอายุ
+            คุณสามารถขอใหม่ได้โดยทำตามขั้นตอนเดิมอีกครั้ง
           </div>
         </div>
       </div>
-    </ProtectedLayout>
+    </div>
   );
 };
 

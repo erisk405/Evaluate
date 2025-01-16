@@ -26,16 +26,18 @@ import {
 } from "@/components/ui/form";
 import { z } from "zod";
 import { toast } from "@/components/ui/use-toast";
+import { useThemeStyles } from "@/hooks/useTheme";
 
 const formSchema = z.object({
   email: z.string().email({
-    message: "Email must be a valid email address.",
+    message: "อีเมลจะต้องเป็นที่อยู่อีเมลที่ถูกต้อง เช่น yourname@domain.com",
   }),
 });
 
 const page = () => {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState(false);
+  const styles = useThemeStyles();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -64,7 +66,7 @@ const page = () => {
   };
   return (
     <div className="flex justify-center h-screen ">
-      <div className="w-[980px] h-screen bg-white  p-10">
+      <div className={`w-[980px] h-screen  p-10`}>
         <div className="flex flex-col h-full justify-between">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -75,7 +77,7 @@ const page = () => {
               href={"/sign-up"}
               className="text-blue-500 underline font-bold"
             >
-              Create an account
+              สร้างบัญชีใหม่
             </Link>
           </div>
           <div className="flex flex-col gap-6 items-center">
@@ -85,9 +87,9 @@ const page = () => {
                   <div className="border-2 p-2 rounded-xl">
                     <Fingerprint size={40} />
                   </div>
-                  <h2 className="text-3xl font-semibold">Forgot password?</h2>
+                  <h2 className="text-3xl font-semibold">ลืมรหัสผ่านใช่ไหม?</h2>
                   <h2 className="text-gray-500">
-                    No worries, we'll send you reset instructions.
+                    ไม่ต้องกังวล เราจะส่งคำแนะนำการรีเซ็ตให้คุณ
                   </h2>
                 </div>
                 <div className="flex justify-center w-full ">
@@ -99,12 +101,12 @@ const page = () => {
                           name="email"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Enter your email</FormLabel>
+                              <FormLabel>กรอกอีเมลผู้ใช้ในระบบ</FormLabel>
                               <FormControl>
-                                <Input placeholder="Email" {...field} />
+                                <Input placeholder="xxx@xxxx.xxx" {...field} />
                               </FormControl>
                               <FormDescription>
-                                This is your public display name.
+                                โปรดตรวจสอบอีเมลให้ถูกต้อง
                               </FormDescription>
                               <FormMessage />
                             </FormItem>
@@ -127,9 +129,9 @@ const page = () => {
                 <div className="">
                   <ShieldCheck size={60} className="text-blue-500" />
                 </div>
-                <h2 className="text-3xl font-semibold">Send Email Success.</h2>
+                <h2 className="text-3xl font-semibold">ส่งอีเมลสำเร็จแล้ว.</h2>
                 <h2 className="text-gray-500">
-                  please check your email for reset your
+                  โปรดตรวจสอบอีเมลของคุณเพื่อรีเซ็ต
                 </h2>
               </div>
             )}
@@ -138,14 +140,13 @@ const page = () => {
               className="flex items-center gap-3 hover:text-blue-500"
             >
               <ChevronLeft />
-              Back to log in
+              กลับไปยังหน้าล็อกอิน
             </Link>
           </div>
           <div>
-            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Explicabo
-            beatae sequi dicta aperiam repellendus, qui, consequatur expedita
-            quasi dolor, dolores sit ad cupiditate itaque. Excepturi repudiandae
-            minima quidem natus officiis!
+            หมายเหตุ: เพื่อความปลอดภัย ลิงก์รีเซ็ตรหัสผ่านจะมีอายุการใช้งานจำกัด
+            เช่น 15 นาที หากลิงก์หมดอายุ
+            คุณสามารถขอใหม่ได้โดยทำตามขั้นตอนเดิมอีกครั้ง
           </div>
         </div>
       </div>

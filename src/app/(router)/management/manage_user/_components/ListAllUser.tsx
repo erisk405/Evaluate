@@ -60,8 +60,8 @@ import {
 } from "@/components/ui/dialog";
 import UserProfile from "./UserProfile";
 import GlobalApi, { handleErrorOnAxios } from "@/app/_util/GlobalApi";
-import { PageNumber, User } from "@/types/interface";
-import React, { useEffect, useState } from "react";
+import { Department, PageNumber, User } from "@/types/interface";
+import React, { useEffect, useMemo, useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useThemeClass, useThemeStyles } from "@/hooks/useTheme";
 import EditPageUser from "./edit-page-user";
@@ -78,6 +78,10 @@ import {
 } from "@/components/ui/alert-dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import FilterDeparment from "./filter-department";
+import useStore from "@/app/store/store";
 
 type ListEmployeeProp = {
   allUser: User[];
@@ -89,8 +93,33 @@ export function ListEmployee({ allUser, fetchUserList }: ListEmployeeProp) {
   const { getThemeClass } = useThemeClass();
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [showNoDepartment, setShowNoDepartment] = useState(false);
   const [rowSelection, setRowSelection] = useState({});
   const [globalFilter, setGlobalFilter] = useState("");
+  const [selectDept, setSelectDept] = useState<Department | string | null>(
+    "all"
+  );
+
+  // ปรับปรุง filterUserDept
+  const filterUserDept = useMemo(() => {
+    let filteredUsers = allUser;
+
+    // กรองตาม department ก่อน
+    if (selectDept !== "all" && selectDept !== null) {
+      if (typeof selectDept === "object") {
+        filteredUsers = allUser.filter(
+          (a) => a.department?.id === selectDept.id
+        );
+      }
+    }
+
+    // ถ้า switch เปิดอยู่ กรองเฉพาะคนที่ไม่มีหน่วยงาน
+    if (showNoDepartment) {
+      filteredUsers = filteredUsers.filter((user) => !user.department);
+    }
+
+    return filteredUsers;
+  }, [selectDept, allUser, showNoDepartment]);
   const columns: ColumnDef<User>[] = [
     {
       id: "select",
@@ -161,7 +190,10 @@ export function ListEmployee({ allUser, fetchUserList }: ListEmployeeProp) {
                 className="w-[40px] h-[40px] rounded-full object-cover"
               />
             )}
-            <h2 className="truncate">{row.original.prefix?.prefix_name}{row.getValue("name")}</h2>
+            <h2 className="truncate">
+              {row.original.prefix?.prefix_name}
+              {row.getValue("name")}
+            </h2>
           </div>
         );
       },
@@ -182,7 +214,11 @@ export function ListEmployee({ allUser, fetchUserList }: ListEmployeeProp) {
                 {
                   light: `${
                     role_name
-                      ? "bg-gradient-to-tl from-emerald-50 from-10% to-emerald-100 to-50% text-emerald-500"
+                      ? `bg-gradient-to-tl from-emerald-50 from-10% to-50%  ${
+                          role_name === "member"
+                            ? "to-zinc-100 text-zinc-500"
+                            : "to-emerald-100 text-emerald-500"
+                        } `
                       : "bg-gray-100 text-gray-500"
                   }`,
                   dark: `${
@@ -283,7 +319,7 @@ export function ListEmployee({ allUser, fetchUserList }: ListEmployeeProp) {
     },
   ];
   const table = useReactTable({
-    data: allUser ?? [],
+    data: filterUserDept ?? [],
     columns,
     state: {
       sorting,
@@ -370,14 +406,14 @@ export function ListEmployee({ allUser, fetchUserList }: ListEmployeeProp) {
       const selectData = table
         .getSelectedRowModel()
         .rows.map((row) => row.original);
-      const userID = selectData.map(item=> item.id)
-      const response = await GlobalApi.deleteUserByAdmin(userID)
-      console.log("response",response?.data);
-      
-      toast("ลบผู้ใช้งานเสร็จสิ้นแล้ว", {
-        description: `${response?.data.message}`,
-      });
-      fetchUserList()
+      const userID = selectData.map((item) => item.id);
+      const response = await GlobalApi.deleteUserByAdmin(userID);
+      if (response?.data) {
+        toast("ลบผู้ใช้งานเสร็จสิ้นแล้ว", {
+          description: `${response?.data.message}`,
+        });
+      }
+      fetchUserList();
     } catch (error: unknown) {
       // จัดการ error
       console.error({ message: error });
@@ -386,13 +422,24 @@ export function ListEmployee({ allUser, fetchUserList }: ListEmployeeProp) {
   };
   return (
     <div className="w-full ">
-      <div className="flex items-center mb-3">
+      <div className="flex flex-wrap gap-3 items-center mb-3">
         <Input
           placeholder="ค้นหา: ชื่อ-นามสกุล,เบอร์โทร,email"
           value={globalFilter}
           onChange={(event) => setGlobalFilter(event.target.value)}
           className="max-w-sm rounded-xl"
         />
+        <div className="ml-3">
+          <FilterDeparment onFilterDepartChange={setSelectDept} />
+        </div>
+        <div className="flex items-center space-x-2 ml-3">
+          <Switch
+            id="not-have-role"
+            checked={showNoDepartment}
+            onCheckedChange={setShowNoDepartment}
+          />
+          <Label htmlFor="not-have-role">ยังไม่มีหน่วยงาน</Label>
+        </div>
         <div className="ml-auto flex items-center gap-2">
           <AlertDialog>
             <AlertDialogTrigger asChild>

@@ -13,7 +13,13 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "@/components/ui/use-toast";
 import { Input } from "@/components/ui/input";
-import { Fingerprint, Loader, RectangleEllipsis } from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  Fingerprint,
+  Loader,
+  RectangleEllipsis,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useThemeStyles } from "@/hooks/useTheme";
 import GlobalApi from "@/app/_util/GlobalApi";
@@ -33,7 +39,7 @@ const formSchema = z
       .regex(/[0-9]/, {
         message: "Password must contain at least one number.",
       }),
-      newPassword: z
+    newPassword: z
       .string()
       .min(8, {
         message: "Password must be at least 8 characters long.",
@@ -56,6 +62,7 @@ const formSchema = z
 const page = () => {
   const [loading, setLoading] = useState(false);
   const styles = useThemeStyles();
+  const [showPassword, setShowPassword] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -70,9 +77,9 @@ const page = () => {
       setLoading(true);
       console.log(values);
       const payload = {
-        old_pass:values.oldPassword,
-        new_pass:values.newPassword
-      }
+        old_pass: values.oldPassword,
+        new_pass: values.newPassword,
+      };
       const response = await GlobalApi.changePassword(payload);
       console.log(response);
       toast({
@@ -109,13 +116,30 @@ const page = () => {
                   name="oldPassword"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Current Password</FormLabel>
+                      <FormLabel>รหัสผ่านเดิม</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="********"
-                          {...field}
-                          type="password"
-                        />
+                        <div className="relative">
+                          <Input
+                            placeholder="********"
+                            {...field}
+                            type={`${showPassword ? "text" : "password"}`}
+                          />
+                          {!showPassword ? (
+                            <EyeOff
+                              onClick={() => setShowPassword(!showPassword)}
+                              strokeWidth={1.8}
+                              size={18}
+                              className="absolute top-1/2 -translate-y-1/2 right-3"
+                            />
+                          ) : (
+                            <Eye
+                              onClick={() => setShowPassword(!showPassword)}
+                              strokeWidth={1.8}
+                              size={18}
+                              className="absolute top-1/2 -translate-y-1/2 right-3"
+                            />
+                          )}
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -128,7 +152,7 @@ const page = () => {
                   name="newPassword"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Password</FormLabel>
+                      <FormLabel>รหัสผ่านใหม่</FormLabel>
                       <FormControl>
                         <Input
                           placeholder="********"
@@ -147,7 +171,7 @@ const page = () => {
                   name="confirmPassword"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Confirm password</FormLabel>
+                      <FormLabel>ยืนยันรหัสผ่าน</FormLabel>
                       <FormControl>
                         <Input
                           placeholder="********"

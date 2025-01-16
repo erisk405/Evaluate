@@ -20,15 +20,22 @@ import { CommandList } from "cmdk";
 import { useEffect, useState } from "react";
 import useStore from "@/app/store/store";
 import GlobalApi from "@/app/_util/GlobalApi";
-import { Department } from "@/types/interface";
+import { Department, User } from "@/types/interface";
 
+type SetDepartmentUserOptionsProp = {
+  isAdmin: boolean;
+  defaultValue?: Department;
+  onChange: (data: string) => void;
+  value: string;
+};
 export default function SetDepartmentUserOptions({
+  isAdmin,
   defaultValue,
   onChange,
   value,
-}: any) {
+}: SetDepartmentUserOptionsProp) {
   const [open, setOpen] = useState(false);
-  const { departments, setDepartments } = useStore();
+  const { departments, setDepartments, ProfileDetail } = useStore();
   const getDepartment = async () => {
     try {
       const response = await GlobalApi.getDepartment();
@@ -63,6 +70,7 @@ export default function SetDepartmentUserOptions({
           role="combobox"
           aria-expanded={open}
           className="justify-between w-auto"
+          disabled={isAdmin}
         >
           {value
             ? departments.find((item: Department) => item.id === value)

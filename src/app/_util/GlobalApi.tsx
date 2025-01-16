@@ -4,7 +4,7 @@ import { toast } from "@/components/ui/use-toast";
 import { Department, PeriodType, PrefixType } from "@/types/interface";
 import axios, { AxiosResponse } from "axios";
 import apiClient from "./intercaptor";
-const isProduction = process.env.NODE_ENV === "production"
+const isProduction = process.env.NODE_ENV === "production";
 
 interface UserProfile {
   [x: string]: any;
@@ -17,7 +17,9 @@ interface UserProfile {
   };
 }
 
-export const apiUrl = isProduction ? process.env.NEXT_PUBLIC_BACKEND_API_URL : "https://localhost:8000/api";
+export const apiUrl = isProduction
+  ? process.env.NEXT_PUBLIC_BACKEND_API_URL
+  : "http://localhost:8000/api";
 if (!process.env.NEXT_PUBLIC_BACKEND_API_URL) {
   console.error("API URL is not defined");
   // จัดการ error case
@@ -103,14 +105,6 @@ const updateProfileName = async (payload: {
     return await apiClient.put(`${apiUrl}/myProfile`, payload);
   } catch (error) {
     console.error("Error updateProfileName:", error);
-  }
-};
-
-const Logout = async () => {
-  try {
-    return await apiClient.post(`${apiUrl}/sign-out`);
-  } catch (error) {
-    console.error("Error logging out:", error);
   }
 };
 
@@ -200,7 +194,7 @@ const addUsersToDepartment = async (payload: any) => {
 type updateUserProfileByAdminProp = {
   userId: string;
   name: string;
-  department: string;
+  department?: string | null;
   email: string;
   role: string;
   prefixId: string;
@@ -273,7 +267,9 @@ const deleteRole = (id: string) => {
     return apiClient.delete(`${apiUrl}/role`, {
       data: { id },
     });
-  } catch (error) {}
+  } catch (error) {
+    handleErrorOnAxios(error);
+  }
 };
 
 const getRole = async () => {
@@ -382,6 +378,18 @@ const joinDepartment = async (departmentId: string) => {
         },
       }
     );
+  } catch (error) {
+    handleErrorOnAxios(error);
+  }
+};
+
+const deleteDepartment = async (departmentId: string) => {
+  try {
+    return await apiClient.delete(`${apiUrl}/department/${departmentId}`, {
+      headers: {
+        "Content-Type": "application/json", // Set content type to JSON
+      },
+    });
   } catch (error) {
     handleErrorOnAxios(error);
   }
@@ -765,7 +773,6 @@ const getExportEvaluationByUserId = (period_id: string, userId: string) => {
 
 export default {
   fetchUserProfile,
-  Logout,
   updateUserImage,
   getDepartment,
   CreateDepartment,
@@ -829,4 +836,5 @@ export default {
   deleteHistory,
   joinDepartment,
   deleteUserByAdmin,
+  deleteDepartment
 };

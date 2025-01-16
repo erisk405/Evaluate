@@ -23,14 +23,16 @@ import GlobalApi from "../_util/GlobalApi";
 import { PrefixType } from "@/types/interface";
 
 type SetPrefixSelectionProp = {
-  userPrefix?: PrefixType | null;
-  value:string
+  userPrefix?: PrefixType | "";
+  value: string;
   onChange: (value: string) => void;
+  isAdmin?: boolean; // เพิ่ม flag เพื่อระบุว่าเรียกจากหน้า admin หรือไม่
 };
 export default function SetPrefixSelection({
   userPrefix,
   onChange,
-  value
+  value,
+  isAdmin = false, // default เป็น false
 }: SetPrefixSelectionProp) {
   const { ProfileDetail } = useStore();
   const [open, setOpen] = useState(false);
@@ -46,15 +48,20 @@ export default function SetPrefixSelection({
   // ให้ เรียกใช้ function ใหม่หากเกิดการเปลี่ยนแปลงที่ rolRequest
   useEffect(() => {
     fetchPrefix();
-  }, []);
+  }, []); // Dependencies เป็น array เปล่า
+  // Use effect สำหรับการตั้งค่า prefix
   useEffect(() => {
-    if (userPrefix) {
+    // console.log("userPrefix", userPrefix);
+    // console.log("ProfileDetail", ProfileDetail.prefix?.prefix_id);
+
+    if (isAdmin && userPrefix) {
+      // กรณีที่มาจากหน้า AdminPage และมี userPrefix
       onChange(userPrefix.prefix_id);
-    } else {
-      onChange(ProfileDetail.prefix ? ProfileDetail.prefix.prefix_id : '');
+    } else if (!isAdmin) {
+      // กรณีที่ไม่ใช่ AdminPage
+      onChange(ProfileDetail.prefix ? ProfileDetail.prefix.prefix_id : "");
     }
-    // console.log("prefix",ProfileDetail.prefix.prefix_id );
-  }, [ProfileDetail, userPrefix]);
+  }, [ProfileDetail, userPrefix, isAdmin]); // เพิ่ม isAdmin เป็น dependency
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

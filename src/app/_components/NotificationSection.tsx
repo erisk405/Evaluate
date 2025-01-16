@@ -1,3 +1,4 @@
+"use client"
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import socket from "@/lib/socket";
 import axios from "axios";
@@ -78,7 +79,7 @@ const NotificationSection = () => {
       const response = await apiClient.get(`${apiUrl}/roleRequestPending`, {
         params: { page, limit: PAGE_LIMIT }
       });
-      console.log(response);
+      // console.log(response);
 
       setNotificationCount(response.data.count);
       setNotifications((prevNotifications) => {

@@ -45,8 +45,9 @@ export function NavUser() {
   const { isAdmin } = useAuthState();
   const handleLogout = async () => {
     try {
-      await GlobalApi.Logout();
+      localStorage.removeItem("token");
       // Additional logout logic like clearing local storage or redirecting
+      console.log("Logout successful and token removed.");
     } catch (error) {
       console.error("Error logging out:", error);
     }
@@ -67,7 +68,7 @@ export function NavUser() {
         department,
         phone,
       } = response.data;
-      console.log("responseNev-User", response.data);
+      // console.log("responseNev-User", response.data);
 
       updateProfileDetail({
         id,

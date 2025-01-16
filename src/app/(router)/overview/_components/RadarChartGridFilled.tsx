@@ -90,8 +90,14 @@ const RadarChartGridFilled = () => {
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
         <div className="flex items-center gap-2 font-medium leading-none">
-          {currentlyEvaluationPeriod?.title}
-          <CalendarClock className="h-4 w-4" />
+          {currentlyEvaluationPeriod ? (
+            <div>
+              {currentlyEvaluationPeriod?.title}
+              <CalendarClock className="h-4 w-4" />
+            </div>
+          ) : (
+            <div className="text-xl animate-bounce">☃️</div>
+          )}
         </div>
         <div className="flex items-center gap-2 leading-none text-muted-foreground">
           {currentlyEvaluationPeriod && (
@@ -109,7 +115,9 @@ const RadarChartGridFilled = () => {
 
       <div className="border-t">
         <Table>
-          <TableCaption>A list of your recent invoices.</TableCaption>
+          <TableCaption>
+            ตารางนี้จะแสดงเพียงภาพรวมของผลการประเมิน ณ ขณะนั้น.
+          </TableCaption>
           <TableHeader>
             <TableRow>
               <TableHead className="w-auto truncate">

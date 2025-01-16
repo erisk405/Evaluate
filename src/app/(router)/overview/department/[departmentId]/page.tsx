@@ -26,7 +26,6 @@ import {
 } from "@/components/ui/alert-dialog";
 
 import { useParams } from "next/navigation";
-import { apiUrl } from "@/app/data/data-option";
 import useStore from "@/app/store/store";
 import GlobalApi from "@/app/_util/GlobalApi";
 import { motion } from "framer-motion";
@@ -54,13 +53,12 @@ const page = () => {
   const joinDepartment = async () => {
     try {
       const response = await GlobalApi.joinDepartment(params.departmentId);
-      const {department} = response?.data
+      const { department } = response?.data;
       updateProfileDetail({
         department: department ? department : null,
       });
     } catch (error) {
-      console.error({message:error});
-      
+      console.error({ message: error });
     }
   };
 
@@ -131,8 +129,8 @@ const page = () => {
             </Link>
             <div>
               <AlertDialog>
-                {department.department_name ? (
-                  ProfileDetail.department?.department_name ===
+                {department &&
+                  (ProfileDetail.department?.department_name ===
                   department.department_name ? (
                     <h2 className="flex items-center gap-2 py-1 px-2 rounded-lg text-lg font-bold text-emerald-500 bg-emerald-100">
                       <Check />
@@ -140,24 +138,25 @@ const page = () => {
                     </h2>
                   ) : (
                     <AlertDialogTrigger asChild>
-                      <Button className="flex gap-3">
+                      <Button
+                        className="flex gap-3"
+                        disabled={currentlyEvaluationPeriod?.isAction === true}
+                      >
                         <CirclePlus /> Join this department
                       </Button>
                     </AlertDialogTrigger>
-                  )
-                ) : (
-                  <div className="bg-gray-300 w-[200px] h-[40px] rounded-lg animate-pulse"></div>
-                )}
+                  ))}
+
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle className="text-xl">
+                    <AlertDialogTitle>
                       คูณแน่ใจที่จะเข้า
                       <span className="underline">
                         {department.department_name}
                       </span>{" "}
                       ใช่หรือไม่ ?
                     </AlertDialogTitle>
-                    <AlertDialogDescription className="text-red-500 text-lg">
+                    <AlertDialogDescription className="text-red-500">
                       หากยืนยัน บันทึกการประเมินทั้งหมดของคุณจะถูกลบทิ้ง
                     </AlertDialogDescription>
                   </AlertDialogHeader>

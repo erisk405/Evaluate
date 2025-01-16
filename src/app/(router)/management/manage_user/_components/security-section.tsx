@@ -95,7 +95,7 @@ const SecuritySection = ({ userDetail }: { userDetail: User }) => {
                     name="newPassword"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Password</FormLabel>
+                        <FormLabel>รหัสผ่านใหม่</FormLabel>
                         <FormControl>
                           <Input
                             placeholder="********"
@@ -114,7 +114,7 @@ const SecuritySection = ({ userDetail }: { userDetail: User }) => {
                     name="confirmPassword"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Confirm password</FormLabel>
+                        <FormLabel>ยืนยันรหัสผ่าน</FormLabel>
                         <FormControl>
                           <Input
                             placeholder="********"

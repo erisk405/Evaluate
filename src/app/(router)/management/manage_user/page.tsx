@@ -12,7 +12,7 @@ const page = () => {
   const fetchRole = async () => {
     try {
       const response = await GlobalApi.getRole();
-      console.log("role:", response);
+      // console.log("role:", response);
       setRole(response?.data);
     } catch (error) {
       console.log(error);
@@ -77,15 +77,15 @@ const page = () => {
           🛠️ รายชื่อผู้ใช้งานทั้งหมด{" "}
           <span className="animate-wiggle-float"></span>
         </h2>
-        <div className="flex justify-between flex-wrap gap-3 my-5 rounded-3xl">
+        <div className="flex justify-between flex-wrap gap-3 my-10 rounded-3xl">
           {OptionEmployee.map((item) => (
             <div key={item?.id} className="w-[290px] cursor-pointer">
               <div
                 className={`flex rounded-3xl gap-3 relative overflow-hidden
-              items-center shadow-lg shadow-orange-500/50 h-[120px] bg-gradient-to-br from-orange-500 from-30% to-amber-500 to-70% 
+              items-center shadow-lg shadow-orange-500/50 h-auto bg-gradient-to-br from-orange-500 from-30% to-amber-500 to-70% 
               transition-all `}
               >
-                <div className="text-white flex flex-col justify-between h-full w-full p-5 z-10">
+                <div className="text-white flex flex-col justify-between gap-8 h-full w-full p-5 z-10">
                   <div className="">
                     <h2 className="text-xl">{item?.name}</h2>
                   </div>

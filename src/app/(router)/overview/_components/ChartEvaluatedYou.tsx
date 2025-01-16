@@ -72,9 +72,7 @@ const ChartEvaluatedYou = () => {
       endTime: formattedEnd.time,
     };
   }, [currentlyEvaluationPeriod]);
-  useEffect(() => {
-
-  }, [ProfileDetail]);
+  useEffect(() => {}, [ProfileDetail]);
   return (
     <div className={`${styles.text}`}>
       <div className="@container flex w-full justify-center items-center">
@@ -88,15 +86,19 @@ const ChartEvaluatedYou = () => {
           }}
           className="cursor-pointer "
         >
-          <div className={`hidden @[700px]:flex text-xl  items-center gap-3`}>
-            <h2>สำเร็จแล้ว</h2>
-            <div className="text-3xl">
-              {resultEvaluate?.headData
-                ? resultEvaluate?.headData?.totalEvaluated
-                : 0}
+          {currentlyEvaluationPeriod ? (
+            <div className={`hidden @[700px]:flex text-xl  items-center gap-3`}>
+              <h2>สำเร็จแล้ว</h2>
+              <div className="text-3xl">
+                {resultEvaluate?.headData
+                  ? resultEvaluate?.headData?.totalEvaluated
+                  : 0}
+              </div>
+              <h2>คน</h2>
             </div>
-            <h2>คน</h2>
-          </div>
+          ) : (
+            <div className="hidden @[700px]:block text-6xl animate-wiggle-float">🕊️</div>
+          )}
         </motion.div>
         <Card
           className={`flex flex-col border-none shadow-none ${styles.background}`}
@@ -112,75 +114,93 @@ const ChartEvaluatedYou = () => {
               )}
             </CardDescription>
           </CardHeader>
-          <CardContent className="flex-1 relative pb-0">
-            {resultEvaluate && resultEvaluate?.headData?.totalEvaluated > 0 ? (
-              <ChartContainer
-                config={chartConfig}
-                className="mx-auto aspect-square max-h-[250px]"
-              >
-                <PieChart>
-                  <ChartTooltip
-                    cursor={false}
-                    content={<ChartTooltipContent hideLabel />}
-                  />
-                  <Pie
-                    data={chartData}
-                    dataKey="result"
-                    nameKey="form"
-                    innerRadius={60}
-                    strokeWidth={5}
-                  >
-                    <Label
-                      content={({ viewBox }) => {
-                        if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                          return (
-                            <text
-                              x={viewBox.cx}
-                              y={viewBox.cy}
-                              textAnchor="middle"
-                              dominantBaseline="middle"
-                            >
-                              <tspan
+          {currentlyEvaluationPeriod ? (
+            <CardContent className="flex-1 relative pb-0">
+              {resultEvaluate &&
+              resultEvaluate?.headData?.totalEvaluated > 0 ? (
+                <ChartContainer
+                  config={chartConfig}
+                  className="mx-auto aspect-square max-h-[250px]"
+                >
+                  <PieChart>
+                    <ChartTooltip
+                      cursor={false}
+                      content={<ChartTooltipContent hideLabel />}
+                    />
+                    <Pie
+                      data={chartData}
+                      dataKey="result"
+                      nameKey="form"
+                      innerRadius={60}
+                      strokeWidth={5}
+                    >
+                      <Label
+                        content={({ viewBox }) => {
+                          if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                            return (
+                              <text
                                 x={viewBox.cx}
                                 y={viewBox.cy}
-                                className="fill-foreground text-3xl font-bold"
+                                textAnchor="middle"
+                                dominantBaseline="middle"
                               >
-                                {resultEvaluate?.headData
-                                  ? resultEvaluate?.headData?.totalEvaluated
-                                  : 0}{" "}
-                                /{" "}
-                                {resultEvaluate?.headData
-                                  ? resultEvaluate?.headData
-                                      ?.totalAssessorsHasPermiss
-                                  : 0}
-                              </tspan>
-                              <tspan
-                                x={viewBox.cx}
-                                y={(viewBox.cy || 0) + 24}
-                                className="fill-muted-foreground"
-                              >
-                                result
-                              </tspan>
-                            </text>
-                          );
-                        }
-                      }}
-                    />
-                  </Pie>
-                </PieChart>
-              </ChartContainer>
-            ) : (
-              <div className="w-full h-[300px] flex items-center justify-center">
-                <h2 className="text-9xl text-blue-500 font-bold animate-bounce">
-                  0
-                </h2>
-              </div>
-            )}
-          </CardContent>
+                                <tspan
+                                  x={viewBox.cx}
+                                  y={viewBox.cy}
+                                  className="fill-foreground text-3xl font-bold"
+                                >
+                                  {resultEvaluate?.headData
+                                    ? resultEvaluate?.headData?.totalEvaluated
+                                    : 0}{" "}
+                                  /{" "}
+                                  {resultEvaluate?.headData
+                                    ? resultEvaluate?.headData
+                                        ?.totalAssessorsHasPermiss
+                                    : 0}
+                                </tspan>
+                                <tspan
+                                  x={viewBox.cx}
+                                  y={(viewBox.cy || 0) + 24}
+                                  className="fill-muted-foreground"
+                                >
+                                  result
+                                </tspan>
+                              </text>
+                            );
+                          }
+                        }}
+                      />
+                    </Pie>
+                  </PieChart>
+                </ChartContainer>
+              ) : (
+                <div className="w-full h-[300px] flex items-center justify-center">
+                  <h2 className="text-9xl text-blue-500 font-bold animate-bounce">
+                    0
+                  </h2>
+                </div>
+              )}
+            </CardContent>
+          ) : (
+            <CardContent className="h-[300px]  mx-10 flex justify-center items-center">
+              <h2 className="text-3xl text-center">
+                ขณะนี้ยังไม่ได้อยู่ในช่วงเวลาประเมินผล
+              </h2>
+            </CardContent>
+          )}
+
           <CardFooter className="flex-col gap-2 text-sm">
             <div className="flex items-center gap-2 font-medium leading-none">
-              {currentlyEvaluationPeriod?.title}
-              <CalendarClock className="h-4 w-4" />
+              {currentlyEvaluationPeriod ? (
+                <>
+                  {currentlyEvaluationPeriod?.title}
+                  <CalendarClock className="h-4 w-4" />
+                </>
+              ) : (
+                <div>
+                  ข้อมูลการสรุปดังกล่าวจะแสดงเมื่ออยู่ภายในช่วงเวลาการประเมินเท่านั้น
+                </div>
+              )}
             </div>
             {currentlyEvaluationPeriod && (
               <div>
@@ -202,15 +222,19 @@ const ChartEvaluatedYou = () => {
           }}
           className="cursor-pointer"
         >
-          <div className="hidden @[700px]:flex text-xl items-center gap-3">
-            <h2>จากทั้งหมด</h2>
-            <span className="text-3xl">
-              {resultEvaluate?.headData
-                ? resultEvaluate?.headData?.totalAssessorsHasPermiss
-                : 0}
-            </span>
-            <h2>คน</h2>
-          </div>
+          {currentlyEvaluationPeriod ? (
+            <div className="hidden @[700px]:flex text-xl items-center gap-3">
+              <h2>จากทั้งหมด</h2>
+              <span className="text-3xl">
+                {resultEvaluate?.headData
+                  ? resultEvaluate?.headData?.totalAssessorsHasPermiss
+                  : 0}
+              </span>
+              <h2>คน</h2>
+            </div>
+          ) : (
+            <div className="hidden @[700px]:block text-6xl animate-wiggle-float-blue">🌿</div>
+          )}
         </motion.div>
       </div>
       <div className="flex flex-wrap ">

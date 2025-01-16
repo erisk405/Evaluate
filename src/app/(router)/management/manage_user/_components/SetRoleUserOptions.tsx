@@ -22,22 +22,25 @@ import useStore from "@/app/store/store";
 import { Role } from "@/types/interface";
 
 type SetRoleUserOptionsType = {
+  userIdForCheckAdmin?:string
   onChange: (value: string) => void;
   defaultValue: Role | null;
   value: string;
 };
 export default function SetRoleUserOptions({
+  userIdForCheckAdmin, // เช็คว่าคนที่จะ setให้เป็นใคร ถ้าเป็นตัวเองแล้วตัวเองเป็น"admin"ห้ามปรับroleกลับ ต้องให้คนอื่นที่เป็น"admin"มาปรับRoleให้
   onChange,
   defaultValue,
   value,
 }: SetRoleUserOptionsType) {
   const [open, setOpen] = useState(false);
-  const { roles } = useStore();
+  const { roles, ProfileDetail } = useStore();
 
   // ให้ เรียกใช้ function ใหม่หากเกิดการเปลี่ยนแปลงที่ rolRequest
   useEffect(() => {
-    // Set default value based on fetched roles
-    const defaultRole = roles.find((role: any) => role.id === defaultValue?.id);
+    const defaultRole = roles.find(
+      (role: Role) => role.id === defaultValue?.id
+    );
     if (defaultRole) {
       onChange(defaultRole.id);
     }
@@ -51,6 +54,10 @@ export default function SetRoleUserOptions({
           role="combobox"
           aria-expanded={open}
           className="justify-between w-auto"
+          disabled={
+            ProfileDetail?.id === userIdForCheckAdmin &&
+            ProfileDetail.role?.role_name === "admin"
+          }
         >
           {value
             ? roles.find((Role) => Role.id === value)?.role_name
@@ -80,7 +87,9 @@ export default function SetRoleUserOptions({
                     )}
                   />
                   <div className="flex flex-col w-[240px]">
-                    {Role.role_name}
+                    {Role.role_name !== "member"
+                      ? Role.role_name
+                      : "ไม่ระบุตำแหน่ง"}
                     <span className="text-neutral-500">{Role.description}</span>
                   </div>
                 </CommandItem>

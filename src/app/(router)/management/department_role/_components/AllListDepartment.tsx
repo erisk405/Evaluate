@@ -17,6 +17,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { useThemeStyles } from "@/hooks/useTheme";
+import GlobalApi, { handleErrorOnAxios } from "@/app/_util/GlobalApi";
+import { toast } from "sonner";
+import { Loader } from "lucide-react";
 
 interface AllListDepartmentProps {
   department: Department[];
@@ -27,7 +30,28 @@ const AllListDepartment = ({
   fetchDepart,
 }: AllListDepartmentProps) => {
   const { roles } = useStore();
-  const styles = useThemeStyles()
+  const [isLoading, setIsLoading] = useState(false);
+  const showToast = (title: string, description: string) => {
+    toast(title, { description });
+  };
+  const handleDeleteDepartment = async (departmemtId: string) => {
+    setIsLoading(true);
+    try {
+      showToast("กำลังดำเนินการ", `ขณะนี้ระบบกำลังดำเนินการ โปรดรอสักครู่...`);
+      const response = await GlobalApi.deleteDepartment(departmemtId);
+      showToast(
+        "ดำเนินการสำเร็จ",
+        `ระบบได้ลบหน่วยงาน "${response?.data?.delete?.department_name}" เรียบร้อยแล้ว`
+      );
+      await fetchDepart();
+      // ปิด AlertDialog หลังจากทำงานเสร็จ
+    } catch (error) {
+      console.error({ message: error });
+      handleErrorOnAxios(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   return (
     <div className="@container w-full flex flex-col gap-3 my-4 sm:max-h-[700px] overflow-scroll scrollbar-gemini">
       {department.length > 0
@@ -79,9 +103,7 @@ const AllListDepartment = ({
                 <SettingSection department={item} fetchDepart={fetchDepart} />
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button className="w-full mt-3">
-                      ลบหน่วยงาน
-                    </Button>
+                    <Button className="w-full mt-3">ลบหน่วยงาน</Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
@@ -96,7 +118,16 @@ const AllListDepartment = ({
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction>Continue</AlertDialogAction>
+                      <AlertDialogAction
+                        onClick={() => handleDeleteDepartment(item.id)}
+                        disabled={isLoading}
+                      >
+                        {isLoading ? (
+                          <Loader className="animate-spin" />
+                        ) : (
+                          "Continue"
+                        )}
+                      </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
