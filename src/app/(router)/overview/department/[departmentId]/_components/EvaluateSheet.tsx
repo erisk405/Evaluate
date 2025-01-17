@@ -85,8 +85,9 @@ text-green-500 px-2 py-1 rounded-xl transition-all active:scale-95"
               fetchUserHaveBeenEvaluated={fetchUserHaveBeenEvaluated}
               setOpen={setOpen}
             />
+            
             <SheetDescription>
-              Make changes to your profile here. Click save when you're done.
+              Tip : การลงคะแนนแต่ละครั้งสามารถเปลี่ยนคะแนนได้ทุกเมื่อ หากอยู่ภายในช่วงเวลาการประเมิน เพียงกดคำว่า <span className="text-green-500">"เสร็จสิ้นแล้ว"</span> อีกครั้ง
             </SheetDescription>
           </SheetContent>
         )}

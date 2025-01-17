@@ -102,7 +102,8 @@ const GeneralEditPage = ({ formItem, fetchForm }: GeneralEditPageProp) => {
                       <Input id="name" className="col-span-3 mt-2" {...field} />
                     </FormControl>
                     <p className="text-sm text-muted-foreground">
-                      Your message will be copied to the describtion role.
+                      ข้อความที่กรอกจะแสดงอยู่ในผลการประเมินด้วย
+                      โปรดตรวจสอบให้แน่ใจ
                     </p>
                     <FormMessage />
                   </FormItem>

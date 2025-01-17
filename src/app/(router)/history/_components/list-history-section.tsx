@@ -1,6 +1,6 @@
 "use client";
 import { ChevronDown, Dot } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Pagination,
   PaginationContent,
@@ -172,8 +172,12 @@ const ListHistorySection = () => {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
+  const isStoredInHistory = useMemo(
+    () => allPeriod?.filter((p) => p.backUp === true),
+    [allPeriod]
+  );
   const table = useReactTable({
-    data: allPeriod ?? [],
+    data: isStoredInHistory ?? [],
     columns,
     state: {
       sorting,

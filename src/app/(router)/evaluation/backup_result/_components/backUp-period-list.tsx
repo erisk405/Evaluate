@@ -151,6 +151,10 @@ const BackUpPeriodList = () => {
         .getSelectedRowModel()
         .rows.map((row) => row.original);
       console.log("payload", selectData);
+      toast("กำลังดำเนินการ", {
+        description:
+          "ขณะนี้ระบบกำลังดำเนินการลบข้อมูลการประเมิน โปรดรอสักครู่...",
+      });
 
       const responses = await Promise.all(
         selectData.map((item) => GlobalApi.deleteHistory(item.period_id))

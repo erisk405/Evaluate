@@ -101,7 +101,7 @@ const EditPariod = ({
             <FormItem className="w-full">
               <FormControl>
                 <div className="grid gap-2 items-center w-full">
-                  <Label className="">Title</Label>
+                  <Label className="">ชื่อรอบการประเมิน</Label>
                   <div className="w-full">
                     <Input
                       placeholder="รอบที่ x ประจำปีงบประมาณ พ.ศ. xxxx"
@@ -115,7 +115,7 @@ const EditPariod = ({
           )}
         />
         <div className="grid grid-cols-4 items-center w-full">
-          <Label className="col-span-1">From</Label>
+          <Label className="col-span-1">เริ่มต้น</Label>
           <div className="col-span-3">
             <DateTimePicker24h
               type="from"
@@ -134,7 +134,7 @@ const EditPariod = ({
           </div>
         </div>
         <div className="grid grid-cols-4 items-center w-full">
-          <Label className="col-span-1">To</Label>
+          <Label className="col-span-1">สิ้นสุด</Label>
           <div className="col-span-3">
             <DateTimePicker24h
               type="to"
@@ -156,7 +156,7 @@ const EditPariod = ({
             <FormItem className="w-full">
               <FormControl>
                 <div className="grid grid-cols-4 items-center w-full">
-                  <Label htmlFor="period-active">Active</Label>
+                  <Label htmlFor="period-active">เปิดใช้งาน</Label>
                   <Switch
                     id="period-active"
                     checked={field.value}
@@ -168,7 +168,7 @@ const EditPariod = ({
             </FormItem>
           )}
         />
-        <Button type="submit">Update Period</Button>
+        <Button type="submit">บันทึกรอบการประเมิน</Button>
       </form>
     </Form>
   );

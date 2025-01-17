@@ -85,7 +85,7 @@ const page = () => {
               key={item.id}
             >
               <h2 className="">{item.title}</h2>
-              <p className="text-lg text-right">{item.quantity}</p>
+              <p className="text-right">{item.quantity}</p>
             </div>
           ))}
         </div>

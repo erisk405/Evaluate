@@ -124,7 +124,7 @@ const page = () => {
                 <ChevronLeft size={28} />
               </div>
               <span className={`cursor-pointer ${styles.text}`}>
-                Back to overview
+                กลับไปยังหน้าหลัก
               </span>
             </Link>
             <div>

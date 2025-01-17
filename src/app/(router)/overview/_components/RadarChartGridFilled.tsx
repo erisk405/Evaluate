@@ -91,7 +91,7 @@ const RadarChartGridFilled = () => {
       <CardFooter className="flex-col gap-2 text-sm">
         <div className="flex items-center gap-2 font-medium leading-none">
           {currentlyEvaluationPeriod ? (
-            <div>
+            <div className="flex items-center gap-2">
               {currentlyEvaluationPeriod?.title}
               <CalendarClock className="h-4 w-4" />
             </div>

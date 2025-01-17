@@ -21,6 +21,7 @@ const UpComingPeriod = () => {
       const payload = {
         period_id,
       };
+      showToast("กำลังดำเนินการ", "กำลังดำเนินการบันทึกผลการประเมิน");
       const response = await GlobalApi.saveEvaluationToHistory(payload);
       console.log("Save", response?.data);
       showToast("ทำรายการสำเร็จ", "บันทึกผลการประเมินเรียบร้อยแล้ว");

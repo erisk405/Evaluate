@@ -129,7 +129,7 @@ const page = () => {
     setLoading(true);
     try {
       const response = await GlobalApi.getForm();
-      console.log("form", response?.data);
+      // console.log("form", response?.data);
       setFormState(response?.data);
     } catch (error) {
       console.error({ message: error });

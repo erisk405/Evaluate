@@ -290,7 +290,7 @@ const EvaluateSection: React.FC<EvaluateSection> = ({
       >
         <div className="rounded-lg border">
           <Table>
-            <TableCaption>A list of your recent invoices.</TableCaption>
+            <TableCaption>ตารางคะแนนในแต่ละแบบฟอร์มการประเมิน</TableCaption>
             <TableHeader>
               <TableRow
                 className={`text-lg ${styles.background_head_table} w-full`}

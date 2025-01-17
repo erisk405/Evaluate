@@ -48,6 +48,7 @@ const ReportOverview = () => {
       // console.log("setResultEvalEachDepartment",response?.data);
     } catch (error) {
       console.error({ message: error });
+      // handleErrorOnAxios(error)
     }
   };
   const fetchSupervise = async () => {

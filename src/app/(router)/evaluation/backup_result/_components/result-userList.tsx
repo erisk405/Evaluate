@@ -20,6 +20,7 @@ import {
   Dot,
   Download,
   FileText,
+  Loader,
   Search,
   Sheet,
   UserPlus,
@@ -93,6 +94,7 @@ import Personal_result from "@/app/(router)/personal_evaluation/_components/Pers
 import { ScrollArea } from "@/components/ui/scroll-area";
 import MainResultHistory from "@/app/(router)/history/_components/main-result-history";
 import { useThemeStyles } from "@/hooks/useTheme";
+import { toast } from "@/components/ui/use-toast";
 
 type filterAreaType = {
   departments: string[];
@@ -105,6 +107,7 @@ const ResultUserList = ({ period }: { period: PeriodType }) => {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [globalFilter, setGlobalFilter] = useState("");
   const [allUser, setAllUser] = useState<User[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   // select ตัวนี้ใช้กับ การที่ต้องการ select ข้อมูลทั้งตารางมาใช้ได้ในส่วนของ employee ในdepartment นั้นๆ
   const [rowSelection, setRowSelection] = useState({});
   const columns: ColumnDef<User>[] = [
@@ -287,11 +290,22 @@ const ResultUserList = ({ period }: { period: PeriodType }) => {
     return pageNumbers;
   };
   const handleExport = async () => {
+    setIsLoading(true);
     try {
       const selectData = table
         .getSelectedRowModel()
         .rows.map((row) => row.original);
       // Process each export sequentially to handle downloads properly
+      if (selectData.length === 0) {
+        toast({
+          title: "Uh oh! การใช้งาน Export",
+          description: "จะต้องเลือกบุคคลที่จะExportข้อมูล อย่างน้อย 1 คน",
+        });
+      }
+      toast({
+        title: "กำลังดำเนินการ",
+        description: "ระบบกำลังนำข้อมูลมาประมวลผลโปรดรอสักครู่...",
+      });
       for (const user of selectData) {
         const response = await GlobalApi.getExportEvaluationByUserId(
           period.period_id,
@@ -321,8 +335,20 @@ const ResultUserList = ({ period }: { period: PeriodType }) => {
         document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
       }
+      toast({
+        title: "ดำเนินการเสร็จสิ้น",
+        description: "ระบบได้ประมวลผลเสร็จสิ้นแล้ว",
+      });
     } catch (error) {
-      handleErrorOnAxios(error);
+      console.error({ message: error });
+      toast({
+        title: "Uh oh! การใช้งาน Export",
+        description:
+          "หากตำแหน่งของบุคคลที่คุณเลือกมา Level 1 จะไม่สามารถ Export ได้",
+      });
+      // handleErrorOnAxios(error);
+    } finally {
+      setIsLoading(false);
     }
   };
   // กรองมาแค่ตัวที่ select Area เลือกมา
@@ -475,29 +501,42 @@ const ResultUserList = ({ period }: { period: PeriodType }) => {
                   <h2 className="text-sm">
                     โปรดเลือกว่าจะ export เป็นไฟล์อะไร
                   </h2>
-                  <ToggleGroup type="multiple">
+                  <ToggleGroup type="multiple" defaultValue={["exel"]}>
                     <div className="grid grid-cols-2 w-full gap-3 my-3">
                       <ToggleGroupItem
-                        value="bold"
+                        value="exel"
                         className="flex items-center gap-3 border"
                       >
                         <Sheet size={20} />
                         <h2 className="text-md">Excel file</h2>
                       </ToggleGroupItem>
                       <ToggleGroupItem
-                        value="italic"
+                        value="pdf"
+                        disabled
                         className="flex items-center gap-3 border"
                       >
                         <FileText size={20} />
-                        <h2 className="text-md">PDF file</h2>
+                        <h2 className="text-md">
+                          PDF file{"(ยังไม่พร้อมใช้งาน)"}
+                        </h2>
                       </ToggleGroupItem>
                     </div>
                   </ToggleGroup>
                 </TabsContent>
               </Tabs>
               <DialogFooter>
-                <Button type="submit" onClick={() => handleExport()}>
-                  Export file
+                <Button
+                  type="submit"
+                  onClick={() => handleExport()}
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <div className="px-6">
+                      <Loader className="animate-spin" />
+                    </div>
+                  ) : (
+                    "Export file"
+                  )}
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -539,7 +578,10 @@ const ResultUserList = ({ period }: { period: PeriodType }) => {
           {/* หัวตาราง */}
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className={`${styles.background_third_head_table}`}>
+              <TableRow
+                key={headerGroup.id}
+                className={`${styles.background_third_head_table}`}
+              >
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead key={header.id} className="text-md">
