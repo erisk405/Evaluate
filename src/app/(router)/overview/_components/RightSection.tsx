@@ -30,6 +30,7 @@ import {
   Dot,
   EllipsisVertical,
   HardDriveDownload,
+  Loader,
   LockKeyhole,
   LockKeyholeOpen,
   X,
@@ -101,6 +102,7 @@ const RightSection = ({ permission, period }: RightSectionProps) => {
   const [expandedPeriodId, setExpandedPeriodId] = useState<string | null>(null); // เปิดถาดสำหรับการแก้ไขช่วงเวลา
   const [deletePeriod, setDeletePeroid] = useState("");
   // State สำหรับเก็บค่าเวลา
+  const [isCreateLoading, setIsCreateLoading] = useState(false);
   const [openAlert, setOpenAlert] = useState(false);
 
   const styles = useThemeStyles();
@@ -117,6 +119,7 @@ const RightSection = ({ permission, period }: RightSectionProps) => {
     },
   });
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    setIsCreateLoading(true);
     try {
       const data = {
         title: values.title,
@@ -176,6 +179,8 @@ const RightSection = ({ permission, period }: RightSectionProps) => {
           ),
         });
       }
+    } finally {
+      setIsCreateLoading(false);
     }
   };
 
@@ -591,7 +596,15 @@ const RightSection = ({ permission, period }: RightSectionProps) => {
                         />
                       </div>
                     </div>
-                    <Button type="submit">สร้างรอบการประเมิน</Button>
+                    <Button type="submit" disabled={isCreateLoading}>
+                      {isCreateLoading ? (
+                        <div className="px-6">
+                          <Loader className="animate-spin" />
+                        </div>
+                      ) : (
+                        "สร้างรอบการประเมิน"
+                      )}{" "}
+                    </Button>
                   </form>
                 </Form>
               </div>

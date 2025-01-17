@@ -110,15 +110,19 @@ const ReportOverview = () => {
   }, [currentlyEvaluationPeriod?.period_id]);
 
   return (
-    <div className={`h-full flex flex-col gap-3 ${styles.text}`}>
-      <div className="@container w-full grid grid-cols-3 lg:grid-cols-3 gap-3">
+    <div
+      className={`@container w-full h-full flex flex-col gap-3 ${styles.text}`}
+    >
+      <div className="grid grid-cols-3 lg:grid-cols-3 gap-3">
         <motion.div
+          layout // Add this
           initial={{ opacity: 0, y: -100 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{
             duration: 1.5,
             delay: 0.1,
             ease: [0, 0.71, 0.2, 1.01],
+            layout: { duration: 0.3 }, // Add this
           }}
           className="col-span-3 @[45rem]:col-span-2 rounded-2xl grid gap-3"
         >
@@ -165,7 +169,7 @@ const ReportOverview = () => {
                 {AllFinished}/{AllUser} คน
               </h2>
             </div>
-            <h2>
+            <h2 className="truncate">
               จากหน่วยงานทั้งหมด {resultEvalEachDepartment?.length} หน่วยงาน
             </h2>
             <Image

@@ -19,6 +19,7 @@ import { PeriodType, TimeRange } from "@/types/interface";
 import { Switch } from "@/components/ui/switch";
 import useStore from "@/app/store/store";
 import { useThemeStyles } from "@/hooks/useTheme";
+import { Loader } from "lucide-react";
 
 interface EditPeriodProps {
   defaultPeriod: PeriodType;
@@ -48,8 +49,11 @@ const EditPariod = ({
     from: new Date(defaultPeriod.start),
     to: new Date(defaultPeriod.end),
   });
+
+  const [isUpdateLoading, setIsUpdateLoading] = useState(false);
   const { fetchCurrentPeriod } = useStore();
   const onUpdate = async (values: z.infer<typeof formSchema>) => {
+    setIsUpdateLoading(true);
     try {
       const data = {
         period_id: defaultPeriod.period_id,
@@ -83,6 +87,8 @@ const EditPariod = ({
           </pre>
         ),
       });
+    } finally {
+      setIsUpdateLoading(false);
     }
   };
   useEffect(() => {
@@ -168,7 +174,15 @@ const EditPariod = ({
             </FormItem>
           )}
         />
-        <Button type="submit">บันทึกรอบการประเมิน</Button>
+        <Button type="submit" disabled={isUpdateLoading}>
+          {isUpdateLoading ? (
+            <div className="px-6">
+              <Loader className="animate-spin" />
+            </div>
+          ) : (
+            "บันทึกรอบการประเมิน"
+          )}
+        </Button>
       </form>
     </Form>
   );
