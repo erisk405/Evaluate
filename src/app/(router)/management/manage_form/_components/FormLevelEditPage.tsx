@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { GitFork } from "lucide-react";
+import { GitFork, Loader } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Select,
@@ -20,6 +20,7 @@ type FormLevelEditPageProp = {
 };
 const FormLevelEditPage = ({ formItem, fetchForm }: FormLevelEditPageProp) => {
   const { roles, setRole } = useStore();
+  const [isLoading, setIsLoading] = useState(false);
   // สร้างค่าเริ่มต้นของ stackFormLevel จาก roles ทันทีใน useState
 
   // เปลี่ยนเป็นฟังก์ชันเพื่อสร้าง initial state
@@ -87,6 +88,7 @@ const FormLevelEditPage = ({ formItem, fetchForm }: FormLevelEditPageProp) => {
     }));
   };
   const handleSaveChanges = async (formId: string) => {
+    setIsLoading(true);
     try {
       const payload = {
         formId: formId,
@@ -103,10 +105,12 @@ const FormLevelEditPage = ({ formItem, fetchForm }: FormLevelEditPageProp) => {
       showToast("อัพเดทVision Form สำเร็จ", `ระบบได้ save Vision form นี้แล้ว`);
       // console.log("response", response);
       // console.log("payload", payload);
-      // อัพเดทค่า initialStackFormLevel หลังจาก save สำเร็จ 
+      // อัพเดทค่า initialStackFormLevel หลังจาก save สำเร็จ
       setInitialStackFormLevel(stackFormLevel);
     } catch (error) {
       handleApiError(error, "Error while update vision");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -186,7 +190,13 @@ const FormLevelEditPage = ({ formItem, fetchForm }: FormLevelEditPageProp) => {
           onClick={() => handleSaveChanges(formItem.id)}
           disabled={isFormUnchanged}
         >
-          Save changes
+          {isLoading ? (
+            <div className="px-6">
+              <Loader className="animate-spin" />
+            </div>
+          ) : (
+            "บันทึกข้อมูล"
+          )}
         </Button>
       </div>
     </div>

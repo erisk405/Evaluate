@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import socket from "@/lib/socket";
 import axios from "axios";
@@ -32,7 +32,7 @@ const NotificationSection = () => {
     try {
       const response = await GlobalApi.resolveRole(requestId, status, userId);
       const SendRes = response?.data;
-      console.log(ProfileDetail);
+      // console.log(ProfileDetail);
       const { name, image } = ProfileDetail;
 
       socket.emit("roleRequestHandled", {
@@ -43,12 +43,13 @@ const NotificationSection = () => {
       });
 
       setSlideOut(requestId);
+      // console.log("notificationCounts", notificationCounts);
 
       setTimeout(() => {
         setNotifications((prev) =>
           prev.filter((item) => item.id !== requestId)
         );
-        setNotificationCount(notificationCounts - 1);
+        setNotificationCount((prev) => Math.max(0, prev - 1));
         setSlideOut(null);
       }, 300);
     } catch (error) {
@@ -77,11 +78,13 @@ const NotificationSection = () => {
   const fetchRoleRequest = async () => {
     try {
       const response = await apiClient.get(`${apiUrl}/roleRequestPending`, {
-        params: { page, limit: PAGE_LIMIT }
+        params: { page, limit: PAGE_LIMIT },
       });
       // console.log(response);
 
       setNotificationCount(response.data.count);
+      // console.log("response.data.count", response.data.count);
+
       setNotifications((prevNotifications) => {
         const existingIds = new Set(prevNotifications.map((item) => item.id));
         const newNotifications = response.data.data.filter(
@@ -98,15 +101,17 @@ const NotificationSection = () => {
     if (ProfileDetail.role?.role_name === "admin") {
       fetchRoleRequest();
       socket.on("adminNotification", (receive) => {
-        console.log("receive", receive);
-
+        // console.log("receive", receive);
         playNotificationSound();
-        const newCount = notificationCounts + 1;
-        setNotificationCount(newCount);
-        setNotifications((prev) => [receive.data.data, ...prev]);
+        setNotificationCount((prev: number) => Math.max(0, prev + 1));
+
+        setNotifications((prev) => {
+          const newNotifications = [receive.data.data, ...prev];
+          return newNotifications;
+        });
 
         const { user, role, createdAt } = receive.data.data;
-        console.log("receive", receive.data.data);
+        // console.log("receive", receive.data.data);
 
         toast(
           <div className="w-full">

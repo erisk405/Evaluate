@@ -16,6 +16,7 @@ import { PeriodType, User } from "@/types/interface";
 import { useTheme } from "next-themes";
 import { useThemeStyles } from "@/hooks/useTheme";
 import { ChevronDown, ChevronsUpDown, ChevronUp } from "lucide-react";
+import Loading from "@/app/_components/Loading";
 
 interface IndividualType {
   headData: headDataIndividuaType;
@@ -53,6 +54,8 @@ const IndividualOverview = ({
   userId?: string;
 }) => {
   const styles = useThemeStyles();
+
+  const [loading, setLoading] = useState(false);
   const [individual, setIndividual] = useState<IndividualType>();
   const [sortConfig, setSortConfig] = useState<SortConfig>({
     key: "score",
@@ -119,7 +122,12 @@ const IndividualOverview = ({
   // Sort indicator component
   const SortIndicator = ({ column }: { column: "score" | "mean" }) => {
     if (column === "mean" && sortConfig.key !== "mean") {
-      return <ChevronsUpDown size={20} className={`inline-block ml-1 ${styles.text}`} />;
+      return (
+        <ChevronsUpDown
+          size={20}
+          className={`inline-block ml-1 ${styles.text}`}
+        />
+      );
     }
     if (sortConfig.key !== column) return null;
     return (
@@ -134,6 +142,7 @@ const IndividualOverview = ({
   };
   useEffect(() => {
     const fetchIndividualOverview = async () => {
+      setLoading(true);
       try {
         const response = await GlobalApi.getAllResultIndividualOverview(
           period.period_id,
@@ -143,10 +152,15 @@ const IndividualOverview = ({
         setIndividual(response?.data);
       } catch (error) {
         handleErrorOnAxios(error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchIndividualOverview();
   }, []);
+  if (loading) {
+    return <Loading />;
+  }
   return (
     <div className="mx-auto w-full max-w-screen-2xl">
       <div className="border rounded-lg">

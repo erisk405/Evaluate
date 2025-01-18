@@ -86,19 +86,19 @@ const ReportOverview = () => {
     {
       id: "FN01",
       title: "เสร็จสิ้นแล้ว",
-      icon: "🏅",
+      icon: "🐲",
       quantity: AllFinished,
     },
     {
       id: "FN02",
       title: "ยังไม่เสร็จสิ้น",
-      icon: "⚡",
+      icon: "👻",
       quantity: AllUnfinished,
     },
     {
       id: "FN03",
       title: "ทั้งหมด",
-      icon: "👔",
+      icon: "🐝",
       quantity: AllUser,
     },
   ];
@@ -124,23 +124,23 @@ const ReportOverview = () => {
             ease: [0, 0.71, 0.2, 1.01],
             layout: { duration: 0.3 }, // Add this
           }}
-          className="col-span-3 @[45rem]:col-span-2 rounded-2xl grid gap-3"
+          className="col-span-3 @[45rem]:col-span-2 rounded-2xl"
         >
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 justify-center">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 justify-center mb-3">
             {data.map((item, index) => (
               <div
                 key={item.id}
-                className={`flex gap-3 w-full justify-center ${styles.background} p-2 shadow rounded-2xl items-center`}
+                className={`flex gap-3 w-full justify-around ${styles.background} p-2 shadow rounded-2xl items-center`}
               >
                 <div
-                  className={`${styles.border} shadow rounded-full w-[60px] h-[60px] animate-wiggle flex justify-center items-center`}
+                  className={`shadow ${styles.background_card} rounded-full w-[60px] h-[60px] animate-wiggle flex justify-center items-center`}
                 >
                   <h2 className="text-2xl">{item.icon}</h2>
                 </div>
                 <div className="grid gap-1 grid-cols-1">
                   <div className="flex gap-1 items-end">
-                    <div className="text-lg">🎗️</div>
-                    <h2 className="text-xl ">{item.quantity} คน</h2>
+                    <div className="text-lg">⃝🕊️</div>
+                    <h2 className="text-lg">{item.quantity} คน</h2>
                   </div>
                   <h2 className="text-sm">{item.title}</h2>
                 </div>

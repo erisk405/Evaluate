@@ -35,8 +35,7 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 const BarChartMultiple = () => {
-  const { resultEvalEachDepartment, ProfileDetail, currentlyEvaluationPeriod } =
-    useStore();
+  const { resultEvalEachDepartment, currentlyEvaluationPeriod } = useStore();
   const styles = useThemeStyles();
   const chartData = resultEvalEachDepartment?.map((result) => ({
     depart: result.department,
@@ -44,16 +43,16 @@ const BarChartMultiple = () => {
     total: result.totalUsers,
   }));
   const abbreviateDepartment = (departName: string): string => {
-    if (departName.length <= 10) {
+    if (departName.length <= 6) {
       return departName;
     } else {
-      return `${departName.slice(0, 10)}...`;
+      return `${departName.slice(0, 6)}...`;
     }
   };
 
   return (
     <Card
-      className={`rounded-2xl ${styles.text} ${styles.background} shadow border-none`}
+      className={`rounded-2xl ${styles.text} ${styles.background} h-auto shadow border-none`}
     >
       <CardHeader>
         <CardTitle>จำนวนผู้ประเมินในแต่ละวัน</CardTitle>
@@ -67,7 +66,7 @@ const BarChartMultiple = () => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="max-h-[400px] mx-auto">
+        <ChartContainer config={chartConfig} className="mx-auto">
           <BarChart accessibilityLayer data={chartData}>
             <CartesianGrid vertical={false} />
             <XAxis

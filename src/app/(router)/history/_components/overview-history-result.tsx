@@ -140,11 +140,11 @@ const OverviewHistoryResult = ({
   if (resultHistoryDetail === null) {
     return <Loading />;
   }
-  return resultHistoryDetail ? (
+  return (
     <div className="mx-auto w-full max-w-screen-2xl">
       <div className="">
         {formResultsByVisionLevel &&
-          Object.entries(formResultsByVisionLevel.formResults).map(
+          Object.entries(formResultsByVisionLevel.formResults).reverse().map(
             ([vesion_level, vision]) => (
               <div
                 key={vesion_level}
@@ -333,10 +333,7 @@ const OverviewHistoryResult = ({
               </TableBody>
               <TableFooter>
                 <TableRow className="text-right">
-                  <TableCell
-                    colSpan={7}
-                    className="text-center"
-                  >
+                  <TableCell colSpan={7} className="text-center">
                     <h2>
                       ผลการประเมินการปฎิบัติงานตามคุณลักษณะและพฤติกรรมในการปฎิบัติงาน
                     </h2>
@@ -352,26 +349,10 @@ const OverviewHistoryResult = ({
         </div>
         <div className="mx-auto w-full max-w-lg">
           <DrawerFooter>
-            <Button>Export</Button>
             <DrawerClose asChild>
               <Button variant="outline">Cancel</Button>
             </DrawerClose>
           </DrawerFooter>
-        </div>
-      </div>
-    </div>
-  ) : (
-    <div className="mx-auto w-full  overflow-auto scrollbar-gemini">
-      <div className="mx-auto w-full max-w-xl ">
-        <DrawerHeader className="flex flex-col justify-center items-center">
-          <DrawerTitle className="text-xl"></DrawerTitle>
-          <DrawerDescription></DrawerDescription>
-        </DrawerHeader>
-        <div className="flex flex-col w-full h-[540px] items-center justify-center ">
-          <h2 className="text-9xl animate-wiggle-float">😿</h2>
-          <p className="text-3xl mt-20 text-orange-500">
-            ไม่พบผลการประเมินในรอบการประเมินนี้
-          </p>
         </div>
       </div>
     </div>

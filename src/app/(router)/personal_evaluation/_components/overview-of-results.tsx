@@ -41,8 +41,7 @@ type categorizedTableProp = {
 const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
   const [scoreTypes, setScoreTypes] = useState<string[]>([]);
   const [characteristics, setCharacteristics] = useState<string>();
-  const [formResultsByVisionLevel, SetFormResultsByVisionLevel] =
-    useState<CategorizedFormResults>();
+  const [formResultsByVisionLevel, SetFormResultsByVisionLevel] = useState<CategorizedFormResults>();
   const styles = useThemeStyles();
   const { getThemeClass } = useThemeClass();
   const [adaptedData, setAdaptedData] = useState<CommonResultFormat>();
@@ -126,16 +125,16 @@ const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
     }
   }, [resultEvaluateDetail]);
 
-  // useEffect(() => {
-  //   scoreTypes.flatMap((type) => console.log("type", type));
-  //   console.log(formResultsByVisionLevel);
-  // }, [scoreTypes]);
+  useEffect(() => {
+    scoreTypes.flatMap((type) => console.log("type", type));
+    console.log(formResultsByVisionLevel);
+  }, [scoreTypes]);
 
   return (
     <div className="mx-auto w-full max-w-screen-2xl">
       <div className="">
         {formResultsByVisionLevel &&
-          Object.entries(formResultsByVisionLevel.formResults).map(
+          Object.entries(formResultsByVisionLevel.formResults).reverse().map(
             ([vesion_level, vision]) => (
               <div
                 key={vesion_level}
@@ -346,7 +345,6 @@ const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
         </div>
         <div className="mx-auto w-full max-w-lg">
           <DrawerFooter>
-            <Button>Export</Button>
             <DrawerClose asChild>
               <Button variant="outline">Cancel</Button>
             </DrawerClose>

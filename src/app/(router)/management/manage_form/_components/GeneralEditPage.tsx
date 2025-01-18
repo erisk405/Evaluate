@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { formStates } from "@/types/interface";
 import GlobalApi from "@/app/_util/GlobalApi";
 import { toast } from "sonner";
+import { Loader } from "lucide-react";
 
 const formSchema = z.object({
   formName: z
@@ -31,6 +32,7 @@ type GeneralEditPageProp = {
 const GeneralEditPage = ({ formItem, fetchForm }: GeneralEditPageProp) => {
   // set ค่า defualt
   const [initialValue, setInitialValue] = useState(formItem.name);
+  const [isLoading, setIsLoading] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -65,6 +67,7 @@ const GeneralEditPage = ({ formItem, fetchForm }: GeneralEditPageProp) => {
     values: z.infer<typeof formSchema>,
     formId: string
   ) => {
+    setIsLoading(true);
     try {
       const data = {
         id: formId,
@@ -79,6 +82,8 @@ const GeneralEditPage = ({ formItem, fetchForm }: GeneralEditPageProp) => {
     } catch (error) {
       console.error({ message: error });
       handleApiError(error, "Error while update form");
+    } finally {
+      setIsLoading(false);
     }
   };
   return (
@@ -119,7 +124,13 @@ const GeneralEditPage = ({ formItem, fetchForm }: GeneralEditPageProp) => {
               onClick={() => handleSaveChanges(formItem.id)}
               disabled={isFormUnchanged || !form.formState.isValid}
             >
-              Save changes
+              {isLoading ? (
+                <div className="px-6">
+                  <Loader className="animate-spin" />
+                </div>
+              ) : (
+                "Save changes"
+              )}
             </Button>
           </DialogFooter>
         </form>

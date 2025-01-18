@@ -267,7 +267,6 @@ export default function Myprofile() {
               height={300}
               alt={"profile"}
               className="w-[85px] h-[85px] rounded-full object-cover border border-neutral-50 p-[2px] shadow-lg bg-white"
-              loading="lazy"
             />
           )}
 

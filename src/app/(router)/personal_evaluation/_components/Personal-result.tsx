@@ -21,8 +21,7 @@ type Personal_resultProp = {
 
 const Personal_result = ({ period, userId }: Personal_resultProp) => {
   const [loading, setLoading] = useState(false);
-  const [resultEvaluateDetail, setResultEvaluateDetail] =
-    useState<getResultEvaluateType>();
+  const [resultEvaluateDetail, setResultEvaluateDetail] = useState<getResultEvaluateType>();
   const { ProfileDetail } = useStore();
 
   const fetchResultEvaluateDetail = async () => {
@@ -60,7 +59,7 @@ const Personal_result = ({ period, userId }: Personal_resultProp) => {
   useEffect(() => {
     fetchResultEvaluateDetail();
   }, []);
-  if (resultEvaluateDetail === null) {
+  if (loading) {
     return <Loading />;
   }
 

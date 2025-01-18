@@ -27,7 +27,8 @@ import { useThemeStyles } from "@/hooks/useTheme";
 import ProtectedLayout from "../_components/layouts/ProtectedLayout";
 
 const layout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
-  const { showNotifications, setShowNotifications, notificationCounts } = useStore();
+  const { showNotifications, setShowNotifications, notificationCounts } =
+    useStore();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 

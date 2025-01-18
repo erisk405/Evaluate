@@ -15,7 +15,7 @@ interface StoreState {
 
 
   notificationCounts: number;
-  setNotificationCount: (count: number) => void;
+  setNotificationCount: (count: number | ((prev: number) => number)) => void;
 
   showNotifications: boolean
   setShowNotifications: (showNotification: boolean) => void;
@@ -45,7 +45,7 @@ interface StoreState {
     email?: string;
     image?: ImageType;
     role?: Role;
-    phone?:string;
+    phone?: string;
     roleRequests?: RoleRequest[];
     department?: Department;
   }) => void;
@@ -88,7 +88,7 @@ const useStore = create<StoreState>((set) => ({
     email: null,
     image: null,
     role: null,
-    phone:null,
+    phone: null,
     roleRequests: null,
     department: null
   },
@@ -114,9 +114,14 @@ const useStore = create<StoreState>((set) => ({
 
 
   notificationCounts: 0,
-  setNotificationCount: (count: number) => set(() => ({  // Implementation matches interface
-    notificationCounts: count
-  })),
+  setNotificationCount: (update: number | ((prev: number) => number)) =>
+    set((state) => ({
+      notificationCounts: typeof update === "function"
+        ? update(state.notificationCounts)
+        : update,
+    })),
+
+
 
   showNotifications: false,
   setShowNotifications: (show: boolean) => {
@@ -185,7 +190,7 @@ const useStore = create<StoreState>((set) => ({
   fetchCurrentPeriod: async () => {
     try {
       const response = await GlobalApi.getPeriod();
-      if(!response){
+      if (!response) {
         throw new Error("Don't have period")
       }
       const now = new Date();

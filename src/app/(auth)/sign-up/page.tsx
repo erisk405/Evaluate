@@ -117,8 +117,8 @@ const page = () => {
       email: values.email,
       password: values.password,
       phone: values.phoneNumber,
-      prefix: values.prefix || null,  // Use null if prefix is not provided
-      department: values.department || null,  // Use null if department is not provided
+      prefix: values.prefix || null, // Use null if prefix is not provided
+      department: values.department || null, // Use null if department is not provided
     };
 
     try {
@@ -142,7 +142,7 @@ const page = () => {
     >
       <div className="hidden bg-muted lg:block overflow-hidden">
         <Image
-          src="/profiletest.jpg"
+          src="/wallpaperLogin.jpg"
           alt="Image"
           width="1920"
           height="1080"

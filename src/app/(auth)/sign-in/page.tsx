@@ -198,7 +198,7 @@ const page = () => {
       </div>
       <div className="hidden bg-muted lg:block overflow-hidden">
         <Image
-          src="/profiletest.jpg"
+          src="/wallpaperLogin.jpg"
           alt="Image"
           width="1920"
           height="1080"

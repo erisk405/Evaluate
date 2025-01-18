@@ -72,6 +72,7 @@ import EditQuestionDialog from "./EditQuestionDialog";
 
 import { toast } from "sonner";
 import { useThemeClass, useThemeStyles } from "@/hooks/useTheme";
+import Loading from "@/app/_components/Loading";
 export type questionProp = {
   id: string;
   content: string;
@@ -284,7 +285,7 @@ export function QuestionList({ formId }: QuestionListProp) {
     },
   ];
   const table = useReactTable({
-    data: question,
+    data: question ?? [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -301,6 +302,13 @@ export function QuestionList({ formId }: QuestionListProp) {
       rowSelection,
     },
   });
+  if (!question) {
+    return (
+      <div>
+        <Loading />
+      </div>
+    );
+  }
 
   return (
     <div className="w-full">

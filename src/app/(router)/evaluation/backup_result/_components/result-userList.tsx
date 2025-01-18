@@ -301,11 +301,13 @@ const ResultUserList = ({ period }: { period: PeriodType }) => {
           title: "Uh oh! การใช้งาน Export",
           description: "จะต้องเลือกบุคคลที่จะExportข้อมูล อย่างน้อย 1 คน",
         });
+        return null;
+      } else {
+        toast({
+          title: "กำลังดำเนินการ",
+          description: "ระบบกำลังนำข้อมูลมาประมวลผลโปรดรอสักครู่...",
+        });
       }
-      toast({
-        title: "กำลังดำเนินการ",
-        description: "ระบบกำลังนำข้อมูลมาประมวลผลโปรดรอสักครู่...",
-      });
       for (const user of selectData) {
         const response = await GlobalApi.getExportEvaluationByUserId(
           period.period_id,

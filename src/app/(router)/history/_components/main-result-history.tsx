@@ -1,16 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
   Drawer,
   DrawerClose,
   DrawerContent,
@@ -43,6 +33,7 @@ const MainResultHistory = ({ period, userId }: MainResultHistoryProp) => {
 
   useEffect(() => {
     const getResultEvaluateFormHistory = async () => {
+      setLoading(true);
       try {
         if (!period) throw new Error("period not found");
 
@@ -65,11 +56,18 @@ const MainResultHistory = ({ period, userId }: MainResultHistoryProp) => {
         }
       } catch (error) {
         console.log({ message: error });
+      } finally {
+        setLoading(false);
       }
     };
     getResultEvaluateFormHistory();
   }, []);
-  return (
+
+  if (loading) {
+    return <Loading />;
+  }
+
+  return resultHistoryDetail ? (
     <div className="mx-auto w-full overflow-auto scrollbar-gemini">
       <div className="mx-auto w-full max-w-xl">
         <DrawerHeader className="flex flex-col justify-center items-center">
@@ -104,6 +102,17 @@ const MainResultHistory = ({ period, userId }: MainResultHistoryProp) => {
           </TabsContent>
         ))}
       </Tabs>
+    </div>
+  ) : (
+    <div className="mx-auto w-full overflow-auto scrollbar-gemini">
+      <div className="mx-auto w-full max-w-xl ">
+        <div className="flex flex-col w-full h-[540px] items-center justify-center ">
+          <h2 className="text-9xl animate-wiggle-float">😿</h2>
+          <p className="text-3xl mt-20 text-orange-500">
+            ไม่พบผลการประเมินในรอบการประเมินนี้
+          </p>
+        </div>
+      </div>
     </div>
   );
 };
