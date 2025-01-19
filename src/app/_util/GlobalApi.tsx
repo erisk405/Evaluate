@@ -563,6 +563,15 @@ const updateSupervise = (payload: {
     return apiClient.put(`${apiUrl}/supervise`, payload);
   } catch (error) {
     // console.error("API createPeriod", { message: error });
+    handleErrorOnAxios(error)
+  }
+};
+
+const deleteSupervise = (superviseId: string) => {
+  try {
+    return apiClient.delete(`${apiUrl}/supervise/${superviseId}`);
+  } catch (error) {
+    handleErrorOnAxios(error)
   }
 };
 
@@ -837,4 +846,5 @@ export default {
   joinDepartment,
   deleteUserByAdmin,
   deleteDepartment,
+  deleteSupervise
 };

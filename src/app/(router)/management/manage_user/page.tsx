@@ -47,14 +47,14 @@ const page = () => {
     {
       id: "OEP02",
       name: "ยังไม่ระบุตำแหน่งงาน",
-      quantity: allUser.filter((fil) => fil.role.role_name === "member").length,
+      quantity: allUser.filter((fil) => fil.role?.role_name === "member").length,
       color: "from-green-200 to-emerald-300",
     },
     {
       id: "OEP03",
       name: "ยังไม่ระบุหน่วยงาน",
       quantity: allUser.filter(
-        (fil) => !fil.department && fil.role.role_name !== "admin"
+        (fil) => !fil.department && fil.role?.role_name !== "admin"
       ).length,
       color: "from-blue-300 to-cyan-300",
     },

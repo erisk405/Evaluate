@@ -192,6 +192,7 @@ export function ListAllEmployee({ filterDataArea }: ListAllEmployeeProp) {
                     <Personal_result
                       period={selectPeriod!!}
                       userId={row.original.id}
+                      userRoleLevel={row.original.role.role_level}
                     />
                   </div>
                 </div>

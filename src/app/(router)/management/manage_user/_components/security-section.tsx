@@ -53,25 +53,32 @@ const SecuritySection = ({ userDetail }: { userDetail: User }) => {
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    setLoading(true);
     try {
-      setLoading(true);
       console.log(values);
       const payload = {
         new_pass: values.confirmPassword,
       };
-      const response = await GlobalApi.changePassword(payload,userDetail.id);
+      const response = await GlobalApi.changePassword(payload, userDetail.id);
       console.log(response);
-      toast({
-        description: "Server is updated your password success.",
-      });
-      setLoading(false);
+      if (response && response.status === 201) {
+        toast({
+          description: `${response.data.message}`,
+        });
+        // Clear form
+        form.reset({
+          newPassword: "",
+          confirmPassword: "",
+        });
+      }
     } catch (error) {
-      setLoading(false);
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
         description: `${{ message: error }}`,
       });
+    } finally {
+      setLoading(false);
     }
   };
   return (
@@ -132,11 +139,12 @@ const SecuritySection = ({ userDetail }: { userDetail: User }) => {
                 <Button
                   className="w-[100px] mt-3 text-end h-[40px] active:scale-95 transition-all"
                   type="submit"
+                  disabled={loading}
                 >
                   {loading ? (
                     <Loader className="animate-spin" />
                   ) : (
-                    "บันทึกข้อมูล"
+                    "เปลี่ยนรหัสผ่าน"
                   )}
                 </Button>
               </div>

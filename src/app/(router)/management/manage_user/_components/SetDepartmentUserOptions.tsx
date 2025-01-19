@@ -24,7 +24,7 @@ import { Department, User } from "@/types/interface";
 
 type SetDepartmentUserOptionsProp = {
   isAdmin: boolean;
-  defaultValue?: Department;
+  defaultValue?: Department | string;
   onChange: (data: string) => void;
   value: string;
 };
@@ -47,12 +47,20 @@ export default function SetDepartmentUserOptions({
   };
   // ให้ เรียกใช้ function ใหม่หากเกิดการเปลี่ยนแปลงที่ rolRequest
   useEffect(() => {
-    if (defaultValue) {
+    if (defaultValue && typeof defaultValue !== "string") {
       const defaultDepartment = departments?.find(
         (department: Department) => department.id === defaultValue.id
       );
       if (defaultDepartment) {
-        onChange(defaultDepartment.id); // ใช้ onChange แทน onDepartmentChange
+        onChange(defaultDepartment.id);
+      }
+    } else if (defaultValue && typeof defaultValue === "string") {
+      // กรณีที่ defaultValue เป็น string (id)
+      const defaultDepartment = departments?.find(
+        (department: Department) => department.id === defaultValue
+      );
+      if (defaultDepartment) {
+        onChange(defaultValue);
       }
     }
   }, [defaultValue, departments]);
@@ -74,7 +82,7 @@ export default function SetDepartmentUserOptions({
         >
           {value
             ? departments.find((item: Department) => item.id === value)
-                ?.department_name
+                ?.department_name || "Select Department"
             : "Select Department"}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>

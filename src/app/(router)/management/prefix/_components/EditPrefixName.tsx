@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import {
@@ -22,6 +22,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { FormQuestion, PrefixType } from "@/types/interface";
 import { Input } from "@/components/ui/input";
+import { Loader } from "lucide-react";
 const formSchema = z.object({
   prefix_name: z
     .string()
@@ -43,6 +44,7 @@ const EditPrefixName = ({
   prefix,
   onUpdate,
 }: EditPrefixNameDialogProps) => {
+  const [isLoading, setIsLoading] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -51,6 +53,7 @@ const EditPrefixName = ({
   });
   // 2. handleSubmit function ใน EditQuestionDialog
   const handleSubmit = async (values: FormValues) => {
+    setIsLoading(true);
     try {
       // ส่งข้อมูลที่แก้ไขไปยัง parent component ผ่าน onUpdate prop
       await onUpdate(values);
@@ -59,6 +62,8 @@ const EditPrefixName = ({
     } catch (error) {
       // จัดการ error กรณีที่ update ไม่สำเร็จ
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
   return (
@@ -97,7 +102,16 @@ const EditPrefixName = ({
               )}
             />
             <DialogFooter>
-              <Button type="submit">Save Changes</Button>
+              <Button type="submit">
+                {" "}
+                {isLoading ? (
+                  <div className="px-6">
+                    <Loader className="animate-spin" />
+                  </div>
+                ) : (
+                  "บันทึกข้อมูล"
+                )}
+              </Button>
             </DialogFooter>
           </form>
         </Form>

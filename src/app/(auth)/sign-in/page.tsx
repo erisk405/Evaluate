@@ -71,7 +71,7 @@ const page = () => {
           "Content-Type": "application/json",
         },
       });
-      console.log("response", response.data);
+      // console.log("response", response.data);
 
       const token = response.data.token;
       if (!token) {
@@ -80,14 +80,13 @@ const page = () => {
       // เก็บ JWT ใน localStorage
       localStorage.setItem("token", token);
       // ทดสอบ verifyToken (เรียก API ที่ต้องการ JWT)
-      const verifyToken = await GlobalApi.fetchProtected();
-      console.log("verifyToken", verifyToken);
+      await GlobalApi.fetchProtected();
+      // console.log("verifyToken", verifyToken);
 
       // แสดง toast หลังจากล็อกอินสำเร็จ
       toast({
-        title: "Login success",
-        description: `✅ You are logged in successfully`,
-        className: "bg-black text-white",
+        title: "เข้าสู่ระบบ",
+        description: `✅ คุณเข้าสู่ระบบสำเร็จ โปรดรอสักครู่...`,
       });
 
       // เปลี่ยนเส้นทางหลังจากล็อกอินสำเร็จ
@@ -138,7 +137,7 @@ const page = () => {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>password</FormLabel>
+                      <FormLabel>รหัสผ่าน</FormLabel>
                       <FormControl>
                         <div className="relative">
                           <Input
@@ -177,7 +176,7 @@ const page = () => {
                   )}
                 />
                 <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? <Loader className="animate-spin" /> : "Login"}
+                  {loading ? <Loader className="animate-spin" /> : "เข้าสู่ระบบ"}
                 </Button>
               </div>
             </form>
@@ -185,13 +184,13 @@ const page = () => {
           <div className="mt-4 text-center text-sm">
             {"สมัครสมาชิกได้เลยที่นี่ "}
             <Link href="/sign-up" className="underline">
-              Sign up
+              สร้างบัญชีใหม่
             </Link>
           </div>
           <div className="text-center text-sm">
             ถ้าหากคุณลืมรหัสผ่านคลิกที่นี่{" "}
             <Link href="/forgot-password" className="underline">
-              forgot password
+              ลืมรหัสผ่าน?
             </Link>
           </div>
         </div>

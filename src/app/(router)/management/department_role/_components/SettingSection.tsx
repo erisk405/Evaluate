@@ -317,7 +317,8 @@ export default function SettingSection({
                           {department?.supervise?.user?.name}
                         </h2>
                         <p className="text-sm text-gray-500">
-                          {department?.supervise?.user?.role.role_name}
+                          {department?.supervise &&
+                            department?.supervise?.user?.role?.role_name}
                         </p>
                         <div
                           className={` ${styles.background_third_head_table} p-2 rounded-lg`}
@@ -383,7 +384,7 @@ export default function SettingSection({
             <div className="fixed right-5 bottom-5">
               {isLoading ? (
                 <Button className="w-32" type="submit">
-                  Save Change
+                  บันทึกข้อมูล
                 </Button>
               ) : (
                 <Button className="w-32 animate-pulse" type="button">

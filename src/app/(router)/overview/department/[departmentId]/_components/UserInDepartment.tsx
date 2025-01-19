@@ -66,7 +66,7 @@ import {
 import EvaluateSection from "./EvaluateSection";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import React, { useMemo, useState } from "react";
+import React, { memo, useMemo, useState } from "react";
 import useStore from "@/app/store/store";
 import { useThemeStyles } from "@/hooks/useTheme";
 
@@ -246,8 +246,12 @@ export function UserInDepartment({
       },
     },
   ];
+  const filterMember = useMemo(() => {
+    return member?.filter(f => f.role.role_name !== "admin" && f.role.role_name !== "member");
+  }, [member]);
+  
   const table = useReactTable({
-    data: member ?? [],
+    data: filterMember ?? [],
     columns,
     state: {
       sorting,

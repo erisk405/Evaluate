@@ -10,7 +10,7 @@ import { toast } from "sonner";
 
 const UpComingPeriod = () => {
   const [loading, setLoading] = useState(false);
-  const { allPeriod ,fetchCurrentPeriod} = useStore();
+  const { allPeriod, fetchCurrentPeriod } = useStore();
   const styles = useThemeStyles();
   const showToast = (title: string, description: string) => {
     toast(title, { description });
@@ -26,7 +26,7 @@ const UpComingPeriod = () => {
       console.log("Save", response?.data);
       showToast("ทำรายการสำเร็จ", "บันทึกผลการประเมินเรียบร้อยแล้ว");
       setLoading(false);
-      fetchCurrentPeriod()
+      fetchCurrentPeriod();
     } catch (error) {
       console.error("API saveEvaluationToHistory", { message: error });
       return handleErrorOnAxios(error);
@@ -77,7 +77,7 @@ const UpComingPeriod = () => {
             </div>
           )
       )}
-      {allPeriod?.filter(item => !item.backUp).length === 0 && (
+      {allPeriod?.filter((item) => !item.backUp).length === 0 && (
         <div className="p-4 flex items-center justify-center gap-3">
           <h2>ไม่มีรอบการประเมินที่ยังไม่บันทึกผล</h2>
           <p className="text-xl animate-wiggle-float">🦊</p>

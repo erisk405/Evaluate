@@ -20,10 +20,11 @@ import { useParams, usePathname, useRouter } from "next/navigation";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import GlobalApi from "@/app/_util/GlobalApi";
+import GlobalApi, { handleErrorOnAxios } from "@/app/_util/GlobalApi";
 import axios from "axios";
 import { decodeToken } from "@/hooks/serverAction";
 import ProtectedLayout from "@/app/_components/layouts/ProtectedLayout";
+import Loading from "@/app/_components/Loading";
 
 const formSchema = z
   .object({
@@ -53,8 +54,8 @@ type AuthCheckResponse = {
 };
 const page = () => {
   const [status, setStatus] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingPage, setIsLoadingPage] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
   const { token } = useParams();
@@ -71,25 +72,25 @@ const page = () => {
   });
 
   const onSubmit = async (values: ResetPasswordFormValues) => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-
       const response = await GlobalApi.resetPassword({
         newPassword: values.password,
         token: token as string,
       });
+      console.log("response", response?.data);
 
-      toast({
-        description: "Password updated successfully.",
-      });
-      setIsSuccess(true);
+      if (response && response.status === 200) {
+        toast({
+          description: response.data.message,
+        });
+        setStatus(response.data.success); // true or false
+        // หลังจากเปลี่ยนรหัสผ่านสำเร็จ
+        form.reset(); // clear form
+      }
     } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description:
-          error instanceof Error ? error.message : "An unknown error occurred",
-      });
+      console.error({ message: error });
+      handleErrorOnAxios(error);
     } finally {
       setIsLoading(false);
     }
@@ -128,8 +129,7 @@ const page = () => {
         router.push("/sign-in");
         return;
       }
-
-      setIsLoading(true);
+      setIsLoadingPage(true);
       try {
         await checkAuthorization(token as string);
       } catch (error) {
@@ -143,13 +143,20 @@ const page = () => {
         });
         router.push("/sign-in");
       } finally {
-        setIsLoading(false);
+        setIsLoadingPage(false);
       }
     };
 
     verifyToken();
   }, [token, router, pathname]);
 
+  if (isLoadingPage) {
+    return (
+      <div>
+        <Loading />
+      </div>
+    );
+  }
   return (
     <div className="flex justify-center h-screen ">
       <div className="w-[980px] h-screen p-10">
@@ -174,7 +181,9 @@ const page = () => {
                   <RectangleEllipsis size={40} />
                 </div>
                 <h2 className="text-3xl font-semibold">ตั้งรหัสผ่านใหม่?</h2>
-                <h2 className="text-gray-500">รหัสผ่านจะต้องมีอย่างน้อย8ตัวอักษร</h2>
+                <h2 className="text-gray-500">
+                  รหัสผ่านจะต้องมีอย่างน้อย8ตัวอักษร
+                </h2>
               </div>
               <div className="flex justify-center w-full ">
                 <Form {...form}>

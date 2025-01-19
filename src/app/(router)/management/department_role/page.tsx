@@ -29,7 +29,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import GlobalApi from "@/app/_util/GlobalApi";
+import GlobalApi, { handleErrorOnAxios } from "@/app/_util/GlobalApi";
 import AllListDepartment from "./_components/AllListDepartment";
 import { toast } from "@/components/ui/use-toast";
 import useStore from "@/app/store/store";
@@ -75,7 +75,7 @@ const page = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "หน่วยงาน...",
+      name: "ชื่อหน่วยงาน",
       image: undefined,
     },
   });
@@ -83,29 +83,38 @@ const page = () => {
   const getDepartment = async () => {
     try {
       const response = await GlobalApi.getDepartmentForAdmin();
-      // console.log("Department :",response?.data);
-      setDepartmentData(response?.data); // ตั้งค่าเป็นอาเรย์ว่างถ้าไม่มีข้อมูล
+      console.log("Department :", response);
+      if (response && response.status === 201) {
+        setDepartmentData(response?.data); // ตั้งค่าเป็นอาเรย์ว่างถ้าไม่มีข้อมูล
+      }
     } catch (error) {
       console.error("Error fetching department data:", error);
+      handleErrorOnAxios(error);
     }
   };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+    setIsLoading(false);
+    toast({
+      description: `ดำเนินการสร้างหน่วยงานนี้ โปรดรอสักครู่...`,
+    });
+    // console.log(values);
     const formData = new FormData();
     formData.append("departmentName", values.name);
     formData.append("image", values.image as File);
     try {
-      setIsLoading(false);
       const response = await GlobalApi.CreateDepartment(formData);
       console.log(response);
-      setIsLoading(true);
-      getDepartment();
-      toast({
-        description: `✅ Your are create department success`,
-      });
+      if (response && response.status === 201) {
+        getDepartment();
+        toast({
+          description: `✅ ดำเนินการสร้างหน่วยงานสำเร็จแล้ว`,
+        });
+      }
     } catch (error) {
       console.error("Error updating user image:", error);
+    } finally {
+      setIsLoading(true);
     }
   }
   const fetchRole = async () => {
@@ -289,7 +298,7 @@ const page = () => {
               </div>
             </div>
           </div>
-          {/* All list departmemt */}
+
           <AllListDepartment
             department={filteredDepartments}
             fetchDepart={getDepartment}

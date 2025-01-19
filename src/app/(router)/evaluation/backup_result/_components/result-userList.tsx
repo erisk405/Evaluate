@@ -96,10 +96,6 @@ import MainResultHistory from "@/app/(router)/history/_components/main-result-hi
 import { useThemeStyles } from "@/hooks/useTheme";
 import { toast } from "@/components/ui/use-toast";
 
-type filterAreaType = {
-  departments: string[];
-  itemsRole: string[];
-};
 const ResultUserList = ({ period }: { period: PeriodType }) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const styles = useThemeStyles();
@@ -396,7 +392,7 @@ const ResultUserList = ({ period }: { period: PeriodType }) => {
               <DialogHeader>
                 <DialogTitle>Export</DialogTitle>
                 <DialogDescription>
-                  Make changes to your Export here. Click save when you're done.
+                  รายละเอียดผลการประเมินที่ต้องการจะส่งออกไฟล์
                 </DialogDescription>
               </DialogHeader>
               <Tabs defaultValue="detail" className="w-full">

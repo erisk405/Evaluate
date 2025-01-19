@@ -107,8 +107,7 @@ const page = () => {
               <CardHeader>
                 <CardTitle>ผลที่เก็บในแต่ละรอบ</CardTitle>
                 <CardDescription>
-                  Make changes to your account here. Click save when you're
-                  done.
+                  ผลการประเมินที่เก็บในไว้ในประวัติแต่ละรอบการประเมิน
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">

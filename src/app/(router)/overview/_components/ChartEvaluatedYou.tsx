@@ -97,7 +97,9 @@ const ChartEvaluatedYou = () => {
               <h2>คน</h2>
             </div>
           ) : (
-            <div className="hidden @[700px]:block text-6xl animate-wiggle-float">🕊️</div>
+            <div className="hidden @[700px]:block text-6xl animate-wiggle-float">
+              🕊️
+            </div>
           )}
         </motion.div>
         <Card
@@ -163,7 +165,7 @@ const ChartEvaluatedYou = () => {
                                   y={(viewBox.cy || 0) + 24}
                                   className="fill-muted-foreground"
                                 >
-                                  result
+                                  คน
                                 </tspan>
                               </text>
                             );
@@ -233,7 +235,9 @@ const ChartEvaluatedYou = () => {
               <h2>คน</h2>
             </div>
           ) : (
-            <div className="hidden @[700px]:block text-6xl animate-wiggle-float-blue">🌿</div>
+            <div className="hidden @[700px]:block text-6xl animate-wiggle-float-blue">
+              🌿
+            </div>
           )}
         </motion.div>
       </div>

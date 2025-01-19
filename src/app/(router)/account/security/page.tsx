@@ -22,45 +22,47 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useThemeStyles } from "@/hooks/useTheme";
-import GlobalApi from "@/app/_util/GlobalApi";
+import GlobalApi, { handleErrorOnAxios } from "@/app/_util/GlobalApi";
+import useStore from "@/app/store/store";
 const formSchema = z
   .object({
     oldPassword: z
       .string()
       .min(8, {
-        message: "Password must be at least 8 characters long.",
+        message: "รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัวอักษร",
       })
       .regex(/[a-z]/, {
-        message: "Password must contain at least one lowercase letter.",
+        message: "รหัสผ่านจะต้องมีตัวอักษรพิมพ์เล็กอย่างน้อยหนึ่งตัว",
       })
       .regex(/[A-Z]/, {
-        message: "Password must contain at least one uppercase letter.",
+        message: "รหัสผ่านต้องมีอักษรตัวพิมพ์ใหญ่อย่างน้อยหนึ่งตัว",
       })
       .regex(/[0-9]/, {
-        message: "Password must contain at least one number.",
+        message: "รหัสผ่านต้องมีตัวเลขอย่างน้อยหนึ่งตัว",
       }),
     newPassword: z
       .string()
       .min(8, {
-        message: "Password must be at least 8 characters long.",
+        message: "รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัวอักษร",
       })
       .regex(/[a-z]/, {
-        message: "Password must contain at least one lowercase letter.",
+        message: "รหัสผ่านจะต้องมีตัวอักษรพิมพ์เล็กอย่างน้อยหนึ่งตัว",
       })
       .regex(/[A-Z]/, {
-        message: "Password must contain at least one uppercase letter.",
+        message: "รหัสผ่านต้องมีอักษรตัวพิมพ์ใหญ่อย่างน้อยหนึ่งตัว",
       })
       .regex(/[0-9]/, {
-        message: "Password must contain at least one number.",
+        message: "รหัสผ่านต้องมีตัวเลขอย่างน้อยหนึ่งตัว",
       }),
     confirmPassword: z.string(),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
-    message: "Passwords don't match.",
+    message: "รหัสผ่านไม่ตรงกัน",
     path: ["confirmPassword"], // Error message will be displayed under confirmPassword field
   });
 const page = () => {
   const [loading, setLoading] = useState(false);
+  const { countdownTime, setCountdownTime } = useStore();
   const styles = useThemeStyles();
   const [showPassword, setShowPassword] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
@@ -73,8 +75,8 @@ const page = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    setLoading(true);
     try {
-      setLoading(true);
       console.log(values);
       const payload = {
         old_pass: values.oldPassword,
@@ -82,19 +84,35 @@ const page = () => {
       };
       const response = await GlobalApi.changePassword(payload);
       console.log(response);
-      toast({
-        description: "Server is updated your password success.",
-      });
-      setLoading(false);
+      if (response && response.status === 201) {
+        toast({
+          description: `${response.data.message}`,
+        });
+        // Clear form
+        form.reset({
+          oldPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        });
+        // เริ่มนับถอยหลัง 30 วิ
+        setCountdownTime(30);
+        const timer = setInterval(() => {
+          setCountdownTime((prev) => {
+            if (prev <= 1) {
+              clearInterval(timer);
+              return 0;
+            }
+            return prev - 1;
+          });
+        }, 1000);
+      }
     } catch (error) {
+      handleErrorOnAxios(error);
+    } finally {
       setLoading(false);
-      toast({
-        variant: "destructive",
-        title: "Uh oh! Something went wrong.",
-        description: `${{ message: error }}`,
-      });
     }
   };
+  const isSubmitDisabled = loading || countdownTime > 0;
   return (
     <div
       className={`px-4 flex flex-col items-center  rounded-lg h-screen ${styles.text}`}
@@ -188,11 +206,14 @@ const page = () => {
             <Button
               className="w-full mt-10 h-[40px] active:scale-95 transition-all"
               type="submit"
+              disabled={isSubmitDisabled}
             >
               {loading ? (
                 <Loader className="animate-spin" />
+              ) : countdownTime > 0 ? (
+                `โปรดรอ ${countdownTime} วินาที`
               ) : (
-                "Change account password"
+                "เปลี่ยนรหัสผ่าน"
               )}
             </Button>
           </form>

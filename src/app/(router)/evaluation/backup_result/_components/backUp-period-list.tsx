@@ -116,16 +116,15 @@ export const columns: ColumnDef<PeriodType>[] = [
           </DialogTrigger>
           <DialogContent className="sm:max-w-[1625px]">
             <DialogHeader>
-              <DialogTitle>รอบการประเมินที่ 1</DialogTitle>
+              <DialogTitle>{row.original.title}</DialogTitle>
               <DialogDescription>
-                Make changes to your profile here. Click save when you're done.
+                รายชื่อแต่ละการประเมินที่ถูกบันทึกลงไปในฐานข้อมูลแล้ว
               </DialogDescription>
             </DialogHeader>
             <ScrollArea className="max-h-[650px]">
               <ResultUserList period={row.original} />
             </ScrollArea>
             <DialogFooter>
-              <Button type="submit">Save changes</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -252,9 +251,9 @@ const BackUpPeriodList = () => {
                 </div>
               </ScrollArea>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
                 <AlertDialogAction onClick={() => handleDeleteHistory()}>
-                  Continue
+                  ลบประวัติการประเมินนี้
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>

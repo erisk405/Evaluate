@@ -39,10 +39,14 @@ const AllListDepartment = ({
     try {
       showToast("กำลังดำเนินการ", `ขณะนี้ระบบกำลังดำเนินการ โปรดรอสักครู่...`);
       const response = await GlobalApi.deleteDepartment(departmemtId);
-      showToast(
-        "ดำเนินการสำเร็จ",
-        `ระบบได้ลบหน่วยงาน "${response?.data?.delete?.department_name}" เรียบร้อยแล้ว`
-      );
+      console.log("response dept", response?.data);
+
+      if (response && response?.status === 200) {
+        showToast(
+          "ดำเนินการสำเร็จ",
+          `ระบบได้ลบหน่วยงาน "${response?.data?.delete?.department_name}" เรียบร้อยแล้ว`
+        );
+      }
       await fetchDepart();
       // ปิด AlertDialog หลังจากทำงานเสร็จ
     } catch (error) {
@@ -52,108 +56,93 @@ const AllListDepartment = ({
       setIsLoading(false);
     }
   };
+
   return (
     <div className="@container w-full flex flex-col gap-3 my-4 sm:max-h-[700px] overflow-scroll scrollbar-gemini">
-      {department.length > 0
-        ? department?.map((item) => (
-            <div
-              key={item?.id}
-              className="border-b p-4 rounded-xl grid grid-cols-4  items-center gap-3 "
-            >
-              <div className="w-full col-span-4 @[568px]:col-span-1">
-                <Image
-                  src={item?.image ? item?.image.url : "/test.png"}
-                  width={300}
-                  height={200}
-                  alt="banner"
-                  className="w-full h-[150px] object-cover rounded-lg"
-                />
-              </div>
-              <div className="col-span-4 @[568px]:col-span-2 max-w-[468px] w-full mx-auto">
-                <h2 className="text-lg">{item?.department_name}</h2>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                  {roles.map(
-                    (role) =>
-                      role.role_name !== "admin" &&
-                      role.role_name !== "member" && (
-                        <div
-                          key={role.id}
-                          className="flex justify-between text-sm"
-                        >
-                          <h2 className="text-gray-500">{role.role_name}</h2>
-                          <h2>
-                            {
-                              item?.user?.filter(
-                                (users) =>
-                                  users.role.role_name === role.role_name
-                              ).length
-                            }{" "}
-                            คน
-                          </h2>
-                        </div>
-                      )
-                  )}
-                  <div className="flex justify-between  text-gray-500 text-sm">
-                    <h2 className="font-bold">ทั้งหมด</h2>
-                    <h2>{item?.user?.length} คน</h2>
-                  </div>
-                </div>
-              </div>
-              <div className="col-span-4 @[568px]:col-span-1 mx-auto">
-                <SettingSection department={item} fetchDepart={fetchDepart} />
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button className="w-full mt-3">ลบหน่วยงาน</Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>
-                        Are you absolutely sure?
-                      </AlertDialogTitle>
-                      <AlertDialogDescription>
-                        This action cannot be undone. This will permanently
-                        delete your account and remove your data from our
-                        servers.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={() => handleDeleteDepartment(item.id)}
-                        disabled={isLoading}
+      {department.length > 0 ? (
+        department?.map((item) => (
+          <div
+            key={item?.id}
+            className="border-b p-4 rounded-xl grid grid-cols-4  items-center gap-3 "
+          >
+            <div className="w-full col-span-4 @[568px]:col-span-1">
+              <Image
+                src={item?.image ? item?.image.url : "/test.png"}
+                width={300}
+                height={200}
+                alt="banner"
+                className="w-full h-[150px] object-cover rounded-lg"
+              />
+            </div>
+            <div className="col-span-4 @[568px]:col-span-2 max-w-[468px] w-full mx-auto">
+              <h2 className="text-lg">{item?.department_name}</h2>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                {roles.map(
+                  (role) =>
+                    role.role_name !== "admin" &&
+                    role.role_name !== "member" && (
+                      <div
+                        key={role.id}
+                        className="flex justify-between text-sm"
                       >
-                        {isLoading ? (
-                          <Loader className="animate-spin" />
-                        ) : (
-                          "Continue"
-                        )}
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
+                        <h2 className="text-gray-500">{role.role_name}</h2>
+                        <h2>
+                          {
+                            item?.user?.filter(
+                              (users) => users.role?.role_name === role?.role_name
+                            ).length
+                          }{" "}
+                          คน
+                        </h2>
+                      </div>
+                    )
+                )}
+                <div className="flex justify-between  text-gray-500 text-sm">
+                  <h2 className="font-bold">ทั้งหมด</h2>
+                  <h2>{item?.user?.length} คน</h2>
+                </div>
               </div>
             </div>
-          ))
-        : [1, 2, 3].map(
-            (
-              item,
-              index // for loading when wait api send response
-            ) => (
-              <div
-                key={"LoadDepert" + index}
-                className="flex gap-3 justify-between items-center animate-pulse mt-3 mx-3"
-              >
-                <div className="flex gap-3 items-center">
-                  <div className="w-[190px] h-[120px] bg-zinc-400 rounded-lg"></div>
-                  <div className="flex flex-col gap-3">
-                    <div className="w-[200px] h-[10px] bg-zinc-400 rounded-lg"></div>
-                    <div className="w-[300px] h-[10px] bg-zinc-400 rounded-lg"></div>
-                  </div>
-                </div>
-                <div className="w-[100px] h-[40px] bg-zinc-400 rounded-xl"></div>
-              </div>
-            )
-          )}
+            <div className="col-span-4 @[568px]:col-span-1 mx-auto">
+              <SettingSection department={item} fetchDepart={fetchDepart} />
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button className="w-full mt-3">ลบหน่วยงาน</Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>คุณแน่ใจแล้วใช้ไหม?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      การนำเนินการนี้จะลบหน่วยงานนี้ออกจากระบบอย่างถาวร
+                      หากแน่ใจแล้วกดปุ่ม"ยืนยัน
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => handleDeleteDepartment(item.id)}
+                      disabled={isLoading}
+                    >
+                      {isLoading ? (
+                        <Loader className="animate-spin" />
+                      ) : (
+                        "ยืนยัน"
+                      )}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
+          </div>
+        ))
+      ) : (
+        <div className="h-72 flex justify-center items-center gap-3">
+          <h2 className="text-3xl">
+            ไม่มีหน่วยงานในขณะนี้ โปรดสร้างหน่วยงานก่อน
+          </h2>
+          <h2 className="text-6xl animate-wiggle-float">🐈</h2>
+        </div>
+      )}
     </div>
   );
 };

@@ -4,13 +4,28 @@ import { motion } from "framer-motion";
 import RadarChartSection from "./RadarChartSection";
 import BarChartMultiple from "./BarChartMultiple";
 import {
+  Box,
+  Boxes,
   CircleCheck,
   CircleDotDashed,
   Combine,
   Container,
   Package,
   TrendingUp,
+  Vault,
+  Codesandbox,
 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import Image from "next/image";
 import {
   Table,
@@ -28,6 +43,8 @@ import InfoOfDepartmentEval from "./InfoOfDepartmentEval";
 import { getAllSuperviseByAdminType } from "@/types/interface";
 import { useThemeStyles } from "@/hooks/useTheme";
 import Loading from "@/app/_components/Loading";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 export const description = "A radial chart with a grid";
 
@@ -61,6 +78,22 @@ const ReportOverview = () => {
       handleErrorOnAxios(error);
     }
   };
+  const handleDeleteSupervise = async (superviseId: string) => {
+    try {
+      toast("กำลังดำเนินการ", {
+        description: "ระบบกำลังนำผู้ใช้งานนี้ออกจากกำกับดูแลโปรดรอสักครู่...",
+      });
+      const response = await GlobalApi.deleteSupervise(superviseId);
+      if (response && response.status === 201) {
+        toast("ดำเนินการเสร็จสิ้น", {
+          description: "ระบบได้นำผู้ใช้งานนี้ออกจากกำกับดูแลเรียบร้อยแล้ว",
+        });
+        fetchSupervise();
+      }
+    } catch (error) {
+      handleErrorOnAxios(error);
+    }
+  };
 
   const calculateSummention = (data: number[]) =>
     data.reduce((sum, val) => sum + val, 0);
@@ -86,19 +119,19 @@ const ReportOverview = () => {
     {
       id: "FN01",
       title: "เสร็จสิ้นแล้ว",
-      icon: "🐲",
+      icon: <Codesandbox strokeWidth={1} size={30} />,
       quantity: AllFinished,
     },
     {
       id: "FN02",
       title: "ยังไม่เสร็จสิ้น",
-      icon: "👻",
+      icon: <Box strokeWidth={1} size={30} />,
       quantity: AllUnfinished,
     },
     {
       id: "FN03",
       title: "ทั้งหมด",
-      icon: "🐝",
+      icon: <Boxes strokeWidth={1} size={30} />,
       quantity: AllUser,
     },
   ];
@@ -135,7 +168,7 @@ const ReportOverview = () => {
                 <div
                   className={`shadow ${styles.background_card} rounded-full w-[60px] h-[60px] animate-wiggle flex justify-center items-center`}
                 >
-                  <h2 className="text-2xl">{item.icon}</h2>
+                  <h2 className={`text-3xl `}>{item.icon}</h2>
                 </div>
                 <div className="grid gap-1 grid-cols-1">
                   <div className="flex gap-1 items-end">
@@ -197,7 +230,7 @@ const ReportOverview = () => {
           ) : (
             <div className="w-full flex justify-center items-center h-[180px]">
               <h2 className="text-2xl">
-                ตอนนี้ไม่ได้อยู่ในช่วงเวลาการประเมินค้าบผม...{" "}
+                ตอนนี้ไม่ได้อยู่ในช่วงเวลาการประเมินครับผม...{" "}
               </h2>
               <span className="text-4xl animate-bounce">🐱</span>
             </div>
@@ -228,6 +261,7 @@ const ReportOverview = () => {
                   <TableHead className="">ชื่อผู้ที่กำกับดูแล</TableHead>
                   <TableHead className="">หน่วยงาน/สังกัด</TableHead>
                   <TableHead className="">ตำแหน่ง</TableHead>
+                  <TableHead className=""></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -253,7 +287,36 @@ const ReportOverview = () => {
                     <TableCell>
                       {item.user.department?.department_name}
                     </TableCell>
-                    <TableCell>{item.user.role.role_name}</TableCell>
+                    <TableCell>{item.user.role?.role_name}</TableCell>
+                    <TableCell>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="outline">นำออกจากกำกับดูแล</Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              คุณแน่ใจแล้วใช่มั้ย?
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              การดำเนินการนี้ไม่สามารถย้อนกลับได้
+                              การดำเนินการนี้จะลบบุคคลที่กำกับดูแลนี้ออก
+                              แต่ยังสามารถแต่งตั้งใหม่ได้
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() =>
+                                handleDeleteSupervise(item.supervise_id)
+                              }
+                            >
+                              ยืนยัน
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>

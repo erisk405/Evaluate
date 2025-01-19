@@ -39,7 +39,13 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-import { ArrowUpDown, ChevronDown, MoreHorizontal, Plus } from "lucide-react";
+import {
+  ArrowUpDown,
+  ChevronDown,
+  Loader,
+  MoreHorizontal,
+  Plus,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -87,6 +93,7 @@ const PrefixTable = () => {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
   const { prefixes, setPrefix } = useStore();
   const [open, setOpen] = useState(false);
 
@@ -106,11 +113,13 @@ const PrefixTable = () => {
     }
   };
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    setIsLoading(true);
     try {
       // console.log("values", values);
-
       const response = await GlobalApi.createPrefix(values);
-
+      if (!response) {
+        throw new Error("prefix create fail");
+      }
       fetchPrefix();
       setOpen(false);
       toast("Event has been created", {
@@ -118,9 +127,12 @@ const PrefixTable = () => {
       });
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
   const deletePrefix = async () => {
+    setIsLoading(true);
     try {
       const selectData = table
         .getSelectedRowModel()
@@ -149,6 +161,8 @@ const PrefixTable = () => {
           </pre>
         ),
       });
+    } finally {
+      setIsLoading(false);
     }
   };
   const columns: ColumnDef<PrefixType>[] = [
@@ -344,7 +358,13 @@ const PrefixTable = () => {
                 <AlertDialogFooter>
                   <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
                   <AlertDialogAction onClick={() => deletePrefix()}>
-                    ลบคำนำหน้า
+                    {isLoading ? (
+                      <div className="px-6">
+                        <Loader className="animate-spin" />
+                      </div>
+                    ) : (
+                      "ลบคำนำหน้า"
+                    )}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
@@ -395,7 +415,16 @@ const PrefixTable = () => {
                       )}
                     />
                     <DialogFooter>
-                      <Button type="submit">Save Change</Button>
+                      <Button type="submit">
+                        {" "}
+                        {isLoading ? (
+                          <div className="px-6">
+                            <Loader className="animate-spin" />
+                          </div>
+                        ) : (
+                          "บันทึกข้อมูล"
+                        )}
+                      </Button>
                     </DialogFooter>
                   </form>
                 </Form>

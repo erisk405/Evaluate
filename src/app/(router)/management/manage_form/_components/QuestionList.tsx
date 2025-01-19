@@ -11,7 +11,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { MoreHorizontal, Plus } from "lucide-react";
+import { Loader, MoreHorizontal, Plus } from "lucide-react";
 
 import {
   AlertDialog,
@@ -95,6 +95,7 @@ export function QuestionList({ formId }: QuestionListProp) {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
   const [question, setQuestion] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -103,6 +104,7 @@ export function QuestionList({ formId }: QuestionListProp) {
     },
   });
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    setIsLoading(true);
     try {
       // ใช้  spread operator เพื่อ ประกอบ Json มาใหม่
       const data = {
@@ -111,6 +113,9 @@ export function QuestionList({ formId }: QuestionListProp) {
       };
       const response = await GlobalApi.createQuestion(data);
       // console.log("response", response);
+      if (!response) {
+        throw new Error("สร้างแบบฟอร์มล้มเหลว");
+      }
       fetchQuestion();
       setOpen(false);
       toast("Event has been created", {
@@ -126,6 +131,8 @@ export function QuestionList({ formId }: QuestionListProp) {
           </pre>
         ),
       });
+    } finally {
+      setIsLoading(false);
     }
   };
   const deleteQuestion = async () => {
@@ -217,7 +224,9 @@ export function QuestionList({ formId }: QuestionListProp) {
       cell: ({ row }) => {
         const question = row.original;
         const [open, setOpen] = useState(false);
+        const [isLoading, setIsLoading] = useState(false);
         const handleUpdate = async (values: any) => {
+          setIsLoading(true);
           try {
             const payload = {
               questionId: question.id,
@@ -226,10 +235,9 @@ export function QuestionList({ formId }: QuestionListProp) {
             // console.log("value",payload);
             const response = await GlobalApi.updateQuestion(payload);
             if (!response) {
-              throw new Error("Question update fail");
+              throw new Error("อัพเดทคำถามล้มเหลว");
             }
-            console.log("response", response?.data);
-
+            // console.log("response", response?.data);
             fetchQuestion();
             toast("Event has been updated", {
               description: `แก้ชื่อคำถามเป็น : "${response?.data.datail.content}" เรียบร้อยแล้ว`,
@@ -245,6 +253,8 @@ export function QuestionList({ formId }: QuestionListProp) {
                 </pre>
               ),
             });
+          } finally {
+            setIsLoading(false);
           }
         };
         return (
@@ -278,6 +288,7 @@ export function QuestionList({ formId }: QuestionListProp) {
               setOpen={setOpen} // function สำหรับเปลี่ยนสถานะ Dialog
               question={question} // ข้อมูล question ที่ต้องการแก้ไข
               onUpdate={handleUpdate} // function callback สำหรับการ update
+              isLoading={isLoading}
             />
           </>
         );
@@ -416,7 +427,15 @@ export function QuestionList({ formId }: QuestionListProp) {
                     )}
                   />
                   <DialogFooter>
-                    <Button type="submit">บันทึกข้อมูล</Button>
+                    <Button type="submit">
+                      {isLoading ? (
+                        <div className="px-6">
+                          <Loader className="animate-spin" />
+                        </div>
+                      ) : (
+                        "บันทึกข้อมูล"
+                      )}
+                    </Button>
                   </DialogFooter>
                 </form>
               </Form>

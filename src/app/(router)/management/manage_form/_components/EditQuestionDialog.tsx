@@ -1,3 +1,4 @@
+"use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import { useForm } from "react-hook-form";
@@ -21,6 +22,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { FormQuestion } from "@/types/interface";
+import { Loader } from "lucide-react";
 const formSchema = z.object({
   content: z
     .string()
@@ -35,6 +37,7 @@ interface EditQuestionDialogProps {
   setOpen: (open: boolean) => void;
   question: FormQuestion;
   onUpdate: (values: FormValues) => Promise<void>;
+  isLoading: boolean;
 }
 
 const EditQuestionDialog = ({
@@ -42,6 +45,7 @@ const EditQuestionDialog = ({
   setOpen,
   question,
   onUpdate,
+  isLoading,
 }: EditQuestionDialogProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -97,7 +101,15 @@ const EditQuestionDialog = ({
               )}
             />
             <DialogFooter>
-              <Button type="submit">บันทึกข้อมูล</Button>
+              <Button type="submit">
+                {isLoading ? (
+                  <div className="px-6">
+                    <Loader className="animate-spin" />
+                  </div>
+                ) : (
+                  "บันทึกข้อมูล"
+                )}
+              </Button>
             </DialogFooter>
           </form>
         </Form>

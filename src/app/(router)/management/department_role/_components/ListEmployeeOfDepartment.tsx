@@ -54,7 +54,7 @@ import {
 import Image from "next/image";
 import { Department, PageNumber, User } from "@/types/interface";
 import SetStatusSection from "./SetStatusSection";
-import GlobalApi from "@/app/_util/GlobalApi";
+import GlobalApi, { handleErrorOnAxios } from "@/app/_util/GlobalApi";
 import {
   Dialog,
   DialogContent,
@@ -83,6 +83,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Separator } from "@/components/ui/separator";
 import { useThemeStyles } from "@/hooks/useTheme";
+import { toast } from "sonner";
 
 export const columns: ColumnDef<User>[] = [
   {
@@ -130,7 +131,7 @@ export const columns: ColumnDef<User>[] = [
     cell: ({ row }) => {
       return (
         <div className="flex items-center">
-          <h2>{row.original.role.role_name}</h2>
+          <h2>{row.original.role?.role_name}</h2>
           {/* <SetStatusSection defaultValue={row.original.role.role_name} /> */}
         </div>
       );
@@ -202,6 +203,7 @@ export function ListEmployeeOfDepartment({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [globalFilter, setGlobalFilter] = useState("");
+  const [searchUser, setSearchUser] = useState<string>("");
   const styles = useThemeStyles();
 
   // select ตัวนี้ใช้กับ การที่ต้องการ select ข้อมูลทั้งตารางมาใช้ได้ในส่วนของ employee ในdepartment นั้นๆ
@@ -210,7 +212,7 @@ export function ListEmployeeOfDepartment({
   // select ตัวนี้ใช้กับ การที่ select addemployee เข้ามาเท่านั้น ไม่เกี่ยวข้องกับส่วนอื่น
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
-  const [usersEmptyDepartment, setUsersEmptyDepartment] = useState<any>([]);
+  const [usersEmptyDepartment, setUsersEmptyDepartment] = useState<User[]>([]);
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const handleToggle = (value: string) => {
@@ -220,7 +222,9 @@ export function ListEmployeeOfDepartment({
         : [...prev, value]
     );
   };
-
+  const showToast = (title: string, description: string) => {
+    toast(title, { description });
+  };
   const fetchUserEmptyDepartment = async () => {
     try {
       const response = await GlobalApi.findUserEmptyDepartment();
@@ -233,6 +237,10 @@ export function ListEmployeeOfDepartment({
   const onsubmitAddEmployee = async () => {
     try {
       setIsLoading(false);
+      showToast(
+        "กำลังดำเนิน",
+        "ระบบกำลังดำเนินการนำผู้ใช้งานที่ถูกเลือกเข้าไปยังหน่วยงานนี้ โปรดรอสักครู่..."
+      );
       const payload = {
         userIds: selectedItems, // selectedItems is an array of user IDs
         departmentId: department?.id,
@@ -242,6 +250,10 @@ export function ListEmployeeOfDepartment({
       const response = await GlobalApi.addUsersToDepartment(payload);
       if (response?.data) {
         fetchUserEmptyDepartment(); // รอให้ addUsersToDepartment เสร็จสิ้นก่อน แล้วเรียก fetch อีกครั้ง เพื่อให้แสดงผลเลย ไม่ต้อง reload
+        showToast(
+          "ดำเนินการเสร็จสิ้น",
+          "ระบบได้นำผู้ใช้งานที่ถูกเลือกเข้าไปยังหน่วยงานนี้แล้ว"
+        );
       }
       setIsLoading(true);
     } catch (error) {
@@ -261,12 +273,21 @@ export function ListEmployeeOfDepartment({
     };
 
     try {
+      showToast(
+        "กำลังดำเนิน",
+        "ระบบกำลังดำเนินการลบผู้ใช้งานที่ถูกเลือกออกจากหน่วยงานนี้ โปรดรอสักครู่..."
+      );
       const response = await GlobalApi.addUsersToDepartment(payload);
       if (response?.data) {
         fetchUserEmptyDepartment(); // รอให้ addUsersToDepartment เสร็จสิ้นก่อน แล้วเรียก fetch อีกครั้ง เพื่อให้แสดงผลเลย ไม่ต้อง reload
+        showToast(
+          "ดำเนินการเสร็จสิ้น",
+          "ระบบได้ลบผู้ใช้งานที่ถูกเลือกออกจากหน่วยงานนี้แล้ว"
+        );
       }
     } catch (error) {
       console.log("message:", { message: error });
+      handleErrorOnAxios(error);
     }
   };
 
@@ -378,20 +399,20 @@ export function ListEmployeeOfDepartment({
                     : true
                 }
               >
-                Removes
+                นำออกจากหน่วยงาน
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogTitle>คุณแน่ใจแล้วใช่ไหม?</AlertDialogTitle>
                 <AlertDialogDescription className="text-red-500">
-                  This action cannot be undone. This will permanently delete.
+                  ระบบจะดำเนินการนำผู้ใช้ที่คุณเลือกออกจากหน่วยงานนี้
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
                 <AlertDialogAction onClick={handleUpdateSelectedRows}>
-                  Continue
+                  ยืนยัน
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
@@ -410,22 +431,17 @@ export function ListEmployeeOfDepartment({
                   เพิ่มสมาชิก
                 </DialogTitle>
                 <DialogDescription>
-                  Make changes to your profile here. Click save when you're
-                  done.
+                  ผู้ใช้งานที่แสดงอยู่คือผู้ใช้งานที่ยังไม่ได้สังกัดหน่วยงานใดๆ
                 </DialogDescription>
               </DialogHeader>
               <div className="">
                 <div className="flex justify-between items-center ">
                   <Input
-                    className="max-w-[200px] h-8"
+                    className="max-w-[280px] h-8"
                     placeholder="Search Employee"
                     type="text"
+                    onChange={(e) => setSearchUser(e.target.value)}
                   />
-
-                  <div className="flex items-center space-x-2">
-                    <Switch id="gogo" />
-                    <Label htmlFor="gogo">Airplane Mode</Label>
-                  </div>
                 </div>
 
                 <ToggleGroup
@@ -439,45 +455,53 @@ export function ListEmployeeOfDepartment({
                   <Separator className="h-[.5px]" />
                   <div className="w-full sm:max-h-[400px] overflow-scroll scrollbar-gemini">
                     {usersEmptyDepartment.length > 0 ? (
-                      usersEmptyDepartment.map((item: any) => (
-                        <ToggleGroupItem
-                          key={item.id}
-                          value={item.id}
-                          aria-label="Toggle bold"
-                          className="py-2 justify-between h-auto w-full"
-                          onClick={() => handleToggle(item.id)}
-                        >
-                          <div className="flex items-center gap-2">
-                            <Image
-                              src={
-                                item.image ? item.image.url : "/profiletest.jpg"
-                              }
-                              width={80}
-                              height={80}
-                              alt="profile"
-                              className="w-[50px] h-[50px] object-cover rounded-full"
-                            />
-                            <ul className="text-left">
-                              <li>{item.name}</li>
-                              <li className="text-gray-500">
-                                {item.role.role_name}
-                              </li>
-                            </ul>
-                          </div>
-
-                          {selectedItems.includes(item.id) ? (
-                            <div className="p-1 bg-blue-500 rounded-full">
-                              <Check
-                                className="text-white"
-                                size={14}
-                                strokeWidth={4}
+                      usersEmptyDepartment
+                        .filter((f) =>
+                          f.name
+                            .toLowerCase()
+                            .includes(searchUser.toLowerCase())
+                        )
+                        .map((item) => (
+                          <ToggleGroupItem
+                            key={item.id}
+                            value={item.id}
+                            aria-label="Toggle bold"
+                            className="py-2 justify-between h-auto w-full"
+                            onClick={() => handleToggle(item.id)}
+                          >
+                            <div className="flex items-center gap-2">
+                              <Image
+                                src={
+                                  item.image
+                                    ? item.image.url
+                                    : "/profiletest.jpg"
+                                }
+                                width={80}
+                                height={80}
+                                alt="profile"
+                                className="w-[50px] h-[50px] object-cover rounded-full"
                               />
+                              <ul className="text-left">
+                                <li>{item.name}</li>
+                                <li className="text-gray-500">
+                                  {item.role.role_name}
+                                </li>
+                              </ul>
                             </div>
-                          ) : (
-                            <div className="p-1 w-[22px] h-[22px] border border-black rounded-full"></div>
-                          )}
-                        </ToggleGroupItem>
-                      ))
+
+                            {selectedItems.includes(item.id) ? (
+                              <div className="p-1 bg-blue-500 rounded-full">
+                                <Check
+                                  className="text-white"
+                                  size={14}
+                                  strokeWidth={4}
+                                />
+                              </div>
+                            ) : (
+                              <div className="p-1 w-[22px] h-[22px] border border-black rounded-full"></div>
+                            )}
+                          </ToggleGroupItem>
+                        ))
                     ) : (
                       <div>No items found.</div>
                     )}
@@ -491,7 +515,7 @@ export function ListEmployeeOfDepartment({
                     onClick={onsubmitAddEmployee}
                     disabled={selectedItems.length > 0 ? false : true}
                   >
-                    Comfirm
+                    บันทึกข้อมูล
                   </Button>
                 ) : (
                   <Button className="w-32 animate-pulse" type="button">
@@ -536,10 +560,13 @@ export function ListEmployeeOfDepartment({
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className={`${styles.background_third_head_table}`}>
+              <TableRow
+                key={headerGroup.id}
+                className={`${styles.background_third_head_table}`}
+              >
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id} >
+                    <TableHead key={header.id}>
                       {header.isPlaceholder
                         ? null
                         : flexRender(

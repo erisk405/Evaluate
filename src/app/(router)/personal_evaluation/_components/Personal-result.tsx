@@ -6,7 +6,7 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import GlobalApi from "@/app/_util/GlobalApi";
+import GlobalApi, { handleErrorOnAxios } from "@/app/_util/GlobalApi";
 import { getResultEvaluateType, PeriodType } from "@/types/interface";
 import CategorizedTable from "./categorizedTable";
 import OverviewOfResults from "./overview-of-results";
@@ -17,11 +17,17 @@ import useStore from "@/app/store/store";
 type Personal_resultProp = {
   period: PeriodType;
   userId?: string;
+  userRoleLevel?: string;
 };
 
-const Personal_result = ({ period, userId }: Personal_resultProp) => {
+const Personal_result = ({
+  period,
+  userId,
+  userRoleLevel,
+}: Personal_resultProp) => {
   const [loading, setLoading] = useState(false);
-  const [resultEvaluateDetail, setResultEvaluateDetail] = useState<getResultEvaluateType>();
+  const [resultEvaluateDetail, setResultEvaluateDetail] =
+    useState<getResultEvaluateType>();
   const { ProfileDetail } = useStore();
 
   const fetchResultEvaluateDetail = async () => {
@@ -51,6 +57,7 @@ const Personal_result = ({ period, userId }: Personal_resultProp) => {
       }
     } catch (error) {
       console.error("Failed to fetch evaluation details", error);
+      handleErrorOnAxios(error);
     } finally {
       setLoading(false);
     }
@@ -90,7 +97,10 @@ const Personal_result = ({ period, userId }: Personal_resultProp) => {
             {(["LEVEL_2", "LEVEL_3", "LEVEL_4"].includes(
               ProfileDetail.role?.role_level || ""
             ) ||
-              ProfileDetail.role?.role_name === "admin") && (
+              (ProfileDetail.role?.role_name === "admin" &&
+                ["LEVEL_2", "LEVEL_3", "LEVEL_4"].includes(
+                  userRoleLevel || ""
+                ))) && (
               <TabsTrigger value="individual-overview">
                 ภาพรวมของแต่ละบุคคล
               </TabsTrigger>

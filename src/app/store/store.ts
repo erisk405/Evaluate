@@ -17,6 +17,9 @@ interface StoreState {
   notificationCounts: number;
   setNotificationCount: (count: number | ((prev: number) => number)) => void;
 
+  countdownTime: number;
+  setCountdownTime: (time: number | ((prev: number) => number)) => void;
+
   showNotifications: boolean
   setShowNotifications: (showNotification: boolean) => void;
 
@@ -120,6 +123,12 @@ const useStore = create<StoreState>((set) => ({
         ? update(state.notificationCounts)
         : update,
     })),
+
+
+  countdownTime: 0,
+  setCountdownTime: (update: number | ((prev: number) => number)) => set((state) => ({
+    countdownTime: typeof update === "function" ? update(state.countdownTime) : update,
+  })),
 
 
 

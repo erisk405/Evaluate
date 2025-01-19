@@ -186,21 +186,33 @@ const RightSection = ({ permission, period }: RightSectionProps) => {
 
   const savePeriod = async (period_id: string) => {
     try {
-      const payload = {
-        period_id,
-      };
-      const response = await GlobalApi.saveEvaluationToHistory(payload);
-      // console.log("Save", response?.data);
       toast({
-        title: "ทำรายการสำเร็จ",
+        title: "กำลังดำเนินการ",
         description: (
           <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-x-auto">
             <code className="text-white whitespace-pre-wrap break-words">
-              บันทึกผลการประเมินเรียบร้อยแล้ว
+              ระบบกำลังดำเนินการเก็บข้อมูล โปรดรอสักครู่
             </code>
           </pre>
         ),
       });
+      const payload = {
+        period_id,
+      };
+      const response = await GlobalApi.saveEvaluationToHistory(payload);
+      console.log("Save", response);
+      if (response && response.status === 200) {
+        toast({
+          title: "ทำรายการสำเร็จ",
+          description: (
+            <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-x-auto">
+              <code className="text-white whitespace-pre-wrap break-words">
+                บันทึกผลการประเมินเรียบร้อยแล้ว
+              </code>
+            </pre>
+          ),
+        });
+      }
     } catch (error) {
       console.error("API saveEvaluationToHistory", { message: error });
       return handleErrorOnAxios(error);

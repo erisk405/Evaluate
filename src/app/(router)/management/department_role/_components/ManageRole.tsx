@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useState } from "react";
 import {
   Dialog,
@@ -59,7 +60,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import GlobalApi from "@/app/_util/GlobalApi";
+import GlobalApi, { handleErrorOnAxios } from "@/app/_util/GlobalApi";
 import EditRoleDialog from "./EditRoleDialog";
 import { toast } from "@/components/ui/use-toast";
 import { useThemeStyles } from "@/hooks/useTheme";
@@ -174,16 +175,9 @@ const ManageRole = () => {
       };
       setLoading(true);
       const response = await GlobalApi.updateRole(payload);
-      toast({
-        title: "อัพเดทเสร็จเรียบร้อยแล้ว ✅",
-        description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-x-auto">
-            <code className="text-white whitespace-pre-wrap break-words">
-              {JSON.stringify(response?.data.message, null, 2)}
-            </code>
-          </pre>
-        ),
-      });
+      if (!response) {
+        throw new Error("อัพเดทตำแหน่งล้มเหลว");
+      }
 
       // -----------------------------------------------------
       // update ข้อมูลของ Role พวก permission การจัดการ form ต่างๆ
@@ -193,6 +187,9 @@ const ManageRole = () => {
         permissions,
       };
       const responsePermis = await GlobalApi.updatePermission(data);
+      if (!response) {
+        throw new Error("อัพเดทการกำหนดสิทธิ์ล้มเหลว");
+      }
       console.log(responsePermis);
       fetchRole();
       setLoading(false);
@@ -209,31 +206,29 @@ const ManageRole = () => {
         ),
       });
     } catch (error) {
-      toast({
-        title: "เกิดข้อผิดพลาด",
-        description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 overflow-x-auto">
-            <code className="text-white whitespace-pre-wrap break-words">
-              {JSON.stringify({ message: error }, null, 2)}
-            </code>
-          </pre>
-        ),
-      });
+      handleErrorOnAxios(error);
     }
   };
 
   const deleteRole = async (id: string) => {
+    toast({
+      title: "กำลังดำเนินการ",
+      description: "ระบบกำลังดำเนินการลบ ตำแหน่ง นี้ออกจากฐานข้อมูล",
+    });
     try {
-      await GlobalApi.deleteRole(id);
+      const response = await GlobalApi.deleteRole(id);
+      console.log("response", response);
+      if (response && response.status === 201) {
+        toast({
+          title: "ดำเนินการเสร็จเรียบร้อย ✅",
+          description: "ระบบได้ลบ ตำแหน่ง นี้ออกจากฐานข้อมูลเรียบร้อยแล้ว",
+        });
+      }
       // อัพเดท roles ใน store หลังจากลบสำเร็จ
       const updatedRoles = roles.filter((role) => role.id !== id);
       setRole(updatedRoles);
       // อัพเดท permissions state ด้วย
       setPermissions({});
-      toast({
-        title: "ดำเนินการเสร็จเรียบร้อยแล้ว ✅",
-        description: "ระบบได้ลบ Role เรียบร้อยแล้ว",
-      });
     } catch (error: any) {
       console.log("error", { message: error });
 
@@ -268,9 +263,6 @@ const ManageRole = () => {
     }));
   };
 
-  // useEffect(() => {
-  //   console.log("permission", permissions);
-  // }, [permissions]);
   return (
     <div className={`@container ${styles.text}`}>
       <div className="flex justify-between items-center my-3">
@@ -303,7 +295,7 @@ const ManageRole = () => {
                 </div>
               </DialogTitle>
               <DialogDescription>
-                Make changes to your profile here. Click save when you're done.
+                ใช้ในจัดการสิทธิ์และรูปแบบฟอร์มที่จะใช้ในการประเมินต่างๆ
               </DialogDescription>
             </DialogHeader>
             <Form {...form}>
@@ -347,10 +339,21 @@ const ManageRole = () => {
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                <SelectItem value="LEVEL_1">Level 1 {"(ผู้ใช้งานทั่วไป)"}</SelectItem>
-                                <SelectItem value="LEVEL_2">Level 2 {"(ดูผลของผู้ใช้งานอื่นที่ตนเองสังกัดอยู่ได้)"}</SelectItem>
-                                <SelectItem value="LEVEL_3">Level 3 {"(กำกับดูแลหน่วยงานอื่นได้)"}</SelectItem>
-                                <SelectItem value="LEVEL_4">Level 4 {"(ดูผลภาพรวมได้)"}</SelectItem>
+                                <SelectItem value="LEVEL_1">
+                                  Level 1 {"(ผู้ใช้งานทั่วไป)"}
+                                </SelectItem>
+                                <SelectItem value="LEVEL_2">
+                                  Level 2{" "}
+                                  {
+                                    "(ดูผลของผู้ใช้งานอื่นที่ตนเองสังกัดอยู่ได้)"
+                                  }
+                                </SelectItem>
+                                <SelectItem value="LEVEL_3">
+                                  Level 3 {"(กำกับดูแลหน่วยงานอื่นได้)"}
+                                </SelectItem>
+                                <SelectItem value="LEVEL_4">
+                                  Level 4 {"(ดูผลภาพรวมได้)"}
+                                </SelectItem>
                               </SelectContent>
                             </Select>
                           </FormItem>
@@ -549,20 +552,20 @@ const ManageRole = () => {
                           <AlertDialogContent>
                             <AlertDialogHeader>
                               <AlertDialogTitle>
-                                Are you absolutely sure?
+                                คุณแน่ใจแล้วใช่ไหมฦ
                               </AlertDialogTitle>
                               <AlertDialogDescription className="text-red-500">
                                 การดำเนินการนี้ไม่สามารถย้อนกลับได้
-                                การดำเนินการนี้จะลบบัญชีของคุณอย่างถาวรและลบตำแหน่งนี้
+                                การดำเนินการนี้จะลบตำแหน่งนี้
                                 ออกจากเซิร์ฟเวอร์ของเรา
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
                               <AlertDialogAction
                                 onClick={() => deleteRole(item.id)}
                               >
-                                Continue
+                                ยืนยัน
                               </AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>
@@ -570,7 +573,7 @@ const ManageRole = () => {
                         <Dialog open={openUpdate} onOpenChange={setOpenUpdate}>
                           <DialogTrigger asChild>
                             <Button className="flex items-center gap-2 px-2 h-9 active:scale-95">
-                              <Settings2 size={18} /> กำหนดสิทธิ
+                              <Settings2 size={18} /> กำหนดสิทธิ์
                             </Button>
                           </DialogTrigger>
                           <DialogContent className="sm:max-w-[625px]">
@@ -583,15 +586,13 @@ const ManageRole = () => {
                                       className="text-blue-500"
                                     />
                                   </div>
-                                  <h2 className="text-xl">Edit role</h2>
+                                  <h2 className="text-xl">ตั้งค่าตำแหน่ง</h2>
                                 </div>
                               </DialogTitle>
                               <DialogDescription>
-                                Make changes to your profile here. Click save
-                                when you're done.
+                                ตั้งค่าตำแหน่งและกำหนดสิทธิ์ต่างๆในการใช้แบบฟอร์มการประเมิน
                               </DialogDescription>
                             </DialogHeader>
-
                             <EditRoleDialog
                               role={item} //ส่งค่า item ซึ่งเป็นข้อมูลของ role ปัจจุบันที่กำลังถูกแก้ไขไปยัง EditRoleDialog component
                               onUpdate={onUpdate} //ส่งฟังก์ชัน onUpdate ไปให้ EditRoleDialog เพื่อให้ component นี้เรียกใช้งานเมื่อต้องการอัปเดตข้อมูล role

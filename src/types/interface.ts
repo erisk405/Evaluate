@@ -35,6 +35,7 @@ interface dataDepartmentByAdmin {
   // เพิ่มข้อมูลที่จำเป็นตามโครงสร้างข้อมูลจริง
 }
 interface User {
+  [x: string]: number;
   id: string,
   prefix?: PrefixType,
   name: string,

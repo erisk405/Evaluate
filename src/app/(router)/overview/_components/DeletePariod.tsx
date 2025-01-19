@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
 import useStore from "@/app/store/store";
 import { PeriodType } from "@/types/interface";
+import { Loader } from "lucide-react";
 interface DeletePeriodAlertProps {
   openAlert: boolean;
   setOpenAlert: (openAlert: boolean) => void;
@@ -28,11 +29,17 @@ const DeletePariod = ({
   periodId,
 }: DeletePeriodAlertProps) => {
   const [check, setCheck] = useState(""); // check ให้แน่ใจว่าจะ Deleteจริงๆนะ
-
+  const [isLoading, setIsLoading] = useState(false);
   const { fetchCurrentPeriod } = useStore();
   const handleDelete = async () => {
+    setIsLoading(true);
     try {
       const response = await GlobalApi.deletePeriod(periodId);
+      if (!response) {
+        throw new Error(
+          "ดำเนินการไม่สำเร็จ ตรวจสอบให้แน่ใจว่ามีข้อมูลไหนเชื่อมโยงกับช่วงเวลานี้อยู่"
+        );
+      }
       setCheck("");
       toast({
         title: "ระบบได้ลบช่วงเวลาในการประเมินนี้แล้ว",
@@ -56,6 +63,8 @@ const DeletePariod = ({
           </pre>
         ),
       });
+    } finally {
+      setIsLoading(false);
     }
   };
   return (
@@ -66,26 +75,31 @@ const DeletePariod = ({
       <AlertDialog open={openAlert} onOpenChange={setOpenAlert}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogTitle>คุณแน่ใจแล้วใช่ไหม?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete your
-              account and remove your data from our servers.
+              ระบบจะดำเนินการลบช่วงเวลานี้ออกจากฐานข้อมูลโดยถาวร
             </AlertDialogDescription>
           </AlertDialogHeader>
           <Label className="text-red-500">
-            If you're sure please typing "Delete"
+            หากคุณแน่ใจให้พิมพ์คำว่า "Delete"
           </Label>
           <Input
             onChange={(e) => setCheck(e.target.value)}
             placeholder="Delete"
           />
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => handleDelete()}
               disabled={check !== "Delete"}
             >
-              Continue
+              {isLoading ? (
+                <div>
+                  <Loader className="animate-spin" />
+                </div>
+              ) : (
+                "ยืนยัน"
+              )}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

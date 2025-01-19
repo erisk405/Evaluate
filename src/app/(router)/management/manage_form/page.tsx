@@ -5,6 +5,7 @@ import {
   DiscAlbum,
   EllipsisVertical,
   GitFork,
+  Loader,
   Logs,
   MessageCircleQuestion,
   Plus,
@@ -62,7 +63,6 @@ enum SideBarEditSection {
 }
 
 const page = () => {
-  const { roles, setRole } = useStore();
   const [slideStates, setSlideStates] = useState<SlideStates>({});
   const [formState, setFormState] = useState<formStates[]>([]);
   const { openForm, setOpenForm } = useStore();
@@ -96,6 +96,7 @@ const page = () => {
 
   // เพื่อให้ง่ายเรางานกด create โดยไม่ต้องใส่ชื่อมาเลย จะให้ใส่ชื่อภายหลัง ในส่วนของการเพิ่มฟอร์ม
   const addForm = async (name: string) => {
+    setLoading(true);
     try {
       const response = await GlobalApi.createForm(name);
       const newform = response?.data.form;
@@ -107,6 +108,8 @@ const page = () => {
     } catch (error: any) {
       console.error({ message: error });
       handleApiError(error, "Error while creating form");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -126,15 +129,12 @@ const page = () => {
 
   // แสดงรายการแบบฟอร์มทั้งหมเ
   const fetchForm = async () => {
-    setLoading(true);
     try {
       const response = await GlobalApi.getForm();
       // console.log("form", response?.data);
       setFormState(response?.data);
     } catch (error) {
       console.error({ message: error });
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -336,8 +336,16 @@ const page = () => {
               className="w-full h-10 active:scale-95 transition-all mt-3 select-none gap-2"
               onClick={() => addForm("untitle_" + (formState.length + 1))}
             >
-              <Plus />
-              เพิ่มแบบฟอร์ม
+              {loading ? (
+                <div>
+                  <Loader className="animate-spin" />
+                </div>
+              ) : (
+                <div className="flex gap-2 items-center">
+                  <Plus />
+                  เพิ่มแบบฟอร์ม
+                </div>
+              )}
             </Button>
           </div>
           <div className="col-span-5 @[65rem]:col-span-3 p-5 grid ">

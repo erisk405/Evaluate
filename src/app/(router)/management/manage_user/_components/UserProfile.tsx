@@ -17,14 +17,16 @@ import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import { Check, Loader, Mail } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "@/components/ui/use-toast";
-import GlobalApi from "@/app/_util/GlobalApi";
+import GlobalApi, { handleErrorOnAxios } from "@/app/_util/GlobalApi";
 import SetRoleUserOptions from "./SetRoleUserOptions";
 import SetDepartmentUserOptions from "./SetDepartmentUserOptions";
 import SetPrefixSelection from "@/app/_components/SetPrefixSelection";
 import { useProfileComparison } from "@/app/lib/adapters/user-profile/useProfileComparison";
 import { ProfileDetailType } from "@/app/lib/adapters/user-profile/types";
+import { Department } from "@/types/interface";
+import useStore from "@/app/store/store";
 
 const formSchema = z.object({
   image: z
@@ -68,6 +70,8 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const { departments } = useStore();
+
   //  image
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
@@ -136,6 +140,7 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
       console.log("error", { message: error });
     }
   }
+
   const isProfileUnchanged = useProfileComparison(form.getValues(), userDetail);
   return (
     <div className="">
@@ -317,12 +322,23 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
                     <FormControl className="col-span-8">
                       <div className="relative">
                         <div className="flex items-center gap-3">
-                          <SetDepartmentUserOptions
-                            isAdmin={userDetail.role?.role_name === "admin"}
-                            defaultValue={userDetail.department || undefined}
-                            value={field.value ?? ""}
-                            onChange={field.onChange}
-                          />
+                          {departments.length > 0 ? (
+                            <SetDepartmentUserOptions
+                              isAdmin={userDetail.role?.role_name === "admin"}
+                              defaultValue={
+                                userDetail.department as Department | undefined
+                              }
+                              value={field.value ?? ""}
+                              onChange={field.onChange}
+                            />
+                          ) : (
+                            <div>
+                              <Input
+                                disabled
+                                placeholder="ไม่พบรายการหน่วยงาน"
+                              />
+                            </div>
+                          )}
                         </div>
                       </div>
                     </FormControl>

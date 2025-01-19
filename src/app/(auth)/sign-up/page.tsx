@@ -41,35 +41,34 @@ import {
 } from "@/components/ui/select";
 import GlobalApi, { apiUrl } from "@/app/_util/GlobalApi";
 import { Department } from "@/types/interface";
-import { useThemeStyles } from "@/hooks/useTheme";
 
 const formSchema = z
   .object({
     FirstName: z.string().min(2, {
-      message: "First name must be at least 2 characters.",
+      message: "ต้องมีอย่างน้อย 2 ตัวอักษร",
     }),
     LastName: z.string().min(2, {
-      message: "Last name must be at least 2 characters.",
+      message: "ต้องมีอย่างน้อย 2 ตัวอักษร",
     }),
     email: z.string().email({
-      message: "Email must be a valid email address.",
+      message: "กรอกที่อยู่อีเมลให้ถูกต้อง",
     }),
     phoneNumber: z.string().regex(/^(\+\d{1,3}[- ]?)?\d{10}$/, {
-      message: "Phone number must be a valid format.",
+      message: "หมายเลขโทรศัพท์ต้องอยู่ในรูปแบบที่ถูกต้อง",
     }),
     password: z
       .string()
       .min(8, {
-        message: "Password must be at least 8 characters long.",
+        message: "รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัวอักษร",
       })
       .regex(/[a-z]/, {
-        message: "Password must contain at least one lowercase letter.",
+        message: "รหัสผ่านจะต้องมีตัวอักษรพิมพ์เล็กอย่างน้อยหนึ่งตัว",
       })
       .regex(/[A-Z]/, {
-        message: "Password must contain at least one uppercase letter.",
+        message: "รหัสผ่านต้องมีอักษรตัวพิมพ์ใหญ่อย่างน้อยหนึ่งตัว",
       })
       .regex(/[0-9]/, {
-        message: "Password must contain at least one number.",
+        message: "รหัสผ่านต้องมีตัวเลขอย่างน้อยหนึ่งตัว",
       }),
     confirmPassword: z.string(),
     prefix: z.string().optional(),
@@ -329,14 +328,14 @@ const page = () => {
                   {loading ? (
                     <Loader className="animate-spin" />
                   ) : (
-                    "Create an account"
+                    "สร้างบัญชี"
                   )}
                 </Button>
               </div>
               <div className="mt-4 text-center text-sm">
                 หากคุณมีบัญชีที่พร้อมใช้งานแล้ว{" "}
                 <Link href="/sign-in" className="underline">
-                  Sign in
+                  เข้าสู่ระบบที่นี่
                 </Link>
               </div>
             </CardContent>

@@ -74,9 +74,6 @@ const EditRoleDialog = ({
     },
   });
 
-  useEffect(() => {
-    console.log("defaultPermissions", role.permissionsAsAssessor); // สามารถใช้ เป็น defaultValue ของ Permissions ได้
-  }, []);
   return (
     <Form {...form}>
       <form
@@ -227,7 +224,7 @@ const EditRoleDialog = ({
           )}
         />
         {!loading ? (
-          <Button type="submit">Save Change</Button>
+          <Button type="submit">บันทึกข้อมูล</Button>
         ) : (
           <Button className="animate-pulse" type="button">
             <Loader className="animate-spin" />

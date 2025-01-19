@@ -39,7 +39,7 @@ export default function FormOption({
   const [searchTerm, setSearchTerm] = useState("");
   // ใช้ useRef เพื่อบันทึกสถานะการตั้งค่า defaultValues
   const toggleValue = (selectedName: string) => {
-     // หารายการที่ตรงกับชื่อที่เลือก
+    // หารายการที่ตรงกับชื่อที่เลือก
     const selectedItem = form.find((item) => item.name === selectedName);
     if (!selectedItem) return;
 
@@ -69,8 +69,6 @@ export default function FormOption({
   // Set default values to selectedValues on mount
   // จัดการค่า defaultValues เมื่อคอมโพเนนต์ถูกโหลด
 
-
-  
   useEffect(() => {
     if (defaultValues.length > 0) {
       setSelectedValues(defaultValues);
@@ -89,26 +87,26 @@ export default function FormOption({
           className="w-full justify-between"
         >
           {selectedValues?.length > 0
-            ? `Selected ${selectedValues.length} form(s)`
-            : "Select form..."}
+            ? `เลือก ${selectedValues.length} แบบฟอร์ม(s)`
+            : "เลือกแบบฟอร์ม..."}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
         <Command>
-        {/* ช่องค้นหา */}
+          {/* ช่องค้นหา */}
           <CommandInput
-            placeholder="Search form..."
+            placeholder="ค้นหาแบบฟอร์ม..."
             value={searchTerm}
-            onValueChange={setSearchTerm}  // อัพเดทค่า searchTerm เมื่อพิมพ์
+            onValueChange={setSearchTerm} // อัพเดทค่า searchTerm เมื่อพิมพ์
           />
           {/* ข้อความเมื่อไม่พบรายการ */}
-          <CommandEmpty>No framework found.</CommandEmpty>
+          <CommandEmpty>ไม่พบแบบฟอร์ม.</CommandEmpty>
           <CommandGroup>
             <CommandList>
               {form &&
                 form
-                // กรองรายการตาม searchTerm
+                  // กรองรายการตาม searchTerm
                   .filter((item) =>
                     item.name.toLowerCase().includes(searchTerm.toLowerCase())
                   )

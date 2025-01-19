@@ -202,7 +202,7 @@ export function ListEmployee({ allUser, fetchUserList }: ListEmployeeProp) {
       accessorKey: "role",
       header: "ตำแหน่ง",
       cell: ({ row }) => {
-        const role_name = row.original.role.role_name;
+        const role_name = row.original.role?.role_name;
         return (
           <div
             className={`capitalize inline-flex items-center gap-2 p-2 rounded-lg 
