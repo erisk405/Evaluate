@@ -144,6 +144,18 @@ const updateUserImage = async (
   });
 };
 
+// New function to update user image
+const updateUserImageForAdmin = async (
+  formData: FormData,
+  userId:string
+): Promise<AxiosResponse<any>> => {
+  return await apiClient.put(`${apiUrl}/imageUser/${userId}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+
 const getAllUsers = async () => {
   try {
     return await apiClient.get(`${apiUrl}/allUsers`, {
@@ -846,5 +858,6 @@ export default {
   joinDepartment,
   deleteUserByAdmin,
   deleteDepartment,
-  deleteSupervise
+  deleteSupervise,
+  updateUserImageForAdmin
 };

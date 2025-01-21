@@ -111,7 +111,7 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
       if (values.image) {
         formData.append("image", values.image);
         try {
-          const response = await GlobalApi.updateUserImage(formData);
+          const response = await GlobalApi.updateUserImageForAdmin(formData,userDetail.id!);
           console.log(response);
           // const { id, name, image, email, role } = response.data;
         } catch (error) {
