@@ -19,7 +19,7 @@ export default function RootLayout({
         <body className={`${notoSansThai.className} relative`}>
           <ThemeProvider
             attribute="class"
-            defaultTheme="system"
+            defaultTheme="light"
             enableSystem
             disableTransitionOnChange
           >

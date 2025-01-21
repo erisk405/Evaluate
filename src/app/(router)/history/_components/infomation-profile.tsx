@@ -86,8 +86,8 @@ const InfomationProfile = () => {
           <div className="flex items-center gap-2">
             <span className="p-1 bg-neutral-300  text-xl rounded-full">📧</span>
             <div className="grid grid-cols-1 leading-4">
-              <p className="text-sm text-gray-500">สังกัดอยู่ที่</p>
-              <h2 className="text-sm">{ProfileDetail.email}</h2>
+              <p className="text-sm text-gray-500">ที่อยู่อีเมล</p>
+              <h2 className="text-sm">{ProfileDetail?.email}</h2>
             </div>
           </div>
           <Separator className="my-2" />
@@ -95,7 +95,7 @@ const InfomationProfile = () => {
             <span className="p-1 bg-neutral-300  text-xl rounded-full">📱</span>
             <div className="grid grid-cols-1 leading-4">
               <p className="text-sm text-gray-500">เบอร์โทรศัพท์</p>
-              <h2 className="text-sm">0906652652</h2>
+              <h2 className="text-sm">{ProfileDetail?.phone}</h2>
             </div>
           </div>
         </div>
