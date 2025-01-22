@@ -53,7 +53,6 @@ interface EvaluateSection {
 }
 
 const SCORE_OPTIONS = [5, 4, 3, 2, 1];
-const DEFAULT_SCORE = "3";
 
 const EvaluateSection: React.FC<EvaluateSection> = ({
   evaluatorUserTarget,
@@ -126,10 +125,21 @@ const EvaluateSection: React.FC<EvaluateSection> = ({
     }
   };
   const handleSubmit = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
       if (!payload || !currentlyEvaluationPeriod) {
         throw new Error("Missing required data");
+      }
+      // Check for unanswered questions first
+      const questionsWithMissingScores = Object.values(payload).flatMap(
+        (item) => item.question.filter((q) => !q.score)
+      );
+      if (questionsWithMissingScores.length > 0) {
+        // If there are questions without scores, show error message
+        const missingQuestions = questionsWithMissingScores
+          .map((q) => q.content)
+          .join(", ");
+        throw new Error(`กรุณาลงคะแนนให้ครบทุกข้อ ท่านยังไม่ลงคะแนนอีก${questionsWithMissingScores.length}ข้อ : ${missingQuestions}`);
       }
       // is created evaluation
       if (!defaultScoreOfUserHasEval) {
@@ -145,7 +155,7 @@ const EvaluateSection: React.FC<EvaluateSection> = ({
           evaluator_id: evaluatorUserTarget.id,
           questions, // ตอนแรกเป็นarrays เลยส่งไปแบบ object ที่มีความสัมพันธ์แบบ key value
         };
-        console.log("data", data);
+        // console.log("payload", payload);
 
         await GlobalApi.createEvaluate(data);
         // console.log("response", response);
@@ -172,13 +182,13 @@ const EvaluateSection: React.FC<EvaluateSection> = ({
               : null;
           })
           .filter((item): item is detailsType => item !== null); // Type guard เพื่อให้ TypeScript รู้ว่า filter แล้วจะได้ detailsType แน่ๆ
-        console.log("details", detailsUpdate);
+        // console.log("details", detailsUpdate);
 
         const response = await GlobalApi.updateEvaluate({
           evaluate_id: defaultScoreOfUserHasEval.id,
           details: detailsUpdate,
         });
-        console.log("response", response);
+        // console.log("response", response);
 
         toast({
           title: "บันทึกข้อมูลเรียบร้อยแล้ว",
@@ -211,10 +221,12 @@ const EvaluateSection: React.FC<EvaluateSection> = ({
         : "เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ";
 
       toast({
-        title: "เกิดข้อผิดพลาด",
+        title: "โปรดตรวจสอบข้อมูลให้แน่ใจ",
         description: errorMessage,
         variant: "destructive",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -256,7 +268,7 @@ const EvaluateSection: React.FC<EvaluateSection> = ({
         return {
           questionId: defaultScore?.formQuestion.id || item.id,
           content: defaultScore?.formQuestion.content || item.content,
-          score: defaultScore?.score.toString() || DEFAULT_SCORE,
+          score: defaultScore?.score?.toString() || "",
         };
       });
       return {
@@ -286,7 +298,7 @@ const EvaluateSection: React.FC<EvaluateSection> = ({
         </h2>
       </div>
       <div
-        className={` ${styles.text+" "+styles.background_secondary} my-4`}
+        className={` ${styles.text + " " + styles.background_secondary} my-4`}
       >
         <div className="rounded-lg border">
           <Table>
@@ -295,19 +307,13 @@ const EvaluateSection: React.FC<EvaluateSection> = ({
               <TableRow
                 className={`text-lg ${styles.background_head_table} w-full`}
               >
-                <TableHead
-                  className={`text-lg w-[100px]  ${styles.text}`}
-                >
+                <TableHead className={`text-lg w-[100px]  ${styles.text}`}>
                   ลำดับ
                 </TableHead>
-                <TableHead
-                  className={`text-lg ${styles.text }`}
-                >
+                <TableHead className={`text-lg ${styles.text}`}>
                   ข้อคำถาม
                 </TableHead>
-                <TableHead
-                  className={`text-lg text-center ${styles.text}`}
-                >
+                <TableHead className={`text-lg text-center ${styles.text}`}>
                   ลงคะแนน
                 </TableHead>
               </TableRow>
