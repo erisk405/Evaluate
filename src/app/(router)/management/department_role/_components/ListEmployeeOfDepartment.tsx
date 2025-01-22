@@ -119,6 +119,7 @@ export const columns: ColumnDef<User>[] = [
           height={40}
           alt="profiletable"
           className="w-[40px] h-[40px] rounded-full object-cover"
+          unoptimized={true} // Try this if Next.js image optimization is causing issues
         />
         {row.original.prefix?.prefix_name ?? ""}
         {row.getValue("name")}

@@ -168,28 +168,20 @@ export function ListEmployee({ allUser, fetchUserList }: ListEmployeeProp) {
       accessorKey: "name",
       header: "ชื่อ-นามสกุล",
       cell: ({ row }) => {
-        const image = row.original.image;
-        // console.log("image :", image);
-
+        console.log("ชื่อ :", row.original.name);
+        console.log("image :", row.original.image?.url);
+        console.log('Full row data:', row.original);
+        console.log('Image object:', row.original.image);
         return (
           <div className="capitalize flex items-center gap-3">
-            {image?.url ? (
-              <Image
-                src={image?.url}
-                width={40}
-                height={40}
-                alt="profiletable"
-                className="w-[40px] h-[40px] rounded-full object-cover"
-              />
-            ) : (
-              <Image
-                src="/profiletest.jpg"
-                width={50}
-                height={50}
-                alt="profiletable"
-                className="w-[40px] h-[40px] rounded-full object-cover"
-              />
-            )}
+            <Image
+              src={`${row.original.image?.url || '/profiletest.jpg'}`}
+              width={40}
+              height={40}
+              alt="profiletable"
+              className="w-[40px] h-[40px] rounded-full object-cover"
+              unoptimized={true} // Try this if Next.js image optimization is causing issues
+            />
             <h2 className="truncate">
               {row.original.prefix?.prefix_name}
               {row.getValue("name")}
@@ -420,6 +412,11 @@ export function ListEmployee({ allUser, fetchUserList }: ListEmployeeProp) {
       handleErrorOnAxios(error);
     }
   };
+  // Add these debug logs
+useEffect(() => {
+  console.log('All users:', allUser);
+  console.log('Filtered users:', filterUserDept);
+}, [allUser, filterUserDept]);
   return (
     <div className="w-full ">
       <div className="flex flex-wrap gap-3 items-center mb-3">

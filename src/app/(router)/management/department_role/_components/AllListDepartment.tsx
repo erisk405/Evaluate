@@ -89,7 +89,8 @@ const AllListDepartment = ({
                         <h2>
                           {
                             item?.user?.filter(
-                              (users) => users.role?.role_name === role?.role_name
+                              (users) =>
+                                users.role?.role_name === role?.role_name
                             ).length
                           }{" "}
                           คน

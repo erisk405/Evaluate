@@ -223,11 +223,12 @@ const page = () => {
                       <div className="text-white w-full group-hover:text-white z-10">
                         <div className="flex gap-3">
                           <Image
-                            src={"/profiletest.jpg"}
+                            src={item?.image?.url ||"/profiletest.jpg"}
                             width={100}
                             height={100}
                             alt="imageProsiden"
                             className="w-[70px] h-[80px] object-cover rounded-xl"
+                            unoptimized={true} // Try this if Next.js image optimization is causing issues
                           />
                           <div>
                             <h2 className="text-md text-gray-300">

@@ -55,7 +55,7 @@ const BarChartMultiple = () => {
       className={`rounded-2xl ${styles.text} ${styles.background} h-auto shadow border-none`}
     >
       <CardHeader>
-        <CardTitle>จำนวนผู้ประเมินในแต่ละวัน</CardTitle>
+        <CardTitle>แท่งชาร์ตแสดงสถานะผู้ที่ต้องประเมินผล</CardTitle>
         <CardDescription>
           {currentlyEvaluationPeriod?.title}
           {" ตั้งแต่วันที่ "}

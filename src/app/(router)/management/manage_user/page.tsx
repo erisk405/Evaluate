@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { ListEmployee } from "./_components/ListAllUser";
-import GlobalApi from "@/app/_util/GlobalApi";
+import GlobalApi, { handleErrorOnAxios } from "@/app/_util/GlobalApi";
 import useStore from "@/app/store/store";
 import { User } from "@/types/interface";
 import { useThemeStyles } from "@/hooks/useTheme";
@@ -30,10 +30,11 @@ const page = () => {
   const fetchUserList = async () => {
     try {
       const response = await GlobalApi.getAllUsers();
-      // console.log("AllUser", response?.data);
+      console.log("AllUser", response?.data);
       setAllUser(response?.data);
     } catch (error) {
       console.error({ message: error });
+      handleErrorOnAxios(error);
     }
   };
 
@@ -47,7 +48,8 @@ const page = () => {
     {
       id: "OEP02",
       name: "ยังไม่ระบุตำแหน่งงาน",
-      quantity: allUser.filter((fil) => fil.role?.role_name === "member").length,
+      quantity: allUser.filter((fil) => fil.role?.role_name === "member")
+        .length,
       color: "from-green-200 to-emerald-300",
     },
     {
