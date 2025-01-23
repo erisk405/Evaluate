@@ -207,6 +207,7 @@ const ResultUserList = ({ period }: { period: PeriodType }) => {
                     <MainResultHistory
                       period={period}
                       userId={row.original.id}
+                      userRoleLevel={row.original.role.role_level}
                     />
                   </div>
                 </div>

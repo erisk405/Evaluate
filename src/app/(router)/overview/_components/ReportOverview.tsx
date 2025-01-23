@@ -280,6 +280,7 @@ const ReportOverview = () => {
                         height={30}
                         alt="hover profile"
                         className="rounded-lg w-[30px] h-[30px] object-cover"
+                        unoptimized={true}
                       />
                       {item.user.prefix?.prefix_name}
                       {item.user.name}

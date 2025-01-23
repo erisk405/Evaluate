@@ -42,17 +42,16 @@ export const CursorContent = ({
     >
       <div className="flex items-center gap-2 ">
         <Image
-          src={item.image  && item.image.url || "/test.png"}
+          src={(item.image && item.image.url) || "/test.png"}
           width={50}
           height={50}
           alt="hover profile"
           className="rounded-lg w-[50px] h-[50px] object-cover"
+          unoptimized={true}
         />
         <div>
           <p className="font-bold text-sm">{item.department}</p>
-          <p
-            className={`text-xs ${styles.text_description}`}
-          >
+          <p className={`text-xs ${styles.text_description}`}>
             Completed: {item.totalFinished}/{item.totalUsers}
           </p>
         </div>
@@ -60,9 +59,7 @@ export const CursorContent = ({
 
       <hr className="my-1" />
       <div className="pl-6">
-        <p
-          className={`font-bold ${styles.text_description} text-sm`}
-        >
+        <p className={`font-bold ${styles.text_description} text-sm`}>
           กำกับดูแลโดย
         </p>
         <div className="grid grid-cols-5 items-center gap-2">
@@ -77,6 +74,7 @@ export const CursorContent = ({
               height={25}
               alt="hover profile"
               className="rounded-full w-[25px] h-[25px] object-cover mx-auto"
+              unoptimized={true}
             />
           ) : (
             <CircleOff size={18} className="mx-auto" />
@@ -145,6 +143,7 @@ const InfoOfDepartmentEval = () => {
             alt="bannerDepartment"
             src={item?.image ? item?.image.url : "/test.png"}
             className="w-full h-full object-cover"
+            unoptimized={true}
           />
         </div>
         <div className="grid grid-cols-1 col-span-7">
@@ -210,6 +209,7 @@ const InfoOfDepartmentEval = () => {
                       height={50}
                       className="rounded-lg w-[50px] h-[50px] object-cover "
                       alt="unfinishProfile"
+                      unoptimized={true}
                     />
                     <div className="text-sm">
                       <h2>{item.name}</h2>

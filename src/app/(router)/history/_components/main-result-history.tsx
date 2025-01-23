@@ -21,13 +21,21 @@ import {
 import Loading from "@/app/_components/Loading";
 import OverviewHistoryResult from "./overview-history-result";
 import CategorizedHistoryTable from "./categorized-history-table";
+import useStore from "@/app/store/store";
+import IndividualOverview from "../../personal_evaluation/_components/individual-overview";
 
 type MainResultHistoryProp = {
   period: PeriodType;
   userId?: string; // เมื่อ admin ส่งมา
+  userRoleLevel?: string;
 };
-const MainResultHistory = ({ period, userId }: MainResultHistoryProp) => {
+const MainResultHistory = ({
+  period,
+  userId,
+  userRoleLevel,
+}: MainResultHistoryProp) => {
   const [loading, setLoading] = useState(false);
+  const { ProfileDetail } = useStore();
   const [resultHistoryDetail, setResultHistoryDetail] =
     useState<historyResult>();
 
@@ -90,7 +98,18 @@ const MainResultHistory = ({ period, userId }: MainResultHistoryProp) => {
               <TabsTrigger value={`${item.detailId}`} key={index + "trigger"}>
                 {item.formName}
               </TabsTrigger>
-            ))}
+            ))}{" "}
+            {(["LEVEL_2", "LEVEL_3", "LEVEL_4"].includes(
+              ProfileDetail.role?.role_level || ""
+            ) ||
+              (ProfileDetail.role?.role_name === "admin" &&
+                ["LEVEL_2", "LEVEL_3", "LEVEL_4"].includes(
+                  userRoleLevel || ""
+                ))) && (
+              <TabsTrigger value="individual-overview">
+                ภาพรวมของแต่ละบุคคล
+              </TabsTrigger>
+            )}
           </TabsList>
         </div>
         <TabsContent value="all-result">
@@ -101,6 +120,14 @@ const MainResultHistory = ({ period, userId }: MainResultHistoryProp) => {
             <CategorizedHistoryTable formHistoryResultsItem={item} />
           </TabsContent>
         ))}
+        {(["LEVEL_2", "LEVEL_3", "LEVEL_4"].includes(
+          ProfileDetail.role?.role_level || ""
+        ) ||
+          ProfileDetail.role?.role_name === "admin") && (
+          <TabsContent value="individual-overview">
+            <IndividualOverview period={period} userId={userId} />
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   ) : (

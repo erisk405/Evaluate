@@ -141,11 +141,12 @@ const page = () => {
     >
       <div className="hidden bg-muted lg:block overflow-hidden">
         <Image
-          src="/wallpaperLogin.jpg"
+          src="/wallpaperLogin.png"
           alt="Image"
-          width="1920"
-          height="1080"
+          width={1280}
+          height={980}
           className="h-full w-full object-cover"
+          unoptimized={true}
         />
       </div>
       <Form {...form}>
@@ -303,6 +304,10 @@ const page = () => {
                           type="password"
                         />
                       </FormControl>
+                      <span className="text-sm">
+                        รหัสผ่านต้องมี 8 ตัวขึ้นไป มีตัวพิมพ์เล็ก พิมพ์ใหญ่
+                        และตัวเลขอย่างน้อย 1 ตัว*
+                      </span>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -325,11 +330,7 @@ const page = () => {
                   )}
                 />
                 <Button type="submit" className="w-full">
-                  {loading ? (
-                    <Loader className="animate-spin" />
-                  ) : (
-                    "สร้างบัญชี"
-                  )}
+                  {loading ? <Loader className="animate-spin" /> : "สร้างบัญชี"}
                 </Button>
               </div>
               <div className="mt-4 text-center text-sm">

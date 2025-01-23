@@ -197,11 +197,12 @@ const page = () => {
       </div>
       <div className="hidden bg-muted lg:block overflow-hidden">
         <Image
-          src="/wallpaperLogin.jpg"
+          src="/wallpaperLogin.png"
           alt="Image"
-          width="1920"
-          height="1080"
+          width={1280}
+          height={980}
           className="h-full w-full object-cover "
+          unoptimized={true}
         />
       </div>
     </div>

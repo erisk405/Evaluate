@@ -52,7 +52,7 @@ const RadarChartSection = () => {
       <CardHeader className="items-center pb-4">
         <CardTitle className="">แผนภูมิเรดาร์</CardTitle>
         <CardDescription>
-          แสดงจำนวนผู้ประเมินในแต่ละวัน
+          แสดงจำนวนผู้ประเมินในแต่ละรอบ
         </CardDescription>
       </CardHeader>
       <CardContent className="pb-0">

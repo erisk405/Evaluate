@@ -120,7 +120,16 @@ const Personal_result = ({
         ) ||
           ProfileDetail.role?.role_name === "admin") && (
           <TabsContent value="individual-overview">
-            <IndividualOverview period={period} userId={userId} />
+            {period.backUp ? (
+              <IndividualOverview period={period} userId={userId} />
+            ) : (
+              <div className="flex flex-col justify-center items-center w-full h-96 gap-5">
+                <p className="animate-wiggle-float text-6xl">🌟</p>
+                <h2 className="text-3xl">
+                  รอประมวลผลอีกครั้งหลังเสร็จสิ้นการประเมิน
+                </h2>
+              </div>
+            )}
           </TabsContent>
         )}
       </Tabs>

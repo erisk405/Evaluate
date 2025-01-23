@@ -144,8 +144,9 @@ const OverviewHistoryResult = ({
     <div className="mx-auto w-full max-w-screen-2xl">
       <div className="">
         {formResultsByVisionLevel &&
-          Object.entries(formResultsByVisionLevel.formResults).reverse().map(
-            ([vesion_level, vision]) => (
+          Object.entries(formResultsByVisionLevel.formResults)
+            .sort((a, b) => (a[0] === "VISION_2" ? -1 : 1)) //ถ้าได้ -1 หมายถึง a มาก่อน b  แต่ถ้าได้ 1 หมายถึง b มาก่อน a แล้วถ้าได้ 0 หมายถึง ค่าเท่ากัน
+            .map(([vesion_level, vision]) => (
               <div
                 key={vesion_level}
                 className={`my-5  ${
@@ -254,8 +255,7 @@ const OverviewHistoryResult = ({
                   </TableBody>
                 </Table>
               </div>
-            )
-          )}
+            ))}
         <div className="w-full">
           <div className="lg:w-[70%] mx-auto">
             <Table className="border rounded-lg ">
@@ -350,7 +350,7 @@ const OverviewHistoryResult = ({
         <div className="mx-auto w-full max-w-lg">
           <DrawerFooter>
             <DrawerClose asChild>
-              <Button variant="outline">Cancel</Button>
+              <Button variant="outline">ตกลง</Button>
             </DrawerClose>
           </DrawerFooter>
         </div>
