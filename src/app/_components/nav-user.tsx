@@ -67,6 +67,7 @@ export function NavUser() {
         roleRequests,
         department,
         phone,
+        supervise,
       } = response.data;
       // console.log("responseNev-User", response.data);
 
@@ -80,6 +81,7 @@ export function NavUser() {
         roleRequests,
         phone,
         department: department || null,
+        supervise,
       });
     } catch (error) {
       console.error("Error fetching user profile:", error);

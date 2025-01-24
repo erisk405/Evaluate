@@ -69,6 +69,7 @@ const EvaluateSection: React.FC<EvaluateSection> = ({
   const [payloadForUpdate, setPayloadForUpdate] = useState<
     Array<{ question_id: string; score: string }>
   >([]);
+  const params = useParams<{ departmentId: string }>();
   const { ProfileDetail, currentlyEvaluationPeriod } = useStore();
   const styles = useThemeStyles();
 
@@ -139,7 +140,9 @@ const EvaluateSection: React.FC<EvaluateSection> = ({
         const missingQuestions = questionsWithMissingScores
           .map((q) => q.content)
           .join(", ");
-        throw new Error(`กรุณาลงคะแนนให้ครบทุกข้อ ท่านยังไม่ลงคะแนนอีก${questionsWithMissingScores.length}ข้อ : ${missingQuestions}`);
+        throw new Error(
+          `กรุณาลงคะแนนให้ครบทุกข้อ ท่านยังไม่ลงคะแนนอีก${questionsWithMissingScores.length}ข้อ : ${missingQuestions}`
+        );
       }
       // is created evaluation
       if (!defaultScoreOfUserHasEval) {
@@ -230,20 +233,43 @@ const EvaluateSection: React.FC<EvaluateSection> = ({
     }
   };
 
+  const SupervisionService = {
+    isUserSupervisor: (
+      currentUser: typeof ProfileDetail,
+      targetUser: typeof evaluatorUserTarget
+    ): boolean => {
+      // Ensure supervise array exists and handle potential undefined
+      const currentUserSupervises = currentUser.supervise || [];
+      const targetUserSupervises = targetUser.supervise || [];
+
+      // Level 3 users check if they supervise the target's department
+      if (currentUser.role?.role_level === "LEVEL_3") {
+        return currentUserSupervises.some(
+          (superviseItem) =>
+            superviseItem.department_id === targetUser.department?.id
+        );
+      }
+
+      // For other levels, check if the target supervises current user's department
+      return targetUserSupervises.some(
+        (superviseItem) =>
+          superviseItem.department_id === currentUser.department?.id
+      );
+    },
+  };
   const isScoreUnchanged = useMemo(() => {
     return JSON.stringify(payload) === JSON.stringify(initialPayload);
   }, [payload, initialPayload]);
   useEffect(() => {
     const initializeFormEvaluation = () => {
-      // console.log("evaluatorUserTarget", evaluatorUserTarget);
-      const isMySupervise = evaluatorUserTarget?.supervise?.some(
-        (item) => item.department_id === ProfileDetail?.department?.id
-      );
-      // console.log("isMySupervise", isMySupervise);
-      const ingroup = isMySupervise
-        ? true
-        : evaluatorUserTarget.department?.id === ProfileDetail?.department?.id;
-      // console.log("ingroup", ProfileDetail);
+      // isInSameGroup เป็น function ที่ใช้ในการหาว่า ตอนนี้เราตำแหน่งอะไร เพื่อเช็คว่า ตอนนี้เรากำกับดูแลที่ไหนบ้าง ถ้าไม่มีแล้วใครกำกับดูแลเราบ้าง
+      const isInSameGroup =
+        SupervisionService.isUserSupervisor(
+          ProfileDetail,
+          evaluatorUserTarget
+        ) ||
+        evaluatorUserTarget.department?.id === ProfileDetail?.department?.id;
+      // console.log("isInSameGroup", isInSameGroup);
       // Find the appropriate permission for the evaluator
       const matchedPermission = ProfileDetail?.role?.permissionsAsAssessor.find(
         (item) => item.evaluator_role_id === evaluatorUserTarget.role.id
@@ -251,7 +277,7 @@ const EvaluateSection: React.FC<EvaluateSection> = ({
       // console.log("filteredPermissions", matchedPermission);
       // Filter the forms based on the `ingroup` value
       const filteredForms = matchedPermission?.permissionForm.filter(
-        (item) => item.ingroup === ingroup
+        (item) => item.ingroup === isInSameGroup
       );
       setFormEvaluation(filteredForms || []);
     };

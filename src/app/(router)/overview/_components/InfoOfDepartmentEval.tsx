@@ -42,7 +42,7 @@ export const CursorContent = ({
     >
       <div className="flex items-center gap-2 ">
         <Image
-          src={(item.image && item.image.url) || "/test.png"}
+          src={item?.image?.url || "/test.png"}
           width={50}
           height={50}
           alt="hover profile"
@@ -141,7 +141,7 @@ const InfoOfDepartmentEval = () => {
             width={300}
             height={300}
             alt="bannerDepartment"
-            src={item?.image ? item?.image.url : "/test.png"}
+            src={item?.image?.url || "/test.png"}
             className="w-full h-full object-cover"
             unoptimized={true}
           />
@@ -204,7 +204,7 @@ const InfoOfDepartmentEval = () => {
                 >
                   <div className="col-span-3 flex items-center gap-3">
                     <Image
-                      src={(item.image && item.image.url) || "/profiletest.jpg"}
+                      src={(item.image && item.image?.url) || "/profiletest.jpg"}
                       width={50}
                       height={50}
                       className="rounded-lg w-[50px] h-[50px] object-cover "

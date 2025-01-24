@@ -1,5 +1,5 @@
 // store.ts
-import { Department, getCountUserAsEvaluatedType, getResultEvalEachDepartmentType, getResultEvaluateType, ImageType, PeriodType, PrefixType, Role, RoleRequest } from '@/types/interface';
+import { Department, getCountUserAsEvaluatedType, getResultEvalEachDepartmentType, getResultEvaluateType, ImageType, PeriodType, PrefixType, Role, RoleRequest, Supervise } from '@/types/interface';
 import { create } from 'zustand';
 import GlobalApi from '../_util/GlobalApi';
 
@@ -39,6 +39,7 @@ interface StoreState {
     phone: string | null,
     department: Department | null;
     roleRequests: RoleRequest[] | null;
+    supervise: Supervise[] | null;
   };
 
   updateProfileDetail: (updatedFields: {
@@ -51,6 +52,7 @@ interface StoreState {
     phone?: string;
     roleRequests?: RoleRequest[];
     department?: Department;
+    supervise?: Supervise[];
   }) => void;
 
 
@@ -93,7 +95,8 @@ const useStore = create<StoreState>((set) => ({
     role: null,
     phone: null,
     roleRequests: null,
-    department: null
+    department: null,
+    supervise: null
   },
 
   openForm: {

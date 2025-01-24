@@ -1,4 +1,4 @@
-import { Department, ImageType, PrefixType, Role, RoleRequest } from "@/types/interface";
+import { Department, ImageType, PrefixType, Role, RoleRequest, Supervise } from "@/types/interface";
 
 export interface ProfileDetailType {
     id: string | null;
@@ -10,4 +10,6 @@ export interface ProfileDetailType {
     phone: string | null;
     department?: Department | null;
     roleRequests?: RoleRequest[] | null;
+    supervise: Supervise[] | null;
+
 }
