@@ -191,9 +191,9 @@ const InfoOfDepartmentEval = () => {
           </DialogTrigger>
           <DialogContent className="sm:max-w-[725px]">
             <DialogHeader>
-              <DialogTitle>ข้อมูลสมาชิกภายในหน่วยงาน</DialogTitle>
+              <DialogTitle>ข้อมูลสมาชิกที่ยังประเมินผลไม่เสร็จสิ้น</DialogTitle>
               <DialogDescription>
-                Make changes to your profile here. Click save when you're done.
+                รานละเอียดข้อมูลสมาชิกที่ยังประเมินผลไม่เสร็จสิ้นภายในหน่วยงาน
               </DialogDescription>
             </DialogHeader>
             <ScrollArea className="h-[458px]">
@@ -204,7 +204,9 @@ const InfoOfDepartmentEval = () => {
                 >
                   <div className="col-span-3 flex items-center gap-3">
                     <Image
-                      src={(item.image && item.image?.url) || "/profiletest.jpg"}
+                      src={
+                        (item.image && item.image?.url) || "/profiletest.jpg"
+                      }
                       width={50}
                       height={50}
                       className="rounded-lg w-[50px] h-[50px] object-cover "

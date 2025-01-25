@@ -181,6 +181,7 @@ export function ListEmployee({ allUser, fetchUserList }: ListEmployeeProp) {
               alt="profiletable"
               className="w-[40px] h-[40px] rounded-full object-cover"
               unoptimized={true} // Try this if Next.js image optimization is causing issues
+              loading="lazy"
             />
             <h2 className="truncate">
               {row.original.prefix?.prefix_name}

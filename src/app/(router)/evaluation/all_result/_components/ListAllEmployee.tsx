@@ -125,6 +125,7 @@ export function ListAllEmployee({ filterDataArea }: ListAllEmployeeProp) {
             height={40}
             alt="profiletable"
             className="w-[40px] h-[40px] rounded-full object-cover"
+            unoptimized={true} // Try this if Next.js image optimization is causing issues
           />
           {row.original.prefix?.prefix_name ?? ""}
           {row.getValue("name")}
@@ -164,7 +165,7 @@ export function ListAllEmployee({ filterDataArea }: ListAllEmployeeProp) {
       cell: ({ row }) => {
         return (
           <div className="capitalize flex items-center gap-3 ">
-            <h2>{selectPeriod ? selectPeriod?.title : 'ไม่พบรอบการประเมิน'}</h2>
+            <h2>{selectPeriod ? selectPeriod?.title : "ไม่พบรอบการประเมิน"}</h2>
           </div>
         );
       },
@@ -364,7 +365,8 @@ export function ListAllEmployee({ filterDataArea }: ListAllEmployeeProp) {
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow
                 key={headerGroup.id}
-                className={`${styles.background_third_head_table}`}>
+                className={`${styles.background_third_head_table}`}
+              >
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead key={header.id} className="text-md ">
