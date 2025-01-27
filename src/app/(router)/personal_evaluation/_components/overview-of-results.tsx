@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import ExcelJS from "exceljs";
 import {
   Table,
   TableBody,
@@ -29,6 +30,9 @@ import { adaptCategorizeFormResultsByVisionLevel } from "@/app/lib/adapters/resu
 import useStore from "@/app/store/store";
 import { useTheme } from "next-themes";
 import { useThemeClass, useThemeStyles } from "@/hooks/useTheme";
+import { downloadEvaluationExcel } from "@/app/lib/excel";
+import { handleErrorOnAxios } from "@/app/_util/GlobalApi";
+import { Loader } from "lucide-react";
 
 const SCORE_TYPE_LABELS: Record<string, string> = {
   Executive: "ผู้บริหาร",
@@ -44,7 +48,9 @@ const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
   const [formResultsByVisionLevel, SetFormResultsByVisionLevel] =
     useState<CategorizedFormResults>();
   const styles = useThemeStyles();
+  const [isloading, Isloading] = useState(false);
   const { getThemeClass } = useThemeClass();
+  const { ProfileDetail } = useStore();
   const [adaptedData, setAdaptedData] = useState<CommonResultFormat>();
   const renderTableHeaders = (
     scoreTypes: string[],
@@ -96,6 +102,23 @@ const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
       </TableRow>
     </>
   );
+  const handleExport = async () => {
+    Isloading(true);
+    try {
+      if (!adaptedData) {
+        throw new Error("adaptedData doesn't have data");
+      }
+      await downloadEvaluationExcel(
+        formResultsByVisionLevel!,
+        adaptedData,
+        scoreTypes
+      );
+    } catch (error) {
+      handleErrorOnAxios(error);
+    } finally {
+      Isloading(false);
+    }
+  };
   //หาว่ามันมีทั้งหมดที่ type ใน formResults นี้ โดยตรวจสอบจาก score.type
   const extractScoreTypes = (formResults: CommonFormResult[]) => {
     const types = new Set<string>();
@@ -130,6 +153,9 @@ const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
     scoreTypes.flatMap((type) => console.log("type", type));
     console.log(formResultsByVisionLevel);
   }, [scoreTypes]);
+  useEffect(() => {
+    console.log("adaptedData", adaptedData);
+  }, [adaptedData]);
 
   return (
     <div className="mx-auto w-full max-w-screen-2xl">
@@ -346,6 +372,15 @@ const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
         </div>
         <div className="mx-auto w-full max-w-lg">
           <DrawerFooter>
+            {ProfileDetail.role?.role_name === "admin" && (
+              <Button onClick={handleExport}>
+                {isloading ? (
+                  <Loader className="px-6 animate-spin" />
+                ) : (
+                  "Export"
+                )}
+              </Button>
+            )}
             <DrawerClose asChild>
               <Button variant="outline">ตกลง</Button>
             </DrawerClose>

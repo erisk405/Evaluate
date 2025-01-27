@@ -32,6 +32,7 @@ export const adaptEvaluateResult = (data: getResultEvaluateType): CommonResultFo
       }
     })),
     headData: {
+      userName: data.headData.evaluatorName || '',
       department: data.headData.department || '',
       periodName: data.headData.periodName,
       roleName: data.headData.roleName || '',

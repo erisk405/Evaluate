@@ -37,6 +37,9 @@ import { adaptCategorizeFormResultsByVisionLevel } from "@/app/lib/adapters/resu
 import Loading from "@/app/_components/Loading";
 import useStore from "@/app/store/store";
 import { useThemeClass, useThemeStyles } from "@/hooks/useTheme";
+import { downloadEvaluationExcel } from "@/app/lib/excel";
+import { handleErrorOnAxios } from "@/app/_util/GlobalApi";
+import { Loader } from "lucide-react";
 
 const SCORE_TYPE_LABELS: Record<string, string> = {
   Executive: "ผู้บริหาร",
@@ -52,11 +55,14 @@ const OverviewHistoryResult = ({
   resultHistoryDetail,
 }: categorizedTableProp) => {
   const [scoreTypes, setScoreTypes] = useState<string[]>([]);
+  const [isloading, Isloading] = useState(false);
   const [characteristics, setCharacteristics] = useState<string>();
   const [adaptedData, setAdaptedData] = useState<CommonResultFormat>();
   const [formResultsByVisionLevel, SetFormResultsByVisionLevel] =
     useState<CategorizedFormResults>();
   const styles = useThemeStyles();
+
+  const { ProfileDetail } = useStore();
   const renderTableHeaders = (
     scoreTypes: string[],
     vesion_level: LevelFormVision
@@ -116,6 +122,25 @@ const OverviewHistoryResult = ({
       )
     );
     return Array.from(types);
+  };
+  // export ผลคะแนน
+  const handleExport = async () => {
+    Isloading(true);
+    try {
+      if (!adaptedData) {
+        throw new Error("adaptedData doesn't have data")
+    
+      }   
+      await downloadEvaluationExcel(
+        formResultsByVisionLevel!,
+        adaptedData,
+        scoreTypes
+      );
+    } catch (error) {
+      handleErrorOnAxios(error)
+    } finally {
+      Isloading(false);
+    }
   };
   useEffect(() => {
     if (resultHistoryDetail) {
@@ -349,6 +374,9 @@ const OverviewHistoryResult = ({
         </div>
         <div className="mx-auto w-full max-w-lg">
           <DrawerFooter>
+            {ProfileDetail.role?.role_name === "admin" && (
+              <Button onClick={handleExport}>{isloading ? <Loader className="px-6 animate-spin"/> : "Export"}</Button>
+            )}
             <DrawerClose asChild>
               <Button variant="outline">ตกลง</Button>
             </DrawerClose>
