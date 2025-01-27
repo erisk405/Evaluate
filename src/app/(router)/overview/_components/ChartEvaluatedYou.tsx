@@ -278,11 +278,19 @@ const ChartEvaluatedYou = () => {
               </div>
               <div className="w-[40px] font-bold">
                 <CircularProgressbar
-                  value={(item.evaluatedPerForm / item.totalAsserPerForm) * 100}
-                  text={`${(
-                    (item.evaluatedPerForm / item.totalAsserPerForm) *
-                    100
-                  ).toFixed(0)}%`}
+                  value={
+                    item.totalAsserPerForm
+                      ? (item.evaluatedPerForm / item.totalAsserPerForm) * 100
+                      : 0
+                  }
+                  text={`${
+                    item.totalAsserPerForm
+                      ? (
+                          (item.evaluatedPerForm / item.totalAsserPerForm) *
+                          100
+                        ).toFixed(0)
+                      : 0
+                  }%`}
                   strokeWidth={15}
                   styles={buildStyles({
                     strokeLinecap: "butt",

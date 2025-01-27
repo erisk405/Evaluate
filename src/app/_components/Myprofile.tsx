@@ -1,5 +1,4 @@
 "use client";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -426,6 +425,7 @@ export default function Myprofile() {
                     <FormControl className="col-span-8">
                       <div className="relative">
                         <SetDepartmentUserOptions
+                          fromAdmin={false}
                           isAdmin={ProfileDetail.role?.role_name === "admin"}
                           defaultValue={field.value as Department | undefined}
                           value={field.value ?? ""}

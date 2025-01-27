@@ -11,6 +11,14 @@ const isPathAccessibleForAdmin = (path: string): boolean => {
         path.startsWith(protectedPath)
     );
 };
+const isPathAccessibleRoleMember = (path: string): boolean => {
+    const protectedPathsMember = [
+        "/overview/department",
+    ];
+    return protectedPathsMember.some((protectedPath) =>
+        path.startsWith(protectedPath)
+    );
+};
 
 const isPathAccessibleForUsers = (path: string): boolean => {
     const protectedPathsUser = [
@@ -83,13 +91,16 @@ export async function protectedRounterAction(token: string, currentPath: string)
         // Check if current path is protected
         const isProtectedRouteAdmin = isPathAccessibleForAdmin(currentPath);
         const isProtectedRouteUser = isPathAccessibleForUsers(currentPath);
-
+        const isProtectedRouteMember = isPathAccessibleRoleMember(currentPath);
         const userRole = decodedToken?.role;
 
         if (!userRole) {
             return NextResponse.redirect(new URL('/sign-in', BASE_URL));
         }
-
+        // Member route protection
+        if (isProtectedRouteMember && userRole === 'member') {
+            return NextResponse.redirect(new URL('/overview', BASE_URL));
+        }
         // Admin route protection
         if (isProtectedRouteAdmin && userRole !== 'admin') {
             return NextResponse.redirect(new URL('/overview', BASE_URL));

@@ -27,12 +27,14 @@ type SetDepartmentUserOptionsProp = {
   defaultValue?: Department | string;
   onChange: (data: string) => void;
   value: string;
+  fromAdmin?: boolean;
 };
 export default function SetDepartmentUserOptions({
   isAdmin,
   defaultValue,
   onChange,
   value,
+  fromAdmin,
 }: SetDepartmentUserOptionsProp) {
   const [open, setOpen] = useState(false);
   const { departments, setDepartments, ProfileDetail } = useStore();
@@ -78,7 +80,11 @@ export default function SetDepartmentUserOptions({
           role="combobox"
           aria-expanded={open}
           className="justify-between w-auto"
-          disabled={isAdmin}
+          disabled={
+            fromAdmin
+              ? isAdmin
+              : !["member"].includes(ProfileDetail.role!.role_name)
+          }
         >
           {value
             ? departments.find((item: Department) => item.id === value)

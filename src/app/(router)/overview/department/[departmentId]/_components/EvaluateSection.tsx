@@ -69,7 +69,6 @@ const EvaluateSection: React.FC<EvaluateSection> = ({
   const [payloadForUpdate, setPayloadForUpdate] = useState<
     Array<{ question_id: string; score: string }>
   >([]);
-  const params = useParams<{ departmentId: string }>();
   const { ProfileDetail, currentlyEvaluationPeriod } = useStore();
   const styles = useThemeStyles();
 
@@ -128,6 +127,11 @@ const EvaluateSection: React.FC<EvaluateSection> = ({
   const handleSubmit = async () => {
     setLoading(true);
     try {
+      // วิธีที่ 3: ถ้าคุณแน่ใจว่าจะมีค่าเสมอ สามารถใช้ non-null assertion operator (!)
+      const restrictedRoles = ["member", "admin"];
+      if (restrictedRoles.includes(ProfileDetail.role!.role_name)) {
+        throw new Error("หาก member และ admin ไม่สามารถประเมินผลได้");
+      }
       if (!payload || !currentlyEvaluationPeriod) {
         throw new Error("Missing required data");
       }

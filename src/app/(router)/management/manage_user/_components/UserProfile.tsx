@@ -111,7 +111,10 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
       if (values.image) {
         formData.append("image", values.image);
         try {
-          const response = await GlobalApi.updateUserImageForAdmin(formData,userDetail.id!);
+          const response = await GlobalApi.updateUserImageForAdmin(
+            formData,
+            userDetail.id!
+          );
           console.log(response);
           // const { id, name, image, email, role } = response.data;
         } catch (error) {
@@ -324,6 +327,7 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
                         <div className="flex items-center gap-3">
                           {departments.length > 0 ? (
                             <SetDepartmentUserOptions
+                              fromAdmin={true}
                               isAdmin={userDetail.role?.role_name === "admin"}
                               defaultValue={
                                 userDetail.department as Department | undefined
