@@ -79,6 +79,45 @@ export const exportEvaluationToExcel = async (
     // เพิ่มข้อมูลในตาราง
     Object.entries(formResultsByVisionLevel.formResults).forEach(([level, forms]) => {
         forms.forEach((form) => {
+            // เพิ่มแถว "รวมทั้งสิ้น"
+            const row = worksheet.addRow([
+                `ผลรวมของด้าน ${form.formName}`, // ข้อความ "รวมทั้งสิ้น" จะอยู่ในคอลัมน์ที่ต้องการรวม
+                "", // เว้นคอลัมน์ว่างไว้ (หรือใช้จำนวนคอลัมน์ที่เหมาะสม)
+                "",
+                form.totals.average.toFixed(2), // ค่าเฉลี่ยทั้งหมด
+                form.totals.sd.toFixed(2),// ค่าSDทั้งหมด
+                ...scoreTypes.flatMap((type) => { // ผลรวมของแต่ละด้านที่ถูกจำแนกออกไป
+                    const matchedScore = form.totals.byType?.find(
+                        (score) => score.type === type
+                    );
+                    return [
+                        matchedScore?.average?.toFixed(2) || "-", // ค่าเฉลี่ยรวม
+                        matchedScore?.sd?.toFixed(2) || "-", // ค่า SD รวม
+                    ];
+                }),
+            ]);
+            // Merge เซลล์สำหรับ "รวมทั้งสิ้น"
+            worksheet.mergeCells(`A${row.number}:C${row.number}`); // รวมเซลล์ A ถึง C ในแถวนี้
+            // จัดรูปแบบสไตล์ของ "รวมทั้งสิ้น"
+            // จัดรูปแบบสไตล์ให้ทั้งแถวเป็นสีเหลือง
+            row.eachCell((cell) => {
+                cell.style = {
+                    font: { size: 12, bold: true },
+                    alignment: { horizontal: "center", vertical: "middle" },
+                    fill: {
+                        type: "pattern",
+                        pattern: "solid",
+                        fgColor: { argb: "FFFFFF00" }, // สีเหลือง
+                    },
+                    border: {
+                        top: { style: "thin" },
+                        left: { style: "thin" },
+                        bottom: { style: "thin" },
+                        right: { style: "thin" },
+                    },
+                };
+            });
+
             // เพิ่มคำถาม
             form.questions.forEach((question, index) => {
                 const row = worksheet.addRow([
@@ -109,49 +148,39 @@ export const exportEvaluationToExcel = async (
                 });
             });
 
-            // เพิ่มแถว "รวมทั้งสิ้น"
-            const row = worksheet.addRow([
-                `ผลรวมของด้าน ${form.formName}`, // ข้อความ "รวมทั้งสิ้น" จะอยู่ในคอลัมน์ที่ต้องการรวม
-                "", // เว้นคอลัมน์ว่างไว้ (หรือใช้จำนวนคอลัมน์ที่เหมาะสม)
-                "",
-                form.totals.average.toFixed(2), // ค่าเฉลี่ยทั้งหมด
-                form.totals.sd.toFixed(2),// ค่าSDทั้งหมด
-                ...scoreTypes.flatMap((type) => { // ผลรวมของแต่ละด้านที่ถูกจำแนกออกไป
-                    const matchedScore = form.totals.byType?.find(
-                        (score) => score.type === type
-                    );
-                    return [
-                        matchedScore?.average?.toFixed(2) || "-", // ค่าเฉลี่ยรวม
-                        matchedScore?.sd?.toFixed(2) || "-", // ค่า SD รวม
-                    ];
-                }),
-            ]);
 
-            // Merge เซลล์สำหรับ "รวมทั้งสิ้น"
-            worksheet.mergeCells(`A${row.number}:C${row.number}`); // รวมเซลล์ A ถึง C ในแถวนี้
-            // จัดรูปแบบสไตล์ของ "รวมทั้งสิ้น"
-            // จัดรูปแบบสไตล์ให้ทั้งแถวเป็นสีเหลือง
-            row.eachCell((cell) => {
-                cell.style = {
-                    font: { size: 12, bold: true },
-                    alignment: { horizontal: "center", vertical: "middle" },
-                    fill: {
-                        type: "pattern",
-                        pattern: "solid",
-                        fgColor: { argb: "FFFFFF00" }, // สีเหลือง
-                    },
-                    border: {
-                        top: { style: "thin" },
-                        left: { style: "thin" },
-                        bottom: { style: "thin" },
-                        right: { style: "thin" },
-                    },
-                };
-            });
         });
     });
 
-
+    // เพิ่มแถว "ผลรวมทั้งหมด"
+    const finalRow = worksheet.addRow([
+        `ผลรวมทั้งหมดของ ${adaptedData.headData.userName}`, // ข้อความ "รวมทั้งสิ้น" จะอยู่ในคอลัมน์ที่ต้องการรวม
+        "", // เว้นคอลัมน์ว่างไว้ (หรือใช้จำนวนคอลัมน์ที่เหมาะสม)
+        "",
+        adaptedData.headData.totalAverage.toFixed(2), // ค่าเฉลี่ยทั้งหมด
+        adaptedData.headData.totalSD.toFixed(2),// ค่าSDทั้งหมด
+    ]);
+    // Merge เซลล์สำหรับ "รวมทั้งสิ้น"
+    worksheet.mergeCells(`A${finalRow.number}:C${finalRow.number}`); // รวมเซลล์ A ถึง C ในแถวนี้
+    // จัดรูปแบบสไตล์ของ "รวมทั้งสิ้น"
+    // จัดรูปแบบสไตล์ให้ทั้งแถวเป็นสีเหลือง
+    finalRow.eachCell((cell) => {
+        cell.style = {
+            font: { size: 12, bold: true },
+            alignment: { horizontal: "center", vertical: "middle" },
+            fill: {
+                type: "pattern",
+                pattern: "solid",
+                fgColor: { argb: "3EFD29" }, // สีเหลือง
+            },
+            border: {
+                top: { style: "thin" },
+                left: { style: "thin" },
+                bottom: { style: "thin" },
+                right: { style: "thin" },
+            },
+        };
+    });
     // Return buffer
     return await workbook.xlsx.writeBuffer();
 };
