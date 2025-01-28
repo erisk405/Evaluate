@@ -341,12 +341,12 @@ const ResultUserList = ({ period }: { period: PeriodType }) => {
       });
     } catch (error) {
       console.error({ message: error });
-      toast({
-        title: "Uh oh! การใช้งาน Export",
-        description:
-          "หากตำแหน่งของบุคคลที่คุณเลือกมา Level 1 จะไม่สามารถ Export ได้",
-      });
-      // handleErrorOnAxios(error);
+      // toast({
+      //   title: "Uh oh! การใช้งาน Export",
+      //   description:
+      //     "หากตำแหน่งของบุคคลที่คุณเลือกมา Level 1 จะไม่สามารถ Export ได้",
+      // });
+      handleErrorOnAxios(error);
     } finally {
       setIsLoading(false);
     }
@@ -437,28 +437,7 @@ const ResultUserList = ({ period }: { period: PeriodType }) => {
                         </div>
                         <h2>รอบการประเมิน</h2>
                       </div>
-                      <Select>
-                        <SelectTrigger className="w-auto">
-                          <SelectValue placeholder="รอบการประเมิน" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectLabel>การประเมิน</SelectLabel>
-                            <SelectItem value="apple">
-                              รอบที่ 1 ประจำปีงบประมาณ 2568
-                            </SelectItem>
-                            <SelectItem value="banana">
-                              รอบที่ 2 ประจำปีงบประมาณ 2568
-                            </SelectItem>
-                            <SelectItem value="blueberry">
-                              รอบที่ 1 ประจำปีงบประมาณ 2567
-                            </SelectItem>
-                            <SelectItem value="grapes">
-                              รอบที่ 2 ประจำปีงบประมาณ 2567
-                            </SelectItem>
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
+                      <h2 className="text-sm">{period.title}</h2>
                     </div>
                   </div>
                   {/* รายชื่อทั้งหมดที่กำลังจะดำเนินการต่อใป ในการ export */}
@@ -472,7 +451,20 @@ const ResultUserList = ({ period }: { period: PeriodType }) => {
                         >
                           <Dot strokeWidth={6} className="text-blue-500" />
                           <h2 className="text-sm">{row.original.name}</h2>
-                          <X size={14} />
+                          <X
+                            className="hover:bg-red-500 rounded-full hover:text-white"
+                            size={14}
+                            onClick={() => {
+                              // สร้าง object ใหม่จาก row selection ปัจจุบัน
+                              const newSelection = {
+                                ...table.getState().rowSelection,
+                              };
+                              // ลบ row ที่เลือกออกโดยใช้ row.id
+                              delete newSelection[row.id];
+                              // อัปเดต row selection state
+                              table.setRowSelection(newSelection);
+                            }}
+                          />
                         </div>
                       ))}
                     </ScrollArea>

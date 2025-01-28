@@ -33,6 +33,7 @@ import { useThemeClass, useThemeStyles } from "@/hooks/useTheme";
 import { downloadEvaluationExcel } from "@/app/lib/excel";
 import { handleErrorOnAxios } from "@/app/_util/GlobalApi";
 import { Loader } from "lucide-react";
+import { useAuthState } from "@/hooks/useAuthState";
 
 const SCORE_TYPE_LABELS: Record<string, string> = {
   Executive: "ผู้บริหาร",
@@ -49,8 +50,8 @@ const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
     useState<CategorizedFormResults>();
   const styles = useThemeStyles();
   const [isloading, Isloading] = useState(false);
+  const { isAdmin, isLoading } = useAuthState();
   const { getThemeClass } = useThemeClass();
-  const { ProfileDetail } = useStore();
   const [adaptedData, setAdaptedData] = useState<CommonResultFormat>();
   const renderTableHeaders = (
     scoreTypes: string[],
@@ -372,7 +373,7 @@ const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
         </div>
         <div className="mx-auto w-full max-w-lg">
           <DrawerFooter>
-            {ProfileDetail.role?.role_name === "admin" && (
+            {isAdmin && (
               <Button onClick={handleExport}>
                 {isloading ? (
                   <Loader className="px-6 animate-spin" />

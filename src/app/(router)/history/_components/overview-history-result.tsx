@@ -40,6 +40,7 @@ import { useThemeClass, useThemeStyles } from "@/hooks/useTheme";
 import { downloadEvaluationExcel } from "@/app/lib/excel";
 import { handleErrorOnAxios } from "@/app/_util/GlobalApi";
 import { Loader } from "lucide-react";
+import { useAuthState } from "@/hooks/useAuthState";
 
 const SCORE_TYPE_LABELS: Record<string, string> = {
   Executive: "ผู้บริหาร",
@@ -62,7 +63,7 @@ const OverviewHistoryResult = ({
     useState<CategorizedFormResults>();
   const styles = useThemeStyles();
 
-  const { ProfileDetail } = useStore();
+  const { isAdmin, isLoading } = useAuthState();
   const renderTableHeaders = (
     scoreTypes: string[],
     vesion_level: LevelFormVision
@@ -128,16 +129,15 @@ const OverviewHistoryResult = ({
     Isloading(true);
     try {
       if (!adaptedData) {
-        throw new Error("adaptedData doesn't have data")
-    
-      }   
+        throw new Error("adaptedData doesn't have data");
+      }
       await downloadEvaluationExcel(
         formResultsByVisionLevel!,
         adaptedData,
         scoreTypes
       );
     } catch (error) {
-      handleErrorOnAxios(error)
+      handleErrorOnAxios(error);
     } finally {
       Isloading(false);
     }
@@ -374,8 +374,14 @@ const OverviewHistoryResult = ({
         </div>
         <div className="mx-auto w-full max-w-lg">
           <DrawerFooter>
-            {ProfileDetail.role?.role_name === "admin" && (
-              <Button onClick={handleExport}>{isloading ? <Loader className="px-6 animate-spin"/> : "Export"}</Button>
+            {isAdmin && (
+              <Button onClick={handleExport}>
+                {isloading ? (
+                  <Loader className="px-6 animate-spin" />
+                ) : (
+                  "Export"
+                )}
+              </Button>
             )}
             <DrawerClose asChild>
               <Button variant="outline">ตกลง</Button>
