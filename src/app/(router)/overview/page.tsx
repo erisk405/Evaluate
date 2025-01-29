@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import MyEvaluated from "./_components/MyEvaluated";
 import RightSection from "./_components/RightSection";
-import GlobalApi from "@/app/_util/GlobalApi";
+import GlobalApi, { handleErrorOnAxios } from "@/app/_util/GlobalApi";
 import ReportOverview from "./_components/ReportOverview";
 import Loading from "@/app/_components/Loading";
 import useStore from "@/app/store/store";
@@ -27,14 +27,11 @@ const page = () => {
         await fetchCurrentPeriod();
       } catch (error) {
         // Handle error (e.g., show error message)
+        handleErrorOnAxios(error);
       }
     };
     initializePeriod();
   }, []);
-
-  useEffect(() => {
-    console.log("allPeriod", allPeriod);
-  }, [allPeriod]);
   if (checkPermission === null) {
     return <Loading />;
   }

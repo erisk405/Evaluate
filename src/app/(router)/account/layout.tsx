@@ -38,7 +38,7 @@ const layout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
       const response = await GlobalApi.fetchUserProfile();
       const { id, name, image, email, prefix, role, roleRequests, department } =
         response.data;
-      console.log("responseNev-User", response.data);
+      // console.log("responseNev-User", response.data);
 
       updateProfileDetail({
         id,

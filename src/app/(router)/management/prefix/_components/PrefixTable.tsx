@@ -106,7 +106,6 @@ const PrefixTable = () => {
   const fetchPrefix = async () => {
     try {
       const response = await GlobalApi.getPrefix();
-      console.log("prefix", response?.data);
       setPrefix(response?.data);
     } catch (error) {
       console.log("error", { message: error });
@@ -137,10 +136,8 @@ const PrefixTable = () => {
       const selectData = table
         .getSelectedRowModel()
         .rows.map((row) => row.original);
-      console.log("payload", selectData);
 
       const response = await GlobalApi.deletePrefix(selectData);
-      console.log("selectData", selectData);
       if (!response) {
         throw new Error("prefix delete fail");
       }
@@ -227,7 +224,6 @@ const PrefixTable = () => {
               throw new Error("Question update fail");
             }
             fetchPrefix(); // fetch ข้อมูลใหม่
-            console.log("response", response);
             toast("Event has been updated", {
               description: `แก้คำนำหน้าเป็น : "${response?.data.prefix_name}" เรียบร้อยแล้ว`,
             });

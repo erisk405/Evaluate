@@ -246,7 +246,7 @@ export function ListEmployeeOfDepartment({
         userIds: selectedItems, // selectedItems is an array of user IDs
         departmentId: department?.id,
       };
-      console.log("Payload:", payload); // For debugging
+      // console.log("Payload:", payload); // For debugging
 
       const response = await GlobalApi.addUsersToDepartment(payload);
       if (response?.data) {
@@ -504,7 +504,9 @@ export function ListEmployeeOfDepartment({
                           </ToggleGroupItem>
                         ))
                     ) : (
-                      <div>No items found.</div>
+                      <div className="text-sm text-center">
+                        ไม่พบผู้ใช้งานที่ยังไม่มีหน่วยงาน
+                      </div>
                     )}
                   </div>
                 </ToggleGroup>

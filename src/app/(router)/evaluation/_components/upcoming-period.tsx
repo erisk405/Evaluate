@@ -23,7 +23,7 @@ const UpComingPeriod = () => {
       };
       showToast("กำลังดำเนินการ", "กำลังดำเนินการบันทึกผลการประเมิน");
       const response = await GlobalApi.saveEvaluationToHistory(payload);
-      console.log("Save", response?.data);
+      // console.log("Save", response?.data);
       showToast("ทำรายการสำเร็จ", "บันทึกผลการประเมินเรียบร้อยแล้ว");
       setLoading(false);
       fetchCurrentPeriod();

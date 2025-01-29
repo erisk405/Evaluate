@@ -30,7 +30,7 @@ const page = () => {
   const fetchUserList = async () => {
     try {
       const response = await GlobalApi.getAllUsers();
-      console.log("AllUser", response?.data);
+      // console.log("AllUser", response?.data);
       setAllUser(response?.data);
     } catch (error) {
       console.error({ message: error });

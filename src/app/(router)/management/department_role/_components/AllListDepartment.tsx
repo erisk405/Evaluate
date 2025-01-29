@@ -39,7 +39,7 @@ const AllListDepartment = ({
     try {
       showToast("กำลังดำเนินการ", `ขณะนี้ระบบกำลังดำเนินการ โปรดรอสักครู่...`);
       const response = await GlobalApi.deleteDepartment(departmemtId);
-      console.log("response dept", response?.data);
+      // console.log("response dept", response?.data);
 
       if (response && response?.status === 200) {
         showToast(

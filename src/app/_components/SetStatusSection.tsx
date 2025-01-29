@@ -42,7 +42,7 @@ export default function SetStatusSection({
       // console.log("role:", response);
       setRole(response?.data);
     } catch (error) {
-      console.log(error);
+      console.log({message:error});
     }
   };
   // ให้ เรียกใช้ function ใหม่หากเกิดการเปลี่ยนแปลงที่ rolRequest

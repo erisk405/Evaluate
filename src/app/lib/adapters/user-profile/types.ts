@@ -10,6 +10,6 @@ export interface ProfileDetailType {
     phone: string | null;
     department?: Department | null;
     roleRequests?: RoleRequest[] | null;
-    supervise: Supervise[] | null;
+    supervise?: Supervise[] | null;
 
 }

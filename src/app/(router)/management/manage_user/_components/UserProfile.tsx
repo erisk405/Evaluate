@@ -105,7 +105,6 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       setIsLoading(false);
-      console.log(values);
 
       const formData = new FormData();
       if (values.image) {
@@ -115,7 +114,6 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
             formData,
             userDetail.id!
           );
-          console.log(response);
           // const { id, name, image, email, role } = response.data;
         } catch (error) {
           console.error("Error updating user image:", error);
@@ -136,7 +134,6 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
         phone: values.phoneNumber,
       };
       const response = await GlobalApi.updateUserProfileByAdmin(data);
-      console.log(response);
       refreshData();
       setIsLoading(true);
     } catch (error) {

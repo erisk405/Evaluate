@@ -84,7 +84,7 @@ const page = () => {
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
     try {
-      console.log(data);
+      // console.log(data);
       setFilterDataArea(data);
     } catch (error) {
       console.error({ message: data });
@@ -96,7 +96,7 @@ const page = () => {
       // console.log("role:", response);
       setRole(response?.data);
     } catch (error) {
-      console.log(error);
+      console.log({message:error});
     }
   };
   useEffect(() => {

@@ -78,7 +78,7 @@ const page = () => {
         newPassword: values.password,
         token: token as string,
       });
-      console.log("response", response?.data);
+      // console.log("response", response?.data);
 
       if (response && response.status === 200) {
         toast({

@@ -452,8 +452,6 @@ const deleteForm = async (id: string) => {
 // -----------------------------------------------------------
 
 const createPermission = async (data: any, assessorID: string) => {
-  console.log(data);
-
   try {
     return apiClient.post(`${apiUrl}/permission`, { data, assessorID });
   } catch (error) {
@@ -462,8 +460,6 @@ const createPermission = async (data: any, assessorID: string) => {
 };
 
 const updatePermission = (permissions: any) => {
-  console.log(permissions);
-
   try {
     return apiClient.put(`${apiUrl}/permissionRole`, permissions);
   } catch (error) {}

@@ -150,13 +150,10 @@ const OverviewOfResults = ({ resultEvaluateDetail }: categorizedTableProp) => {
     }
   }, [resultEvaluateDetail]);
 
-  useEffect(() => {
-    scoreTypes.flatMap((type) => console.log("type", type));
-    console.log(formResultsByVisionLevel);
-  }, [scoreTypes]);
-  useEffect(() => {
-    console.log("adaptedData", adaptedData);
-  }, [adaptedData]);
+  // useEffect(() => {
+  //   scoreTypes.flatMap((type) => console.log("type", type));
+  //   console.log(formResultsByVisionLevel);
+  // }, [scoreTypes]);
 
   return (
     <div className="mx-auto w-full max-w-screen-2xl">

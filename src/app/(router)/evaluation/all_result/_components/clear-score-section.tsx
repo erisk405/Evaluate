@@ -69,7 +69,7 @@ const ClearScoreSection = ({ table, selectPeriod }: ClearScoreSectionProps) => {
         periodId: selectPeriod.period_id,
       };
       const response = await GlobalApi.deleteUserEvaluation(payload);
-      console.log("response", response?.data);
+      // console.log("response", response?.data);
       toast("ลบผลการประเมินเสร็จสิ้น", {
         description: `ระบบได้ลบผลการประเมินของ ${selectPeriod.title} เสร็จสิ้นแล้ว`,
       });

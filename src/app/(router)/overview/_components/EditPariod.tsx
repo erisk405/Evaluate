@@ -91,9 +91,6 @@ const EditPariod = ({
       setIsUpdateLoading(false);
     }
   };
-  useEffect(() => {
-    console.log("timeRange", timeRange);
-  }, [timeRange]);
   return (
     <Form {...form}>
       <form

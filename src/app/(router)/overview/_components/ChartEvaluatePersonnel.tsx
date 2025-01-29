@@ -60,7 +60,7 @@ const ChartEvaluatePersonnel = () => {
     try {
       // Add additional checks before making the API call
       if (!currentlyEvaluationPeriod?.period_id) {
-        console.log("Missing required data for fetching result evaluation");
+        // console.log("Missing required data for fetching result evaluation");
         return;
       }
       const payload = {

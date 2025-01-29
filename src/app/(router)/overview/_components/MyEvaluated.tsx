@@ -20,7 +20,7 @@ const MyEvaluated = () => {
     debounce(async () => {
       try {
         if (!ProfileDetail?.id || !currentlyEvaluationPeriod?.period_id) {
-          console.log("Missing required data for fetching result evaluation");
+          // console.log("Missing required data for fetching result evaluation");
           return;
         }
         const payload = {

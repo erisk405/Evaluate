@@ -14,7 +14,7 @@ socket.on("connect_error", (error) => {
 });
 
 socket.on("connect", () => {
-    console.log("Connected to server!");
+    // console.log("Connected to server!");
 });
 
 

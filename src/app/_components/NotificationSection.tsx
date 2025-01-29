@@ -151,7 +151,7 @@ const NotificationSection = () => {
         if (receive.userId === ProfileDetail.id) {
           playNotificationSound();
           setNotificationCount(notificationCounts + 1);
-          console.log("receive....", receive);
+          // console.log("receive....", receive);
           const SenderImage = receive.AdminImage;
           const SenderName = receive.AdminName;
           const SenderStatus = receive.SendRes.status;

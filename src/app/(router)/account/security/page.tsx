@@ -77,13 +77,11 @@ const page = () => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setLoading(true);
     try {
-      console.log(values);
       const payload = {
         old_pass: values.oldPassword,
         new_pass: values.newPassword,
       };
       const response = await GlobalApi.changePassword(payload);
-      console.log(response);
       if (response && response.status === 201) {
         toast({
           description: `${response.data.message}`,

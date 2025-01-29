@@ -50,7 +50,7 @@ const Personal_result = ({
           userId
         );
         const data = response?.data;
-        console.log("data for admin", data);
+        // console.log("data for admin", data);
         if (data) {
           setResultEvaluateDetail(data);
         }

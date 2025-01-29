@@ -200,7 +200,6 @@ const RightSection = ({ permission, period }: RightSectionProps) => {
         period_id,
       };
       const response = await GlobalApi.saveEvaluationToHistory(payload);
-      console.log("Save", response);
       if (response && response.status === 200) {
         toast({
           title: "ทำรายการสำเร็จ",

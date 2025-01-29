@@ -18,14 +18,13 @@ const InfomationProfile = () => {
   const fetchResultEvaluate = async () => {
     try {
       if (!ProfileDetail?.id || !currentlyEvaluationPeriod?.period_id) {
-        console.log("Missing required data for fetching result evaluation");
+        // console.log("Missing required data for fetching result evaluation");
         return;
       }
       const payload = {
         period_id: currentlyEvaluationPeriod.period_id,
       };
       const response = await GlobalApi.getResultEvaluate(payload);
-      console.log("response", response?.data);
 
       setResultEvaluate(response?.data);
     } catch (error) {

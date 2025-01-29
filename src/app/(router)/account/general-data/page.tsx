@@ -103,7 +103,6 @@ export default function page() {
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(false); // Set to true at the start
-    console.log(values);
 
     try {
       // Image update
@@ -133,7 +132,6 @@ export default function page() {
       };
 
       const response = await GlobalApi.updateProfileName(payload);
-      console.log("nameResponse", response);
 
       if (response?.data) {
         const { name, prefix, phone } = response.data;
@@ -145,7 +143,8 @@ export default function page() {
         if (ProfileDetail.roleRequests?.length === 0) {
           await requestRole(values.role);
         } else {
-          console.log("Don't request role, pending request exists!");
+          toast({description:"ไม่สามารถร้องขอตำแหน่งได้ เนื่องจากมีคำขอที่อยู่ระหว่างดำเนินการอยู่"})
+          // console.log("Don't request role, pending request exists!");
         }
       }
 

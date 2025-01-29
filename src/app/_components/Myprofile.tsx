@@ -114,7 +114,7 @@ export default function Myprofile() {
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(false); // Set to true at the start
-    console.log(values);
+    // console.log(values);
 
     try {
       if (
@@ -168,7 +168,11 @@ export default function Myprofile() {
         if (ProfileDetail.roleRequests?.length === 0) {
           await requestRole(values.role);
         } else {
-          console.log("Don't request role, pending request exists!");
+          showToast(
+            "⚠️ ไม่สามารถร้องขอตำแหน่งได้",
+            "เนื่องจากมีคำขอที่อยู่ระหว่างดำเนินการอยู่"
+          );
+          // console.log("Don't request role, pending request exists!");
         }
       }
       if (values.department) {
@@ -221,7 +225,7 @@ export default function Myprofile() {
       });
       // Emit an event to notify admins ขนข้อูลทั้งหมดที่ได้จาก response ไปให้ admin
       const data = response?.data;
-      console.log("requestRole:", data);
+      // console.log("requestRole:", data);
       socket.emit("newRoleRequest", {
         data,
       });

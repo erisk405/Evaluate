@@ -38,7 +38,7 @@ export default function SetSuperviseOfDepartmentSection({
           item.role.role_level === "LEVEL_3"
       );
       setUser(filterUser);
-      console.log("defaultValue",defaultValue);
+      // console.log("defaultValue",defaultValue);
 
       if (defaultValue) {
         onSuperviserChange && onSuperviserChange(defaultValue.id);

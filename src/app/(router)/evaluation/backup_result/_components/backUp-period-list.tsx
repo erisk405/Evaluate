@@ -149,7 +149,6 @@ const BackUpPeriodList = () => {
       const selectData = table
         .getSelectedRowModel()
         .rows.map((row) => row.original);
-      console.log("payload", selectData);
       toast("กำลังดำเนินการ", {
         description:
           "ขณะนี้ระบบกำลังดำเนินการลบข้อมูลการประเมิน โปรดรอสักครู่...",

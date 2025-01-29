@@ -100,7 +100,6 @@ const page = () => {
     try {
       const response = await GlobalApi.createForm(name);
       const newform = response?.data.form;
-      console.log("newform", newform);
 
       fetchForm();
       setFormState((prev) => [...prev, newform]);

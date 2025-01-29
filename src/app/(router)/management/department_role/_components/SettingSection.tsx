@@ -80,7 +80,6 @@ export default function SettingSection({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     // console.log(department);
-    console.log("values", values);
     try {
       setIsLoading(false);
       // ----------------------------
@@ -93,7 +92,10 @@ export default function SettingSection({
           formData,
           department
         );
-        console.log("responseChangeImage", response);
+        if(!response){
+          throw new Error("Error updateDepartmentImage")
+        }
+        // console.log("responseChangeImage", response);
       }
       // ----------------------------
       // อัพเดทเปลี่ยนชื่อ ของ department
@@ -118,8 +120,7 @@ export default function SettingSection({
             userId,
             departmentId: department.id,
           };
-          const response = await GlobalApi.createSupervise(payload);
-          console.log("createSupervise", response?.data);
+          await GlobalApi.createSupervise(payload);
         } else {
           // กรณีมี supervise แล้ว ให้อัพเดท
           const payload = {
@@ -127,8 +128,7 @@ export default function SettingSection({
             userId,
             departmentId: department.id,
           };
-          const updateSupervise = await GlobalApi.updateSupervise(payload);
-          console.log("updateSupervise", updateSupervise?.data);
+          await GlobalApi.updateSupervise(payload);
         }
       }
 

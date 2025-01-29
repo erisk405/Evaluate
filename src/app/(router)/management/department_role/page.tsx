@@ -83,7 +83,7 @@ const page = () => {
   const getDepartment = async () => {
     try {
       const response = await GlobalApi.getDepartmentForAdmin();
-      console.log("Department :", response);
+      // console.log("Department :", response);
       if (response && response.status === 201) {
         setDepartmentData(response?.data); // ตั้งค่าเป็นอาเรย์ว่างถ้าไม่มีข้อมูล
       }
@@ -104,7 +104,6 @@ const page = () => {
     formData.append("image", values.image as File);
     try {
       const response = await GlobalApi.CreateDepartment(formData);
-      console.log(response);
       if (response && response.status === 201) {
         getDepartment();
         toast({

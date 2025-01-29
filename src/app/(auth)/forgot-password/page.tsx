@@ -48,7 +48,7 @@ const page = () => {
     try {
       setLoading(true);
       const response = await GlobalApi.forgotPassowrd(values.email);
-      console.log("response", response);
+      // console.log("response", response);
       toast({
         title: "✅ Send to your email successful",
         description: "Please checking on your email.",

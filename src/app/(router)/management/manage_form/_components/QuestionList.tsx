@@ -140,10 +140,9 @@ export function QuestionList({ formId }: QuestionListProp) {
       const selectData = table
         .getSelectedRowModel()
         .rows.map((row) => row.original);
-      console.log("payload", selectData);
+      // console.log("payload", selectData);
 
       const response = await GlobalApi.deleteQuestion(selectData);
-      console.log("response", response);
       if (!response) {
         throw new Error("Question delete fail");
       }
@@ -176,7 +175,6 @@ export function QuestionList({ formId }: QuestionListProp) {
     const selectData = table
       .getSelectedRowModel()
       .rows.map((row) => row.original);
-    console.log("rowSelection", selectData);
   }, [rowSelection]);
   // -----------------------------------
   //      ส่วนของ columns และข้อมูล

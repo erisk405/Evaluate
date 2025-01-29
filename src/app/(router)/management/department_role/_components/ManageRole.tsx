@@ -137,7 +137,6 @@ const ManageRole = () => {
           permissions,
           assessorId
         );
-        console.log(newPermission);
       }
 
       // อัพเดทRole
@@ -163,7 +162,6 @@ const ManageRole = () => {
   };
   const onUpdate = async (values: any, id: string) => {
     try {
-      console.log("values", values);
       // --------------------------------------------
       // update ข้อมูลของ Role พวก ชื่อ คำอธิบาย และ Level
       // --------------------------------------------
@@ -190,7 +188,6 @@ const ManageRole = () => {
       if (!response) {
         throw new Error("อัพเดทการกำหนดสิทธิ์ล้มเหลว");
       }
-      console.log(responsePermis);
       fetchRole();
       setLoading(false);
       setOpenUpdate(false); // ปิด Dialog เมื่อ loading เสร็จสิ้น
@@ -217,7 +214,6 @@ const ManageRole = () => {
     });
     try {
       const response = await GlobalApi.deleteRole(id);
-      console.log("response", response);
       if (response && response.status === 201) {
         toast({
           title: "ดำเนินการเสร็จเรียบร้อย ✅",

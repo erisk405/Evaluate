@@ -42,7 +42,7 @@ export default function SetPrefixSelection({
       const response = await GlobalApi.getPrefix();
       setPrefix(response?.data);
     } catch (error) {
-      console.log(error);
+      console.log({message:error});
     }
   };
   // ให้ เรียกใช้ function ใหม่หากเกิดการเปลี่ยนแปลงที่ rolRequest

@@ -110,7 +110,7 @@ const page = () => {
     },
   });
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+    // console.log(values);
     const new_user = {
       name: values.FirstName + " " + values.LastName,
       email: values.email,
@@ -128,7 +128,7 @@ const page = () => {
         description: `✅ ${response.data.message}`,
         className: "bg-black text-white",
       });
-      console.log(response);
+      // console.log(response);
       Router.push("/sign-in");
     } catch (error) {
       setLoading(false);

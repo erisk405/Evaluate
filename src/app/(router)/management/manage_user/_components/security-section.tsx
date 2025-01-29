@@ -55,12 +55,12 @@ const SecuritySection = ({ userDetail }: { userDetail: User }) => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setLoading(true);
     try {
-      console.log(values);
+      // console.log(values);
       const payload = {
         new_pass: values.confirmPassword,
       };
       const response = await GlobalApi.changePassword(payload, userDetail.id);
-      console.log(response);
+      // console.log(response);
       if (response && response.status === 201) {
         toast({
           description: `${response.data.message}`,
