@@ -8,7 +8,7 @@ export async function middleware(request: NextRequest) {
   const currentPath = request.nextUrl.pathname;
   // Redirect root to overview
   if (currentPath === '/') {
-    return NextResponse.redirect(new URL('/sign-in', request.url));
+    return NextResponse.redirect(new URL('/overview', request.url));
   }
 
   // const isProtectedRouteAdmin = protectedPathsAdmin.some(path => currentPath.startsWith(path));

@@ -53,6 +53,6 @@ export const themeClasses = {
     },
     hover: {
         light: 'hover:bg-zinc-100',
-        dark: 'hover:bg-zinc-800'
+        dark: 'hover:bg-zinc-700'
     }
 } as const

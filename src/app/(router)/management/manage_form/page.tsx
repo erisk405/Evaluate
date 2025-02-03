@@ -183,7 +183,7 @@ const page = () => {
                       dark:
                         openForm.id === item.id
                           ? "bg-zinc-700"
-                          : "bg-zinc-900 hover:bg-zinc-700",
+                          : "bg-zinc-900 hover:bg-zinc-800",
                     },
                     `relative overflow-hidden px-3`
                   )}

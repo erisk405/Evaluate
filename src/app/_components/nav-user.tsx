@@ -206,12 +206,12 @@ export function NavUser() {
                 )}
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
-              <Link href={"/sign-in"} onClick={handleLogout}>
+              <a href={"/sign-in"} onClick={handleLogout}>
                 <DropdownMenuItem className="flex gap-2 items-center">
                   <LogOut size={18} />
                   ออกจากระบบ
                 </DropdownMenuItem>
-              </Link>
+              </a>
             </DropdownMenuContent>
           </DropdownMenu>
         </SidebarMenuItem>

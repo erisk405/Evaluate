@@ -85,7 +85,10 @@ const page = () => {
     { prefix_id: string; prefix_name: string }[] | null
   >(null);
   const [department, setDepartment] = useState<Department[]>([]);
-
+  const {
+    setError,
+    formState: { errors },
+  } = useForm();
   const fetchDataOfSelection = async () => {
     const prefixResponse = await GlobalApi.getPrefix();
     const departmentResponse = await GlobalApi.getDepartment();
@@ -105,6 +108,7 @@ const page = () => {
       LastName: "",
       phoneNumber: "",
       password: "",
+      confirmPassword: "",
       prefix: "", // ค่าเริ่มต้นของ select
       department: "",
     },
@@ -130,8 +134,11 @@ const page = () => {
       });
       // console.log(response);
       Router.push("/sign-in");
-    } catch (error) {
+    } catch (error: any) {
       setLoading(false);
+      const errorMessage =
+        error?.response?.data?.message || "สมัครสมาชิกล้มเหลว";
+      setError("email", { type: "manual", message: errorMessage });
       console.error("Error fetching data:", error);
     }
   }
@@ -286,7 +293,13 @@ const page = () => {
                       <FormControl>
                         <Input placeholder="m@example.com" {...field} />
                       </FormControl>
-                      <FormMessage />
+                      {errors.email?.message && (
+                        <FormMessage>
+                          {typeof errors.email.message === "string"
+                            ? errors.email.message
+                            : "เกิดข้อผิดพลาด"}
+                        </FormMessage>
+                      )}
                     </FormItem>
                   )}
                 />

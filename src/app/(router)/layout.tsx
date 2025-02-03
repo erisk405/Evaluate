@@ -67,7 +67,7 @@ const layout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
               }`}
             ></div>
             {/* icon for notificate */}
-            <div className="flex items-center gap-3 mr-14">
+            <div className="flex items-center gap-3 mr-4 sm:mr-14">
               <div
                 className={`flex gap-2 items-center cursor-pointer ${styles.hover} p-2 rounded-lg `}
                 onClick={() => setShowNotifications(!showNotifications)}
@@ -85,7 +85,7 @@ const layout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
 
                   <Bell size={18} />
                 </div>
-                การแจ้งเตือน
+                <h2 className="hidden sm:block truncate">การแจ้งเตือน</h2>
               </div>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

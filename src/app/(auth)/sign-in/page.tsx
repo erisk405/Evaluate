@@ -27,7 +27,7 @@ import GlobalApi, { apiUrl } from "@/app/_util/GlobalApi";
 
 const formSchema = z.object({
   email: z.string().email({
-    message: "Email must be a valid email address.",
+    message: "อีเมลจะต้องเป็นที่อยู่อีเมลที่ถูกต้อง เช่น example@mail.com",
   }),
   password: z
     .string()

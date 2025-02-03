@@ -34,6 +34,7 @@ const AllListDepartment = ({
   const showToast = (title: string, description: string) => {
     toast(title, { description });
   };
+  const styles = useThemeStyles();
   const handleDeleteDepartment = async (departmemtId: string) => {
     setIsLoading(true);
     try {
@@ -58,12 +59,16 @@ const AllListDepartment = ({
   };
 
   return (
-    <div className="@container w-full flex flex-col gap-3 my-4 sm:max-h-[700px] overflow-scroll scrollbar-gemini">
+    <div
+      className={`@container w-full flex flex-col gap-3 my-4 
+        sm:max-h-[1080px] rounded-sm p-3 ${styles.background}
+        shadow-inner overflow-scroll scrollbar-gemini`}
+    >
       {department.length > 0 ? (
         department?.map((item) => (
           <div
             key={item?.id}
-            className="border-b p-4 rounded-xl grid grid-cols-4  items-center gap-3 "
+            className={`shadow p-4 ${styles.background_card} rounded-lg grid grid-cols-4  items-center gap-3 `}
           >
             <div className="w-full col-span-4 @[568px]:col-span-1">
               <Image

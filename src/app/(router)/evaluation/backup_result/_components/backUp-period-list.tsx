@@ -114,18 +114,17 @@ export const columns: ColumnDef<PeriodType>[] = [
           <DialogTrigger asChild>
             <Button>ตรวจสอบ</Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[1625px]">
+          <DialogContent className="sm:max-w-[calc(100dvw-100px)] h-[calc(100dvh-100px)]">
             <DialogHeader>
               <DialogTitle>{row.original.title}</DialogTitle>
               <DialogDescription>
                 รายชื่อแต่ละการประเมินที่ถูกบันทึกลงไปในฐานข้อมูลแล้ว
               </DialogDescription>
             </DialogHeader>
-            <ScrollArea className="max-h-[650px]">
+            <ScrollArea className="max-h-[calc(100dvh-100px)]">
               <ResultUserList period={row.original} />
             </ScrollArea>
-            <DialogFooter>
-            </DialogFooter>
+            <DialogFooter></DialogFooter>
           </DialogContent>
         </Dialog>
       );

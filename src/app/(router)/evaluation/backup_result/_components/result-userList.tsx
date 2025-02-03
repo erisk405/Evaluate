@@ -473,8 +473,7 @@ const ResultUserList = ({ period }: { period: PeriodType }) => {
                 <TabsContent value="export">
                   {/* รายชื่อทั้งหมดที่กำลังจะดำเนินการต่อใป ในการ export */}
                   <h2 className="my-3 text-sm">
-                    รายชื่อที่จะดำเนินการทั้งหมด ของรอบการประเมินที่ 1
-                    ประจำปีงบประมาณ 2567
+                    รายชื่อที่จะดำเนินการทั้งหมด ของการประเมิน{period.title}
                   </h2>
                   <div className="flex flex-wrap gap-2">
                     <ScrollArea className="max-h-[200px]">

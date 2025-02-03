@@ -517,7 +517,7 @@ const RightSection = ({ permission, period }: RightSectionProps) => {
                             <hr className="mt-3" />
                             <div
                               onClick={() => setExpandedPeriodId(null)}
-                              className="flex justify-center w-full hover:bg-gray-50 rounded-lg"
+                              className={`flex justify-center w-full ${styles.hover} rounded-lg`}
                             >
                               <ChevronUp />
                             </div>
