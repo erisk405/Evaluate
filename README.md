@@ -16,6 +16,10 @@ The 360-Degree Evaluation System is designed to enhance the competency assessmen
 
 <table>
   <tr>
+    <th>Admin</th>
+    <th>User</th>
+  </tr>
+  <tr>
     <td><img src="https://res.cloudinary.com/dmmpngwym/image/upload/v1739257679/dam1_igyf7m.gif" width="100%"></td>
     <td><img src="https://res.cloudinary.com/dmmpngwym/image/upload/v1739257833/dam2_ahnuxg.gif" width="100%"></td>
   </tr>
@@ -32,7 +36,7 @@ The 360-Degree Evaluation System is designed to enhance the competency assessmen
 :star:24/7 Accessibility – Use the system anytime, anywhere.
 
 ## 🛠 Tech Stack? :thinking:
-This is a bachelor's degree project and use basic skills to build this website  I hope this project is easy to use and directly solves users' problems.
+This is a bachelor's degree project to build this website  I hope this project is easy to use and directly solves users' problems.
 
 <div align="center">
   <img src="https://res.cloudinary.com/dmmpngwym/image/upload/v1739258554/Screenshot_2025-02-11_142211_xxbqbu.png">
