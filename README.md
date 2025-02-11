@@ -1,36 +1,100 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 🎯 360-Degree Evaluation System
+<div align="center">
+  <img src="https://res.cloudinary.com/dmmpngwym/image/upload/v1739263695/dam3_sodznv.jpg">
+</div>
+<div align="center">
 
-## Getting Started
+[![Open Source Love](https://firstcontributions.github.io/open-source-badges/badges/open-source-v1/open-source.svg)](https://github.com/kishanrajput23/Hacktoberfest-2022)
+<img src="https://img.shields.io/badge/Evaluation-2024-blueviolet" alt="Eris"/>
+<img src="https://img.shields.io/static/v1?label=%E2%AD%90&message=If%20Useful&style=style=flat&color=BC4E99" alt="Star Badge"/>
+<a href="https://github.com/erisk405" ><img src="https://img.shields.io/badge/Contributions-welcome-green.svg?style=flat&logo=github" alt="Contributions" /></a>
 
-First, run the development server:
+</div>
 
-```bash
+# 🌟 Overview
+The 360-Degree Evaluation System is designed to enhance the competency assessment process within organizations. It provides real-time assessment results, historical evaluation summaries, and flexible assessment authorization to support decision-making.
+
+<table>
+  <tr>
+    <td><img src="https://res.cloudinary.com/dmmpngwym/image/upload/v1739257679/dam1_igyf7m.gif" width="100%"></td>
+    <td><img src="https://res.cloudinary.com/dmmpngwym/image/upload/v1739257833/dam2_ahnuxg.gif" width="100%"></td>
+  </tr>
+</table>
+
+## 🚀 Key Features
+
+:star:Flexible assessment authorization – Customize who can evaluate whom.
+
+:star:Real-time assessment results – Get instant feedback on evaluations.
+
+:star:Historical evaluation summaries – Review past assessments easily.
+
+:star:24/7 Accessibility – Use the system anytime, anywhere.
+
+## 🛠 Tech Stack? :thinking:
+This is a bachelor's degree project and use basic skills to build this website  I hope this project is easy to use and directly solves users' problems.
+
+<div align="center">
+  <img src="https://res.cloudinary.com/dmmpngwym/image/upload/v1739258554/Screenshot_2025-02-11_142211_xxbqbu.png">
+</div>
+<br>
+<div align="center">
+<table>
+  <tr>
+    <th>FrontEnd</th>
+    <th>BackEnd</th>
+    <th>Database</th>
+    <th>Tools</th>
+  </tr>
+  <tr>
+    <td>Next.js</td>
+    <td>Express.js</td>
+    <td>PostgreSQL</td>
+    <td>Docker</td>
+  </tr>
+  <tr>
+    <td>Tailwind CSS</td>
+    <td>Prisma</td>
+    <td>-</td>
+    <td>GitHub Actions</td>
+  </tr>
+  <tr>
+    <td>-</td>
+    <td>Socket.IO</td>
+    <td>-</td>
+    <td>-</td>
+  </tr>
+</table>
+</div>
+
+## Performance :fire:
+The performance testing results indicate that the system functions as expected in 
+various aspects, including efficiency, functionality, security, and usability. Additionally, a 
+user satisfaction evaluation by staff members showed that the system received a 
+satisfaction rating of "Very Good," with an average score of 4.78 and a standard deviation 
+of 0.43. 
+
+### 📦 Installation Guide
+```
+# Clone the repository
+git clone https://github.com/erisk405/Evaluate.git
+
+# Install dependencies
+cd Evaluate
+npm install
+
+# Start the development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Awesome contributors :star_struck:
+<a href="https://github.com/erisk405">
+  <img src="https://res.cloudinary.com/dmmpngwym/image/upload/v1739256689/2_yvkcpt.png" />
+</a>
+<a href="https://github.com/amphon11">
+  <img src="https://res.cloudinary.com/dmmpngwym/image/upload/v1739256689/1_sxf0s1.png" />
+</a>
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+:tada:  _**Happy Contributing**_  :tada:
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## Author 🙋‍♂️ : [Find Me Here](https://www.linkedin.com/in/krittaphat-samrit-648408164/)
