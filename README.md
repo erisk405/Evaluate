@@ -87,14 +87,21 @@ npm install
 npm run dev
 ```
 
+## 🔗 Links
+- **Frontend Repository:** [GitHub](https://github.com/erisk405/Evaluate)
+- **Backend Repository:** [GitHub](https://github.com/erisk405/Evaluate_backend)
+
+
 ## Awesome contributors :star_struck:
+<div>
 <a href="https://github.com/erisk405">
-  <img src="https://res.cloudinary.com/dmmpngwym/image/upload/v1739256689/2_yvkcpt.png" />
-</a>
-<a href="https://github.com/amphon11">
   <img src="https://res.cloudinary.com/dmmpngwym/image/upload/v1739256689/1_sxf0s1.png" />
 </a>
-
-:tada:  _**Happy Contributing**_  :tada:
+ 
+<a href="https://github.com/amphon11">
+  <img src="https://res.cloudinary.com/dmmpngwym/image/upload/v1739256689/2_yvkcpt.png" />
+</a>
+</div>
+:tada: Happy Contributing :tada:
 
 ## Author 🙋‍♂️ : [Find Me Here](https://www.linkedin.com/in/krittaphat-samrit-648408164/)
