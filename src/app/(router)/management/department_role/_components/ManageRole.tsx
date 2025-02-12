@@ -439,7 +439,7 @@ const ManageRole = () => {
                 </div>
 
                 {!loading ? (
-                  <Button type="submit">Save Change</Button>
+                  <Button type="submit">บันทึกข้อมูล</Button>
                 ) : (
                   <Button className="animate-pulse" type="button">
                     <Loader className="animate-spin" />
@@ -548,7 +548,7 @@ const ManageRole = () => {
                           <AlertDialogContent>
                             <AlertDialogHeader>
                               <AlertDialogTitle>
-                                คุณแน่ใจแล้วใช่ไหมฦ
+                                คุณแน่ใจแล้วใช่ไหม?
                               </AlertDialogTitle>
                               <AlertDialogDescription className="text-red-500">
                                 การดำเนินการนี้ไม่สามารถย้อนกลับได้
