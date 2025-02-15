@@ -30,6 +30,10 @@ yarn-error.log*
 
 .env
 
+.dockerignore
+Dockerfile
+fly.toml
+
 # vercel
 .vercel
 
