@@ -18,8 +18,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { useThemeStyles } from "@/hooks/useTheme";
 import GlobalApi, { handleErrorOnAxios } from "@/app/_util/GlobalApi";
-import { toast } from "sonner";
 import { Loader } from "lucide-react";
+import { toast } from "@/components/ui/use-toast";
 
 interface AllListDepartmentProps {
   department: Department[];
@@ -31,22 +31,22 @@ const AllListDepartment = ({
 }: AllListDepartmentProps) => {
   const { roles } = useStore();
   const [isLoading, setIsLoading] = useState(false);
-  const showToast = (title: string, description: string) => {
-    toast(title, { description });
-  };
   const styles = useThemeStyles();
   const handleDeleteDepartment = async (departmemtId: string) => {
     setIsLoading(true);
     try {
-      showToast("กำลังดำเนินการ", `ขณะนี้ระบบกำลังดำเนินการ โปรดรอสักครู่...`);
+      toast({
+        title: "กำลังดำเนินการ",
+        description: `ขณะนี้ระบบกำลังดำเนินการ โปรดรอสักครู่...`,
+      });
       const response = await GlobalApi.deleteDepartment(departmemtId);
       // console.log("response dept", response?.data);
 
       if (response && response?.status === 200) {
-        showToast(
-          "ดำเนินการสำเร็จ",
-          `ระบบได้ลบหน่วยงาน "${response?.data?.delete?.department_name}" เรียบร้อยแล้ว`
-        );
+        toast({
+          title: "ดำเนินการสำเร็จ",
+          description:`ระบบได้ลบหน่วยงาน "${response?.data?.delete?.department_name}" เรียบร้อยแล้ว`,
+        });
       }
       await fetchDepart();
       // ปิด AlertDialog หลังจากทำงานเสร็จ
