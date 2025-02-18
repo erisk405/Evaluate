@@ -33,7 +33,7 @@ import { Separator } from "@/components/ui/separator";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "@/components/ui/use-toast";
 import socket from "@/lib/socket";
-import { Role } from "@/types/interface";
+import { Department, Role } from "@/types/interface";
 import useStore from "@/app/store/store";
 import GlobalApi from "@/app/_util/GlobalApi";
 import SetPrefixSelection from "@/app/_components/SetPrefixSelection";
@@ -42,6 +42,7 @@ import Loading from "@/app/_components/Loading";
 import { useTheme } from "next-themes";
 import { useThemeClass, useThemeStyles } from "@/hooks/useTheme";
 import { useProfileComparison } from "@/app/lib/adapters/user-profile/useProfileComparison";
+import SetDepartmentUserOptions from "../../management/manage_user/_components/SetDepartmentUserOptions";
 
 const formSchema = z.object({
   image: z
@@ -59,9 +60,12 @@ const formSchema = z.object({
   email: z.string().email({
     message: "Please enter a valid email address.",
   }),
-  department: z.string().min(10, {
-    message: "Department must be at least 10 characters",
-  }).optional(),
+  department: z
+    .string()
+    .min(10, {
+      message: "Department must be at least 10 characters",
+    })
+    .optional(),
   role: z.string().min(1, {
     message: "Role is required",
   }),
@@ -137,13 +141,29 @@ export default function page() {
         const { name, prefix, phone } = response.data;
         updateProfileDetail({ name, prefix, phone });
       }
-
+      if (values.department) {
+        const updateDepartment = await GlobalApi.joinDepartment(
+          values.department
+        );
+        const { department } = updateDepartment?.data;
+        updateProfileDetail({
+          department,
+        });
+        // Reset all form fields, updating only the department
+        form.reset({
+          ...form.getValues(), // Keep existing values
+          department: department.id, // Update department
+        });
+      }
       // Role request logic
       if (ProfileDetail.role && ProfileDetail.role.id !== values.role) {
         if (ProfileDetail.roleRequests?.length === 0) {
           await requestRole(values.role);
         } else {
-          toast({description:"ไม่สามารถร้องขอตำแหน่งได้ เนื่องจากมีคำขอที่อยู่ระหว่างดำเนินการอยู่"})
+          toast({
+            description:
+              "ไม่สามารถร้องขอตำแหน่งได้ เนื่องจากมีคำขอที่อยู่ระหว่างดำเนินการอยู่",
+          });
           // console.log("Don't request role, pending request exists!");
         }
       }
@@ -201,7 +221,7 @@ export default function page() {
   // ใช้ useEffect เพื่อรอให้ ProfileDetail มีข้อมูลก่อน
   const isProfileUnchanged = useProfileComparison(
     form.getValues(),
-    ProfileDetail
+    false // false ไว้บอกว่ามาจาก page ของ user แก้ข้อมูลส่วนตัว
   );
   useEffect(() => {
     if (ProfileDetail) {
@@ -212,7 +232,7 @@ export default function page() {
         image: undefined,
         email: ProfileDetail?.email || "",
         department:
-          ProfileDetail?.department?.department_name || "Don't have department",
+          ProfileDetail.department?.id && ProfileDetail?.department.id,
         role: ProfileDetail?.role?.id || "",
         phoneNumber: ProfileDetail.phone
           ? ProfileDetail.phone
@@ -402,12 +422,12 @@ export default function page() {
                   <div className="grid grid-cols-11 items-center gap-3">
                     <FormControl className="col-span-11">
                       <div className="relative">
-                        <Input
-                          id="department"
-                          type="text"
-                          disabled
-                          className="focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1"
-                          {...field}
+                        <SetDepartmentUserOptions
+                          fromAdmin={false}
+                          isAdmin={ProfileDetail.role?.role_name === "admin"}
+                          defaultValue={field.value as Department | undefined}
+                          value={field.value ?? ""}
+                          onChange={field.onChange}
                         />
                       </div>
                     </FormControl>

@@ -27,6 +27,7 @@ import { useProfileComparison } from "@/app/lib/adapters/user-profile/useProfile
 import { ProfileDetailType } from "@/app/lib/adapters/user-profile/types";
 import { Department } from "@/types/interface";
 import useStore from "@/app/store/store";
+import { useAuthState } from "@/hooks/useAuthState";
 
 const formSchema = z.object({
   image: z
@@ -110,7 +111,7 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
       if (values.image) {
         formData.append("image", values.image);
         try {
-          const response = await GlobalApi.updateUserImageForAdmin(
+          await GlobalApi.updateUserImageForAdmin(
             formData,
             userDetail.id!
           );
@@ -133,15 +134,18 @@ const UserProfile = ({ userDetail, refreshData }: UserProfileProps) => {
         prefixId: values.prefix,
         phone: values.phoneNumber,
       };
-      const response = await GlobalApi.updateUserProfileByAdmin(data);
+      await GlobalApi.updateUserProfileByAdmin(data);
       refreshData();
       setIsLoading(true);
     } catch (error) {
       console.log("error", { message: error });
     }
   }
-
-  const isProfileUnchanged = useProfileComparison(form.getValues(), userDetail);
+  const isProfileUnchanged = useProfileComparison(
+    form.getValues(),
+    true, // true ไว้บอกว่ามาจาก page ของ admin
+    userDetail
+  );
   return (
     <div className="">
       <div className="relative w-full h-[60px]">

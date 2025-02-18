@@ -25,7 +25,7 @@ import {
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import SetStatusSection from "./SetStatusSection";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useStore from "../store/store";
 import GlobalApi, { handleErrorOnAxios } from "../_util/GlobalApi";
 import socket from "@/lib/socket";
@@ -183,6 +183,11 @@ export default function Myprofile() {
         updateProfileDetail({
           department,
         });
+        // Reset all form fields, updating only the department
+        form.reset({
+          ...form.getValues(), // Keep existing values
+          department: department.id, // Update department
+        });
       }
       // Success toast
       showToast(
@@ -235,7 +240,7 @@ export default function Myprofile() {
   };
   const isProfileUnchanged = useProfileComparison(
     form.getValues(),
-    ProfileDetail
+    false // false ไว้บอกว่ามาจาก page ของ user แก้ข้อมูลส่วนตัว
   );
   return (
     <div className={` ${styles.text}`}>

@@ -41,6 +41,7 @@ import {
 } from "@/components/ui/select";
 import GlobalApi, { apiUrl } from "@/app/_util/GlobalApi";
 import { Department } from "@/types/interface";
+import { Label } from "@/components/ui/label";
 
 const formSchema = z
   .object({
@@ -291,14 +292,20 @@ const page = () => {
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input placeholder="m@example.com" {...field} />
+                        <Input placeholder="exam@example.com" {...field} />
                       </FormControl>
-                      {errors.email?.message && (
+                      <Label className="">
+                        **อีเมลจะต้องเป็นที่อยู่อีเมลที่ถูกต้อง เช่น
+                        example@mail.com
+                      </Label>
+                      {errors.email?.message ? (
                         <FormMessage>
                           {typeof errors.email.message === "string"
                             ? errors.email.message
                             : "เกิดข้อผิดพลาด"}
                         </FormMessage>
+                      ) : (
+                        <FormMessage />
                       )}
                     </FormItem>
                   )}
@@ -318,8 +325,8 @@ const page = () => {
                         />
                       </FormControl>
                       <span className="text-sm">
-                        รหัสผ่านต้องมี 8 ตัวขึ้นไป มีตัวพิมพ์เล็ก พิมพ์ใหญ่
-                        และตัวเลขอย่างน้อย 1 ตัว*
+                        **รหัสผ่านต้องมี 8 ตัวขึ้นไป มีตัวพิมพ์เล็ก พิมพ์ใหญ่
+                        และตัวเลขอย่างน้อย 1 ตัว
                       </span>
                       <FormMessage />
                     </FormItem>

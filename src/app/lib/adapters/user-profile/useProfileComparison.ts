@@ -1,31 +1,35 @@
 "use client"
 import { useMemo } from "react";
 import { ProfileDetailType } from "./types";
+import useStore from "@/app/store/store";
 
 export const useProfileComparison = (
   currentFormValues: any,
-  ProfileDetail: ProfileDetailType
+  fromAdmin: boolean,
+  userDetail?: ProfileDetailType,
 ) => {
+  const { ProfileDetail } = useStore();
+  const profileToCompare = fromAdmin ? userDetail : ProfileDetail;
+
   const isProfileUnchanged = useMemo(() => {
     const [currentFirstName, currentLastName] = (
-      ProfileDetail?.name || ""
+      profileToCompare?.name || ""
     ).split(" ");
 
     const originalValues = {
       firstName: currentFirstName || "",
       lastName: currentLastName || "",
-      prefix: ProfileDetail?.prefix?.prefix_id || "",
-      email: ProfileDetail?.email || "",
-      role: ProfileDetail?.role?.id || "",
-      phoneNumber: ProfileDetail?.phone || "ไม่พบเบอร์โทร",
-      image: ProfileDetail?.image?.url,
-      department: ProfileDetail?.department?.id || "",
+      prefix: profileToCompare?.prefix?.prefix_id || "",
+      email: profileToCompare?.email || "",
+      role: profileToCompare?.role?.id || "",
+      phoneNumber: profileToCompare?.phone || "ไม่พบเบอร์โทร",
+      image: profileToCompare?.image?.url,
+      department: profileToCompare?.department?.id || "",
     };
 
     // เพิ่ม debug logs
     // console.log("originalValues",originalValues);
     // console.log("currentFormValues",currentFormValues);
-
 
     return Object.keys(originalValues).every((key) => {
       // ถ้าเป็น image หรือ department และค่าใน form เป็น undefined ให้ถือว่าไม่มีการเปลี่ยนแปลง
@@ -42,7 +46,7 @@ export const useProfileComparison = (
       // เปรียบเทียบค่าปกติ
       return originalValue === currentValue;
     });
-  }, [currentFormValues, ProfileDetail]);
+  }, [currentFormValues, ProfileDetail, userDetail, fromAdmin]);
 
   return isProfileUnchanged;
 };

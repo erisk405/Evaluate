@@ -47,7 +47,6 @@ export default function SetDepartmentUserOptions({
       console.error("Error fetching department data:", error);
     }
   };
-  // ให้ เรียกใช้ function ใหม่หากเกิดการเปลี่ยนแปลงที่ rolRequest
   useEffect(() => {
     if (defaultValue && typeof defaultValue !== "string") {
       const defaultDepartment = departments?.find(
