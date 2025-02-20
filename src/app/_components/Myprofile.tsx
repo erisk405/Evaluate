@@ -107,7 +107,8 @@ export default function Myprofile() {
       image: undefined,
       email: ProfileDetail?.email ? ProfileDetail?.email : "",
       department: ProfileDetail.department?.id && ProfileDetail?.department.id,
-      role: ProfileDetail?.role?.id,
+      role:
+        ProfileDetail.roleRequests?.[0]?.role?.id ?? ProfileDetail?.role?.id,
       phoneNumber: ProfileDetail.phone ? ProfileDetail.phone : "ไม่พบเบอร์โทร",
     },
   });
@@ -167,12 +168,6 @@ export default function Myprofile() {
       if (ProfileDetail.role && ProfileDetail.role.id !== values.role) {
         if (ProfileDetail.roleRequests?.length === 0) {
           await requestRole(values.role);
-        } else {
-          showToast(
-            "⚠️ ไม่สามารถร้องขอตำแหน่งได้",
-            "เนื่องจากมีคำขอที่อยู่ระหว่างดำเนินการอยู่"
-          );
-          // console.log("Don't request role, pending request exists!");
         }
       }
       if (values.department) {
@@ -230,7 +225,6 @@ export default function Myprofile() {
       });
       // Emit an event to notify admins ขนข้อูลทั้งหมดที่ได้จาก response ไปให้ admin
       const data = response?.data;
-      // console.log("requestRole:", data);
       socket.emit("newRoleRequest", {
         data,
       });
@@ -242,6 +236,7 @@ export default function Myprofile() {
     form.getValues(),
     false // false ไว้บอกว่ามาจาก page ของ user แก้ข้อมูลส่วนตัว
   );
+
   return (
     <div className={` ${styles.text}`}>
       <div className="relative bg-gray-100 w-full h-[120px] rounded-xl ">

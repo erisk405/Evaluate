@@ -12,7 +12,8 @@ import { toast } from "@/components/ui/use-toast";
 import socket from "@/lib/socket";
 
 const MyEvaluated = () => {
-  const { setResultEvaluate, ProfileDetail, currentlyEvaluationPeriod } = useStore();
+  const { setResultEvaluate, ProfileDetail, currentlyEvaluationPeriod } =
+    useStore();
   const styles = useThemeStyles();
   // สร้าง debounced version ของ fetchResultEval
   //ใช้ useCallback ป้องกันการสร้างฟังก์ชันใหม่ทุกครั้งที่ ช่วยให้ฟังก์ชันนั้นถูกสร้างขึ้นแค่ครั้งเดียวและจะถูกเก็บไว้ในหน่วยความจำจนกว่าค่าของ dependencies จะเปลี่ยนแปลง
@@ -76,7 +77,23 @@ const MyEvaluated = () => {
             }}
             className={`${styles.background} rounded-2xl shadow`}
           >
-            <ChartEvaluatedYou />
+            {ProfileDetail.role?.role_name === "member" ? (
+              <div className="flex flex-col gap-3 justify-center items-center p-6 h-80">
+                <div className="text-6xl animate-wiggle-float">🌕</div>
+                <h2 className="text-3xl">โปรดระบุตำแหน่งของตนเอง</h2>
+                <p>
+                  โดยการคลิกที่ <span className="text-green-500">โปรไฟล์</span>{" "}
+                  แล้วเลือก <span className="text-green-500">บัญชีของฉัน </span>
+                </p>
+                <p>
+                  หากตำแหน่งยังคงเป็น{" "}
+                  <span className="text-green-500">"member"</span>{" "}
+                  โปรดเลือกตำแหน่งใหม่ให้ถูกต้อง
+                </p>
+              </div>
+            ) : (
+              <ChartEvaluatedYou />
+            )}
           </motion.div>
           <motion.div
             initial={{ opacity: 0, y: -100 }}

@@ -102,6 +102,7 @@ const FormLevelEditPage = ({ formItem, fetchForm }: FormLevelEditPageProp) => {
       if (!response) {
         throw new Error("Can not updated vision form.");
       }
+      fetchForm();
       showToast("อัพเดทVision Form สำเร็จ", `ระบบได้ save Vision form นี้แล้ว`);
       // console.log("response", response);
       // console.log("payload", payload);

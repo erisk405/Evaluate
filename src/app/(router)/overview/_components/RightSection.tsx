@@ -677,7 +677,18 @@ const RightSection = ({ permission, period }: RightSectionProps) => {
                 <TextEffect preset="slide">รายการแต่ละหน่วยงาน</TextEffect>
               </h2>
               <div className={`mt-5 border rounded-xl shadow-inner  `}>
-                <DepartmentSection />
+                {permission === "member" ? (
+                  <div className="p-4 flex flex-col items-center justify-center">
+                    <h2 className="text-3xl animate-wiggle-float">🔏</h2>
+                    <h2 className="text-center">
+                      รายการแต่ละหน่วยงาน
+                      <br />
+                      จะไม่แสดงผลหากยังไม่ระบุตำแหน่งงาน
+                    </h2>
+                  </div>
+                ) : (
+                  <DepartmentSection />
+                )}
               </div>
             </motion.div>
           </div>

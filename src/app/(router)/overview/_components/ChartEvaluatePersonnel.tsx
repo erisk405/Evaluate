@@ -118,104 +118,117 @@ const ChartEvaluatePersonnel = () => {
             <CardTitle className="mb-3">
               บุคคลที่คุณประเมินไปแล้วในแต่ละหน่วยงาน
             </CardTitle>
-            <div className="inline-flex justify-around">
-              <div className="flex items-center gap-2 p-2 shadow rounded-lg justify-center">
-                <Combine strokeWidth={1} className="text-blue-500" />
-                <h2 className="text-sm ">ทั้งหมด</h2>
-                <h2 className="">{totalUserInDepart}</h2>
+            {ProfileDetail.role?.role_name !== "member" && (
+              <div className="inline-flex justify-around">
+                <div className="flex items-center gap-2 p-2 shadow rounded-lg justify-center">
+                  <Combine strokeWidth={1} className="text-blue-500" />
+                  <h2 className="text-sm ">ทั้งหมด</h2>
+                  <h2 className="">{totalUserInDepart}</h2>
+                </div>
+                <div className="flex items-center gap-2 p-2 shadow rounded-lg  justify-center">
+                  <Package strokeWidth={1} className="text-green-500" />
+                  <h2 className="text-sm ">เสร็จสิ้นแล้ว</h2>
+                  <h2 className="">{totalFinish}</h2>
+                </div>
+                <div className="flex items-center gap-2 p-2 shadow rounded-lg  justify-center">
+                  <ContainerIcon strokeWidth={1} className="text-yellow-500" />
+                  <h2 className="text-sm ">ยังไม่เสร็จ</h2>
+                  <h2 className="">{totalUnfinish}</h2>
+                </div>
               </div>
-              <div className="flex items-center gap-2 p-2 shadow rounded-lg  justify-center">
-                <Package strokeWidth={1} className="text-green-500" />
-                <h2 className="text-sm ">เสร็จสิ้นแล้ว</h2>
-                <h2 className="">{totalFinish}</h2>
-              </div>
-              <div className="flex items-center gap-2 p-2 shadow rounded-lg  justify-center">
-                <ContainerIcon strokeWidth={1} className="text-yellow-500" />
-                <h2 className="text-sm ">ยังไม่เสร็จ</h2>
-                <h2 className="">{totalUnfinish}</h2>
-              </div>
-            </div>
+            )}
           </CardHeader>
-          <CardContent>
-            <ChartContainer config={chartConfig}>
-              <BarChart
-                accessibilityLayer
-                data={chartData}
-                margin={{
-                  top: 20,
-                }}
-              >
-                <CartesianGrid vertical={false} />
-                <XAxis
-                  dataKey="depart"
-                  tickLine={false}
-                  tickMargin={10}
-                  axisLine={false}
-                  tickFormatter={abbreviateDepartment}
-                />
-                <ChartTooltip
-                  cursor={false}
-                  content={<ChartTooltipContent hideLabel />}
-                />
-                <Bar dataKey="finished" fill="var(--color-finished)" radius={8}>
-                  <LabelList
-                    position="top"
-                    offset={12}
-                    className="fill-foreground"
-                    fontSize={12}
+          {ProfileDetail.role?.role_name === "member" ? (
+            <div className="flex flex-col items-center justify-center p-4 h-80">
+              <h2 className="text-6xl animate-wiggle-float">✨</h2>
+              <h2 className="text-2xl text-center">หากยังไม่ได้ระบุตำแหน่งงาน<br/> จะไม่สามารถดำเนินการประเมินได้</h2>
+            </div>
+          ) : (
+            <CardContent>
+              <ChartContainer config={chartConfig}>
+                <BarChart
+                  accessibilityLayer
+                  data={chartData}
+                  margin={{
+                    top: 20,
+                  }}
+                >
+                  <CartesianGrid vertical={false} />
+                  <XAxis
+                    dataKey="depart"
+                    tickLine={false}
+                    tickMargin={10}
+                    axisLine={false}
+                    tickFormatter={abbreviateDepartment}
                   />
-                </Bar>
-                <Bar dataKey="total" fill="var(--color-total)" radius={8}>
-                  <LabelList
-                    position="top"
-                    offset={12}
-                    className="fill-foreground"
-                    fontSize={12}
+                  <ChartTooltip
+                    cursor={false}
+                    content={<ChartTooltipContent hideLabel />}
                   />
-                </Bar>
-              </BarChart>
-            </ChartContainer>
-            <div className="">
-              <h2 className="text-xl font-bold my-3">คุณประเมินไปแล้ว</h2>
-              <div className="grid sm:grid-cols-2 gap-4 text-sm ">
-                {resultCountUserAsEvaluated?.length ? (
-                  resultCountUserAsEvaluated?.map((item, index) => (
-                    <div key={index + "Letgo"}>
-                      <div className="relative flex flex-col shadow items-center p-3 rounded-lg">
-                        <Link
-                          href={`/overview/department/${item.department_id}`}
-                          className="cursor-pointer w-full col-span-2 truncate hover:text-blue-500
-                           transition-all active:scale-95"
-                        >
-                          {item.department_name}
-                        </Link>
-                        <div className=" flex justify-between px-2 items-center w-full">
-                          <div className="inline-flex rounded-lg  mt-1 items-center gap-1 truncate text-blue-500">
-                            <h2 className="text-sm ">
-                              {item.evaluated}/{item.evaluator}
-                            </h2>
-                            <span>คน</span>
+                  <Bar
+                    dataKey="finished"
+                    fill="var(--color-finished)"
+                    radius={8}
+                  >
+                    <LabelList
+                      position="top"
+                      offset={12}
+                      className="fill-foreground"
+                      fontSize={12}
+                    />
+                  </Bar>
+                  <Bar dataKey="total" fill="var(--color-total)" radius={8}>
+                    <LabelList
+                      position="top"
+                      offset={12}
+                      className="fill-foreground"
+                      fontSize={12}
+                    />
+                  </Bar>
+                </BarChart>
+              </ChartContainer>
+              <div className="">
+                <h2 className="text-xl font-bold my-3">คุณประเมินไปแล้ว</h2>
+                <div className="grid sm:grid-cols-2 gap-4 text-sm ">
+                  {resultCountUserAsEvaluated?.length ? (
+                    resultCountUserAsEvaluated?.map((item, index) => (
+                      <div key={index + "Letgo"}>
+                        <div className="relative flex flex-col shadow items-center p-3 rounded-lg">
+                          <Link
+                            href={`/overview/department/${item.department_id}`}
+                            className="cursor-pointer w-full col-span-2 truncate hover:text-blue-500
+                       transition-all active:scale-95"
+                          >
+                            {item.department_name}
+                          </Link>
+                          <div className=" flex justify-between px-2 items-center w-full">
+                            <div className="inline-flex rounded-lg  mt-1 items-center gap-1 truncate text-blue-500">
+                              <h2 className="text-sm ">
+                                {item.evaluated}/{item.evaluator}
+                              </h2>
+                              <span>คน</span>
+                            </div>
+                            <Image
+                              width={30}
+                              height={30}
+                              src={"/OverviewBannerIcon.png"}
+                              alt="OverviewBannerIcon"
+                              className="animate-wiggle"
+                            />
                           </div>
-                          <Image
-                            width={30}
-                            height={30}
-                            src={"/OverviewBannerIcon.png"}
-                            alt="OverviewBannerIcon"
-                            className="animate-wiggle"
-                          />
                         </div>
                       </div>
+                    ))
+                  ) : (
+                    <div className="flex items-center justify-center h-[160px] gap-3 w-full col-span-2">
+                      <h2 className="text-xl">ยังไม่ได้อยู่ในรอบการประเมิน</h2>
+                      <span className="animate-bounce text-xl">😾</span>
                     </div>
-                  ))
-                ) : (
-                  <div className="flex items-center justify-center h-[160px] gap-3 w-full col-span-2">
-                    <h2 className="text-xl">ยังไม่ได้อยู่ในรอบการประเมิน</h2>
-                    <span className="animate-bounce text-xl">😾</span>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
-            </div>
-          </CardContent>
+            </CardContent>
+          )}
         </Card>
         <div className="col-span-1">
           <RadarChartGridFilled />

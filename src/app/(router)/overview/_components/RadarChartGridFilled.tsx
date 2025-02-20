@@ -29,7 +29,8 @@ import useStore from "@/app/store/store";
 import { formatThaiDateTime } from "./RightSection";
 import { useThemeStyles } from "@/hooks/useTheme";
 const RadarChartGridFilled = () => {
-  const { resultEvaluate, currentlyEvaluationPeriod } = useStore();
+  const { resultEvaluate, currentlyEvaluationPeriod, ProfileDetail } =
+    useStore();
 
   const styles = useThemeStyles();
   const chartData = resultEvaluate?.formResults?.map((item) => ({
@@ -72,94 +73,109 @@ const RadarChartGridFilled = () => {
           แสดงผลรวมทั้งหมดในแต่ละด้านภายในระยะเวลาของรอบการประเมิน
         </CardDescription>
       </CardHeader>
-      <CardContent className="pb-0">
-        <ChartContainer
-          config={chartConfig}
-          className="mx-auto aspect-square max-h-[300px]"
-        >
-          <RadarChart data={chartData}>
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
-            />
-            <PolarGrid className="fill-[--color-F01] opacity-20" />
-            <PolarAngleAxis dataKey="form" tickFormatter={abbreviateForm} />
-            <Radar dataKey="F01" fill="var(--color-F01)" fillOpacity={0.5} />
-          </RadarChart>
-        </ChartContainer>
-      </CardContent>
-      <CardFooter className="flex-col gap-2 text-sm">
-        <div className="flex items-center gap-2 font-medium leading-none">
-          {currentlyEvaluationPeriod ? (
-            <div className="flex items-center gap-2">
-              {currentlyEvaluationPeriod?.title}
-              <CalendarClock className="h-4 w-4" />
-            </div>
-          ) : (
-            <div className="text-xl animate-bounce">☃️</div>
-          )}
+      {ProfileDetail.role?.role_name === "member" ? (
+        <div className="flex flex-col items-center justify-center p-4 h-80">
+          <h2 className="text-6xl animate-wiggle-float">🕯️</h2>
+          <h2 className="text-2xl text-center">
+            หากยังไม่ได้ระบุตำแหน่งงาน
+            <br /> จะไม่สามารถดำเนินการประเมินได้
+          </h2>
         </div>
-        <div className="flex items-center gap-2 leading-none text-muted-foreground">
-          {currentlyEvaluationPeriod && (
-            <div>
-              {formatThaiDateTime(currentlyEvaluationPeriod?.start).date} เวลา{" "}
-              {formatThaiDateTime(currentlyEvaluationPeriod?.start).time}{" "}
-              {" จนถึง "}
-              {
-                formatThaiDateTime(currentlyEvaluationPeriod?.end).date
-              } เวลา {formatThaiDateTime(currentlyEvaluationPeriod?.end).time}
+      ) : (
+        <CardContent className="pb-0">
+          <ChartContainer
+            config={chartConfig}
+            className="mx-auto aspect-square max-h-[300px]"
+          >
+            <RadarChart data={chartData}>
+              <ChartTooltip
+                cursor={false}
+                content={<ChartTooltipContent hideLabel />}
+              />
+              <PolarGrid className="fill-[--color-F01] opacity-20" />
+              <PolarAngleAxis dataKey="form" tickFormatter={abbreviateForm} />
+              <Radar dataKey="F01" fill="var(--color-F01)" fillOpacity={0.5} />
+            </RadarChart>
+          </ChartContainer>
+        </CardContent>
+      )}
+      {ProfileDetail.role?.role_name !== "member" && (
+        <>
+          <CardFooter className="flex-col gap-2 text-sm">
+            <div className="flex items-center gap-2 font-medium leading-none">
+              {currentlyEvaluationPeriod ? (
+                <div className="flex items-center gap-2">
+                  {currentlyEvaluationPeriod?.title}
+                  <CalendarClock className="h-4 w-4" />
+                </div>
+              ) : (
+                <div className="text-xl animate-bounce">☃️</div>
+              )}
             </div>
-          )}
-        </div>
-      </CardFooter>
-
-      <div className="border-t">
-        <Table>
-          <TableCaption>
-            ตารางนี้จะแสดงเพียงภาพรวมของผลการประเมิน ณ ขณะนั้น.
-          </TableCaption>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-auto truncate">
-                ด้านในการประเมิน
-              </TableHead>
-              <TableHead className="text-center truncate">
-                ส่วนเบี่ยงเบน(SD.)
-              </TableHead>
-              <TableHead className="text-center truncate">
-                ค่าเฉลี่ย(AVG)
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {resultEvaluate?.formResults &&
-              resultEvaluate?.formResults.map((item) => (
-                <TableRow key={item.formId}>
-                  <TableCell className="font-medium truncate">
-                    <span>{item.formName}</span>
+            <div className="flex items-center gap-2 leading-none text-muted-foreground">
+              {currentlyEvaluationPeriod && (
+                <div>
+                  {formatThaiDateTime(currentlyEvaluationPeriod?.start).date}{" "}
+                  เวลา{" "}
+                  {formatThaiDateTime(currentlyEvaluationPeriod?.start).time}{" "}
+                  {" จนถึง "}
+                  {
+                    formatThaiDateTime(currentlyEvaluationPeriod?.end).date
+                  } เวลา{" "}
+                  {formatThaiDateTime(currentlyEvaluationPeriod?.end).time}
+                </div>
+              )}
+            </div>
+          </CardFooter>
+          <div className="border-t">
+            <Table>
+              <TableCaption>
+                ตารางนี้จะแสดงเพียงภาพรวมของผลการประเมิน ณ ขณะนั้น.
+              </TableCaption>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-auto truncate">
+                    ด้านในการประเมิน
+                  </TableHead>
+                  <TableHead className="text-center truncate">
+                    ส่วนเบี่ยงเบน(SD.)
+                  </TableHead>
+                  <TableHead className="text-center truncate">
+                    ค่าเฉลี่ย(AVG)
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {resultEvaluate?.formResults &&
+                  resultEvaluate?.formResults.map((item) => (
+                    <TableRow key={item.formId}>
+                      <TableCell className="font-medium truncate">
+                        <span>{item.formName}</span>
+                      </TableCell>
+                      <TableCell className="text-center truncate">
+                        {item.totalSDPerForm.toFixed(2)}
+                      </TableCell>
+                      <TableCell className="text-center truncate">
+                        {item.totalAVGPerForm?.toFixed(2)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+              </TableBody>
+              <TableFooter>
+                <TableRow>
+                  <TableCell>รวมทั้งหมด</TableCell>
+                  <TableCell className="text-center text-blue-500 text-[16px]">
+                    {resultEvaluate?.headData.totalSD.toFixed(2)}
                   </TableCell>
-                  <TableCell className="text-center truncate">
-                    {item.totalSDPerForm.toFixed(2)}
-                  </TableCell>
-                  <TableCell className="text-center truncate">
-                    {item.totalAVGPerForm?.toFixed(2)}
+                  <TableCell className="text-center text-fuchsia-700 text-[16px]">
+                    {resultEvaluate?.headData.totalAVG.toFixed(2)}
                   </TableCell>
                 </TableRow>
-              ))}
-          </TableBody>
-          <TableFooter>
-            <TableRow>
-              <TableCell>รวมทั้งหมด</TableCell>
-              <TableCell className="text-center text-blue-500 text-[16px]">
-                {resultEvaluate?.headData.totalSD.toFixed(2)}
-              </TableCell>
-              <TableCell className="text-center text-fuchsia-700 text-[16px]">
-                {resultEvaluate?.headData.totalAVG.toFixed(2)}
-              </TableCell>
-            </TableRow>
-          </TableFooter>
-        </Table>
-      </div>
+              </TableFooter>
+            </Table>
+          </div>
+        </>
+      )}
     </Card>
   );
 };

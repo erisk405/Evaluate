@@ -1,5 +1,11 @@
+import axios from "axios";
 import { JWTPayload, jwtVerify } from "jose";
 import { NextResponse } from "next/server";
+
+const isProduction = process.env.NODE_ENV === "production";
+const apiUrl = isProduction
+    ? process.env.NEXT_PUBLIC_BACKEND_API_URL
+    : "http://localhost:8000/api";
 
 interface TokenPayload extends JWTPayload {
     role?: string;
@@ -47,10 +53,13 @@ export async function decodeToken(token: string): Promise<TokenPayload | null> {
     }
 
     try {
-        const { payload } = await jwtVerify(
-            token,
-            new TextEncoder().encode(jwtSecret)
-        );
+        const response = await axios.get(`${apiUrl}/protected`, {
+            headers: {
+                Authorization: `Bearer ${token}`, // เพิ่ม Bearer token
+            },
+        });
+
+        const payload = response.data; // ต้องใช้ response.data ไม่ใช่ response.payload
         return payload as TokenPayload;
     } catch (error) {
         console.error("Invalid token:", error);

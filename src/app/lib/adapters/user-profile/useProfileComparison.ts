@@ -21,7 +21,7 @@ export const useProfileComparison = (
       lastName: currentLastName || "",
       prefix: profileToCompare?.prefix?.prefix_id || "",
       email: profileToCompare?.email || "",
-      role: profileToCompare?.role?.id || "",
+      role: profileToCompare?.roleRequests?.[0]?.role.id ?? profileToCompare?.role?.id,
       phoneNumber: profileToCompare?.phone || "ไม่พบเบอร์โทร",
       image: profileToCompare?.image?.url,
       department: profileToCompare?.department?.id || "",
