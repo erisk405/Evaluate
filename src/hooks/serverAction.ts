@@ -73,7 +73,7 @@ export async function protectedRounterAction(token: string, currentPath: string)
     try {
         // ตรวจสอบว่าเป็น path ที่เป็น custom path หรือไม่ (เช่น reset-password)
         const isPathCustom = isPathCustoms(currentPath);
-
+        
         // Basic token check - ยกเว้นกรณี custom paths
         if (!token && !isPathCustom) {
             return NextResponse.redirect(new URL('/sign-in', BASE_URL));

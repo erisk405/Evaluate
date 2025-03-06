@@ -49,16 +49,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Image from "next/image";
-
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import UserProfile from "./UserProfile";
 import GlobalApi, { handleErrorOnAxios } from "@/app/_util/GlobalApi";
 import { Department, PageNumber, User } from "@/types/interface";
 import React, { useEffect, useMemo, useState } from "react";
@@ -77,11 +67,10 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import FilterDeparment from "./filter-department";
-import useStore from "@/app/store/store";
+import { toast } from "@/components/ui/use-toast";
 
 type ListEmployeeProp = {
   allUser: User[];
@@ -171,7 +160,7 @@ export function ListEmployee({ allUser, fetchUserList }: ListEmployeeProp) {
         return (
           <div className="capitalize flex items-center gap-3">
             <Image
-              src={`${row.original.image?.url || '/profiletest.jpg'}`}
+              src={`${row.original.image?.url || "/profiletest.jpg"}`}
               width={40}
               height={40}
               alt="profiletable"
@@ -391,6 +380,10 @@ export function ListEmployee({ allUser, fetchUserList }: ListEmployeeProp) {
     return pageNumbers;
   };
   const handleDeleteUser = async () => {
+    toast({
+      title: "กำลังดำเนินการ",
+      description: `ระบบกำลังดำเนินการลบผู้ใช้งาน โปรดรอสักครู่...`,
+    });
     try {
       const selectData = table
         .getSelectedRowModel()
@@ -398,7 +391,8 @@ export function ListEmployee({ allUser, fetchUserList }: ListEmployeeProp) {
       const userID = selectData.map((item) => item.id);
       const response = await GlobalApi.deleteUserByAdmin(userID);
       if (response?.data) {
-        toast("ลบผู้ใช้งานเสร็จสิ้นแล้ว", {
+        toast({
+          title: "ลบผู้ใช้งานเสร็จสิ้นแล้ว",
           description: `${response?.data.message}`,
         });
       }

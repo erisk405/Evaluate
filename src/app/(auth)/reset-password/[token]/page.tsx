@@ -78,8 +78,6 @@ const page = () => {
         newPassword: values.password,
         token: token as string,
       });
-      // console.log("response", response?.data);
-
       if (response && response.status === 200) {
         toast({
           description: response.data.message,
@@ -128,7 +126,7 @@ const page = () => {
       if (!token) {
         router.push("/sign-in");
         return;
-      }
+      }      
       setIsLoadingPage(true);
       try {
         await checkAuthorization(token as string);
