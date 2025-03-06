@@ -58,7 +58,6 @@ export async function decodeToken(token: string): Promise<TokenPayload | null> {
                 Authorization: `Bearer ${token}`, // เพิ่ม Bearer token
             },
         });
-
         const payload = response.data; // ต้องใช้ response.data ไม่ใช่ response.payload
         return payload as TokenPayload;
     } catch (error) {
@@ -89,8 +88,8 @@ export async function protectedRounterAction(token: string, currentPath: string)
 
         // สำหรับ custom paths (reset-password)
         if (isPathCustom) {
-            // ถ้ามี uid ให้เข้าถึงหน้าได้
-            if (decodedToken?.uid) {
+            // ถ้ามี id ให้เข้าถึงหน้าได้
+            if (decodedToken?.userId) {
                 return NextResponse.next();
             }
             // ถ้าไม่มี uid ให้ redirect ไปที่ sign-in

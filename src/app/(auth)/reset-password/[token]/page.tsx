@@ -59,10 +59,6 @@ const page = () => {
   const router = useRouter();
   const pathname = usePathname();
   const { token } = useParams();
-  const {
-    setError,
-    formState: { errors },
-  } = useForm();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -94,11 +90,6 @@ const page = () => {
     }
   };
   const checkAuthorization = async (token: string) => {
-    if (!token) {
-      router.push("/sign-in");
-      return;
-    }
-
     try {
       const response = await fetch("/api/auth/check", {
         method: "POST",
@@ -123,10 +114,6 @@ const page = () => {
   };
   useEffect(() => {
     const verifyToken = async () => {
-      if (!token) {
-        router.push("/sign-in");
-        return;
-      }      
       setIsLoadingPage(true);
       try {
         await checkAuthorization(token as string);
